@@ -257,9 +257,37 @@ export interface SessionsApi {
    * the session header, so a later resume rebuilds the same agent. An unknown
    * id fails with `agent-preset-not-found`, and a preset whose composition
    * cannot be mounted fails with `agent-preset-invalid`.
+   *
+   * `referenceWorkspaceIds` attaches existing workspaces as READ-ONLY
+   * reference projects for comparison (at most 2; the session's own
+   * workspace stays the main project). The reference list is validated
+   * before the session commits: an unknown id fails with
+   * `workspace-not-found`, an id naming the session's own workspace or a
+   * list beyond the cap fails with `references-invalid`, and a deployment
+   * without the workspace-references capability fails with
+   * `references-unsupported`.
    */
-  create(request: RpcRequest<{ workspaceId?: WorkspaceId; cwd?: string; sessionId?: SessionId; agentPreset?: string }>):
-  Promise<RpcResponse<{ sessionId: SessionId; agentPreset?: string }>>
+  create(request: RpcRequest<{
+    workspaceId?: WorkspaceId
+    cwd?: string
+    sessionId?: SessionId
+    agentPreset?: string
+    referenceWorkspaceIds?: WorkspaceId[]
+  }>): Promise<RpcResponse<{ sessionId: SessionId; agentPreset?: string }>>
+
+  /**
+   * Replaces the session's attached reference projects (whole-value):
+   * `referenceWorkspaceIds` is the COMPLETE set after the change (an empty
+   * list detaches all). References are read-only comparison projects —
+   * writes stay confined to the session's own workspace. Unknown ids fail
+   * with `workspace-not-found`; a list containing the session's own
+   * workspace or exceeding the cap fails with `references-invalid`; a
+   * deployment without the capability fails with `references-unsupported`.
+   * The change reaches the model at the session's next prompt assembly, so
+   * an in-flight turn is not interrupted.
+   */
+  setReferences(request: RpcRequest<{ sessionId: SessionId; referenceWorkspaceIds: WorkspaceId[] }>):
+  Promise<RpcResponse<{ accepted: true }>>
 
   /**
    * Reads a window of history events; page boundaries align to append-origin message

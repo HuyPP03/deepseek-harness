@@ -1070,6 +1070,20 @@ describe('runScenario', () => {
     expect(second.rawStdout).toContain('unsupported workspace scope')
   })
 
+  it('newSession resolves cwd-relative additionalDirectories against the scenario cwd', { timeout: 20_000 }, async () => {
+    const { fixtureFile } = await scenario({ echoExtraDirs: true })
+    const result = await runScenario(
+      { steps: [{ op: 'initialize' }, { op: 'newSession', additionalDirectories: ['rel-project', '/abs/elsewhere'] }] },
+      { agent: AGENT, mode: 'replay', fixtureFile },
+    )
+    expect(result.sessionId).toBeDefined()
+    type Frame = { method?: string; params?: { update?: { sessionUpdate?: string; content?: { type?: string; text?: string } } } }
+    const frames = result.rawStdout.split('\n').filter(line => line.trim().length > 0)
+      .map(line => JSON.parse(line) as Frame)
+    const echoed = frames.find(frame => frame.method === 'session/update' && frame.params?.update?.sessionUpdate === 'agent_message_chunk')
+    expect(echoed?.params?.update?.content?.text).toBe(`extra-dirs:${JSON.stringify([`${result.cwd}/rel-project`, '/abs/elsewhere'])}`)
+  })
+
   it('newSessionExpectError throws when session/new unexpectedly succeeds', { timeout: 20_000 }, async () => {
     const { fixtureFile } = await scenario({})
     await expect(runScenario(

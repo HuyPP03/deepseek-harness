@@ -105,6 +105,7 @@ export const SERVICE_PAGE: Record<string, string> = {
   userQuestions: 'user-questions.md',
   web: 'web.md',
   workflowEngine: 'workflow.md',
+  workspaceReferences: 'workspace.md',
   workspaceRegistry: 'workspace.md',
 }
 

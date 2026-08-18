@@ -21,6 +21,20 @@ export interface IWorkspaces {
    */
   connectWorkspace(workspaceId: WorkspaceId): Promise<SessionId>
   /**
+   * Start the session a hero New-Session selection lands in:
+   * main-only reuses or mints that Workspace's blank session
+   * (connectWorkspace); any reference selection mints a FRESH session
+   * carrying referenceWorkspaceIds (a blank reuse would drop the references);
+   * a project-less selection mints a plain chat session on the host's cwd.
+   * @param selection - main project id (first selection) and the ordered
+   *   reference project ids.
+   * @returns the session id (already in the list store; the caller opens it).
+   */
+  startNewSession(selection: {
+    main?: WorkspaceId | undefined
+    references?: readonly WorkspaceId[] | undefined
+  }): Promise<SessionId>
+  /**
    * The New Session flow: connect the explicit, current-Session, or recent
    * Workspace and open the resulting session; failures surface on the session
    * list state.

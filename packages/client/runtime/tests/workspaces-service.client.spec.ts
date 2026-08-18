@@ -275,6 +275,42 @@ describe('WorkspaceRuntime', () => {
     await expect(workspaces.connectWorkspace(wid('alpha'))).resolves.toBe('s-fresh-2')
   })
 
+  it('startNewSession mints plain chat, blank-reuses a bare main, and creates fresh with references', async () => {
+    const ctx = new Context()
+    const api = new FakeApiClient()
+    const sessions = new SessionRuntime(ctx, api, fakeRemote())
+    const workspaces = new WorkspaceRuntime(ctx, api, sessions)
+    api.onWorkspaceList = () => Promise.resolve(ok({
+      items: [workspace('alpha', [sid('s-blank')]), workspace('beta')] as never[],
+    }))
+    api.onList = () => Promise.resolve(ok({
+      items: [
+        { sessionId: sid('s-blank'), updatedAt: 2, running: false, blank: true, cwd: '/w/alpha' },
+      ] as never[],
+    }))
+    api.onCreate = () => Promise.resolve(ok({ sessionId: sid('s-plain') }))
+    await Promise.all([workspaces.refresh(), sessions.refresh()])
+    await Promise.resolve()
+
+    // Plain chat (no main): always a fresh session, no workspaceId.
+    await expect(workspaces.startNewSession({})).resolves.toBe('s-plain')
+    expect(api.callsOf('session.create')).toEqual([{}])
+
+    // Bare main: the connectWorkspace blank-reuse scan, no create RPC.
+    api.onCreate = () => Promise.resolve(ok({ sessionId: sid('s-x') }))
+    await expect(workspaces.startNewSession({ main: wid('alpha') })).resolves.toBe('s-blank')
+    expect(api.callsOf('session.create')).toEqual([{}])
+
+    // Main + references: always a fresh session carrying both ids (no reuse).
+    api.onCreate = () => Promise.resolve(ok({ sessionId: sid('s-ref') }))
+    await expect(workspaces.startNewSession({ main: wid('alpha'), references: [wid('beta')] })).resolves.toBe('s-ref')
+    expect(api.callsOf('session.create')).toEqual([{}, { workspaceId: 'alpha', referenceWorkspaceIds: ['beta'] }])
+
+    // References without a main: fresh session, references only.
+    api.onCreate = () => Promise.resolve(ok({ sessionId: sid('s-refs-only') }))
+    await expect(workspaces.startNewSession({ references: [wid('alpha')] })).resolves.toBe('s-refs-only')
+    expect(api.callsOf('session.create')).toEqual([{}, { workspaceId: 'alpha', referenceWorkspaceIds: ['beta'] }, { referenceWorkspaceIds: ['alpha'] }])
+  })
   it('a rejected first prompt keeps the blank session eligible for connectWorkspace reuse', async () => {
     const ctx = new Context()
     const api = new FakeApiClient()

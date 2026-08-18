@@ -71,6 +71,23 @@ export class TestWorkspaces implements IWorkspaces {
   }
 
   /**
+   * Hero New-Session flow (recorded). The default echoes the main workspace
+   * id back as the session id (`plain` when project-less); stub for
+   * reference-carrying or cross-session flows.
+   * @param selection - main project id and ordered reference project ids.
+   * @returns the session id the flow lands in.
+   */
+  async startNewSession(selection: {
+    main?: WorkspaceId | undefined
+    references?: readonly WorkspaceId[] | undefined
+  }): Promise<SessionId> {
+    this.calls.push({ method: 'startNewSession', args: [selection] })
+    const stub = this.stubs.get('startNewSession')
+    if (stub !== undefined) return await (stub(selection) as Promise<SessionId>)
+    return `session-of-${selection.main ?? 'plain'}` as SessionId
+  }
+
+  /**
    * Create a Workspace (recorded). The default echoes a view derived from
    * the input; stub for failure or list-coupled flows.
    * @param input - the Host create payload.

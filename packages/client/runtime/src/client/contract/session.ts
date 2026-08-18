@@ -9,7 +9,7 @@
  */
 import type { AttachmentIdType, ImageAttachmentRef } from '@deepseek-ai/dsh-attachment'
 import type {
-  MessageId, PromptContentPart, QueueAction, RpcResult, SessionId,
+  MessageId, PromptContentPart, QueueAction, RpcResult, SessionId, WorkspaceId,
 } from '@deepseek-ai/dsh-api-remotes/client'
 import type { RemoteResult } from '@deepseek-ai/dsh-typert-protocol'
 import type { ConversationSnapshot } from '../sessions/conversation.ts'
@@ -67,6 +67,15 @@ export interface ISession {
    * @returns the normalized accepted title and its event seq, or the business error.
    */
   rename(title: string): Promise<RpcResult<{ title: string; seq: number }>>
+  /**
+   * Replace this session's reference-project set whole-value: the list is the
+   * complete attached set after the change (an empty list detaches all); the
+   * Host normalizes (canonicalize, deduplicate, exclude the session cwd, cap)
+   * and logs one workspace/references event on acceptance.
+   * @param referenceWorkspaceIds - the complete reference set to attach.
+   * @returns acceptance, or the business/transport error.
+   */
+  setReferences(referenceWorkspaceIds: readonly WorkspaceId[]): Promise<RpcResult<{ accepted: true }>>
   /**
    * Extend the history window backwards (older messages pagination).
    * @returns completion; failures land in snapshot.openState/loadingOlder.

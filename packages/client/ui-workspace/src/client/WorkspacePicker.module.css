@@ -18,3 +18,15 @@
 .menuStatus {
   color: var(--dsw-alias-label-secondary);
 }
+
+/* Multi-select row: title plus the main-project badge, kept on one line. */
+.rowLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.mainBadge {
+  flex-shrink: 0;
+}

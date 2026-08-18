@@ -116,6 +116,30 @@ export class WorkspaceRuntime implements IWorkspaces {
   }
 
   /**
+   * The hero New-Session flow: main-only reuses or mints the target's blank
+   * session (connectWorkspace, blank-reuse intact); any reference selection
+   * mints a FRESH session carrying referenceWorkspaceIds — a blank reuse would
+   * drop the references, so the reuse scan is skipped entirely; a project-less
+   * selection mints a plain chat session (no workspaceId → host cwd). The
+   * resolution guarantee of connectWorkspace holds on every arm: the returned
+   * id is already in the list store.
+   * @param selection - main project id (first selection) and ordered references.
+   * @returns the session id the flow lands in (the caller opens it).
+   */
+  async startNewSession(selection: {
+    main?: WorkspaceId | undefined
+    references?: readonly WorkspaceId[] | undefined
+  } = {}): Promise<SessionId> {
+    const references = selection.references ?? []
+    if (selection.main === undefined) {
+      if (references.length > 0) return this.sessions.create({ referenceWorkspaceIds: references })
+      return this.sessions.create({})
+    }
+    if (references.length === 0) return this.connectWorkspace(selection.main)
+    return this.sessions.create({ workspaceId: selection.main, referenceWorkspaceIds: references })
+  }
+
+  /**
    * Follow the first complete Workspace/Session baseline and select a default
    * session exactly once. A restored current session wins; otherwise the most
    * recent Workspace is connected (reusing or creating its blank session).

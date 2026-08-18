@@ -31,7 +31,7 @@ export interface AcpConfig {
 
 依赖：`Stream`（`@agentclientprotocol/sdk`）
 
-来源：[`packages/acp/acp/src/index.ts:71`](../packages/acp/acp/src/index.ts)
+来源：[`packages/acp/acp/src/index.ts:75`](../packages/acp/acp/src/index.ts)
 
 <a id="deepseek-aidsh-acp-demo"></a>
 
@@ -3022,6 +3022,22 @@ export interface Config {
 ```
 
 来源：[`packages/workflow/workflow-worker-thread/src/index.ts:32`](../packages/workflow/workflow-worker-thread/src/index.ts)
+
+<a id="deepseek-aidsh-workspace-references"></a>
+
+## `@deepseek-ai/dsh-workspace-references`
+
+需要：`sessions`
+
+```ts config-catalog
+/** The service config. */
+export interface Config {
+  /** Maximum reference projects one session may attach (default 2). */
+  readonly maxReferences?: number
+}
+```
+
+来源：[`packages/workspace/workspace-references/src/index.ts:166`](../packages/workspace/workspace-references/src/index.ts)
 
 ## 无配置的可加载插件
 

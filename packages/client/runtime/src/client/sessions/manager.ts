@@ -530,17 +530,32 @@ export class SessionManager {
    * Contract session.create; on success merge into summaries immediately (no
    * wait for the next refresh). A created session is blank by definition
    * (entity birth precedes the first message).
-   * @param opts - target workspace or working directory, plus an optional caller-owned id.
+   * @param opts - target workspace or working directory, the optional
+   *   reference-project ids (whole value; the Host normalizes and logs the
+   *   workspace/references event), and an optional caller-owned id.
    * @returns the create result.
    */
   async create(
-    opts: { workspaceId?: WorkspaceId; cwd?: string; sessionId?: SessionId } = {},
+    opts: {
+      workspaceId?: WorkspaceId
+      cwd?: string
+      referenceWorkspaceIds?: readonly WorkspaceId[]
+      sessionId?: SessionId
+    } = {},
   ): Promise<RpcResult<{ sessionId: SessionId }>> {
     try {
-      const shared = opts.sessionId === undefined ? {} : { sessionId: opts.sessionId }
-      const payload = opts.workspaceId !== undefined
-        ? { workspaceId: opts.workspaceId, ...shared }
-        : { ...(opts.cwd === undefined ? {} : { cwd: opts.cwd }), ...shared }
+      const payload: {
+        workspaceId?: WorkspaceId
+        cwd?: string
+        sessionId?: SessionId
+        referenceWorkspaceIds?: WorkspaceId[]
+      } = {}
+      if (opts.sessionId !== undefined) payload.sessionId = opts.sessionId
+      if (opts.workspaceId !== undefined) payload.workspaceId = opts.workspaceId
+      else if (opts.cwd !== undefined) payload.cwd = opts.cwd
+      if (opts.referenceWorkspaceIds !== undefined && opts.referenceWorkspaceIds.length > 0) {
+        payload.referenceWorkspaceIds = [...opts.referenceWorkspaceIds]
+      }
       const { result } = await this.api.sessions.create(payload)
       if (result.ok) {
         this.recordMutation({ kind: 'upsert', summary: {

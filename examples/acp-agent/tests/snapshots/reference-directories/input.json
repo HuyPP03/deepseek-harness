@@ -1,0 +1,7 @@
+{
+  "steps": [
+    { "op": "initialize" },
+    { "op": "newSession", "additionalDirectories": ["ref-project"] },
+    { "op": "prompt", "text": "Reply with exactly REFERENCES_DONE. Do not use tools." }
+  ]
+}

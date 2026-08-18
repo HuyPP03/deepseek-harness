@@ -2308,6 +2308,14 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         const appended = logOf(sessionId).at(-1) as SessionEvent
         return ok(request, { title: normalized, seq: appended.seq })
       },
+      setReferences: (request) => {
+        const missing = requireSession(request)
+        if (missing !== undefined) return missing
+        // The Host normalizes (canonicalize/dedup/exclude cwd/cap) and logs one
+        // workspace/references event; the client-plane fixture has no such
+        // event type, so it settles acceptance only.
+        return ok(request, { accepted: true })
+      },
       fork: (request) => {
         const { sessionId, atSeq } = request.payload
         const source = summaryOf(sessionId)
@@ -3084,6 +3092,7 @@ export class FixtureApiClient extends AbstractApiClient {
       case 'session.models': return this.api.sessions.models(request)
       case 'session.selectModel': return this.api.sessions.selectModel(request)
       case 'session.rename': return this.api.sessions.rename(request)
+      case 'session.setReferences': return this.api.sessions.setReferences(request)
       case 'session.fork': return this.api.sessions.fork(request)
       case 'session.prompt': return this.api.sessions.prompt(request)
       case 'session.attachment': return this.api.sessions.attachment(request)

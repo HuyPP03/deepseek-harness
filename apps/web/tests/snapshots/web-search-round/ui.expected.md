@@ -3,6 +3,9 @@
     - button "Use web_search to search exactly" [disabled]
   - img
   - text: Standard mode
+  - button "Reference projects":
+    - img
+    - text: Add reference projects
   - button "Session log":
     - text: Session log
     - img

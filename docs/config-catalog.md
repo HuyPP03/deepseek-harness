@@ -29,7 +29,7 @@ export interface AcpConfig {
 
 Depends on: `Stream` (`@agentclientprotocol/sdk`)
 
-Source: [`packages/acp/acp/src/index.ts:71`](../packages/acp/acp/src/index.ts)
+Source: [`packages/acp/acp/src/index.ts:75`](../packages/acp/acp/src/index.ts)
 
 <a id="deepseek-aidsh-acp-demo"></a>
 
@@ -3020,6 +3020,22 @@ export interface Config {
 ```
 
 Source: [`packages/workflow/workflow-worker-thread/src/index.ts:32`](../packages/workflow/workflow-worker-thread/src/index.ts)
+
+<a id="deepseek-aidsh-workspace-references"></a>
+
+## `@deepseek-ai/dsh-workspace-references`
+
+Requires: `sessions`
+
+```ts config-catalog
+/** The service config. */
+export interface Config {
+  /** Maximum reference projects one session may attach (default 2). */
+  readonly maxReferences?: number
+}
+```
+
+Source: [`packages/workspace/workspace-references/src/index.ts:166`](../packages/workspace/workspace-references/src/index.ts)
 
 ## Loadable plugins with no config
 

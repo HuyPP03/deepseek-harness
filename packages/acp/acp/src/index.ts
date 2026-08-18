@@ -37,6 +37,10 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import { SessionId, type SessionEvent, type TurnEndReason } from '@deepseek-ai/dsh-session'
 // Side-effect type import: declaration-merges the approval waterfall answered below.
 import type {} from '@deepseek-ai/dsh-user-approval'
+// Value import: normalizeReferencePaths pre-validates additionalDirectories
+// before the session commits; the package root also carries the
+// ctx.workspaceReferences Context merge.
+import { normalizeReferencePaths } from '@deepseek-ai/dsh-workspace-references'
 import { AcpContentError, admitAcpPrompt, assistantBlockToAcp, supportsAcpImagePrompts } from './content.ts'
 import { turnEndToStopReason } from './codec.ts'
 
@@ -309,6 +313,23 @@ export function apply(ctx: Context, config: AcpConfig): void {
         assertOpen()
         validateSessionParams(params)
         const sessionId = SessionId(randomUUID())
+        // Reference directories validate before the session commits, so a bad
+        // request never leaves one behind. The service's set() re-validates
+        // at the append boundary, which is the enforcement point.
+        const referenceDirs = params.additionalDirectories
+        const references = referenceDirs !== undefined && referenceDirs.length > 0
+          ? ctx.get('workspaceReferences')
+          : undefined
+        if (referenceDirs !== undefined && referenceDirs.length > 0) {
+          if (references === undefined) {
+            throw invalidParams('additionalDirectories requires a deployment that mounts @deepseek-ai/dsh-workspace-references')
+          }
+          try {
+            await normalizeReferencePaths(referenceDirs, params.cwd, references.maxReferences)
+          } catch (error: unknown) {
+            throw invalidParams(error instanceof Error ? error.message : String(error))
+          }
+        }
         // No preset composition: the ACP bundle keeps the model-facing rows in
         // the host plane, so this agent reads them from the global layer. A
         // deployment that configures a roster has to join one here first
@@ -322,6 +343,15 @@ export function apply(ctx: Context, config: AcpConfig): void {
         if (closed) {
           await handle.dispose()
           throw internalError('connection closed during session/new')
+        }
+        /* v8 ignore next 1 -- an undefined service already threw above, so the third conjunct cannot be false. */
+        if (referenceDirs !== undefined && referenceDirs.length > 0 && references !== undefined) {
+          try {
+            await references.set(handle.agent.session, referenceDirs)
+          } catch (error: unknown) {
+            await handle.dispose()
+            throw invalidParams(`session created but references were not recorded: ${error instanceof Error ? error.message : String(error)}`)
+          }
         }
         sessions.set(sessionId, {
           agent: handle.agent,
@@ -538,8 +568,8 @@ function agentOptions(config: AcpConfig): { provider?: string; model?: string } 
 /** Reject session features outside the automation contract. */
 function validateSessionParams(params: NewSessionRequest): void {
   if (!isAbsolute(params.cwd)) throw invalidParams(`cwd must be an absolute path: ${params.cwd}`)
-  if (params.additionalDirectories !== undefined && params.additionalDirectories.length > 0) {
-    throw invalidParams('additionalDirectories is not supported')
+  for (const directory of params.additionalDirectories ?? []) {
+    if (!isAbsolute(directory)) throw invalidParams(`additionalDirectories entries must be absolute paths: ${directory}`)
   }
   if (params.mcpServers.length > 0) throw invalidParams('mcpServers is not supported')
 }

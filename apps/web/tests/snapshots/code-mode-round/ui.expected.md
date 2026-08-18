@@ -3,6 +3,9 @@
     - 'button "Using ONE run_code program: run" [disabled]'
   - img
   - text: Standard mode
+  - button "Reference projects":
+    - img
+    - text: Add reference projects
   - button "Session log":
     - text: Session log
     - img

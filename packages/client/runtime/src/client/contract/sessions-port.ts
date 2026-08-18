@@ -33,10 +33,15 @@ export interface SessionsPort {
   readonly list: ObservableSnapshot<SessionsPortList>
   /**
    * Create a session on the host.
-   * @param opts - target workspace.
+   * @param opts - target workspace (absent → plain chat on the host's cwd)
+   *   and the optional reference-project ids (whole value; the host
+   *   normalizes and logs the workspace/references event).
    * @returns the new session id.
    */
-  create(opts: { workspaceId: WorkspaceId }): Promise<SessionId>
+  create(opts: {
+    workspaceId?: WorkspaceId
+    referenceWorkspaceIds?: readonly WorkspaceId[]
+  }): Promise<SessionId>
   /**
    * Select a session as current.
    * @param id - session id (must exist in the list store).

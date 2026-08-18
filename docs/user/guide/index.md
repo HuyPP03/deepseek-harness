@@ -12,7 +12,9 @@ The [model configuration guide](./providers.md) covers other providers and custo
 
 ## Choose a workspace
 
-Click **Choose workspace**, add the project directory where you started `dsh`, and select it. The session composer remains unavailable until a workspace is selected.
+Click **Choose workspace** to open the workspace picker. Add the project directories you want to work in, then confirm: the first project you select becomes the session's main project, and you may add up to two more projects as read-only reference projects for comparison. You can also start a chat with no project: the session then runs in the directory where you started `dsh`. The session composer becomes available once you confirm.
+
+While a session runs, the session header's reference control attaches and detaches reference projects (within the same limit); the model sees them as read-only comparison context from its next step onward.
 
 ## Run a task
 

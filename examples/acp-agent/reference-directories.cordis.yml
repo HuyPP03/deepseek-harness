@@ -1,0 +1,11 @@
+# Reference-directories snapshot composition: the base example plus the
+# workspace-references service, so session/new may carry additionalDirectories
+# (read-only comparison projects for the created session).
+- id: base
+  name: '@deepseek-ai/cordis-plugin-include'
+  config:
+    path: ./cordis.yml
+    patches:
+      - insert:
+          - id: workspace-references
+            name: '@deepseek-ai/dsh-workspace-references'

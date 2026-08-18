@@ -59,8 +59,9 @@ export function probeFreePort(): Promise<number> {
  * until the live composer unlocks. A fresh world has no Workspace, so the boot
  * lands in the Workspace-trigger view state (startup auto-selection has nothing to
  * select); every scenario that types into the composer must connect one
- * first. With nothing to list, activating the textarea raises the dialog directly —
- * adding a workspace is the picker's only entry. The directory is staged here
+ * first. The hero's multi-select menu lists No project, Add workspace…,
+ * and Start, so the helper opens that menu and takes the add row, which
+ * starts the session in the adopted workspace. The directory is staged here
  * and adopted through the path editor, which is idempotent across the repeated
  * connects a scenario may make; creating a folder from inside the dialog (the
  * product's other half of the same route) is covered by
@@ -74,6 +75,9 @@ export function probeFreePort(): Promise<number> {
 export async function connectFreshWorkspace(page: Page, root: string, name = 'workspace'): Promise<void> {
   mkdirSync(join(root, name), { recursive: true })
   await page.getByRole('textbox', { name: 'Choose workspace' }).click()
+  // The hero picker is a multi-select menu: with no workspaces yet the add
+  // action is one of its rows (No project, Add workspace…, Start).
+  await page.getByRole('menuitem', { name: 'Add workspace…' }).click()
   const dialog = page.getByRole('dialog', { name: 'Select Workspace Directory' })
   await dialog.waitFor({ timeout: 10_000 })
   await dialog.getByRole('button', { name: 'Edit path' }).click()
@@ -98,6 +102,9 @@ export async function connectFreshWorkspace(page: Page, root: string, name = 'wo
 export async function connectFreshWorkspaceZh(page: Page, root: string, name = 'workspace'): Promise<void> {
   mkdirSync(join(root, name), { recursive: true })
   await page.getByRole('textbox', { name: '选择工作区' }).click()
+  // 英雄选择器是多选菜单：尚无工作区时，添加动作是其一行（不选择项目、
+  // 添加工作区…、开始）。
+  await page.getByRole('menuitem', { name: '添加工作区…' }).click()
   const dialog = page.getByRole('dialog', { name: '选择工作区目录' })
   await dialog.waitFor({ timeout: 10_000 })
   await dialog.getByRole('button', { name: '编辑路径' }).click()

@@ -90,6 +90,9 @@
       "path": "../../workspace/workspace"
     },
     {
+      "path": "../../workspace/workspace-references"
+    },
+    {
       "path": "../directory-picker"
     },
     {

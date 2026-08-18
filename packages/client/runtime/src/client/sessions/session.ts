@@ -5,7 +5,7 @@ import type { AttachmentIdType, ImageAttachmentRef } from '@deepseek-ai/dsh-atta
 import type { SessionEvent } from '@deepseek-ai/dsh-session/types'
 import type {
   HistoryEntry, IApiClient, MessageId, MuxFrame, PromptContentPart, QueueAction, RpcError,
-  RpcId, RpcResponse, RpcResult, SessionId, SubagentAddress, ToolEventView,
+  RpcId, RpcResponse, RpcResult, SessionId, SubagentAddress, ToolEventView, WorkspaceId,
 } from '@deepseek-ai/dsh-api-remotes/client'
 // Value import from the inline-safe wire layer (not the connection plugin):
 // plugin-to-plugin value imports are a bundle purity error.
@@ -342,6 +342,26 @@ export class Session implements SessionFace {
     try {
       const { result } = await this.api.sessions.rename({ sessionId: this.sessionId, title })
       if (result.ok) this.projections.apply('title', result.value.title, result.value.seq)
+      return result
+    } catch (error) {
+      return transportError(error)
+    }
+  }
+
+  /**
+   * Contract session.setReferences: whole-value replacement of this
+   * session's reference-project set (an empty list detaches all). The Host
+   * normalizes the set, logs one workspace/references event, and the
+   * projection frame that follows updates useProjection readers.
+   * @param referenceWorkspaceIds - the complete reference set after the change.
+   * @returns acceptance, or the business/transport error.
+   */
+  async setReferences(referenceWorkspaceIds: readonly WorkspaceId[]): Promise<RpcResult<{ accepted: true }>> {
+    try {
+      const { result } = await this.api.sessions.setReferences({
+        sessionId: this.sessionId,
+        referenceWorkspaceIds: [...referenceWorkspaceIds],
+      })
       return result
     } catch (error) {
       return transportError(error)

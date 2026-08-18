@@ -98,12 +98,16 @@ export const sessionSearchValueSchema = z.object({
   hasMore: z.boolean(),
 }) satisfies z.ZodType<Wire<ResponseValue<'session.search'>>>
 
+/** The product's reference-project cap on the wire (the service's Config enforces the same bound at the fold boundary). */
+export const REFERENCE_PROJECTS_MAX = 2
+
 /** session.create request payload (at most one of workspaceId / cwd). */
 export const sessionCreateRequestSchema = z.object({
   workspaceId: workspaceIdSchema.optional(),
   cwd: z.string().optional(),
   sessionId: sessionIdSchema.optional(),
   agentPreset: z.string().optional(),
+  referenceWorkspaceIds: z.array(workspaceIdSchema).max(REFERENCE_PROJECTS_MAX).optional(),
 }).refine(
   payload => payload.workspaceId === undefined || payload.cwd === undefined,
   { message: 'session.create accepts workspaceId or cwd, not both' },
@@ -114,6 +118,17 @@ export const sessionCreateValueSchema = z.object({
   sessionId: sessionIdSchema,
   agentPreset: z.string().optional(),
 }) satisfies z.ZodType<Wire<ResponseValue<'session.create'>>>
+
+/** session.setReferences request payload (whole-value: the complete set after the change; empty detaches all). */
+export const sessionSetReferencesRequestSchema = z.object({
+  sessionId: sessionIdSchema,
+  referenceWorkspaceIds: z.array(workspaceIdSchema).max(REFERENCE_PROJECTS_MAX),
+}) satisfies z.ZodType<Wire<RequestPayload<'session.setReferences'>>>
+
+/** session.setReferences response value. */
+export const sessionSetReferencesValueSchema = z.object({
+  accepted: z.literal(true),
+}) satisfies z.ZodType<Wire<ResponseValue<'session.setReferences'>>>
 
 /** session.rename request payload (raw title; host-side normalization decides acceptance). */
 export const sessionRenameRequestSchema = z.object({

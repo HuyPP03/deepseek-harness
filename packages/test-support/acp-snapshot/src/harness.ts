@@ -20,7 +20,7 @@ import { cp, mkdtemp, readFile, readdir, rm } from 'node:fs/promises'
 import { existsSync, realpathSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { tmpdir } from 'node:os'
-import { basename, dirname, join, delimiter } from 'node:path'
+import { basename, delimiter, dirname, isAbsolute, join } from 'node:path'
 import { vi } from 'vitest'
 import {
   ClientSideConnection,
@@ -67,7 +67,7 @@ const WAIT_POLL_INTERVAL_MS = 10
  */
 export type InputStep =
   | { op: 'initialize' }
-  | { op: 'newSession' }
+  | { op: 'newSession'; additionalDirectories?: string[] }
   | { op: 'newSessionExpectError'; additionalDirectories?: string[] }
   | { op: 'prompt'; text: string }
   | { op: 'promptContent'; content: AcpContentBlock[] }
@@ -399,7 +399,16 @@ async function runStep(
       })
       return
     case 'newSession': {
-      const { sessionId } = await client.newSession({ cwd, mcpServers: [] })
+      // Cwd-relative additionalDirectories resolve against the scenario cwd
+      // (prepareWorkspace creates them); absolute entries pass through.
+      const additionalDirectories = step.additionalDirectories?.map(
+        directory => isAbsolute(directory) ? directory : join(cwd, directory),
+      )
+      const { sessionId } = await client.newSession({
+        cwd,
+        mcpServers: [],
+        ...additionalDirectories !== undefined ? { additionalDirectories } : {},
+      })
       setSessionId(sessionId)
       return
     }

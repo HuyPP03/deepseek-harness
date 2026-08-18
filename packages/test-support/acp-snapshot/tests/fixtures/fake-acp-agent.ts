@@ -53,6 +53,8 @@ interface Behavior {
   echoEnv?: boolean
   /** Echo the sorted cwd listing as a chunk (spec-side workspace-seeding assertions). */
   echoWorkspace?: boolean
+  /** Echo the `additionalDirectories` a `session/new` received as a chunk (spec-side harness-mapping assertions). */
+  echoExtraDirs?: boolean
   /** Write a line to stderr on boot (spec-side stderr-capture assertions). */
   stderrNote?: string
   /** Let a short-lived descendant retain stdio and emit one final ACP update plus stderr line after this parent exits. */
@@ -213,6 +215,7 @@ function handleFrame(frame: Record<string, unknown>): void {
       sessionId = randomUUID()
       sessionCwd = typeof params.cwd === 'string' ? params.cwd : process.cwd()
       respond(id as number | string, { sessionId })
+      if (behavior.echoExtraDirs === true) chunk(`extra-dirs:${JSON.stringify(extra ?? [])}`)
       return
     }
     case 'session/prompt':

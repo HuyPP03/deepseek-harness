@@ -15,6 +15,7 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type { WorkspaceBrowserInjected, WorkspacePickerInjected } from './contract/slots.ts'
 import { createWorkspaceViewStore } from './stores.ts'
 import { WorkspaceBrowser } from './WorkspaceBrowser.tsx'
+import { ReferenceProjectsChip, type ReferenceProjectsChipInjected } from './ReferenceProjectsChip.tsx'
 import { WorkspacePicker } from './WorkspacePicker.tsx'
 import { en, zh, type WorkspaceKey } from './locales.ts'
 
@@ -126,4 +127,24 @@ export function apply(ctx: ClientContext): void {
     },
     WorkspacePicker,
   ))
+
+  // The in-session reference-project chip: session context sits between the
+  // process work (subagent catalog, job list) and the composition seat
+  // (agent preset). The chip hides itself when the projection is uncomposed
+  // or the session has no owning workspace.
+  ctx.slots.inject('conversation.session.header.actions', () => ctx.slots.register({
+    name: 'conversation.session.header.actions',
+    id: 'reference-projects',
+    order: 40,
+    locale: NS,
+    inject: (sessionId): ReferenceProjectsChipInjected => ({
+      // Row → session-face hop: setReferences is a per-session verb (ISession),
+      // not a list-service verb; the binding resolves any listed session.
+      setReferences: (referenceWorkspaceIds) => {
+        const session = ctx.sessions.binding(sessionId)?.session
+        if (session === undefined) throw new Error(`unknown session "${sessionId}"`)
+        return session.setReferences(referenceWorkspaceIds)
+      },
+    }),
+  }, ReferenceProjectsChip))
 }

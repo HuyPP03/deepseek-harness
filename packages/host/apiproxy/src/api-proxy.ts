@@ -27,6 +27,10 @@ import {
   workspaceDomainState, workspaceRecord, WorkspaceId as brandWorkspaceId,
   WorkspaceMoveInvalidError, WorkspaceOrderInvalidError, WorkspaceUnknownSessionError,
 } from '@deepseek-ai/dsh-workspace'
+// Value import: normalizeReferencePaths validates the wire ids before the
+// create commits; the package root also carries the ctx.workspaceReferences
+// Context merge.
+import { normalizeReferencePaths } from '@deepseek-ai/dsh-workspace-references'
 // Type-only: brings the `ctx.tools` Context merge into this program (viewFor reads presenters).
 import {
   InvalidPresetIdError, PresetExistsError, PresetMountError,
@@ -2119,6 +2123,43 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         }
         const cwd = workspace?.path ?? request.payload.cwd ?? defaults.cwd
         const requestedPreset = request.payload.agentPreset
+        // Reference projects are validated before the create commits: an
+        // unknown id, a self-reference, or a set over the cap must not leave
+        // a session behind. The service's set() re-validates at the append
+        // boundary, which is the enforcement point shared by every caller.
+        const referencesService = ctx.get('workspaceReferences')
+        const requestedReferences = request.payload.referenceWorkspaceIds
+        let referenceSet: string[] | undefined
+        if (requestedReferences !== undefined && requestedReferences.length > 0) {
+          if (referencesService === undefined) {
+            return err(request, {
+              code: 'references-unsupported',
+              message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
+              details: { sessionId },
+            })
+          }
+          const paths: string[] = []
+          for (const referenceId of requestedReferences) {
+            const reference = ctx.workspaceRegistry.get(brandWorkspaceId(referenceId))
+            if (reference === undefined) {
+              return err(request, {
+                code: 'workspace-not-found',
+                message: `workspace "${referenceId}" not found`,
+                details: { workspaceId: referenceId },
+              })
+            }
+            paths.push(reference.path)
+          }
+          try {
+            referenceSet = await normalizeReferencePaths(paths, cwd, referencesService.maxReferences)
+          } catch (error: unknown) {
+            return err(request, {
+              code: 'references-invalid',
+              message: error instanceof Error ? error.message : String(error),
+              details: { sessionId, reason: 'invalid-reference-set' },
+            })
+          }
+        }
         try {
           await ensureSession(sessionId, cwd, request.payload.sessionId !== undefined, requestedPreset)
         } catch (error: unknown) {
@@ -2166,6 +2207,35 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             })
           }
         }
+        if (referenceSet !== undefined) {
+          // Re-read the service (the type needs a fresh narrowing; the
+          // validation above already proved it mounted).
+          const references = ctx.get('workspaceReferences')
+          if (references === undefined) {
+            return err(request, {
+              code: 'references-unsupported',
+              message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
+              details: { sessionId },
+            })
+          }
+          const attached = ctx.agents.get(sessionId)
+          if (attached === undefined) {
+            return err(request, {
+              code: 'internal',
+              message: `session "${sessionId}" was created but no live agent was published for it`,
+              details: {},
+            })
+          }
+          try {
+            await references.set(attached.session, referenceSet)
+          } catch (error: unknown) {
+            return err(request, {
+              code: 'references-invalid',
+              message: `session "${sessionId}" was created but the reference set could not be recorded: ${error instanceof Error ? error.message : String(error)}`,
+              details: { sessionId, reason: 'append-failed' },
+            })
+          }
+        }
         // Echo the composition the session RUNS so a client can label it
         // without waiting for the next list refresh — the create is the commit
         // point that knows it (a caller that named none gets the default).
@@ -2177,6 +2247,42 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         const created = ctx.agents.get(sessionId)
         const createdPreset = created === undefined ? undefined : resolveSessionPreset(created.session)
         return ok(request, { sessionId, ...createdPreset === undefined ? {} : { agentPreset: createdPreset } })
+      },
+
+      async setReferences(request) {
+        const { sessionId, referenceWorkspaceIds } = request.payload
+        const found = await agentFor(sessionId)
+        if ('error' in found) return err(request, found.error)
+        const references = ctx.get('workspaceReferences')
+        if (references === undefined) {
+          return err(request, {
+            code: 'references-unsupported',
+            message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
+            details: { sessionId },
+          })
+        }
+        const paths: string[] = []
+        for (const referenceId of referenceWorkspaceIds) {
+          const reference = ctx.workspaceRegistry.get(brandWorkspaceId(referenceId))
+          if (reference === undefined) {
+            return err(request, {
+              code: 'workspace-not-found',
+              message: `workspace "${referenceId}" not found`,
+              details: { workspaceId: referenceId },
+            })
+          }
+          paths.push(reference.path)
+        }
+        try {
+          await references.set(found.agent.session, paths)
+        } catch (error: unknown) {
+          return err(request, {
+            code: 'references-invalid',
+            message: error instanceof Error ? error.message : String(error),
+            details: { sessionId, reason: 'invalid-reference-set' },
+          })
+        }
+        return ok(request, { accepted: true as const })
       },
 
       async history(request) {

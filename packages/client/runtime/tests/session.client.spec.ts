@@ -604,6 +604,26 @@ describe('rename', () => {
   })
 })
 
+describe('setReferences', () => {
+  it('sends the whole reference set and returns the acceptance', async () => {
+    const { api, session } = makeSession()
+    const carrier = vi.fn(() => Promise.resolve(ok({ accepted: true })))
+    ;(api.sessions as { setReferences?: unknown }).setReferences = carrier
+    const result = await session.setReferences(['fk-w1' as never, 'fk-w2' as never])
+    expect(result).toMatchObject({ ok: true, value: { accepted: true } })
+    expect(carrier).toHaveBeenCalledWith({ sessionId: SID, referenceWorkspaceIds: ['fk-w1', 'fk-w2'] })
+  })
+
+  it('returns the business error untouched and folds a transport throw to internal', async () => {
+    const { api, session } = makeSession()
+    ;(api.sessions as { setReferences?: unknown }).setReferences = () => Promise.resolve(err({ code: 'internal', message: 'no', details: {} }))
+    const rejected = await session.setReferences(['fk-w1' as never])
+    expect(rejected).toMatchObject({ ok: false, error: { code: 'internal' } })
+    ;(api.sessions as { setReferences?: unknown }).setReferences = () => Promise.reject(new Error('refs transport down'))
+    const folded = await session.setReferences([])
+    expect(folded).toMatchObject({ ok: false, error: { code: 'internal' } })
+  })
+})
 describe('pending interactions', () => {
   it('adds approval/question on requested and removes them on resolved', async () => {
     const { session } = makeSession()

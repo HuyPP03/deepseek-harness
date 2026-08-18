@@ -25,7 +25,7 @@ import { HeroShell } from '../src/client/skeleton/EmptyHero.tsx'
 import { InputBar } from '../src/client/skeleton/InputBar.tsx'
 import type { InputBarProps } from '../src/client/skeleton/InputBar.tsx'
 import type {
-  ComposerBarOwnerProps,
+  ComposerBarOwnerProps, NewSessionSelection,
 } from '../src/client/contract/slots.ts'
 import type { ViewTab } from '../src/client/contract/views.ts'
 
@@ -85,7 +85,7 @@ function conversationSnapshot(overrides: Partial<ConversationSnapshot> = {}): Co
 function mount(
   snapshot: ConversationSnapshot,
   workspaceRows: WorkspaceView[] = [{ ...workspace('one'), sessionIds: [SID] }],
-  retargetWorkspace = vi.fn(async (_workspaceId: WorkspaceId) => {}),
+  retargetWorkspace = vi.fn(async (_selection: NewSessionSelection) => {}),
   options: {
     /** When true, mimic overlay:true chain siblings (hidden fallback + takeover). */
     overlayTakeover?: boolean
@@ -246,7 +246,7 @@ function mount(
     inputActions,
     renderSlot,
     renderSlotChain,
-    selectWorkspace: retargetWorkspace,
+    confirmNewSession: retargetWorkspace,
     t,
   }
   const view = render(<ConversationRoot {...props} />)
@@ -286,20 +286,32 @@ describe('ConversationRoot resident composer', () => {
     expect(seat('conversation.input.plan')).toEqual({ locked: true })
   })
 
-  it('lets the no-workspace posture win over a block', () => {
-    // Picking a workspace is the earlier prerequisite; naming a model first
-    // would send the user somewhere they cannot act yet.
+  it('applies a model block to the plain-chat composer (the no-workspace posture is gone)', () => {
+    // A blank session without an owning workspace is plain chat: there is no
+    // earlier workspace prerequisite, so a raised block disables the composer
+    // like any other session's — the model seat stays live to clear it.
     const b = mount(conversationSnapshot({ composerPhase: 'blank' }), [], undefined, {
       summaryBlank: true,
       composerBlock: { reason: 'select a model first' },
     })
     const box = b.view.getByRole('textbox') as HTMLTextAreaElement
+    expect(box.disabled).toBe(true)
+    expect(box.placeholder).toBe('select a model first')
+    const seat = (key: string) => b.seatOwners.filter(call => call.key === key).at(-1)?.owner
+    expect(seat('conversation.input.model')).toEqual({ locked: false })
+    expect(seat('conversation.input.plan')).toEqual({ locked: true })
+  })
+
+  it('keeps the plain-chat composer enabled: a blank session without a workspace can send', () => {
+    const b = mount(conversationSnapshot({ composerPhase: 'blank' }), [], undefined, {
+      summaryBlank: true,
+    })
+    const box = b.view.getByRole('textbox') as HTMLTextAreaElement
     expect(box.disabled).toBe(false)
-    expect(box.readOnly).toBe(true)
-    expect(box.getAttribute('aria-haspopup')).toBe('menu')
-    expect(box.placeholder).not.toBe('select a model first')
-    const modelSeat = b.seatOwners.filter(call => call.key === 'conversation.input.model').at(-1)?.owner
-    expect(modelSeat).toEqual({ locked: true })
+    expect(box.readOnly).toBe(false)
+    expect(box.placeholder).toBe('描述你想要构建的内容')
+    fireEvent.change(box, { target: { value: 'plain chat hello' } })
+    expect(b.chat.store.getSnapshot().draft).toBe('plain chat hello')
   })
 
   it('keeps composer text in the machine, mirrors to the chat store, and submits through the sink', () => {
@@ -372,13 +384,13 @@ describe('ConversationRoot resident composer', () => {
     expect(host?.contains(box)).toBe(true)
     fireEvent.change(box, { target: { value: 'draft in hero' } })
     expect(b.chat.store.getSnapshot().draft).toBe('draft in hero')
-    // Picker: open through the chip; a pick switches to the other
+    // Picker: open through the chip; a confirm switches to the other
     // workspace's blank session (draft carry is apply-layer wiring).
     fireEvent.click(b.view.getByRole('button', { name: '选择工作区' }))
-    const owner = b.pickerOwner() as { open: boolean; onPick(id: WorkspaceId): void }
+    const owner = b.pickerOwner() as { open: boolean; onConfirm(selection: { main?: WorkspaceId; references: WorkspaceId[] } | null): void }
     expect(owner.open).toBe(true)
-    act(() => { owner.onPick(wid('second')) })
-    expect(b.retargetWorkspace).toHaveBeenCalledWith(wid('second'))
+    act(() => { owner.onConfirm({ main: wid('second'), references: [] }) })
+    expect(b.retargetWorkspace).toHaveBeenCalledWith({ main: wid('second'), references: [] })
     expect(b.view.getByText('Selected Folder')).toBeTruthy()
   })
 
@@ -461,19 +473,19 @@ describe('ConversationRoot resident composer', () => {
   })
 
   it('rolls the pending workspace label back when switching fails', async () => {
-    const selectWorkspace = vi.fn(async () => { throw new Error('connect failed') })
+    const confirmNewSession = vi.fn(async () => { throw new Error('connect failed') })
     const b = mount(
       conversationSnapshot({ composerPhase: 'blank', blank: true }),
       [
         { ...workspace('one'), sessionIds: [SID] },
         { ...workspace('second'), title: 'Selected Folder' },
       ],
-      selectWorkspace,
+      confirmNewSession,
     )
     fireEvent.click(b.view.getByRole('button', { name: '选择工作区' }))
-    const owner = b.pickerOwner() as { onPick(id: WorkspaceId): void }
-    await act(async () => { owner.onPick(wid('second')); await Promise.resolve() })
-    expect(selectWorkspace).toHaveBeenCalledWith(wid('second'))
+    const owner = b.pickerOwner() as { onConfirm(selection: { main?: WorkspaceId; references: WorkspaceId[] } | null): void }
+    await act(async () => { owner.onConfirm({ main: wid('second'), references: [] }); await Promise.resolve() })
+    expect(confirmNewSession).toHaveBeenCalledWith({ main: wid('second'), references: [] })
     expect(b.view.queryByText('Selected Folder')).toBeNull()
     expect(b.view.getByText('one')).toBeTruthy()
   })

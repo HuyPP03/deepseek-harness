@@ -944,3 +944,25 @@ export type SessionEvent<T extends SessionEventType = SessionEventType> = {
 ```
 
 来源：[`packages/web/web-search-deepseek/src/provider.ts:83`](../packages/web/web-search-deepseek/src/provider.ts)
+### `workspace/*`
+
+<a id="workspacereferences--log-only"></a>
+
+#### `workspace/references` — log-only
+
+```ts persistence-catalog
+/**
+ * The session's reference-project set changed — log-only (like
+ * `sandbox/mode`; NOT a surface event, carries no `surfaceOp`): durable
+ * and replayable. WHOLE-VALUE: `references` is the complete attached set
+ * after the change (an empty list detaches all); the LAST such event is
+ * the session's current set. The `workspace:references` prompt section
+ * renders the fold, so replay rebuilds the same model-visible text.
+ */
+'workspace/references': {
+  /** The complete reference set after the change: canonical absolute directory paths, in admission order, never the session cwd. */
+  references: readonly ReferenceProject[]
+}
+```
+
+来源：[`packages/workspace/workspace-references/src/index.ts:53`](../packages/workspace/workspace-references/src/index.ts)

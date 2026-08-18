@@ -230,6 +230,14 @@ const SERVICE_ROLES: ServiceRole[] = [
     note: 'Owns WorkspaceId-branded records over the domain facility; stable sessionIds accounts drive Host RPC and GUI projections.',
   },
   {
+    key: 'workspaceReferences',
+    pkg: 'workspace-references',
+    title: 'Session reference projects',
+    mode: 'core',
+    consumers: ['acp', 'apiproxy'],
+    note: 'Whole-value `workspace/references` log state: the read-only project directories attached to a session, with the `workspace:references` prompt section.',
+  },
+  {
     key: 'sessionQuery',
     pkg: 'session-query',
     title: 'Session reads, traces, filters, and search',

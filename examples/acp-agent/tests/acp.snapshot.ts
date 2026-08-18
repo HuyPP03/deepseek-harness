@@ -67,6 +67,7 @@ const BACKGROUND_TASK_ADMISSION_CONFIG = fileURLToPath(
 const PRODUCT_SUBAGENT_CODEX_CONFIG = fileURLToPath(new URL('../product-subagent-codex.cordis.yml', import.meta.url))
 const PRODUCT_SUBAGENT_BOTH_CONFIG = fileURLToPath(new URL('../product-subagent-both.cordis.yml', import.meta.url))
 const FS_DIFF_BOUND_CONFIG = fileURLToPath(new URL('./fs-diff-bound.cordis.yml', import.meta.url))
+const REFERENCE_DIRECTORIES_CONFIG = fileURLToPath(new URL('../reference-directories.cordis.yml', import.meta.url))
 const SNAPSHOTS_DIR = join(dirname(fileURLToPath(import.meta.url)), 'snapshots')
 const PACKED_CHUNKS_SOURCE = 'hook-cc-pretool-deny'
 
@@ -109,6 +110,16 @@ async function prepareFsSearchWorkspace(cwd: string): Promise<void> {
 // TODO(acp-snapshot-ownership): Move backend/product scenarios to headless while
 // retaining ACP protocol contracts here.
 
+/**
+ * Create the reference project the reference-directories scenario attaches:
+ * a plain directory (a workspace-relative path the harness resolves against
+ * the scenario cwd). Its content is irrelevant — the scenario asserts the
+ * attached fact (event + prompt section), not a read through it.
+ */
+async function prepareReferenceDirectoriesWorkspace(cwd: string): Promise<void> {
+  await mkdir(join(cwd, 'ref-project'), { recursive: true })
+}
+
 function fixtureRecords(name: string): unknown[] {
   return readFileSync(join(SNAPSHOTS_DIR, name, 'session.jsonl'), 'utf8')
     .trimEnd()
@@ -134,6 +145,19 @@ function snapshotModeFromEnv(value: string | undefined): SnapshotSuiteOptions['m
 const SCENARIOS: Scenario[] = [
   { name: 'handshake', hasModelTurn: false, recorded: false },
   { name: 'reject-extra-dirs', hasModelTurn: false, recorded: false },
+  // The base deployment has no workspace-references service, so the same
+  // request succeeds under the reference-directories overlay (its own config)
+  // and the authored reply override drives the model turn; the session log
+  // pins the workspace/references event and the request header pins the
+  // workspace:references prompt section.
+  {
+    name: 'reference-directories',
+    hasModelTurn: true,
+    recorded: false,
+    overridden: true,
+    configPath: REFERENCE_DIRECTORIES_CONFIG,
+    prepareWorkspace: prepareReferenceDirectoriesWorkspace,
+  },
   // text-turn is the default header pin and owns the prompt and tool-schema
   // sidecars reused by alternate classes with identical component sequences.
   { name: 'text-turn', hasModelTurn: true, recorded: true, pinsHeader: true },

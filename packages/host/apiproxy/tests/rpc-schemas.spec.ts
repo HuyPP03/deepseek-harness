@@ -67,6 +67,8 @@ describe('rpcErrorSchema', () => {
     expect(rpcErrorSchema.parse({ code: 'workspace-invalid-path', message: 'm', details: { path: '/x' } }).code).toBe('workspace-invalid-path')
     expect(rpcErrorSchema.parse({ code: 'workspace-name-conflict', message: 'm', details: { name: 'x' } }).code).toBe('workspace-name-conflict')
     expect(rpcErrorSchema.parse({ code: 'workspace-move-invalid', message: 'm', details: { workspaceId: 'w', sessionId: 's' } }).code).toBe('workspace-move-invalid')
+    expect(rpcErrorSchema.parse({ code: 'references-unsupported', message: 'm', details: { sessionId: 's' } }).code).toBe('references-unsupported')
+    expect(rpcErrorSchema.parse({ code: 'references-invalid', message: 'm', details: { sessionId: 's', reason: 'r' } }).code).toBe('references-invalid')
     expect(rpcErrorSchema.parse({
       code: 'model-unavailable',
       message: 'm',

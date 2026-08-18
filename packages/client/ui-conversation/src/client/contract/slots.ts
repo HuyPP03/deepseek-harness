@@ -412,10 +412,12 @@ export type ChatStore = ReturnType<typeof createChatStore>
 /** Business callbacks injected into the conversation slot. */
 export interface ConversationInjected {
   /**
-   * Connect the selected Workspace and open its reusable/new blank session.
-   * When a blank session is already current, carry its draft to the target.
+   * Start the session a hero selection lands in and open it: main-only
+   * reuses or mints the Workspace's blank session; any reference selection
+   * and plain chat mint a fresh session. When a blank session is already
+   * current, carry its draft to the target.
    */
-  selectWorkspace: (workspaceId: WorkspaceId) => Promise<void>
+  confirmNewSession: (selection: NewSessionSelection) => Promise<void>
   /**
    * Framework-bound sources. `composerBlock` is this session's block when a
    * plugin raised one; the reason is the blocker's own localized copy, which
@@ -725,12 +727,20 @@ export interface DetailsInjected {
 export type DetailsSlotProps = PropsRuntime<'details'> & PropsRenderSlots<'conversation.details.tool'>
   & PropsStore<ChatStore> & DetailsInjected & PropsLocale<'conversation'>
 
+/** The confirmed selection of the hero / New-Session Workspace picker. */
+export interface NewSessionSelection {
+  /** The first selected Workspace — the session's main project (absent for plain chat). */
+  main?: WorkspaceId | undefined
+  /** The read-only reference projects, in selection order. */
+  references: WorkspaceId[]
+}
+
 /** Owner share common to the hero / New-Session Workspace pickers. */
 export interface EmptyWorkspaceOwnerProps {
   open: boolean
-  anchorRef?: RefObject<HTMLElement>
-  /** Currently active workspace (renders a trailing check in the picker list). */
+  anchorRef?: RefObject<HTMLElement | null> | undefined
+  /** Currently active workspace (initial preselection when the picker opens). */
   selectedId?: WorkspaceId | undefined
-  onPick: (workspaceId: WorkspaceId) => void
-  onClose: () => void
+  /** Confirmed selection; `null` cancels (the picker closed without choosing). */
+  onConfirm: (selection: NewSessionSelection | null) => void
 }

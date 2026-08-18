@@ -4,13 +4,15 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
+import type { SessionId, WorkspaceId } from '@deepseek-ai/dsh-api-remotes/client'
 import { SessionManager } from '../src/client/sessions/manager.ts'
 import { FakeApiClient, deferred, err, fakeRemote, ok } from './fake-api.client.ts'
 import { entries, ev, plainTurn } from './event-script.client.ts'
 
 const S1 = 'fk-m1' as SessionId
 const S2 = 'fk-m2' as SessionId
+const W1 = 'fk-w1' as WorkspaceId
+const W2 = 'fk-w2' as WorkspaceId
 
 type SummaryOver = Partial<{
   updatedAt: number
@@ -758,6 +760,17 @@ describe('remaining branches', () => {
     // Business error passes through untouched.
     api.onCreate = () => Promise.resolve(err({ code: 'internal', message: 'no', details: {} }))
     expect(await manager.create()).toMatchObject({ ok: false })
+  })
+
+  it('create forwards referenceWorkspaceIds only when the set is non-empty', async () => {
+    const api = new FakeApiClient()
+    api.onCreate = () => Promise.resolve(ok({ sessionId: S1 }))
+    const manager = new SessionManager(api, fakeRemote())
+    await manager.create({ referenceWorkspaceIds: [W1, W2] })
+    expect(api.callsOf('session.create')).toEqual([{ referenceWorkspaceIds: ['fk-w1', 'fk-w2'] }])
+    api.onCreate = () => Promise.resolve(ok({ sessionId: S2 }))
+    await manager.create({ referenceWorkspaceIds: [] })
+    expect(api.callsOf('session.create')).toEqual([{ referenceWorkspaceIds: ['fk-w1', 'fk-w2'] }, {}])
   })
 
   it('publishes a real Ungrouped summary from workspace-attach-failed', async () => {

@@ -73,6 +73,12 @@
     - id: workspace
       name: '@deepseek-ai/dsh-workspace'
 
+    # Session reference projects: the read-only comparison directories a
+    # session may attach (whole-value workspace/references log state + the
+    # workspace:references prompt section).
+    - id: workspace-references
+      name: '@deepseek-ai/dsh-workspace-references'
+
     - id: session-projection-cache
       name: '@deepseek-ai/dsh-session-projection-cache'
       config:

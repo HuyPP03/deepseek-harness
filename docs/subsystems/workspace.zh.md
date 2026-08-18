@@ -2,7 +2,7 @@
 
 [English](workspace.md) | 中文
 
-工作区（workspace）是用户工作目录的持久记录：一个建立在规范路径之上的稳定 id、一个显示标题，以及归属于它的会话的有序账本。该子系统是单个包（package）（[dsh-workspace](../../packages/workspace/workspace)，`ctx.workspaceRegistry`）——一项宿主侧可选能力，不属于 agent loop（智能体循环）主干，并且对模型不可见（没有工具、没有提示词文本、没有会话事件）。它通过[存储领域数据形式](storage.md)存储自己的记录，并对照 [`SessionHeader.cwd`](persistence.md#sessionheader--metadata-beside-the-log) 校验会话成员资格，因此 `storageDomain` 与 `sessionPersistence` 是必需的启动依赖：持久化这一依赖不可用时，插件保持 pending，而不是把这种不可用误当作空历史。设计记录：[领域 KV 存储 Agent Note（agent 决策记录）](../../.agents/notes/proposed/architecture/2026-07-24-domain-kv-storage-and-workspace.md)；引导与 GUI 顺序：[Workspace UI 产品流程 Agent Note](../../.agents/notes/implemented/feature/2026-07-25-workspace-ui-product-flow.md)。
+工作区（workspace）是用户工作目录的持久记录：一个建立在规范路径之上的稳定 id、一个显示标题，以及归属于它的会话的有序账本。该子系统是单个包（[dsh-workspace](../../packages/workspace/workspace)，`ctx.workspaceRegistry`）——一项宿主侧可选能力，不属于 agent loop（智能体循环）主干，并且其本身对模型不可见（注册表不暴露工具、不贡献提示词文本；其记录不是会话事件）。同族的姊妹包 [dsh-workspace-references](../../packages/workspace/workspace-references) 是这个家族的模型可见一半：它把会话的其他项目目录（最多到配置的 `maxReferences`）作为只读引用项目附加到会话，以 `workspace/references` 会话事件记录，并通过 `workspace:references` 提示词段呈现给模型。它通过[存储领域数据形式](storage.md)存储自己的记录，并对照 [`SessionHeader.cwd`](persistence.md#sessionheader--metadata-beside-the-log) 校验会话成员资格，因此 `storageDomain` 与 `sessionPersistence` 是必需的启动依赖：持久化这一依赖不可用时，插件保持 pending，而不是把这种不可用误当作空历史。设计记录：[领域 KV 存储 Agent Note（agent 决策记录）](../../.agents/notes/proposed/architecture/2026-07-24-domain-kv-storage-and-workspace.md)；引导与 GUI 顺序：[Workspace UI 产品流程 Agent Note](../../.agents/notes/implemented/feature/2026-07-25-workspace-ui-product-flow.md)。
 
 源码：[`packages/workspace/workspace/src/types.ts`](../../packages/workspace/workspace/src/types.ts)
 
@@ -121,6 +121,10 @@ interface Workspace {
 
 会话的 cwd 在创建时由创建者赋予，而不是由本注册表赋予——API 网关从所选工作区的 `path` 解析新会话的 cwd（回退到显式或默认 cwd），先创建会话使 cwd 落入其不可变的 [`SessionHeader`](persistence.md#sessionheader--metadata-beside-the-log)，再调用 `attachSession`，后者会把已存储的 header cwd 与工作区路径重新校验一遍。首次成功启动时，注册表仅凭已持久化的 header（`id`、`cwd`、`createdAt`——绝不读事件正文）引导历史：把规范 cwd 有效的会话按目录分组为工作区，最新的排在最前；「已初始化」标记最后写入，因此被中断的引导可以安全续跑。引导只发生这一次：没有 cwd 的历史遗留会话保持 Ungrouped，此后创建的会话只能通过 `attachSession` 加入工作区。
 
+## 引用项目
+
+[dsh-workspace-references](../../packages/workspace/workspace-references)（`ctx.workspaceReferences`）把一个会话的其他项目目录（最多 `Config.maxReferences` 个，默认 2）作为只读对照项目附加到会话。附加集合是整值日志状态——每次变更记录一条 `workspace/references` 事件，最后一条事件即当前折叠值——因此 resume、fork 与 replay 随 seed 携带它，`workspace:references` 提示词段（order 115）从日志重建出完全一致的内容；契约、提示词文本与限制以包 README 为准。引用永不作为可写根：现行沙箱策略把写操作限制在会话工作区，而所有受限后端都允许读取其余文件系统，因此被接纳的引用目录可直接读取。引用通过 API 网关（`session.create` 的 `referenceWorkspaceIds` 与 `session.setReferences` RPC）以及 ACP `session/new` 的 `additionalDirectories` 附加；subagent 子会话不继承引用。
+
 ## 消费方
 
 [dsh-host-apiproxy](../../packages/host/apiproxy) 是产品消费方：它经 `ctx.workspaceRegistry` 向 GUI 客户端提供工作区的 CRUD，并执行上文「先建会话再 attach」的流程。[dsh-agent-instructions](../../packages/context/agent-instructions) 尽管名字如此，却**不是**消费方：它在 agent 自己的 cwd 下发现 AGENTS.md 风格的指令文件，从不触碰 `ctx.workspaceRegistry`——两者共用的这个词指的是用户的工作目录，而非本注册表的实体。
@@ -148,6 +152,29 @@ abstract capability(): DirectoryPickerCapability
 ```
 
 Source: [`packages/host/directory-picker/src/index.ts:131`](../../packages/host/directory-picker/src/index.ts)
+
+<a id="ctxworkspacereferences--workspacereferenceservice"></a>
+
+### `ctx.workspaceReferences` — `WorkspaceReferenceService`
+
+The `ctx.workspaceReferences` service: whole-value fold, validated write path, model-facing prompt section, and the client projection. The prompt section renders only while a session has references (an empty fold changes no prompt — request-prefix stability); the projection key stays absent (clients hide the control) when no projection registry is composed.
+
+```ts cordis-catalog
+/**
+ * Replace the session's reference set (whole-value). Validates the request
+ * (see {@link normalizeReferencePaths}) and appends one
+ * `workspace/references` event; a request matching the current set appends
+ * nothing. The new set reaches the model at the session's next prompt
+ * assembly.
+ * @param session - the session to attach to.
+ * @param paths - the complete requested set (empty detaches all).
+ */
+async set(session: Session, paths: readonly string[]): Promise<void>
+```
+
+Types: [Session](session.md)
+
+Source: [`packages/workspace/workspace-references/src/index.ts:178`](../../packages/workspace/workspace-references/src/index.ts)
 
 <a id="ctxworkspaceregistry--workspaceregistry"></a>
 
