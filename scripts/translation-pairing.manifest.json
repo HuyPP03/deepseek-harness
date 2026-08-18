@@ -7,6 +7,19 @@
     "docs/cordis-api/inherited.md",
     "docs/i18n/style-samples.md",
     "docs/i18n/terminology.md",
-    "docs/i18n/translation-prompt.md"
+    "docs/i18n/translation-prompt.md",
+    "docs/user/develop/basic/config.vi.md",
+    "docs/user/develop/basic/index.vi.md",
+    "docs/user/develop/basic/publish.vi.md",
+    "docs/user/develop/basic/tool.vi.md",
+    "docs/user/develop/framework/events.vi.md",
+    "docs/user/develop/framework/index.vi.md",
+    "docs/user/develop/framework/service.vi.md",
+    "docs/user/develop/practice/index.vi.md",
+    "docs/user/develop/practice/llm-adapter.vi.md",
+    "docs/user/guide/index.vi.md",
+    "docs/user/guide/providers.vi.md",
+    "docs/user/guide/python-sdk.vi.md",
+    "docs/user/index.vi.md"
   ]
 }
