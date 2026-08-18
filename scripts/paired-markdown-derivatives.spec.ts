@@ -28,6 +28,16 @@ describe('partitionPairedMarkdownDerivatives', () => {
     })
   })
 
+  it('treats a complete byte-identical Vietnamese sequence as derivative', () => {
+    const english = [{ doc: 'docs/example.md', kind: 'ts', code: 'const one = 1' }]
+    const vietnamese = english.map(block => ({ ...block, doc: 'docs/example.vi.md' }))
+
+    expect(partition([...english, ...vietnamese])).toEqual({
+      primary: english,
+      derivatives: vietnamese,
+    })
+  })
+
   it('keeps reordered, changed, partial, and orphan Chinese sequences primary', () => {
     const sequence = (doc: string) => [
       { doc, kind: 'ts', code: 'const one = 1' },
