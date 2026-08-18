@@ -10,14 +10,14 @@ Filesystem tools, one-shot bash commands, and terminal sessions may enforce the 
 
 ## Config
 
-- `mode` — the deployment default `SandboxMode` (`read-only` / `workspace-write` / `danger-full-access`), validated at load. Default `read-only` (fail-safe).
+- `mode` — the deployment default `SandboxMode` (`read-only` / `workspace-write` / `workspace-refs-write` / `danger-full-access`), validated at load. Default `read-only` (fail-safe).
 - `workspaceRoot` — the fallback directory `workspace-write` may write under for agentless calls or sessions without a cwd. Default `process.cwd()`, resolved to its absolute filesystem identity either way. A normal agent call uses its session header's immutable `cwd` instead.
 
 ## API
 
-- `ctx.sandboxPolicy.resolve({ session?, mode? })` — resolves one complete per-call policy. An explicit approved mode outranks the session's last `sandbox/mode` event, which outranks `defaultMode`; the session's immutable `cwd` is canonicalized with filesystem semantics before becoming `workspaceRoot`, otherwise the configured fallback applies. Canonicalization precedes lexical normalization so `symlink/..` agrees with process working-directory resolution.
+- `ctx.sandboxPolicy.resolve({ session?, mode? })` — resolves one complete per-call policy. An explicit approved mode outranks the session's last `sandbox/mode` event, which outranks `defaultMode`; the session's immutable `cwd` is canonicalized with filesystem semantics before becoming `workspaceRoot`, otherwise the configured fallback applies. Canonicalization precedes lexical normalization so `symlink/..` agrees with process working-directory resolution. Under `workspace-refs-write`, `resolve()` additionally stamps the session's attached reference projects as `referenceRoots`; every other mode leaves the field absent.
 - `ctx.sandboxPolicy.defaultMode` / `ctx.sandboxPolicy.workspaceRoot` — the deployment default and fallback root used by `resolve()`.
-- `sandbox:policy` — a request-time cache-safe context contribution derived directly from `resolve({ session })`. It states the mode's capability-neutral file-effect contract and the canonical session workspace under `workspace-write`; tool owners retain operation-specific denial and escalation guidance.
+- `sandbox:policy` — a request-time cache-safe context contribution derived directly from `resolve({ session })`. It states the mode's capability-neutral file-effect contract and the canonical session workspace under the writable modes; tool owners retain operation-specific denial and escalation guidance.
 - `effectiveSandboxMode(events)` — the pure fold of a session's `sandbox/mode` events (the last switch wins, or `undefined`), used inside `resolve()`.
 - `setSandboxMode(session, mode)` — THE write path for a per-session override: appends exactly one `sandbox/mode` event. The switch IS its event; nothing mutates the mode out of band.
 - `SANDBOX_MODES` — every mode, for option advertisement and runtime validation.
@@ -48,6 +48,12 @@ Current DSH file policy: read-only. Any available operation enforced by the DSH 
 Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: "<workspace root>". Some platform temporary areas may also be writable.
 ```
 
+##### Workspace-refs-write
+
+```markdown
+Current DSH file policy: workspace-refs-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: "<workspace root>" and under the session's attached reference projects listed in the reference section. Some platform temporary areas may also be writable.
+```
+
 ##### Danger-full-access
 
 ```markdown
@@ -56,7 +62,7 @@ Current DSH file policy: danger-full-access. The DSH file sandbox does not restr
 
 #### Token effect
 
-One concise durable context message on the first request and each effective policy change; unchanged requests add nothing. `workspace-write` carries only the canonical session workspace path; platform-specific temporary paths are summarized without adding host-dependent bytes.
+One concise durable context message on the first request and each effective policy change; unchanged requests add nothing. The writable modes carry only the canonical session workspace path (`workspace-refs-write` additionally names the reference section); platform-specific temporary paths are summarized without adding host-dependent bytes.
 
 #### KV Cache effect
 
@@ -64,6 +70,6 @@ The stable system prompt remains byte-identical across mode changes. A changed f
 
 ## Known Limitations and Deferred Work
 
-- **One primary workspace root per session** — policy resolves `SessionHeader.cwd`; extra writable roots are not part of `SandboxExecutionPolicy`.
+- **One primary workspace root per session** — policy resolves `SessionHeader.cwd`; the attached reference projects are the only additional writable roots, carried as `referenceRoots` and consumed only by `workspace-refs-write`.
 - **File-effect modes only** — `SandboxMode` governs file effects; network and process policy are outside its vocabulary, so no knob here restricts them.
 - **Temporary areas are deliberately summarized** — enforcing backends grant different platform temporary areas, which are selected after policy resolution and therefore cannot be enumerated truthfully in the current context.

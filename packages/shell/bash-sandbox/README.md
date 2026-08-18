@@ -12,6 +12,7 @@ Every command is confined by handing the provider the exact `['bash', '-c', comm
 |---|---|
 | `read-only` (default) | No writes anywhere (of `/dev`, only the `/dev/null` node is writable, so `>/dev/null` keeps working) |
 | `workspace-write` | Writes only under `workspaceRoot` + `/tmp` (ephemeral under bwrap, the host `/tmp` under Landlock, `/private/tmp` plus the per-user temp dir under Seatbelt) |
+| `workspace-refs-write` | `workspace-write` plus the session's attached reference projects (the policy's `referenceRoots`), same backend mapping |
 | `danger-full-access` | No confinement; the provider is never consulted. Foreground results carry `sandbox: { mode, denied: false }`; background process handles carry no sandbox facts. |
 
 Semantics:

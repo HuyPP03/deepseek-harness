@@ -1,17 +1,19 @@
 /**
  * Session reference projects (`ctx.workspaceReferences`): the one home for
- * the additional READ-ONLY project directories attached to a session for
- * comparison. The attached set is whole-value log state — one
+ * the additional project directories attached to a session for comparison. The attached set is whole-value log state — one
  * `workspace/references` event per change, the last event the fold — so
  * resume, fork, and replay carry it with the seed, and the
  * `workspace:references` prompt section rebuilds identically from the log
  * (model-visible ⟺ logged).
  *
- * A reference is never a writable root: the standing sandbox policy confines
- * writes to the session workspace (plus platform temp areas) while every
- * confined backend leaves the rest of the filesystem readable, so an
- * admitted reference directory is readable as-is by the fs tools and
- * sandboxed execution without any backend change.
+ * References are readable under every confined mode: each confined backend
+ * leaves the rest of the filesystem readable, so an admitted reference
+ * directory is readable as-is by the fs tools and sandboxed execution
+ * without any backend change. Writability follows the file policy:
+ * `read-only` and `workspace-write` confine writes to the session workspace
+ * (plus platform temp areas); only `workspace-refs-write` makes the attached
+ * reference directories writable, and that mode's policy carries their
+ * canonical paths as `referenceRoots`.
  *
  * Admission canonicalizes each path (realpath), requires an existing
  * directory, deduplicates, excludes the session's own cwd, and caps the set
@@ -74,7 +76,7 @@ declare module '@deepseek-ai/dsh-session-projection/types' {
  */
 export const REFERENCE_PROJECTS_INTRO =
   'Reference projects: these projects are attached to this session for comparison. '
-  + 'They are read-only — never modify files under them; make changes only in the session workspace.'
+  + 'Modify files under them only when the current file policy allows it.'
 
 /**
  * Validate and canonicalize a raw reference list for one session: every entry
@@ -87,7 +89,6 @@ export const REFERENCE_PROJECTS_INTRO =
  * @throws when an entry is not an existing directory, equals the session cwd, or the set exceeds the cap.
  * @returns canonical paths in first-seen order.
  */
-// oxlint-disable-next-line typescript/require-await -- async keeps an admission failure a rejection, not a sync throw
 export async function normalizeReferencePaths(paths: readonly string[], cwd: string | undefined, max: number): Promise<string[]> {
   const out: string[] = []
   for (const raw of paths) {

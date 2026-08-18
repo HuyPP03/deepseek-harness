@@ -8,19 +8,20 @@
 
 ## 模式与强制执行
 
-`SandboxMode` 仅管控文件系统效果。`read-only` 要求后端拒绝写入——POSIX runner 还会授予其 shell 所需的 `/dev/null` 接收器，而 Windows ACL runner 不授予任何显式可写根目录，并因环境 ACL 缺口报告部分强制执行；`workspace-write` 允许在工作区根目录及后端承诺的临时区域下写入；`danger-full-access` 绕过隔离。网络与进程可见性不在此处的定义范围内。
+`SandboxMode` 仅管控文件系统效果。`read-only` 要求后端拒绝写入——POSIX runner 还会授予其 shell 所需的 `/dev/null` 接收器，而 Windows ACL runner 不授予任何显式可写根目录，并因环境 ACL 缺口报告部分强制执行；`workspace-write` 允许在工作区根目录及后端承诺的临时区域下写入；`workspace-refs-write` 在上述基础上再加上会话附加的引用项目（以策略上的 `referenceRoots` 携带）；`danger-full-access` 绕过隔离。网络与进程可见性不在此处的定义范围内。
 
 ```ts type-equiv
 /**
  * File-effect policy for confined processes. `read-only` permits only required
  * sinks such as `/dev/null`; `workspace-write` also permits the workspace and a
- * backend-defined temp area; `danger-full-access` bypasses confinement. Network
- * and process visibility are outside this vocabulary.
+ * backend-defined temp area; `workspace-refs-write` additionally permits the
+ * session's attached reference projects (its `referenceRoots`); `danger-full-access` bypasses
+ * confinement. Network and process visibility are outside this vocabulary.
  */
-type SandboxMode = 'read-only' | 'workspace-write' | 'danger-full-access'
+type SandboxMode = 'read-only' | 'workspace-write' | 'workspace-refs-write' | 'danger-full-access'
 ```
 
-只有前两种模式可以发送给提供方。`danger-full-access` 的消费方直接 spawn 原始 argv，不调用 `ctx.sandbox`。
+只有约束模式（confined modes）可以发送给提供方。`danger-full-access` 的消费方直接 spawn 原始 argv，不调用 `ctx.sandbox`。
 
 ```ts type-equiv
 /** A confining (non-`danger-full-access`) mode — the modes a {@link SandboxPolicy} can carry. */
@@ -51,8 +52,15 @@ type SandboxEnforcement = 'full' | 'partial'
 interface SandboxExecutionPolicy {
   /** The file-effect mode this execution runs under. */
   mode: SandboxMode
-  /** Absolute root directory `workspace-write` may write under. */
+  /** Absolute root directory `workspace-write` (and `workspace-refs-write`) may write under. */
   workspaceRoot: string
+  /**
+   * Canonical absolute reference-project directories the execution may write
+   * under when the mode is `workspace-refs-write`; ignored under every other
+   * mode. The policy owner resolves the list from the session; backends treat
+   * it as fully specified and grant exactly these roots.
+   */
+  referenceRoots?: readonly string[]
   /**
    * Opaque identity of the calling session (the branded `dsh-session`
    * SessionId). Backends key per-session state off it (e.g. windows-acl gives
@@ -184,7 +192,7 @@ Abstract process-sandbox service. confine must return enforcing argv or fail clo
 abstract confine(argv: readonly string[], policy: SandboxPolicy): ConfinedArgv
 ```
 
-Source: [`packages/sandbox/sandbox/src/index.ts:158`](../../packages/sandbox/sandbox/src/index.ts)
+Source: [`packages/sandbox/sandbox/src/index.ts:166`](../../packages/sandbox/sandbox/src/index.ts)
 
 <a id="ctxsandboxpolicy--sandboxpolicyservice"></a>
 
@@ -214,5 +222,5 @@ overrideOf(session: Session): SandboxMode | undefined
 
 Types: [Session](session.md)
 
-Source: [`packages/sandbox/sandbox-policy/src/index.ts:91`](../../packages/sandbox/sandbox-policy/src/index.ts)
+Source: [`packages/sandbox/sandbox-policy/src/index.ts:94`](../../packages/sandbox/sandbox-policy/src/index.ts)
 <!-- END GENERATED cordis-surface -->

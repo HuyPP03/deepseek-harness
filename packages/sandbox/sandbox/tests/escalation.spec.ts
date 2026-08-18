@@ -18,14 +18,15 @@ import {
 import type { EscalationApprover, EscalationOutcome } from '@deepseek-ai/dsh-sandbox'
 
 describe('the strictly-wider ladder', () => {
-  it('read-only escalates to either wider mode; workspace-write only to full access', () => {
-    expect(WIDER_MODES['read-only']).toEqual(['workspace-write', 'danger-full-access'])
-    expect(WIDER_MODES['workspace-write']).toEqual(['danger-full-access'])
+  it('each mode escalates only to the modes strictly wider than it', () => {
+    expect(WIDER_MODES['read-only']).toEqual(['workspace-write', 'workspace-refs-write', 'danger-full-access'])
+    expect(WIDER_MODES['workspace-write']).toEqual(['workspace-refs-write', 'danger-full-access'])
+    expect(WIDER_MODES['workspace-refs-write']).toEqual(['danger-full-access'])
     expect(WIDER_MODES['danger-full-access']).toBeUndefined()
   })
 
   it('the target enum is the closed set every session could escalate TO (read-only is the floor)', () => {
-    expect(ESCALATION_TARGETS).toEqual(['workspace-write', 'danger-full-access'])
+    expect(ESCALATION_TARGETS).toEqual(['workspace-write', 'workspace-refs-write', 'danger-full-access'])
   })
 })
 
@@ -46,6 +47,7 @@ describe('the model-facing markers', () => {
   it('the denial marker names the mode', () => {
     expect(sandboxDenialMarker('read-only')).toBe('[sandbox: file access denied under read-only mode]')
     expect(sandboxDenialMarker('workspace-write')).toBe('[sandbox: file access denied under workspace-write mode]')
+    expect(sandboxDenialMarker('workspace-refs-write')).toBe('[sandbox: file access denied under workspace-refs-write mode]')
   })
 
   it('the hint marker names the family subject', () => {
@@ -79,6 +81,13 @@ describe('approveEscalation', () => {
     const granted = await approveEscalation(req(), ingredients({ approver: approver('allowed-once', r => seen.push(r as { reason?: string })) }))
     expect(granted).toBe('workspace-write')
     expect(seen[0]?.reason).toBe('escalate sandbox to workspace-write: the user asked to write in the workspace')
+  })
+
+  it('the refs-writable mode sits strictly between workspace-write and full access', async () => {
+    const granted = await approveEscalation(req({ requestedMode: 'workspace-refs-write' }), ingredients())
+    expect(granted).toBe('workspace-refs-write')
+    await expect(approveEscalation(req({ requestedMode: 'workspace-write', effectiveMode: 'workspace-refs-write' as never }), ingredients()))
+      .rejects.toThrow(/not strictly wider/)
   })
 
   it('a non-widening request fails closed with its own text and never asks', async () => {

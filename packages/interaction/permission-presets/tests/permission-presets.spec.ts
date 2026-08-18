@@ -85,6 +85,21 @@ describe('PermissionPresetService', () => {
     expect(() => ctx.permissionPresets.resolve('plan')).toThrow(/unknown preset "plan"/)
   })
 
+  it('accepts a preset bundling the refs-writable mode with its label and description', async () => {
+    const ctx = await mounted({ config: {
+      presets: {
+        'workspace-write': { sandbox: 'workspace-write', approval: 'ask' },
+        'write-workspace': { sandbox: 'workspace-refs-write', approval: 'ask', name: 'Write All', description: 'Write inside the workspace and the attached reference projects.' },
+        'danger-full-access': { sandbox: 'danger-full-access', approval: 'never' },
+      },
+    } })
+    expect(ctx.permissionPresets.names).toEqual(['workspace-write', 'write-workspace', 'danger-full-access'])
+    expect(ctx.permissionPresets.resolve('write-workspace')).toMatchObject({ sandbox: 'workspace-refs-write', approval: 'ask', name: 'Write All' })
+    const session = freshSession('sess-refs-preset')
+    ctx.permissionPresets.set(session, 'write-workspace')
+    expect(ctx.permissionPresets.current(session.events)).toBe('write-workspace')
+  })
+
   it('current() derives from the effective knobs: composition defaults hit workspace-write, a switch hits its preset', async () => {
     const ctx = await mounted()
     const session = freshSession('sess-current')

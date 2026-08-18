@@ -158,6 +158,20 @@ const SCENARIOS: Scenario[] = [
     configPath: REFERENCE_DIRECTORIES_CONFIG,
     prepareWorkspace: prepareReferenceDirectoriesWorkspace,
   },
+  // Same attachment under the refs-writable mode: the authored turn writes
+  // THROUGH the real fs fence into the attached reference project (the
+  // relative path resolves against the session cwd, so the fixture stays
+  // host-independent), and the runtime context pins the workspace-refs-write
+  // policy text plus the mode-neutral reference intro.
+  {
+    name: 'reference-refs-write',
+    hasModelTurn: true,
+    recorded: false,
+    overridden: true,
+    configPath: REFERENCE_DIRECTORIES_CONFIG,
+    env: { DSH_PERMISSION_MODE: 'workspace-refs-write' },
+    prepareWorkspace: prepareReferenceDirectoriesWorkspace,
+  },
   // text-turn is the default header pin and owns the prompt and tool-schema
   // sidecars reused by alternate classes with identical component sequences.
   { name: 'text-turn', hasModelTurn: true, recorded: true, pinsHeader: true },

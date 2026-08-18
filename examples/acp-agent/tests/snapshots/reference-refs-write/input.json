@@ -1,0 +1,7 @@
+{
+  "steps": [
+    { "op": "initialize" },
+    { "op": "newSession", "additionalDirectories": ["ref-project"] },
+    { "op": "prompt", "text": "Immediately use the write tool to create the file notes.txt inside the attached reference project directory (ref-project), with exactly the content REF_WRITE_OK. Do not use bash or any other tool. After the tool result, reply with exactly the single word REF_WRITE_DONE." }
+  ]
+}

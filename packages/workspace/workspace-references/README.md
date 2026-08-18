@@ -2,13 +2,13 @@
 
 English | [中文](README.zh.md)
 
-Session reference projects through `ctx.workspaceReferences` ([`WorkspaceReferenceService`](src/index.ts)): the additional READ-ONLY project directories a session may attach for comparison, on top of the session's own workspace (its `header.cwd`, the main project).
+Session reference projects through `ctx.workspaceReferences` ([`WorkspaceReferenceService`](src/index.ts)): the additional comparison project directories a session may attach, on top of the session's own workspace (its `header.cwd`, the main project).
 
 The attached set is whole-value log state: one `workspace/references` event per change, the last event the current set. `set(session, paths)` canonicalizes (realpath), requires existing directories, deduplicates, rejects the session's own cwd, caps at `Config.maxReferences` (default 2), and appends nothing when the request matches the current set. Resume, fork, and replay carry the set with the seed; there is no out-of-band state.
 
 The service registers the model-facing `workspace:references` prompt context (order 115, right after `sandbox:policy`'s 110): the pinned intro line plus one line per reference path. An empty set renders nothing, so attaching or detaching references is the only prompt change this service makes. Clients read the folded set plus the configured cap from the `workspaceReferences` session-projection key (absent when no projection registry is composed, e.g. headless assemblies).
 
-References are never writable roots. The standing sandbox policy already confines writes to the session workspace (plus platform temp areas) while every confined backend (bubblewrap, Landlock, Seatbelt) leaves the rest of the filesystem readable, so an admitted reference directory is readable as-is by the fs tools and sandboxed execution; no sandbox or filesystem provider change ships with this package.
+Reference directories are readable under every sandbox mode. The standing sandbox policy confines writes to the session workspace (plus platform temp areas) while every confined backend (bubblewrap, Landlock, Seatbelt, the Windows ACL restricted token) leaves the rest of the filesystem readable, so an admitted reference directory is readable as-is by the fs tools and sandboxed execution. Under the `workspace-refs-write` sandbox mode the same roots are granted as writable (the policy carries them as `referenceRoots`); no sandbox or filesystem provider change ships with this package.
 
 ## Model Experience
 
@@ -16,12 +16,12 @@ References are never writable roots. The standing sandbox policy already confine
 
 #### What the model sees
 
-One `workspace:references` system-prompt section (order 115, after `sandbox:policy`) in every assembly while the session has references, and none when the set is empty. No new tools: references are read with the file tools the session already has.
+One `workspace:references` system-prompt section (order 115, after `sandbox:policy`) in every assembly while the session has references, and none when the set is empty. No new tools: references are accessed with the file tools the session already has.
 
 ##### Reference projects section
 
 ```markdown
-Reference projects: these projects are attached to this session for comparison. They are read-only — never modify files under them; make changes only in the session workspace.
+Reference projects: these projects are attached to this session for comparison. Modify files under them only when the current file policy allows it.
 - /absolute/path/to/reference
 ```
 

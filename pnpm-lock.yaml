@@ -5703,6 +5703,9 @@ importers:
 
   packages/sandbox/sandbox-policy:
     dependencies:
+      '@deepseek-ai/dsh-workspace-references':
+        specifier: workspace:^
+        version: link:../../workspace/workspace-references
       '@deepseek-ai/schemastery':
         specifier: link:../../../vendor/schemastery
         version: link:../../../vendor/schemastery

@@ -965,4 +965,4 @@ export type SessionEvent<T extends SessionEventType = SessionEventType> = {
 }
 ```
 
-来源：[`packages/workspace/workspace-references/src/index.ts:53`](../packages/workspace/workspace-references/src/index.ts)
+来源：[`packages/workspace/workspace-references/src/index.ts:55`](../packages/workspace/workspace-references/src/index.ts)

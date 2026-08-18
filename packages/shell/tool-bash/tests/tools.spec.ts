@@ -589,7 +589,7 @@ describe('sandbox escalation through the generic task producer', () => {
     const { ctx } = await setupSandboxed()
     const schema = ctx.tools.schemas().find(item => item.name === 'bash')!
     const properties = schema.parameters.properties as Record<string, { enum?: string[] }>
-    expect(properties['sandbox_permissions']?.enum).toEqual(['workspace-write', 'danger-full-access'])
+    expect(properties['sandbox_permissions']?.enum).toEqual(['workspace-write', 'workspace-refs-write', 'danger-full-access'])
     expect(schema.description).toContain('approval prompt')
 
     for (const args of [

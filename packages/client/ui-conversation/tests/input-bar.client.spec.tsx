@@ -1318,6 +1318,34 @@ describe('command launcher chrome and control seats', () => {
     expect((view.getByLabelText(/^访问模式/) as HTMLButtonElement).disabled).toBe(false)
   })
 
+  it('renders the write-workspace preset with its own glyph and the product label', async () => {
+    const command = vi.fn(() => Promise.resolve(true))
+    const permissions = {
+      options: [
+        { value: 'read-only', name: 'Read Only' },
+        { value: 'workspace-write', name: 'Write Only' },
+        { value: 'write-workspace', name: 'Write All' },
+        { value: 'danger-full-access', name: 'danger-full-access' },
+      ],
+      currentValue: 'read-only',
+    }
+    const { view } = bench({ permissions, command })
+    // Trigger svg count = permission glyph + chevron; a glyph-less value would render only the chevron.
+    const trigger = view.getByLabelText(/^访问模式/) as HTMLButtonElement
+    expect(trigger.querySelectorAll('svg').length).toBeGreaterThan(1)
+    fireEvent.click(trigger)
+    const items = view.getAllByRole('menuitem')
+    expect(items.map(o => o.textContent)).toEqual(['Read Only', 'Write Only', 'Write All', 'Full access'])
+    // Every row of the shipped table carries a glyph.
+    expect(items.every(o => o.querySelector('svg') !== null)).toBe(true)
+    fireEvent.click(items[2]!)
+    expect(command).toHaveBeenCalledWith('/permission write-workspace')
+    // While the pick is pending the trigger optimistically shows the new product label;
+    // non-kebab product names pass through the display transform untouched.
+    expect((view.getByLabelText(/^访问模式/) as HTMLButtonElement).textContent).toBe('Write All')
+    await act(async () => {})
+  })
+
   it('requires explicit risk acknowledgement before submitting Full access', async () => {
     const command = vi.fn(() => Promise.resolve(true))
     const permissions = {

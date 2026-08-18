@@ -624,7 +624,7 @@ export type Config = LocalConfig
 
 依赖：[`LocalConfig`](#deepseek-aidsh-fs-local)
 
-来源：[`packages/fs/fs-sandbox/src/index.ts:49`](../packages/fs/fs-sandbox/src/index.ts)
+来源：[`packages/fs/fs-sandbox/src/index.ts:51`](../packages/fs/fs-sandbox/src/index.ts)
 
 <a id="deepseek-aidsh-goal"></a>
 
@@ -1493,7 +1493,7 @@ export interface Config {
 }
 ```
 
-来源：[`packages/sandbox/sandbox-local/src/index.ts:44`](../packages/sandbox/sandbox-local/src/index.ts)
+来源：[`packages/sandbox/sandbox-local/src/index.ts:47`](../packages/sandbox/sandbox-local/src/index.ts)
 
 <a id="deepseek-aidsh-sandbox-policy"></a>
 
@@ -1520,7 +1520,7 @@ export interface Config {
 
 依赖：[`SandboxMode`](subsystems/sandbox.md)
 
-来源：[`packages/sandbox/sandbox-policy/src/index.ts:67`](../packages/sandbox/sandbox-policy/src/index.ts)
+来源：[`packages/sandbox/sandbox-policy/src/index.ts:70`](../packages/sandbox/sandbox-policy/src/index.ts)
 
 <a id="deepseek-aidsh-sdk-jsonrpc-server"></a>
 
@@ -3037,7 +3037,7 @@ export interface Config {
 }
 ```
 
-来源：[`packages/workspace/workspace-references/src/index.ts:166`](../packages/workspace/workspace-references/src/index.ts)
+来源：[`packages/workspace/workspace-references/src/index.ts:168`](../packages/workspace/workspace-references/src/index.ts)
 
 ## 无配置的可加载插件
 

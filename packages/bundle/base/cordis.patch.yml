@@ -200,6 +200,12 @@
           workspace-write:
             sandbox: workspace-write
             approval: ask
+            name: 'Write Only'
+          write-workspace:
+            sandbox: workspace-refs-write
+            approval: ask
+            name: 'Write All'
+            description: 'Write inside the workspace and the attached reference projects; reads are unrestricted. Wider retries require approval.'
           danger-full-access:
             sandbox: danger-full-access
             approval: never

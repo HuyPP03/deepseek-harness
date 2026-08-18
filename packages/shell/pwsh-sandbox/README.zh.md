@@ -9,7 +9,7 @@
 ## 行为
 
 - `danger-full-access`：命令经本地执行器原样运行；结果携带 `sandbox: { mode, denied: false }`。
-- 受限模式（`read-only`、`workspace-write`）：pwsh argv 由 `ctx.sandbox.confine()` 包装；runner 启动失败按 fail-closed 抛 `SANDBOX_UNAVAILABLE`（前台抛错、后台记 `runnerFailed` 事实），被拒绝的写按所选后端的 `denialSignatures` 分类为 `sandbox.denied`。
+- 受限模式（`read-only`、`workspace-write`、`workspace-refs-write`）：pwsh argv 由 `ctx.sandbox.confine()` 包装；runner 启动失败按 fail-closed 抛 `SANDBOX_UNAVAILABLE`（前台抛错、后台记 `runnerFailed` 事实），被拒绝的写按所选后端的 `denialSignatures` 分类为 `sandbox.denied`。
 
 ## 模型体验
 

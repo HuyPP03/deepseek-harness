@@ -49,7 +49,7 @@ import { join } from 'node:path'
 
 import { win32 } from './ffi.ts'
 import { AclSandbox, assertTempRootOutsideWorkspace } from './index.ts'
-import { tempWriteSid, workspaceWriteSid } from './workspace-sid.ts'
+import { refWriteSid, tempWriteSid, workspaceWriteSid } from './workspace-sid.ts'
 
 const RUNNER_SIGNATURE = 'windows-acl-run'
 const RUNNER_FAILURE_EXIT = 127
@@ -65,9 +65,11 @@ function fail(detail: string): never {
 interface ParsedArgs {
   workspace: string
   temp: string
-  mode: 'read-only' | 'workspace-write'
+  mode: 'read-only' | 'workspace-write' | 'workspace-refs-write'
   writeSid: string | undefined
   tempWriteSid: string | undefined
+  refs: string[]
+  refSids: string[]
   command: string
   args: string[]
 }
@@ -78,6 +80,8 @@ function parseArgs(raw: string[]): ParsedArgs {
   let mode: string | undefined
   let writeSid: string | undefined
   let parsedTempWriteSid: string | undefined
+  const refs: string[] = []
+  const refSids: string[] = []
   let index = 0
   for (; index < raw.length; index++) {
     const token = raw[index]
@@ -94,16 +98,19 @@ function parseArgs(raw: string[]): ParsedArgs {
       case '--mode': mode = value; break
       case '--write-sid': writeSid = value; break
       case '--temp-write-sid': parsedTempWriteSid = value; break
+      case '--ref': refs.push(value); break
+      case '--ref-sid': refSids.push(value); break
       default: fail(`unknown argument: ${token}`)
     }
   }
   if (workspace === undefined) fail('missing --workspace')
   if (temp === undefined) fail('missing --temp')
-  if (mode !== 'read-only' && mode !== 'workspace-write') fail(`unknown mode: ${String(mode)}`)
+  if (mode !== 'read-only' && mode !== 'workspace-write' && mode !== 'workspace-refs-write') fail(`unknown mode: ${String(mode)}`)
+  if (refs.length !== refSids.length) fail('--ref and --ref-sid must be paired')
   const argv = raw.slice(index)
   const command = argv[0]
   if (command === undefined) fail('missing command after --')
-  return { workspace, temp, mode, writeSid, tempWriteSid: parsedTempWriteSid, command, args: argv.slice(1) }
+  return { workspace, temp, mode, writeSid, tempWriteSid: parsedTempWriteSid, refs, refSids, command, args: argv.slice(1) }
 }
 
 function requireDirectory(label: string, path: string): void {
@@ -120,14 +127,23 @@ async function main(): Promise<number> {
   requireDirectory('--temp', parsed.temp)
 
   const seamManaged = parsed.writeSid !== undefined || parsed.tempWriteSid !== undefined
-  if (parsed.mode === 'read-only' && seamManaged) {
-    fail('read-only does not accept --write-sid or --temp-write-sid')
+  if (parsed.mode === 'read-only' && (seamManaged || parsed.refs.length > 0)) {
+    fail('read-only does not accept --write-sid, --temp-write-sid, or reference grants')
   }
   if (parsed.mode === 'workspace-write' && (parsed.writeSid === undefined) !== (parsed.tempWriteSid === undefined)) {
     fail('workspace-write requires --write-sid and --temp-write-sid together')
   }
-  if (parsed.mode === 'workspace-write') {
+  if (parsed.mode === 'workspace-refs-write' && (parsed.writeSid === undefined) !== (parsed.tempWriteSid === undefined)) {
+    fail('workspace-refs-write requires --write-sid and --temp-write-sid together')
+  }
+  if (parsed.mode === 'workspace-refs-write') {
     assertTempRootOutsideWorkspace(parsed.workspace, parsed.temp)
+    for (const [i, ref] of parsed.refs.entries()) {
+      requireDirectory('--ref', ref)
+      if (parsed.refSids[i] !== refWriteSid(ref)) {
+        fail(`--ref-sid does not match --ref: ${ref}`)
+      }
+    }
   }
 
   const api = await win32()
@@ -145,7 +161,7 @@ async function main(): Promise<number> {
     let privateTempDir: string | null = null
     let writeSid: string | undefined
     let privateTempSid: string | undefined
-    if (parsed.mode === 'workspace-write') {
+    if (parsed.mode === 'workspace-write' || parsed.mode === 'workspace-refs-write') {
       writeSid = workspaceWriteSid(parsed.workspace)
       if (seamManaged) {
         if (parsed.writeSid !== writeSid) fail('--write-sid does not match --workspace')
@@ -159,11 +175,18 @@ async function main(): Promise<number> {
       }
     }
     sandbox = new AclSandbox({
-      writableDirs: parsed.mode === 'workspace-write' ? [parsed.workspace] : [],
+      writableDirs: parsed.mode === 'workspace-write' || parsed.mode === 'workspace-refs-write' ? [parsed.workspace] : [],
       tempDir: privateTempDir,
       mode: parsed.mode,
       ...writeSid === undefined ? {} : { writeSid },
       ...privateTempSid === undefined ? {} : { tempWriteSid: privateTempSid },
+      refGrants: parsed.mode === 'workspace-refs-write'
+        ? parsed.refs.map((ref, i) => {
+          const sid = parsed.refSids[i]
+          if (sid === undefined) fail(`missing --ref-sid for --ref: ${ref}`)
+          return { dir: ref, sid }
+        })
+        : [],
       manageDacls: !seamManaged,
     })
     await sandbox.init()
