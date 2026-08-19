@@ -103,8 +103,17 @@ describe('createFixtureApi commands/skills', () => {
     const api = createFixtureApi()
     const response = await api.files.list(req({ sessionId: sid('fx-alpha') }))
     if (!response.result.ok) throw new Error('file list failed')
-    expect(response.result.value.files.map(f => f.relative)).toEqual(['README.md', 'src/main.ts', 'lib.ts'])
+    expect(response.result.value.files.map(f => f.relative)).toEqual(['README.md', 'src', 'src/main.ts', 'lib.ts'])
     expect(response.result.value.truncated).toBe(false)
+
+    // The optional query filters and ranks with the host's semantics
+    // (basename prefix beats path prefix beats substring).
+    const queried = await api.files.list(req({ sessionId: sid('fx-alpha'), query: 'src' }))
+    if (!queried.result.ok) throw new Error('file list failed')
+    expect(queried.result.value.files.map(f => f.relative)).toEqual(['src', 'src/main.ts'])
+    const substr = await api.files.list(req({ sessionId: sid('fx-alpha'), query: 'a' }))
+    if (!substr.result.ok) throw new Error('file list failed')
+    expect(substr.result.value.files.map(f => f.relative)).toEqual(['README.md', 'src/main.ts'])
 
     const missingSession = await api.files.list(req({ sessionId: sid('fx-nope') }))
     expect(missingSession.result).toMatchObject({ ok: false, error: { code: 'session-not-found' } })
@@ -124,6 +133,6 @@ describe('FixtureApiClient command/skill dispatch', () => {
     expect(skills.result.value.skills.length).toBeGreaterThan(0)
     const files = await client.files.list({ sessionId: sid('fx-alpha') })
     if (!files.result.ok) throw new Error('files.list failed')
-    expect(files.result.value.files.map(f => f.relative)).toEqual(['README.md', 'src/main.ts', 'lib.ts'])
+    expect(files.result.value.files.map(f => f.relative)).toEqual(['README.md', 'src', 'src/main.ts', 'lib.ts'])
   })
 })

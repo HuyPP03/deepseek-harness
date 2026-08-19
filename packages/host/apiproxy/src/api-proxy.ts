@@ -3309,9 +3309,14 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
       // The composer's @-mention listing: the session's project root plus
       // its attached reference projects resolve host-side from the session
       // header and log (referencesOf replays the log), so the client never
-      // submits a path and the walk never creates or resumes an Agent.
-      async list(request) {
-        const { sessionId } = request.payload
+      // submits a path and the walk never creates or resumes an Agent. The
+      // optional query filters and ranks the walk's own enumeration
+      // host-side; it is never resolved as an independent path. The
+      // carrier's signal follows the caller: a superseded keystroke or a
+      // disconnect stops the walk at the next directory boundary instead of
+      // outliving it.
+      async list(request, signal) {
+        const { sessionId, query } = request.payload
         const session = ctx.sessions.get(sessionId)
         if (session === undefined) {
           return err(request, {
@@ -3330,7 +3335,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         for (const reference of referencesOf(session)) {
           roots.push({ dir: reference, root: basename(reference) })
         }
-        const { files, truncated } = await walkFiles(roots)
+        const { files, truncated } = await walkFiles(roots, signal, query)
         return ok(request, { files, truncated })
       },
     },

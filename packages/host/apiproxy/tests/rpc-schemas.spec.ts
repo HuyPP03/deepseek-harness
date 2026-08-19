@@ -433,22 +433,28 @@ describe('skills domain schemas', () => {
 describe('files domain schemas', () => {
   it('validates the list request/value pair', () => {
     expect(fileListRequestSchema.parse({ sessionId: 's1' })).toEqual({ sessionId: 's1' })
-    // The wire is session-addressed only: a sessionId-less payload fails.
+    // The query is an optional filter string, not a path.
+    expect(fileListRequestSchema.parse({ sessionId: 's1', query: 'src/' })).toEqual({ sessionId: 's1', query: 'src/' })
+    // The wire is session-addressed: a sessionId-less payload fails, and an overlong query does.
     expect(() => fileListRequestSchema.parse({})).toThrow()
+    expect(() => fileListRequestSchema.parse({ sessionId: 's1', query: 'x'.repeat(201) })).toThrow()
     expect(fileListValueSchema.parse({ files: [], truncated: false }).files).toEqual([])
     const value = fileListValueSchema.parse({
       files: [
-        { path: '/w/src/main.ts', relative: 'src/main.ts', root: 'workspace' },
-        { path: '/r/lib.ts', relative: 'lib.ts', root: 'myref' },
+        { path: '/w/src/main.ts', relative: 'src/main.ts', root: 'workspace', isDirectory: false },
+        { path: '/w/src', relative: 'src', root: 'workspace', isDirectory: true },
+        { path: '/r/lib.ts', relative: 'lib.ts', root: 'myref', isDirectory: false },
       ],
       truncated: true,
     })
-    expect(value.files).toHaveLength(2)
-    expect(value.files[1]?.root).toBe('myref')
+    expect(value.files).toHaveLength(3)
+    expect(value.files[2]?.root).toBe('myref')
+    expect(value.files[1]?.isDirectory).toBe(true)
     expect(value.truncated).toBe(true)
-    // Every field is required wire data: a bare path fails.
+    // Every field is required wire data: a bare path or a missing isDirectory fails.
     expect(() => fileEntrySchema.parse({ path: '/w/a.txt' })).toThrow()
-    expect(() => fileEntrySchema.parse({ path: '', relative: 'a', root: 'w' })).toThrow()
+    expect(() => fileEntrySchema.parse({ path: '', relative: 'a', root: 'w', isDirectory: false })).toThrow()
+    expect(() => fileEntrySchema.parse({ path: '/w/a.txt', relative: 'a.txt', root: 'w' })).toThrow()
   })
 })
 

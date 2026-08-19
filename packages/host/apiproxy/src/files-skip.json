@@ -1,0 +1,22 @@
+{
+  "note": "Directory basenames the files.list walk never descends into, on top of the universal dot rule (every dot-prefixed entry - .git, .venv, .cache, .pnpm-store, ... - is always skipped). Exact basename match only, no globs. Edit this list to tune what the @-mention picker sees; the walk reads it once at module load. Keep it to caches and build outputs - never to source directories (vendor/, packages/, src/, ...).",
+  "directories": [
+    "node_modules",
+    "bower_components",
+    "custom_components",
+    "__pycache__",
+    "htmlcov",
+    "venv",
+    "env",
+    "target",
+    "dist",
+    "build",
+    "out",
+    "coverage",
+    "tmp",
+    "temp",
+    "Pods",
+    "Carthage",
+    "DerivedData"
+  ]
+}

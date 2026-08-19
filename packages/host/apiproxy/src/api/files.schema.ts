@@ -14,11 +14,13 @@ export const fileEntrySchema = z.object({
   path: z.string().min(1),
   relative: z.string().min(1),
   root: z.string().min(1),
+  isDirectory: z.boolean(),
 }) satisfies z.ZodType<Wire<FileEntry>>
 
 /** files.list request payload. */
 export const fileListRequestSchema = z.object({
   sessionId: sessionIdSchema,
+  query: z.string().min(0).max(200).optional(),
 }) satisfies z.ZodType<Wire<RequestPayload<'files.list'>>>
 
 /** files.list response value. */
