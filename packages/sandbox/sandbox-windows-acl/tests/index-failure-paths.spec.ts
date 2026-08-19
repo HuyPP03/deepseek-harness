@@ -208,6 +208,66 @@ describe('AclSandbox constructor validation', () => {
       mode: 'workspace-write',
     })).toThrow(/temp write SID requires a temp directory/u)
   })
+
+  it('rejects reference grants outside the workspace-refs-write mode', () => {
+    const workspace = scratch()
+    const ref = scratch()
+    const grant = { dir: ref, sid: 'S-1-4-9000-7-2' }
+    expect(() => new AclSandbox({ writableDirs: [workspace], tempDir: null, writeSid: 'S-1-4-9000-7', mode: 'workspace-write', refGrants: [grant] }))
+      .toThrow(/reference grants are only accepted under workspace-refs-write/u)
+    expect(() => new AclSandbox({ writableDirs: [workspace], tempDir: null, mode: 'read-only', refGrants: [grant] }))
+      .toThrow(/read-only does not accept write SIDs or reference grants/u)
+  })
+
+  it('rejects a reference dir that does not exist', () => {
+    const workspace = scratch()
+    expect(() => new AclSandbox({
+      writableDirs: [workspace],
+      tempDir: null,
+      writeSid: 'S-1-4-9000-8',
+      mode: 'workspace-refs-write',
+      refGrants: [{ dir: join(scratch(), 'missing'), sid: 'S-1-4-9000-8-2' }],
+    })).toThrow(/reference dir does not exist or is not a directory/u)
+  })
+
+  it('rejects a reference SID that collides with the workspace or temp SID', () => {
+    const workspace = scratch()
+    const ref = scratch()
+    const colliding = (sid: string) => new AclSandbox({
+      writableDirs: [workspace],
+      tempDir: scratch(),
+      writeSid: 'S-1-4-9000-9',
+      tempWriteSid: 'S-1-4-9000-9-1',
+      mode: 'workspace-refs-write',
+      refGrants: [{ dir: ref, sid }],
+    })
+    expect(() => colliding('S-1-4-9000-9')).toThrow(/distinct from the workspace and temp SIDs/u)
+    expect(() => colliding('S-1-4-9000-9-1')).toThrow(/distinct from the workspace and temp SIDs/u)
+  })
+
+  it('rejects duplicate reference SIDs', () => {
+    const workspace = scratch()
+    const refA = scratch()
+    const refB = scratch()
+    expect(() => new AclSandbox({
+      writableDirs: [workspace],
+      tempDir: null,
+      writeSid: 'S-1-4-9000-10',
+      mode: 'workspace-refs-write',
+      refGrants: [
+        { dir: refA, sid: 'S-1-4-9000-10-2' },
+        { dir: refB, sid: 'S-1-4-9000-10-2' },
+      ],
+    })).toThrow(/reference SIDs must be unique/u)
+  })
+
+  it('requires a write SID, and a temp SID when a temp dir is granted, under workspace-refs-write', () => {
+    const workspace = scratch()
+    expect(() => new AclSandbox({ writableDirs: [workspace], tempDir: null, mode: 'workspace-refs-write' }))
+      .toThrow(/workspace-refs-write requires a write SID/u)
+    expect(() => new AclSandbox({ writableDirs: [workspace], tempDir: scratch(), writeSid: 'S-1-4-9000-11', mode: 'workspace-refs-write' }))
+      .toThrow(/workspace-refs-write with temp requires a temp write SID/u)
+  })
 })
 
 describe('AclSandbox init', () => {
@@ -239,6 +299,31 @@ describe('AclSandbox init', () => {
     const sandbox = new AclSandbox({ writableDirs: [workspace], tempDir: null, writeSid: 'S-1-4-9000-3', mode: 'workspace-write' })
     await sandbox.init()
     expect(setNamedSecurityInfoW).toHaveBeenCalledTimes(1) // workspace only
+  })
+
+  it('completes the workspace-refs-write pipeline: workspace, temp, and one grant per reference', async () => {
+    const { setNamedSecurityInfoW, localFree } = state.stubs as HappyStubs
+    const workspace = scratch()
+    const temp = scratch()
+    const refA = scratch()
+    const refB = scratch()
+    const sandbox = new AclSandbox({
+      writableDirs: [workspace],
+      tempDir: temp,
+      writeSid: 'S-1-4-9000-12',
+      tempWriteSid: 'S-1-4-9000-12-1',
+      mode: 'workspace-refs-write',
+      refGrants: [
+        { dir: refA, sid: 'S-1-4-9000-12-2' },
+        { dir: refB, sid: 'S-1-4-9000-12-3' },
+      ],
+    })
+    await sandbox.init()
+    expect(sandbox.tempDir).toBe(resolve(temp))
+    expect(setNamedSecurityInfoW).toHaveBeenCalledTimes(4) // workspace + temp + two references
+    const localFreesAfterInit = localFree.mock.calls.length
+    sandbox.dispose()
+    expect(localFree.mock.calls.length).toBeGreaterThan(localFreesAfterInit) // the reference SID pointers are freed on dispose
   })
 
   it('rejects a temp dir that does not exist', async () => {

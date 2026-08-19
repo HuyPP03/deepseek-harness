@@ -13,8 +13,10 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import { Session, SessionId } from '@deepseek-ai/dsh-session'
 import SandboxPolicyService, { SANDBOX_MODES, effectiveSandboxMode, setSandboxMode } from '@deepseek-ai/dsh-sandbox-policy'
 import SystemPrompt, { renderContextSnapshot, renderPrompt } from '@deepseek-ai/dsh-system-prompt'
+// Type-only: the workspace/references event declaration merge the referenceRoots tests append.
+import type {} from '@deepseek-ai/dsh-workspace-references'
 
-async function mounted(config: { mode?: 'read-only' | 'workspace-write' | 'danger-full-access'; workspaceRoot?: string } = {}) {
+async function mounted(config: { mode?: 'read-only' | 'workspace-write' | 'workspace-refs-write' | 'danger-full-access'; workspaceRoot?: string } = {}) {
   const ctx = new Context()
   await ctx.plugin(SandboxPolicyService, config)
   return ctx
@@ -142,19 +144,20 @@ describe('SandboxPolicyService', () => {
 })
 
 describe('sandbox:policy request context', () => {
-  async function promptMounted(config: { mode?: 'read-only' | 'workspace-write' | 'danger-full-access'; workspaceRoot?: string } = {}): Promise<Context> {
+  async function promptMounted(config: { mode?: 'read-only' | 'workspace-write' | 'workspace-refs-write' | 'danger-full-access'; workspaceRoot?: string } = {}): Promise<Context> {
     const ctx = new Context()
     await ctx.plugin(SystemPrompt)
     await ctx.plugin(SandboxPolicyService, config)
     return ctx
   }
 
-  it.each(['read-only', 'workspace-write', 'danger-full-access'] as const)('renders the exact %s policy without a capability inventory', async (mode) => {
+  it.each(['read-only', 'workspace-write', 'workspace-refs-write', 'danger-full-access'] as const)('renders the exact %s policy without a capability inventory', async (mode) => {
     const ctx = await promptMounted({ mode, workspaceRoot: '/fallback' })
     const workspaceRoot = resolve('/projects/current')
     const expected = {
       'read-only': 'Current DSH file policy: read-only. Any available operation enforced by the DSH file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.',
       'workspace-write': `Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(workspaceRoot)}. Some platform temporary areas may also be writable.`,
+      'workspace-refs-write': `Current DSH file policy: workspace-refs-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(workspaceRoot)} and under the session's attached reference projects listed in the reference section. Some platform temporary areas may also be writable.`,
       'danger-full-access': 'Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.',
     } as const
 
@@ -209,7 +212,26 @@ describe('sandbox:policy request context', () => {
 
 describe('the sandbox/mode session kit', () => {
   it('SANDBOX_MODES lists every mode for advertisement and validation', () => {
-    expect(SANDBOX_MODES).toEqual(['read-only', 'workspace-write', 'danger-full-access'])
+    expect(SANDBOX_MODES).toEqual(['read-only', 'workspace-write', 'workspace-refs-write', 'danger-full-access'])
+  })
+
+  it('resolves referenceRoots only under workspace-refs-write, from the latest session event', async () => {
+    const ctx = await mounted({ mode: 'workspace-refs-write', workspaceRoot: '/fallback' })
+    const active = session('sess-refs', '/projects/refs')
+    active.append('workspace/references', { references: [{ path: '/refs/one' }, { path: '/refs/two' }] })
+    expect(ctx.sandboxPolicy.resolve({ session: active })).toEqual({
+      mode: 'workspace-refs-write',
+      workspaceRoot: resolve('/projects/refs'),
+      sessionId: 'sess-refs',
+      referenceRoots: ['/refs/one', '/refs/two'],
+    })
+    active.append('workspace/references', { references: [] })
+    expect(ctx.sandboxPolicy.resolve({ session: active }).referenceRoots).toEqual([])
+
+    const plain = session('sess-plain', '/projects/plain')
+    plain.append('workspace/references', { references: [{ path: '/refs/one' }] })
+    const other = ctx.sandboxPolicy.resolve({ session: plain, mode: 'workspace-write' })
+    expect(other.referenceRoots).toBeUndefined()
   })
 
   it('effectiveSandboxMode folds to the last switch, or undefined without one', () => {

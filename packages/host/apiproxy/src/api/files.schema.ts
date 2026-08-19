@@ -1,0 +1,28 @@
+/**
+ * files domain zod schemas (names derived from map keys: fileListRequestSchema /
+ * fileListValueSchema).
+ */
+
+import { z } from 'zod'
+import type { RequestPayload, ResponseValue } from './rpc-map.ts'
+import type { Wire } from './rpc.schema.ts'
+import { sessionIdSchema } from './sessions.schema.ts'
+import type { FileEntry } from './files.ts'
+
+/** FileEntry row of files.list. */
+export const fileEntrySchema = z.object({
+  path: z.string().min(1),
+  relative: z.string().min(1),
+  root: z.string().min(1),
+}) satisfies z.ZodType<Wire<FileEntry>>
+
+/** files.list request payload. */
+export const fileListRequestSchema = z.object({
+  sessionId: sessionIdSchema,
+}) satisfies z.ZodType<Wire<RequestPayload<'files.list'>>>
+
+/** files.list response value. */
+export const fileListValueSchema = z.object({
+  files: z.array(fileEntrySchema),
+  truncated: z.boolean(),
+}) satisfies z.ZodType<Wire<ResponseValue<'files.list'>>>

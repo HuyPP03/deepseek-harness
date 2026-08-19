@@ -25,7 +25,8 @@ import type {} from '@deepseek-ai/dsh-agent'
 import { canonicalPath, type SandboxExecutionPolicy, type SandboxMode } from '@deepseek-ai/dsh-sandbox'
 import type { Session } from '@deepseek-ai/dsh-session'
 import type {} from '@deepseek-ai/dsh-system-prompt'
-import { effectiveSandboxMode } from './session-mode.ts'
+import { referencesOf } from '@deepseek-ai/dsh-workspace-references'
+import { SANDBOX_MODES, effectiveSandboxMode } from './session-mode.ts'
 
 export { SANDBOX_MODES, effectiveSandboxMode, setSandboxMode } from './session-mode.ts'
 
@@ -41,6 +42,8 @@ function renderPolicyContext(policy: SandboxExecutionPolicy): string {
       return 'Current DSH file policy: read-only. Any available operation enforced by the DSH file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.'
     case 'workspace-write':
       return `Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(policy.workspaceRoot)}. Some platform temporary areas may also be writable.`
+    case 'workspace-refs-write':
+      return `Current DSH file policy: workspace-refs-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(policy.workspaceRoot)} and under the session's attached reference projects listed in the reference section. Some platform temporary areas may also be writable.`
     case 'danger-full-access':
       return 'Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.'
     /* v8 ignore next 4 -- SandboxMode is a typed same-process closed union; this branch is only the static exhaustiveness guard. */
@@ -91,7 +94,7 @@ export interface SandboxPolicyRequest {
 export class SandboxPolicyService extends Service {
   // Inline schema call: the config catalog walks `static Config` statically.
   static Config: z<Config> = z.object({
-    mode: z.union(['read-only', 'workspace-write', 'danger-full-access'] as const).default('read-only'),
+    mode: z.union(SANDBOX_MODES as SandboxMode[]).default('read-only'),
     // No schema default: process.cwd() is resolved in the constructor so the
     // stored root is always absolute regardless of how it was supplied.
     workspaceRoot: z.string(),
@@ -134,10 +137,14 @@ export class SandboxPolicyService extends Service {
    */
   resolve(request: SandboxPolicyRequest = {}): SandboxExecutionPolicy {
     const { session } = request
+    const mode = request.mode ?? (session === undefined ? undefined : this.overrideOf(session)) ?? this.defaultMode
     return {
-      mode: request.mode ?? (session === undefined ? undefined : this.overrideOf(session)) ?? this.defaultMode,
+      mode,
       workspaceRoot: resolveWorkspaceRoot(session?.header.cwd ?? this.workspaceRoot),
       ...session === undefined ? {} : { sessionId: session.id },
+      // Only the refs-writable mode consumes reference roots; every other mode
+      // leaves the field absent so backends grant nothing extra.
+      ...(mode === 'workspace-refs-write' && session !== undefined ? { referenceRoots: referencesOf(session) } : {}),
     }
   }
 

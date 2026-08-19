@@ -23,10 +23,11 @@ export { canonicalPath, writableRoots } from './roots.ts'
 /**
  * File-effect policy for confined processes. `read-only` permits only required
  * sinks such as `/dev/null`; `workspace-write` also permits the workspace and a
- * backend-defined temp area; `danger-full-access` bypasses confinement. Network
- * and process visibility are outside this vocabulary.
+ * backend-defined temp area; `workspace-refs-write` additionally permits the
+ * session's attached reference projects (its `referenceRoots`); `danger-full-access` bypasses
+ * confinement. Network and process visibility are outside this vocabulary.
  */
-export type SandboxMode = 'read-only' | 'workspace-write' | 'danger-full-access'
+export type SandboxMode = 'read-only' | 'workspace-write' | 'workspace-refs-write' | 'danger-full-access'
 
 /** A confining (non-`danger-full-access`) mode — the modes a {@link SandboxPolicy} can carry. */
 export type ConfinedSandboxMode = Exclude<SandboxMode, 'danger-full-access'>
@@ -39,8 +40,15 @@ export type ConfinedSandboxMode = Exclude<SandboxMode, 'danger-full-access'>
 export interface SandboxExecutionPolicy {
   /** The file-effect mode this execution runs under. */
   mode: SandboxMode
-  /** Absolute root directory `workspace-write` may write under. */
+  /** Absolute root directory `workspace-write` (and `workspace-refs-write`) may write under. */
   workspaceRoot: string
+  /**
+   * Canonical absolute reference-project directories the execution may write
+   * under when the mode is `workspace-refs-write`; ignored under every other
+   * mode. The policy owner resolves the list from the session; backends treat
+   * it as fully specified and grant exactly these roots.
+   */
+  referenceRoots?: readonly string[]
   /**
    * Opaque identity of the calling session (the branded `dsh-session`
    * SessionId). Backends key per-session state off it (e.g. windows-acl gives

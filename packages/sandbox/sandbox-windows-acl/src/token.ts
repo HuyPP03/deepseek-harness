@@ -161,8 +161,9 @@ export interface RestrictingSidSet {
 /**
  * Create the write-restricted token with the mode-selected restricting list
  * (verified on Win11 26200, see the POC-worktree restrict-variant harness):
- *  - read-only:       [logon SID, EVERYONE]
- *  - workspace-write: [logon SID, EVERYONE, workspace SID, optional temp SID]
+ *  - read-only:            [logon SID, EVERYONE]
+ *  - workspace-write:      [logon SID, EVERYONE, workspace SID, optional temp SID]
+ *  - workspace-refs-write: [logon SID, EVERYONE, workspace SID, optional temp SID, reference SIDs]
  *
  * The logon SID + EVERYONE keep-alive group is shared by both modes: early
  * DLL init dies with 0xC0000142 and CNG (`\Device\CNG` write trustee —
@@ -189,7 +190,7 @@ export interface RestrictingSidSet {
  * @param writeSids - the distinct write SIDs forming the workspace and
  * optional temp allowlists (workspace-write only; empty under read-only).
  * @param known - the well-known SIDs entering the restricting list.
- * @param mode - selects the restricting list (workspace-write adds the capability SIDs).
+ * @param mode - selects the restricting list (the writable modes add the capability SIDs).
  * @returns the restricted token handle.
  */
 export function createRestrictedToken(
@@ -198,12 +199,12 @@ export function createRestrictedToken(
   logonSid: NativePtr,
   writeSids: readonly NativePtr[],
   known: RestrictingSidSet,
-  mode: 'read-only' | 'workspace-write',
+  mode: 'read-only' | 'workspace-write' | 'workspace-refs-write',
 ): NativePtr {
   const restrictingSids = buildRestrictingSids(mode === 'read-only'
     ? [logonSid, known.world]
     : writeSids.length === 0
-      ? (() => { throw new Error('createRestrictedToken: workspace-write restricting list requires at least one write SID') })()
+      ? (() => { throw new Error(`createRestrictedToken: ${mode} restricting list requires at least one write SID`) })()
       : [logonSid, known.world, ...writeSids])
   const tokenSlot = allocPtrSlot()
   const created = api.createRestrictedToken(

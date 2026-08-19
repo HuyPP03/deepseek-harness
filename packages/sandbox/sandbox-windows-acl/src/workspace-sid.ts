@@ -52,3 +52,19 @@ export function tempWriteSid(tempDir: string): string {
   const second = (digest.readUInt32LE(4) % (2 ** 30 - 1)) + 1
   return `S-1-4-${first}-${second}-1`
 }
+
+/**
+ * Derive one attached reference project's write SID. The input MUST be the
+ * canonical reference path (admission realpaths it); a fixed third
+ * subauthority (2) domain-separates the result from every workspace and temp
+ * SID, so the reference capability can never be confused with the
+ * workspace-wide or per-session-temp capabilities.
+ * @param referenceRoot - the canonical reference project path.
+ * @returns the SDDL string form.
+ */
+export function refWriteSid(referenceRoot: string): string {
+  const digest = createHash('sha256').update('ref\0', 'utf8').update(referenceRoot, 'utf8').digest()
+  const first = (digest.readUInt32LE(0) % (2 ** 30 - 1)) + 1
+  const second = (digest.readUInt32LE(4) % (2 ** 30 - 1)) + 1
+  return `S-1-4-${first}-${second}-2`
+}

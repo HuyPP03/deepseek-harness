@@ -2797,6 +2797,21 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         })
       },
     },
+    files: {
+      list: (request) => {
+        const missing = requireSession(request)
+        if (missing !== undefined) return missing
+        // Browser fixture: a static working set, no filesystem behind it.
+        return ok(request, {
+          files: [
+            { path: '/fixture/README.md', relative: 'README.md', root: 'workspace' },
+            { path: '/fixture/src/main.ts', relative: 'src/main.ts', root: 'workspace' },
+            { path: '/fixture-ref/lib.ts', relative: 'lib.ts', root: 'fixture-ref' },
+          ],
+          truncated: false,
+        })
+      },
+    },
     goals: {
       // Compatibility face only: old API Proxy payloads and acknowledgements
       // adapt to the canonical fixture Remote implementation above.
@@ -3115,6 +3130,7 @@ export class FixtureApiClient extends AbstractApiClient {
       case 'workspace.insertSessionBefore': return this.api.workspace.insertSessionBefore(request)
       case 'workspace.archiveSession': return this.api.workspace.archiveSession(request)
       case 'skill.list': return this.api.skills.list(request)
+      case 'files.list': return this.api.files.list(request)
       case 'agentPreset.list': return this.api.agentPresets.list(request)
       case 'agentPreset.select': return this.api.agentPresets.select(request)
       case 'agentPreset.read': return this.api.agentPresets.read(request)

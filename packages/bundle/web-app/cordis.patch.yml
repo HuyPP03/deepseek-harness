@@ -226,7 +226,7 @@
       name: '@deepseek-ai/dsh-client-ui-workspace'
 
     # Input triggers: the '/' | '@' pipeline (ui-input-trigger), the command surface over
-    # it (ui-commands), and the two reference sources (ui-skill / ui-subagent).
+    # it (ui-commands), and the three reference sources (ui-skill / ui-subagent / ui-file-mention).
     - id: ui-input-trigger
       name: '@deepseek-ai/dsh-client-ui-input-trigger'
 
@@ -238,6 +238,9 @@
 
     - id: ui-subagent
       name: '@deepseek-ai/dsh-client-ui-subagent'
+
+    - id: ui-file-mention
+      name: '@deepseek-ai/dsh-client-ui-file-mention'
 
     # Background jobs: the session-header list over the jobsBySession mirror.
     - id: ui-jobs

@@ -624,7 +624,7 @@ export type Config = LocalConfig
 
 依赖：[`LocalConfig`](#deepseek-aidsh-fs-local)
 
-来源：[`packages/fs/fs-sandbox/src/index.ts:49`](../packages/fs/fs-sandbox/src/index.ts)
+来源：[`packages/fs/fs-sandbox/src/index.ts:51`](../packages/fs/fs-sandbox/src/index.ts)
 
 <a id="deepseek-aidsh-goal"></a>
 
@@ -1493,7 +1493,7 @@ export interface Config {
 }
 ```
 
-来源：[`packages/sandbox/sandbox-local/src/index.ts:44`](../packages/sandbox/sandbox-local/src/index.ts)
+来源：[`packages/sandbox/sandbox-local/src/index.ts:47`](../packages/sandbox/sandbox-local/src/index.ts)
 
 <a id="deepseek-aidsh-sandbox-policy"></a>
 
@@ -1520,7 +1520,7 @@ export interface Config {
 
 依赖：[`SandboxMode`](subsystems/sandbox.md)
 
-来源：[`packages/sandbox/sandbox-policy/src/index.ts:67`](../packages/sandbox/sandbox-policy/src/index.ts)
+来源：[`packages/sandbox/sandbox-policy/src/index.ts:70`](../packages/sandbox/sandbox-policy/src/index.ts)
 
 <a id="deepseek-aidsh-sdk-jsonrpc-server"></a>
 
@@ -3037,7 +3037,7 @@ export interface Config {
 }
 ```
 
-来源：[`packages/workspace/workspace-references/src/index.ts:166`](../packages/workspace/workspace-references/src/index.ts)
+来源：[`packages/workspace/workspace-references/src/index.ts:168`](../packages/workspace/workspace-references/src/index.ts)
 
 ## 无配置的可加载插件
 
@@ -3056,6 +3056,7 @@ export interface Config {
 - `@deepseek-ai/dsh-client-ui-deliverables` — 需要 `systemPrompt`（[`packages/client/ui-deliverables/src/index.ts`](../packages/client/ui-deliverables/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-directory-picker-browse`（[`packages/client/ui-directory-picker-browse/src/index.ts`](../packages/client/ui-directory-picker-browse/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-directory-picker-native`（[`packages/client/ui-directory-picker-native/src/index.ts`](../packages/client/ui-directory-picker-native/src/index.ts)）
+- `@deepseek-ai/dsh-client-ui-file-mention`（[`packages/client/ui-file-mention/src/index.ts`](../packages/client/ui-file-mention/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-goal`（[`packages/client/ui-goal/src/index.ts`](../packages/client/ui-goal/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-input-trigger`（[`packages/client/ui-input-trigger/src/index.ts`](../packages/client/ui-input-trigger/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-jobs`（[`packages/client/ui-jobs/src/index.ts`](../packages/client/ui-jobs/src/index.ts)）

@@ -622,7 +622,7 @@ export type Config = LocalConfig
 
 Depends on: [`LocalConfig`](#deepseek-aidsh-fs-local)
 
-Source: [`packages/fs/fs-sandbox/src/index.ts:49`](../packages/fs/fs-sandbox/src/index.ts)
+Source: [`packages/fs/fs-sandbox/src/index.ts:51`](../packages/fs/fs-sandbox/src/index.ts)
 
 <a id="deepseek-aidsh-goal"></a>
 
@@ -1491,7 +1491,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/sandbox/sandbox-local/src/index.ts:44`](../packages/sandbox/sandbox-local/src/index.ts)
+Source: [`packages/sandbox/sandbox-local/src/index.ts:47`](../packages/sandbox/sandbox-local/src/index.ts)
 
 <a id="deepseek-aidsh-sandbox-policy"></a>
 
@@ -1518,7 +1518,7 @@ export interface Config {
 
 Depends on: [`SandboxMode`](subsystems/sandbox.md)
 
-Source: [`packages/sandbox/sandbox-policy/src/index.ts:67`](../packages/sandbox/sandbox-policy/src/index.ts)
+Source: [`packages/sandbox/sandbox-policy/src/index.ts:70`](../packages/sandbox/sandbox-policy/src/index.ts)
 
 <a id="deepseek-aidsh-sdk-jsonrpc-server"></a>
 
@@ -3035,7 +3035,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/workspace/workspace-references/src/index.ts:166`](../packages/workspace/workspace-references/src/index.ts)
+Source: [`packages/workspace/workspace-references/src/index.ts:167`](../packages/workspace/workspace-references/src/index.ts)
 
 ## Loadable plugins with no config
 
@@ -3054,6 +3054,7 @@ These load from a `cordis.yml` entry with no `config:` block; they declare no co
 - `@deepseek-ai/dsh-client-ui-deliverables` — requires `systemPrompt` ([`packages/client/ui-deliverables/src/index.ts`](../packages/client/ui-deliverables/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-directory-picker-browse` ([`packages/client/ui-directory-picker-browse/src/index.ts`](../packages/client/ui-directory-picker-browse/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-directory-picker-native` ([`packages/client/ui-directory-picker-native/src/index.ts`](../packages/client/ui-directory-picker-native/src/index.ts))
+- `@deepseek-ai/dsh-client-ui-file-mention` ([`packages/client/ui-file-mention/src/index.ts`](../packages/client/ui-file-mention/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-goal` ([`packages/client/ui-goal/src/index.ts`](../packages/client/ui-goal/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-input-trigger` ([`packages/client/ui-input-trigger/src/index.ts`](../packages/client/ui-input-trigger/src/index.ts))
 - `@deepseek-ai/dsh-client-ui-jobs` ([`packages/client/ui-jobs/src/index.ts`](../packages/client/ui-jobs/src/index.ts))

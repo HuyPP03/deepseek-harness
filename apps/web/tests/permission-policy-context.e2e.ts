@@ -1,5 +1,5 @@
 // Web acceptance for current sandbox-policy context. A real Chromium drives
-// the shipped /permission command through all three presets; record mode uses
+// the shipped /permission command through all four presets; record mode uses
 // the real provider, while replay keeps the same provider-authored behavior
 // keyless. Assertions read the exact durable header, runtime-context messages,
 // and tool calls, so assistant prose alone cannot satisfy the scenario.
@@ -25,10 +25,11 @@ const PROMPTS = [
   'Can you create or edit a normal file right now under the current policy? Answer directly in one sentence. Do not call a tool just to discover the policy.',
   'Does the DSH file sandbox currently restrict file operations? Answer directly in one sentence. Do not call tools.',
   'Reply with exactly WORKSPACE_POLICY_SEEN. Do not call tools.',
+  'Reply with exactly WRITE_WORKSPACE_POLICY_SEEN. Do not call tools.',
   'Create the relative path policy-neutral.txt in the current workspace containing exactly POLICY_NEUTRAL_OK, verify its contents, then report completion.',
 ] as const
 
-const PRESET_LABELS = ['Read Only', 'Full access', 'Workspace Write'] as const
+const PRESET_LABELS = ['Read Only', 'Full access', 'Write Only', 'Write All'] as const
 
 function requestSystems(events: readonly SessionEvent[]): string[] {
   return events.flatMap((event) => {
@@ -88,7 +89,7 @@ describe('web e2e: current sandbox policy reaches the model before tools', () =>
     await scaffold?.close()
   })
 
-  it('switches read-only, danger-full-access, and workspace-write through the real GUI command path', async () => {
+  it('switches all four presets through the real GUI command path', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-permission-policy-context'))
     if (MODE !== 'record') {
       expect(fixtureUserPrompts(await readFile(FIXTURE, 'utf8'))).toEqual(PROMPTS)
@@ -96,7 +97,7 @@ describe('web e2e: current sandbox policy reaches the model before tools', () =>
 
     const input = page.locator('textarea').first()
     let sessionId: Awaited<ReturnType<WebScaffold['whenTurnSettled']>> | undefined
-    for (const [index, preset] of ['read-only', 'danger-full-access', 'workspace-write'].entries()) {
+    for (const [index, preset] of ['read-only', 'danger-full-access', 'workspace-write', 'write-workspace'].entries()) {
       await input.fill(`/permission ${preset}`)
       await input.press('Enter')
       await page.getByRole('button', { name: `Access mode, current: ${PRESET_LABELS[index]}` })
@@ -113,7 +114,7 @@ describe('web e2e: current sandbox policy reaches the model before tools', () =>
     await input.press('Enter')
     await page.getByRole('button', { name: 'Access mode, current: Read Only' }).waitFor({ timeout: 10_000 })
     const settled = scaffold.whenTurnSettled()
-    await input.fill(PROMPTS[3])
+    await input.fill(PROMPTS[4])
     await input.press('Enter')
     sessionId = await settled
 
@@ -129,7 +130,7 @@ describe('web e2e: current sandbox policy reaches the model before tools', () =>
     expect(systems[0]).not.toContain('Approval prompts are disabled in this session')
 
     const contexts = runtimeContexts(sessionEvents)
-    expect(contexts).toHaveLength(4)
+    expect(contexts).toHaveLength(5)
     expect(contexts[0]).toContain('Current DSH file policy: read-only. Any available operation enforced by the DSH file sandbox cannot modify files in the standing mode.')
     expect(contexts[0]).toContain('Do not refuse a required modification from this policy alone')
     expect(contexts[0]).toContain('Approval policy: ask.')
@@ -137,20 +138,24 @@ describe('web e2e: current sandbox policy reaches the model before tools', () =>
     expect(contexts[1]).toContain('Approval prompts are disabled in this session')
 
     if (sessionWorkspace === undefined) throw new Error('permission-policy scenario observed no session workspace')
-    expect(contexts[2]).toContain(`Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(canonicalPath(sessionWorkspace))}. Some platform temporary areas may also be writable.`)
+    const workspace = canonicalPath(sessionWorkspace)
+    expect(contexts[2]).toContain(`Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(workspace)}. Some platform temporary areas may also be writable.`)
     expect(contexts[2]).toContain('Approval policy: ask.')
     expect(contexts[2]).not.toContain('Approval prompts are disabled in this session')
-    expect(contexts[3]).toContain('Current DSH file policy: read-only.')
+    expect(contexts[3]).toContain(`Current DSH file policy: workspace-refs-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(workspace)} and under the session's attached reference projects listed in the reference section. Some platform temporary areas may also be writable.`)
+    expect(contexts[3]).toContain('Approval policy: ask.')
+    expect(contexts[4]).toContain('Current DSH file policy: read-only.')
 
     const answers = assistantTexts(sessionEvents)
-    expect(answers.length).toBeGreaterThanOrEqual(4)
+    expect(answers.length).toBeGreaterThanOrEqual(5)
     expect(answers[0]).toMatch(/read-only.*(?:denied|cannot modify|cannot create or edit)/i)
     expect(answers[1]).toMatch(/does not restrict.*(?:file operations|(?:write\/edit tools|write and edit tools).*one-shot bash commands)/i)
     expect(answers[2]).toBe('WORKSPACE_POLICY_SEEN')
+    expect(answers[3]).toBe('WRITE_WORKSPACE_POLICY_SEEN')
     const calls = sessionEvents.filter(
       (event): event is Extract<SessionEvent, { type: 'tool/call' }> => event.type === 'tool/call',
     )
-    expect(calls.every(call => call.data.turn === 4)).toBe(true)
+    expect(calls.every(call => call.data.turn === 5)).toBe(true)
     expect(calls.length).toBeGreaterThanOrEqual(2)
     const firstCall = calls[0]
     if (firstCall === undefined) throw new Error('neutral policy task produced no tool call')

@@ -15,9 +15,14 @@ import type { SandboxPolicy } from '@deepseek-ai/dsh-sandbox'
  */
 export function bwrapProfileArgs(policy: SandboxPolicy): string[] {
   const args = ['--ro-bind', '/', '/', '--dev', '/dev', '--proc', '/proc', '--die-with-parent']
-  if (policy.mode === 'workspace-write') {
+  if (policy.mode === 'workspace-write' || policy.mode === 'workspace-refs-write') {
     args.push('--tmpfs', '/tmp')
     args.push('--bind', policy.workspaceRoot, policy.workspaceRoot)
+    if (policy.mode === 'workspace-refs-write') {
+      for (const root of policy.referenceRoots ?? []) {
+        args.push('--bind', root, root)
+      }
+    }
   }
   return args
 }
@@ -31,6 +36,8 @@ export function landlockProfileArgs(policy: SandboxPolicy): string[] {
   const readWrite = ['/dev/null']
   if (policy.mode === 'workspace-write') {
     readWrite.push('/tmp', policy.workspaceRoot)
+  } else if (policy.mode === 'workspace-refs-write') {
+    readWrite.push('/tmp', policy.workspaceRoot, ...(policy.referenceRoots ?? []))
   }
   return landlockGrantArgs({ readOnly: ['/'], readWrite })
 }

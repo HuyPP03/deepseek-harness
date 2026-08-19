@@ -12,9 +12,12 @@
  * workspace-root ACE materializes once per workspace per server lifetime
  * and STANDS (the cross-session reuse cache — the exact-ACE skip makes
  * every later provision O(1) instead of re-propagating the tree per
- * session); the private-temp ACEs are revoked on dispose. The runner
- * receives both SIDs (their presence marks the seam-managed contract) and
- * stops managing DACLs itself. The rung reports partial enforcement because
+ * session); the private-temp ACEs are revoked on dispose. Reference
+ * projects (the `workspace-refs-write` mode) stand like the workspace:
+ * one deterministic capability (`refWriteSid`) and standing ACE per
+ * reference path per server lifetime. The runner receives the SIDs
+ * (their presence marks the seam-managed contract) and stops managing
+ * DACLs itself. The rung reports partial enforcement because
  * WRITE_RESTRICTED must retain Everyone in its
  * restricting list and NTFS hard links alias one file object across paths.
  * @module @deepseek-ai/dsh-sandbox-local
@@ -37,7 +40,7 @@ import { assertNever } from '@deepseek-ai/dsh-llm'
 import { SandboxProvider, SandboxUnavailableError } from '@deepseek-ai/dsh-sandbox'
 import type { ConfinedArgv, ConfinedSandboxMode, RunnerFailureRule, SandboxEnforcement, SandboxPolicy } from '@deepseek-ai/dsh-sandbox'
 import type { SessionId } from '@deepseek-ai/dsh-session'
-import { AclWriteGrant, assertTempRootOutsideWorkspace, tempWriteSid, workspaceWriteSid } from '@deepseek-ai/dsh-sandbox-windows-acl'
+import { AclWriteGrant, assertTempRootOutsideWorkspace, refWriteSid, tempWriteSid, workspaceWriteSid } from '@deepseek-ai/dsh-sandbox-windows-acl'
 import { bwrapProfileArgs, landlockProfileArgs, seatbeltProfileArgs } from './profiles.ts'
 
 /** Plugin config. All optional — `static Config` supplies the defaults. */
@@ -271,6 +274,7 @@ export class LocalSandboxProvider extends SandboxProvider {
    * dispose).
    */
   private readonly workspaceGrants = new Map<string, AclWriteGrant>()
+  private readonly refGrants = new Map<string, AclWriteGrant>()
   private readonly tempCapabilities = new Map<string, AclTempCapability>()
 
   constructor(ctx: Context, config: Config) {
@@ -366,7 +370,7 @@ export class LocalSandboxProvider extends SandboxProvider {
       ]
     }
     const temp = this.materializeAclGrant(sessionId, policy.workspaceRoot)
-    return [
+    const args = [
       ...this.windowsAclRunnerInvocation(),
       '--workspace', policy.workspaceRoot,
       '--temp', temp.dir,
@@ -374,6 +378,14 @@ export class LocalSandboxProvider extends SandboxProvider {
       '--write-sid', workspaceWriteSid(policy.workspaceRoot),
       '--temp-write-sid', temp.writeSid,
     ]
+    if (policy.mode === 'workspace-refs-write') {
+      for (const root of policy.referenceRoots ?? []) {
+        const writeSid = refWriteSid(root)
+        this.materializeAclRefGrant(root, writeSid)
+        args.push('--ref', root, '--ref-sid', writeSid)
+      }
+    }
+    return args
   }
 
   /**
@@ -443,6 +455,33 @@ export class LocalSandboxProvider extends SandboxProvider {
   }
 
   /**
+   * Materialize one reference project's standing ACE once per provider
+   * lifetime, the workspace-grant pattern: the capability SID is derived from
+   * the canonical reference path, so the ACE materializes once per reference
+   * path per server and stands (the exact-ACE skip makes every later provision
+   * O(1)). Fail-closed: a half-materialized grant frees its SID before the
+   * error propagates; a standing ACE already applied is the intended end
+   * state, not an error artifact.
+   * @param referenceRoot - the canonical reference project path.
+   * @param writeSid - the reference capability SID (derive via refWriteSid).
+   */
+  private materializeAclRefGrant(referenceRoot: string, writeSid: string): void {
+    if (this.refGrants.has(referenceRoot)) return
+    const grant = AclWriteGrant.create(writeSid)
+    try {
+      grant.add(referenceRoot, true)
+    } catch (error) {
+      try {
+        grant.dispose()
+      } catch (cleanupError) {
+        throw new AggregateError([error, cleanupError], 'sandbox-local windows-acl reference grant failed and its cleanup also failed')
+      }
+      throw error
+    }
+    this.refGrants.set(referenceRoot, grant)
+  }
+
+  /**
    * Dispose every write grant (provider dispose): the revocable temp ACEs
    * are revoked, the private temp directories this provider created are
    * removed, and every SID allocation is freed; the standing workspace ACEs
@@ -452,9 +491,14 @@ export class LocalSandboxProvider extends SandboxProvider {
    * OS temp hygiene (or manual removal) eventually reclaims it.
    */
   private revokeAclGrants(): void {
-    if (this.workspaceGrants.size === 0 && this.tempCapabilities.size === 0) return
+    if (this.workspaceGrants.size === 0 && this.refGrants.size === 0 && this.tempCapabilities.size === 0) return
     const failures: unknown[] = []
-    for (const grant of [...this.workspaceGrants.values(), ...[...this.tempCapabilities.values()].map(capability => capability.grant)]) {
+    const grants = [
+      ...this.workspaceGrants.values(),
+      ...this.refGrants.values(),
+      ...[...this.tempCapabilities.values()].map(capability => capability.grant),
+    ]
+    for (const grant of grants) {
       try {
         grant.dispose()
       } catch (error) {

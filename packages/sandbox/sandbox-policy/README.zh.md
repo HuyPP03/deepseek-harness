@@ -10,14 +10,14 @@
 
 ## 配置
 
-- `mode`：部署默认 `SandboxMode`（`read-only`／`workspace-write`／`danger-full-access`），加载时验证。默认为 `read-only`（故障安全）。
+- `mode`：部署默认 `SandboxMode`（`read-only`／`workspace-write`／`workspace-refs-write`／`danger-full-access`），加载时验证。默认为 `read-only`（故障安全）。
 - `workspaceRoot`：无 agent（智能体）的调用或没有 cwd 的会话在 `workspace-write` 下可写入的回退目录。默认为 `process.cwd()`；无论显式配置还是采用默认值，都会解析为其绝对文件系统标识。普通 agent 调用改用其会话头中不可变的 `cwd`。
 
 ## 接口
 
-- `ctx.sandboxPolicy.resolve({ session?, mode? })`：解析一项完整的逐调用策略。显式批准的模式优先于会话最后一条 `sandbox/mode` 事件，后者又优先于 `defaultMode`；会话不可变的 `cwd` 会先按文件系统语义规范化，再成为 `workspaceRoot`，否则使用配置的回退值。规范化先于词法归一化，因此 `symlink/..` 与进程工作目录解析保持一致。
+- `ctx.sandboxPolicy.resolve({ session?, mode? })`：解析一项完整的逐调用策略。显式批准的模式优先于会话最后一条 `sandbox/mode` 事件，后者又优先于 `defaultMode`；会话不可变的 `cwd` 会先按文件系统语义规范化，再成为 `workspaceRoot`，否则使用配置的回退值。规范化先于词法归一化，因此 `symlink/..` 与进程工作目录解析保持一致。在 `workspace-refs-write` 下，`resolve()` 还会把会话附加的引用项目盖章为 `referenceRoots`；其余模式不携带该字段。
 - `ctx.sandboxPolicy.defaultMode`／`ctx.sandboxPolicy.workspaceRoot`：`resolve()` 使用的部署默认值与回退根目录。
-- `sandbox:policy`：直接派生自 `resolve({ session })` 的请求时缓存安全上下文贡献。它说明该模式中与具体能力无关的文件操作约定，以及 `workspace-write` 下规范化的会话工作区；工具归属方仍负责特定于操作的拒绝与升权引导。
+- `sandbox:policy`：直接派生自 `resolve({ session })` 的请求时缓存安全上下文贡献。它说明该模式中与具体能力无关的文件操作约定，以及可写模式下规范化的会话工作区；工具归属方仍负责特定于操作的拒绝与升权引导。
 - `effectiveSandboxMode(events)`：会话 `sandbox/mode` 事件的纯 fold（最后一次切换胜出，没有则为 `undefined`），在 `resolve()` 内使用。
 - `setSandboxMode(session, mode)`：逐会话覆盖的唯一写入路径：恰好追加一条 `sandbox/mode` 事件。切换本身就是事件；不会在带外修改模式。
 - `SANDBOX_MODES`：所有模式，用于选项展示与运行时验证。
@@ -48,6 +48,12 @@ Current DSH file policy: read-only. Any available operation enforced by the DSH 
 Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: "<workspace root>". Some platform temporary areas may also be writable.
 ```
 
+##### 工作区＋引用项目写入
+
+```markdown
+Current DSH file policy: workspace-refs-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: "<workspace root>" and under the session's attached reference projects listed in the reference section. Some platform temporary areas may also be writable.
+```
+
 ##### 完全访问
 
 ```markdown
@@ -56,7 +62,7 @@ Current DSH file policy: danger-full-access. The DSH file sandbox does not restr
 
 #### Token 影响
 
-首次请求和有效策略每次变化时增加一条简洁的持久上下文消息；未变化的请求不增加内容。`workspace-write` 只携带规范化的会话工作区路径；平台特定的临时路径会以摘要表述，不会加入依赖主机的字节。
+首次请求和有效策略每次变化时增加一条简洁的持久上下文消息；未变化的请求不增加内容。可写模式只携带规范化的会话工作区路径（`workspace-refs-write` 额外指明引用段）；平台特定的临时路径会以摘要表述，不会加入依赖主机的字节。
 
 #### KV Cache 影响
 
@@ -64,6 +70,6 @@ Current DSH file policy: danger-full-access. The DSH file sandbox does not restr
 
 ## 已知限制与暂缓事项
 
-- **每个会话只有一个主要工作区根目录**：策略解析 `SessionHeader.cwd`；额外可写根目录不属于 `SandboxExecutionPolicy`。
+- **每个会话只有一个主要工作区根目录**：策略解析 `SessionHeader.cwd`；附加的引用项目是唯一额外可写根目录，以 `referenceRoots` 携带且仅由 `workspace-refs-write` 消费。
 - **仅限文件操作模式**：`SandboxMode` 管控文件操作；网络和进程策略不在其词汇中，因此这里没有限制它们的旋钮。
 - **有意概述临时区域**：强制执行后端会授予不同的平台临时区域，这些区域在策略解析后才会选定，因此无法在当前上下文中如实枚举。

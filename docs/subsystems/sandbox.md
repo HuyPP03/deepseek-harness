@@ -8,19 +8,20 @@ Source: [`packages/sandbox/sandbox/src/index.ts`](../../packages/sandbox/sandbox
 
 ## Modes and enforcement
 
-`SandboxMode` governs filesystem effects only. `read-only` asks the backend to deny writes — the POSIX runners additionally grant the `/dev/null` sink their shells require, while the Windows ACL runner grants no explicit writable root and reports partial enforcement for its ambient ACL gaps; `workspace-write` permits writes under the workspace root and the backend's promised temp area; `danger-full-access` bypasses confinement. Network and process visibility are outside this vocabulary.
+`SandboxMode` governs filesystem effects only. `read-only` asks the backend to deny writes — the POSIX runners additionally grant the `/dev/null` sink their shells require, while the Windows ACL runner grants no explicit writable root and reports partial enforcement for its ambient ACL gaps; `workspace-write` permits writes under the workspace root and the backend's promised temp area; `workspace-refs-write` permits the same plus the session's attached reference projects, carried on the policy as `referenceRoots`; `danger-full-access` bypasses confinement. Network and process visibility are outside this vocabulary.
 
 ```ts type-equiv
 /**
  * File-effect policy for confined processes. `read-only` permits only required
  * sinks such as `/dev/null`; `workspace-write` also permits the workspace and a
- * backend-defined temp area; `danger-full-access` bypasses confinement. Network
- * and process visibility are outside this vocabulary.
+ * backend-defined temp area; `workspace-refs-write` additionally permits the
+ * session's attached reference projects (its `referenceRoots`); `danger-full-access` bypasses
+ * confinement. Network and process visibility are outside this vocabulary.
  */
-type SandboxMode = 'read-only' | 'workspace-write' | 'danger-full-access'
+type SandboxMode = 'read-only' | 'workspace-write' | 'workspace-refs-write' | 'danger-full-access'
 ```
 
-Only the first two modes can be sent to a provider. A `danger-full-access` consumer spawns its original argv and does not call `ctx.sandbox`.
+Only the confined modes can be sent to a provider. A `danger-full-access` consumer spawns its original argv and does not call `ctx.sandbox`.
 
 ```ts type-equiv
 /** A confining (non-`danger-full-access`) mode — the modes a {@link SandboxPolicy} can carry. */
@@ -51,8 +52,15 @@ The complete execution policy is resolved and carried per capability call. It in
 interface SandboxExecutionPolicy {
   /** The file-effect mode this execution runs under. */
   mode: SandboxMode
-  /** Absolute root directory `workspace-write` may write under. */
+  /** Absolute root directory `workspace-write` (and `workspace-refs-write`) may write under. */
   workspaceRoot: string
+  /**
+   * Canonical absolute reference-project directories the execution may write
+   * under when the mode is `workspace-refs-write`; ignored under every other
+   * mode. The policy owner resolves the list from the session; backends treat
+   * it as fully specified and grant exactly these roots.
+   */
+  referenceRoots?: readonly string[]
   /**
    * Opaque identity of the calling session (the branded `dsh-session`
    * SessionId). Backends key per-session state off it (e.g. windows-acl gives
@@ -184,7 +192,7 @@ Abstract process-sandbox service. confine must return enforcing argv or fail clo
 abstract confine(argv: readonly string[], policy: SandboxPolicy): ConfinedArgv
 ```
 
-Source: [`packages/sandbox/sandbox/src/index.ts:158`](../../packages/sandbox/sandbox/src/index.ts)
+Source: [`packages/sandbox/sandbox/src/index.ts:166`](../../packages/sandbox/sandbox/src/index.ts)
 
 <a id="ctxsandboxpolicy--sandboxpolicyservice"></a>
 
@@ -214,5 +222,5 @@ overrideOf(session: Session): SandboxMode | undefined
 
 Types: [Session](session.md)
 
-Source: [`packages/sandbox/sandbox-policy/src/index.ts:91`](../../packages/sandbox/sandbox-policy/src/index.ts)
+Source: [`packages/sandbox/sandbox-policy/src/index.ts:94`](../../packages/sandbox/sandbox-policy/src/index.ts)
 <!-- END GENERATED cordis-surface -->

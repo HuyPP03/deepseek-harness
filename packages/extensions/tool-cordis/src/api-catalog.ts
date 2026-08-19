@@ -3686,11 +3686,11 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'SandboxExecutionPolicy',
-    declaration: 'export interface SandboxExecutionPolicy {\n    mode: SandboxMode;\n    workspaceRoot: string;\n    sessionId?: SessionId;\n}',
+    declaration: 'export interface SandboxExecutionPolicy {\n    mode: SandboxMode;\n    workspaceRoot: string;\n    referenceRoots?: readonly string[];\n    sessionId?: SessionId;\n}',
   },
   {
     name: 'SandboxMode',
-    declaration: 'export type SandboxMode = \'read-only\' | \'workspace-write\' | \'danger-full-access\';',
+    declaration: 'export type SandboxMode = \'read-only\' | \'workspace-write\' | \'workspace-refs-write\' | \'danger-full-access\';',
   },
   {
     name: 'SandboxPolicy',

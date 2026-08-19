@@ -1,8 +1,9 @@
 /**
  * The writable-root derivation shared by every enforcement dialect that
- * expresses a mode as a canonical allow-list: `workspace-write` means "the
- * workspace root plus the platform temp areas", and this module is that
- * meaning's one home. The Seatbelt profile
+ * expresses a mode as a canonical allow-list: the writable modes mean "the
+ * workspace root (plus the attached reference projects under
+ * `workspace-refs-write`) plus the platform temp areas", and this module is
+ * that meaning's one home. The Seatbelt profile
  * (`@deepseek-ai/dsh-sandbox-local`) and the in-process filesystem fence
  * (`@deepseek-ai/dsh-fs-sandbox`) both derive their allow-list here, so "the
  * write tool cannot write /tmp but bash can" asymmetries cannot arise between
@@ -43,13 +44,17 @@ export function canonicalPath(path: string): string {
 /**
  * The roots one confined execution may WRITE under — the mode's meaning as a
  * canonical, deduplicated allow-list. `read-only` allows nothing;
- * `workspace-write` allows the policy's workspace root, the host `/tmp`, and
- * the per-user platform temp dir (`os.tmpdir()` — the real temp area for
- * mkstemp-family tools; omitting it would deny what the mode promises).
+ * `workspace-write` allows the policy's workspace root; `workspace-refs-write`
+ * allows that workspace root plus the policy's attached reference projects;
+ * both writable modes also allow the host `/tmp` and the per-user platform
+ * temp dir (`os.tmpdir()` — the real temp area for mkstemp-family tools;
+ * omitting it would deny what the mode promises).
  * @param policy - the file-effect policy to derive the allow-list from.
- * @returns the canonical writable roots; empty exactly under `read-only`.
+ * @returns the canonical writable roots; empty under `read-only` and
+ *   `danger-full-access` (the latter confining nothing consumes no allow-list).
  */
 export function writableRoots(policy: SandboxExecutionPolicy): string[] {
-  if (policy.mode !== 'workspace-write') return []
-  return [...new Set([policy.workspaceRoot, '/tmp', tmpdir()].map(canonicalPath))]
+  if (policy.mode !== 'workspace-write' && policy.mode !== 'workspace-refs-write') return []
+  const roots = [policy.workspaceRoot, ...(policy.mode === 'workspace-refs-write' ? policy.referenceRoots ?? [] : [])]
+  return [...new Set([...roots, '/tmp', tmpdir()].map(canonicalPath))]
 }

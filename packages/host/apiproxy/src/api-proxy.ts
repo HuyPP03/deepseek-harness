@@ -5,7 +5,7 @@
 
 import { randomUUID } from 'node:crypto'
 import { mkdir, stat } from 'node:fs/promises'
-import { dirname } from 'node:path'
+import { basename, dirname } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import { installModelSelection } from '@deepseek-ai/dsh-agent'
 import type { Agent, ModelSelection, ModelSelectionRef, AgentOptions, AgentStatus } from '@deepseek-ai/dsh-agent'
@@ -30,7 +30,7 @@ import {
 // Value import: normalizeReferencePaths validates the wire ids before the
 // create commits; the package root also carries the ctx.workspaceReferences
 // Context merge.
-import { normalizeReferencePaths } from '@deepseek-ai/dsh-workspace-references'
+import { normalizeReferencePaths, referencesOf } from '@deepseek-ai/dsh-workspace-references'
 // Type-only: brings the `ctx.tools` Context merge into this program (viewFor reads presenters).
 import {
   InvalidPresetIdError, PresetExistsError, PresetMountError,
@@ -60,6 +60,8 @@ import {
   SESSION_SEARCH_SNIPPET_MAX_CODE_POINTS,
   truncateUnicodeCodePoints,
 } from './api/session-search.ts'
+import type { FileWalkRoot } from './files-walk.ts'
+import { walkFiles } from './files-walk.ts'
 // Type-only: resolves `ctx.get('sessionProjections')` to the projection registry.
 import type {} from '@deepseek-ai/dsh-session-projection'
 // Type-only: resolves `ctx.get('tasks')` to the background job registry.
@@ -3300,6 +3302,36 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         } catch (error: unknown) {
           return err(request, { code: 'internal', message: `skill listing failed: ${String(error)}`, details: {} })
         }
+      },
+    },
+
+    files: {
+      // The composer's @-mention listing: the session's project root plus
+      // its attached reference projects resolve host-side from the session
+      // header and log (referencesOf replays the log), so the client never
+      // submits a path and the walk never creates or resumes an Agent.
+      async list(request) {
+        const { sessionId } = request.payload
+        const session = ctx.sessions.get(sessionId)
+        if (session === undefined) {
+          return err(request, {
+            code: 'session-not-found',
+            message: `session "${sessionId}" not found (not attached)`,
+            details: { sessionId },
+          })
+        }
+        const cwd = session.header.cwd
+        if (cwd === undefined) {
+          // Every served session records its project at create time; a
+          // cwd-less header is a pre-project legacy log (not served).
+          return err(request, { code: 'internal', message: `session "${sessionId}" has no project cwd`, details: {} })
+        }
+        const roots: FileWalkRoot[] = [{ dir: cwd, root: 'workspace' }]
+        for (const reference of referencesOf(session)) {
+          roots.push({ dir: reference, root: basename(reference) })
+        }
+        const { files, truncated } = await walkFiles(roots)
+        return ok(request, { files, truncated })
       },
     },
 

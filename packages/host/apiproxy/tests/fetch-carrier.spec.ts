@@ -226,6 +226,11 @@ function fakeApi(overrides: Partial<{ muxFrames: MuxFrame[]; hostFrames: HostFra
         return { rpcId: request.rpcId, result: { ok: true, value: { skills: [{ name: 'commit-helper', description: 'Git commits', modelInvocable: true }] } } }
       },
     },
+    files: {
+      async list(request) {
+        return { rpcId: request.rpcId, result: { ok: true, value: { files: [{ path: '/work/src/main.ts', relative: 'src/main.ts', root: 'workspace' }], truncated: false } } }
+      },
+    },
     goals: {
       async create(request) {
         return { rpcId: request.rpcId, result: { ok: false, error: { code: 'internal', message: 'stub', details: {} } } }
@@ -432,6 +437,12 @@ describe('unary round trip (handler ⇄ client, no network)', () => {
     const c = client()
     const skills = await c.skills.list({ sessionId: 's' as never })
     expect(skills.result).toEqual({ ok: true, value: { skills: [{ name: 'commit-helper', description: 'Git commits', modelInvocable: true }] } })
+  })
+
+  it('round-trips files.list through the wire form', async () => {
+    const c = client()
+    const files = await c.files.list({ sessionId: 's' as never })
+    expect(files.result).toEqual({ ok: true, value: { files: [{ path: '/work/src/main.ts', relative: 'src/main.ts', root: 'workspace' }], truncated: false } })
   })
 
   it('lets host.pickDirectory finish after the 30-second default unary deadline', async () => {

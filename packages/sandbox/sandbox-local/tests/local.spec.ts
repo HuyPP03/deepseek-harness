@@ -23,6 +23,7 @@ import { bwrapProfileArgs, landlockProfileArgs, seatbeltProfileArgs } from '../s
 
 const RO: SandboxPolicy = { mode: 'read-only', workspaceRoot: '/ws' }
 const WW: SandboxPolicy = { mode: 'workspace-write', workspaceRoot: '/ws' }
+const WR: SandboxPolicy = { mode: 'workspace-refs-write', workspaceRoot: '/ws', referenceRoots: ['/refs/one', '/refs/two'] }
 
 async function setup(config: Config = {}, internals: LocalSandboxProvider['internals'] = {}) {
   const ctx = new Context()
@@ -73,6 +74,14 @@ describe('profile dialects', () => {
     ])
   })
 
+  it('bwrap workspace-refs-write: rebinds the workspace root and every reference root', () => {
+    expect(bwrapProfileArgs(WR)).toEqual([
+      '--ro-bind', '/', '/', '--dev', '/dev', '--proc', '/proc', '--die-with-parent',
+      '--tmpfs', '/tmp', '--bind', '/ws', '/ws', '--bind', '/refs/one', '/refs/one', '--bind', '/refs/two', '/refs/two',
+    ])
+    expect(bwrapProfileArgs({ mode: 'workspace-refs-write', workspaceRoot: '/ws' })).toEqual(bwrapProfileArgs(WW))
+  })
+
   it('landlock read-only: readable tree plus a writable /dev/null, nothing else', () => {
     // /dev/null specifically, NOT /dev: a whole-/dev grant would let confined
     // commands write real host paths beneath it (/dev/shm) under read-only.
@@ -81,6 +90,11 @@ describe('profile dialects', () => {
 
   it('landlock workspace-write: adds the host /tmp and the workspace root', () => {
     expect(landlockProfileArgs(WW)).toEqual(['--ro', '/', '--rw', '/dev/null', '--rw', '/tmp', '--rw', '/ws'])
+  })
+
+  it('landlock workspace-refs-write: adds /tmp, the workspace root, and every reference root', () => {
+    expect(landlockProfileArgs(WR)).toEqual(['--ro', '/', '--rw', '/dev/null', '--rw', '/tmp', '--rw', '/ws', '--rw', '/refs/one', '--rw', '/refs/two'])
+    expect(landlockProfileArgs({ mode: 'workspace-refs-write', workspaceRoot: '/ws' })).toEqual(landlockProfileArgs(WW))
   })
 
   it('seatbelt read-only: allow-default with every file write denied except the /dev/null literal', () => {
@@ -96,6 +110,12 @@ describe('profile dialects', () => {
     const roots = [...new Set(['/ws', realpathSync('/tmp'), realpathSync(tmpdir())])]
     const allow = `(allow file-write* ${roots.map(root => `(subpath "${root}")`).join(' ')})`
     expect(seatbeltProfileArgs(WW)).toEqual(['-p', `${SEATBELT_RO_PROFILE} ${allow}`])
+  })
+
+  it('seatbelt workspace-refs-write: allows the reference roots alongside the workspace roots', () => {
+    const roots = [...new Set(['/ws', '/refs/one', '/refs/two', realpathSync('/tmp'), realpathSync(tmpdir())])]
+    const allow = `(allow file-write* ${roots.map(root => `(subpath "${root}")`).join(' ')})`
+    expect(seatbeltProfileArgs(WR)).toEqual(['-p', `${SEATBELT_RO_PROFILE} ${allow}`])
   })
 
   it('seatbelt workspace-write dedups a workspace root that already IS the temp dir', () => {

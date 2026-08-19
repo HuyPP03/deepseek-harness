@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { resolvePwshPath } from '@deepseek-ai/dsh-pwsh-local'
-import { AclWriteGrant, tempWriteSid, workspaceWriteSid } from '../src/index.ts'
+import { AclWriteGrant, refWriteSid, tempWriteSid, workspaceWriteSid } from '../src/index.ts'
 
 const isWin32 = process.platform === 'win32'
 const runnerEntry = fileURLToPath(new URL('../src/runner.ts', import.meta.url))
@@ -458,4 +458,116 @@ describe.skipIf(!isWin32 || !pwshAvailable())('windows-acl runner', () => {
       expect(result.stderr).toContain('windows-acl-run: ')
     }
   }, 15_000)
+
+  it('workspace-refs-write: seam-managed reference grants — the confined child writes the granted reference directory, workspace, and temp only', () => {
+    const seamWorkspace = join(scratchRoot, 'refs-workspace')
+    mkdirSync(seamWorkspace)
+    const refDir = join(scratchRoot, 'refs-reference-project')
+    mkdirSync(refDir)
+    const privateTemp = join(isolatedTemp, 'refs-private-subdir')
+    mkdirSync(privateTemp)
+    const writeSid = workspaceWriteSid(seamWorkspace)
+    const privateTempSid = tempWriteSid(privateTemp)
+    const refSid = refWriteSid(refDir)
+    const tempGrant = AclWriteGrant.create(privateTempSid)
+    tempGrant.add(privateTemp)
+    const refGrant = AclWriteGrant.create(refSid)
+    refGrant.add(refDir)
+    try {
+      const probe = [
+        "$ErrorActionPreference='SilentlyContinue';",
+        `try{Set-Content -Path '${seamWorkspace}\\refs-child-wrote.txt' -Value ok -ErrorAction Stop;'WORKSPACE-WRITE: OK'}catch{'WORKSPACE-WRITE: DENIED'};`,
+        `try{Set-Content -Path '${refDir}\\refs-child-wrote.txt' -Value ok -ErrorAction Stop;'REF-WRITE: OK'}catch{'REF-WRITE: DENIED'};`,
+        `try{Set-Content -Path '${privateTemp}\\refs-child-wrote.txt' -Value ok -ErrorAction Stop;'TEMP-WRITE: OK'}catch{'TEMP-WRITE: DENIED'};`,
+        `try{Set-Content -Path '${escapeFile}' -Value ok -ErrorAction Stop;'ESCAPE-WRITE: OK (ESCAPE!)'}catch{'ESCAPE-WRITE: DENIED'}`,
+      ].join('')
+      const result = runRunner([
+        '--workspace', seamWorkspace, '--temp', privateTemp, '--mode', 'workspace-refs-write',
+        '--write-sid', writeSid, '--temp-write-sid', privateTempSid,
+        '--ref', refDir, '--ref-sid', refSid,
+        '--', 'pwsh', '/NoLogo', '/NonInteractive', '/NoProfile', '/Command', probe,
+      ])
+      expect(result.status, `stderr: ${result.stderr}`).toBe(0)
+      expect(result.stdout).toContain('WORKSPACE-WRITE: OK')
+      expect(result.stdout).toContain('REF-WRITE: OK')
+      expect(result.stdout).toContain('TEMP-WRITE: OK')
+      expect(result.stdout).toContain('ESCAPE-WRITE: DENIED')
+      expect(existsSync(refDir)).toBe(true)
+      expect(existsSync(join(refDir, 'refs-child-wrote.txt'))).toBe(true)
+    } finally {
+      tempGrant.dispose()
+      refGrant.dispose()
+    }
+  }, 30_000)
+
+  it('runner-side failure: reference grants are mode-gated to workspace-refs-write', () => {
+    const refDir = join(scratchRoot, 'refs-failure-dir')
+    mkdirSync(refDir)
+    const refSid = refWriteSid(refDir)
+    const base = ['--workspace', writableDir, '--temp', isolatedTemp]
+    const cases: { args: string[]; detail: RegExp }[] = [
+      { args: ['--mode', 'read-only', '--ref', refDir, '--ref-sid', refSid], detail: /read-only does not accept/u },
+      { args: ['--mode', 'workspace-write', '--ref', refDir, '--ref-sid', refSid], detail: /reference grants are only accepted under workspace-refs-write/u },
+    ]
+    for (const { args, detail } of cases) {
+      const result = runRunner([
+        ...base, ...args,
+        '--', process.execPath, '-e', 'process.exit(99)',
+      ])
+      expect(result.status, `args: ${args.join(' ')}\nstderr: ${result.stderr}`).toBe(127)
+      expect(result.stderr).toContain('windows-acl-run: ')
+      expect(result.stderr).toMatch(detail)
+    }
+  }, 15_000)
+
+  it('runner-side failure: workspace-refs-write requires the seam SID pair', () => {
+    const result = runRunner([
+      '--workspace', writableDir, '--temp', isolatedTemp, '--mode', 'workspace-refs-write',
+      '--', process.execPath, '-e', 'process.exit(99)',
+    ])
+    expect(result.status).toBe(127)
+    expect(result.stderr).toContain('windows-acl-run: ')
+    expect(result.stderr).toMatch(/workspace-refs-write requires --write-sid and --temp-write-sid together/u)
+  }, 15_000)
+})
+
+describe('windows-acl runner ref args (runner-side failures before the Win32 init)', () => {
+  // These failures are decided in parseArgs / the mode gate, BEFORE win32() loads
+  // the Win32 bindings, so they hold on every platform: the runner must never
+  // reach FFI with a malformed reference contract.
+  it('rejects unpaired reference flags, reference grants in non-refs modes, and SID/path mismatches', () => {
+    const scratchRoot = mkdtempSync(join(tmpdir(), 'dsh-acl-refargs-'))
+    try {
+      const workspace = join(scratchRoot, 'workspace')
+      mkdirSync(workspace)
+      const temp = join(scratchRoot, 'temp')
+      mkdirSync(temp)
+      const refDir = join(scratchRoot, 'ref-project')
+      mkdirSync(refDir)
+      const refSid = refWriteSid(refDir)
+      const writeSid = workspaceWriteSid(workspace)
+      const tempSid = tempWriteSid(temp)
+      const cases: { args: string[]; detail: RegExp }[] = [
+        { args: ['--mode', 'workspace-refs-write', '--ref', refDir], detail: /--ref and --ref-sid must be paired/u },
+        { args: ['--mode', 'workspace-refs-write', '--ref-sid', refSid], detail: /--ref and --ref-sid must be paired/u },
+        { args: ['--mode', 'read-only', '--ref', refDir, '--ref-sid', refSid], detail: /read-only does not accept/u },
+        // No SIDs at all is not an argv-level failure (the AclSandbox constructor
+        // rejects it — pinned cross-platform in index-failure-paths.spec.ts).
+        { args: ['--mode', 'workspace-refs-write', '--write-sid', writeSid], detail: /workspace-refs-write requires --write-sid and --temp-write-sid together/u },
+        { args: ['--mode', 'workspace-refs-write', '--write-sid', writeSid, '--temp-write-sid', tempSid, '--ref', refDir, '--ref-sid', 'S-1-4-9-9-2'], detail: /--ref-sid does not match --ref/u },
+        { args: ['--mode', 'workspace-refs-write', '--write-sid', writeSid, '--temp-write-sid', tempSid, '--ref', join(scratchRoot, 'missing'), '--ref-sid', refSid], detail: /--ref is not an existing directory/u },
+      ]
+      for (const { args, detail } of cases) {
+        const result = runRunner([
+          '--workspace', workspace, '--temp', temp, ...args,
+          '--', process.execPath, '-e', 'process.exit(99)',
+        ])
+        expect(result.status, `args: ${args.join(' ')}\nstderr: ${result.stderr}`).toBe(127)
+        expect(result.stderr).toContain('windows-acl-run: ')
+        expect(result.stderr).toMatch(detail)
+      }
+    } finally {
+      rmSync(scratchRoot, { recursive: true, force: true })
+    }
+  }, 30_000)
 })

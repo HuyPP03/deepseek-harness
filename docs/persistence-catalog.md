@@ -964,4 +964,4 @@ Source: [`packages/web/web-search-deepseek/src/provider.ts:83`](../packages/web/
 }
 ```
 
-Source: [`packages/workspace/workspace-references/src/index.ts:53`](../packages/workspace/workspace-references/src/index.ts)
+Source: [`packages/workspace/workspace-references/src/index.ts:55`](../packages/workspace/workspace-references/src/index.ts)

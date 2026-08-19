@@ -14,6 +14,7 @@
 
 - `read-only`：以结构化 `FS_SANDBOX_DENIED` 拒绝所有变更；
 - `workspace-write`：只有目标规范化后位于可写根目录下，才允许变更。可写根包括工作区根目录和平台临时区域（`/tmp`、`os.tmpdir()`），与 Seatbelt profile 授权的集合相同；该集合由唯一的 [`writableRoots`](../../sandbox/README.md) 函数派生，使 fs 围栏与 bash runner 不会漂移。规范拼写使用词法快速路径；基于身份的祖先回退可以识别 Windows 长名称和 8.3 名称等别名等价根目录，而不会把无关前缀视为包含关系。委托前会立即重新规范化目标，因此工具解析后被替换的祖先符号链接也会被发现；
+- `workspace-refs-write`：`workspace-write` 加上策略的 `referenceRoots` 可写集合。
 - `danger-full-access`：不加围栏直接委托。
 
 ## 威胁模型：策略围栏，而非内核边界

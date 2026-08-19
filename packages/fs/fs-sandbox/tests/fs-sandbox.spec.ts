@@ -23,6 +23,7 @@ import { SandboxedFileSystem } from '@deepseek-ai/dsh-fs-sandbox'
 let base: string
 let workspace: string
 let outside: string
+let ref: string
 let ctx: Context
 let fs: SandboxedFileSystem
 let fiber: Awaited<ReturnType<Context['plugin']>>
@@ -43,8 +44,10 @@ beforeEach(async () => {
   base = await mkdtemp(join(homedir(), '.dsh-fssbx-'))
   workspace = join(base, 'ws')
   outside = join(base, 'out')
+  ref = join(base, 'ref')
   await mkdir(workspace)
   await mkdir(outside)
+  await mkdir(ref)
 })
 afterEach(async () => {
   await fiber?.dispose()
@@ -163,6 +166,44 @@ describe('workspace-write containment', () => {
     // isUnder's path-equals-root branch: the fence allows the root, and the
     // write then fails because the root is a directory, not a regular file.
     await expect(fs.writeText(await target(workspace), 'x')).rejects.toMatchObject({ code: 'FS_NOT_REGULAR_FILE' })
+  })
+})
+
+describe('workspace-refs-write containment', () => {
+  beforeEach(() => boot('workspace-refs-write'))
+
+  it('a write under an attached reference root lands', async () => {
+    const path = join(ref, 'ref-write.txt')
+    const outcome = await fs.writeText(await target(path), 'ref', undefined, undefined, { mode: 'workspace-refs-write', workspaceRoot: workspace, referenceRoots: [ref] })
+    expect(outcome.operation).toBe('create')
+    expect(await readFile(path, 'utf8')).toBe('ref')
+  })
+
+  it('an edit under an attached reference root lands', async () => {
+    const path = join(ref, 'ref-edit.txt')
+    await writeFile(path, 'original')
+    const outcome = await fs.editText(await target(path), { oldString: 'original', newString: 'changed', replaceAll: false }, undefined, undefined, { mode: 'workspace-refs-write', workspaceRoot: workspace, referenceRoots: [ref] })
+    expect(outcome.after).toBe('changed')
+    expect(await readFile(path, 'utf8')).toBe('changed')
+  })
+
+  it('a write under a directory that is NOT in referenceRoots is denied, no file created', async () => {
+    const path = join(outside, 'not-attached.txt')
+    await expect(fs.writeText(await target(path), 'x', undefined, undefined, { mode: 'workspace-refs-write', workspaceRoot: workspace, referenceRoots: [ref] }))
+      .rejects.toMatchObject({ code: 'FS_SANDBOX_DENIED' })
+    expect(existsSync(path)).toBe(false)
+  })
+
+  it('the same reference write is denied under workspace-write (references are not writable roots there)', async () => {
+    const path = join(ref, 'ww-denied.txt')
+    await expect(fs.writeText(await target(path), 'x')).rejects.toMatchObject({ code: 'FS_SANDBOX_DENIED' })
+    expect(existsSync(path)).toBe(false)
+  })
+
+  it('a write under the workspace still lands alongside the reference grant', async () => {
+    const path = join(workspace, 'ws-and-ref.txt')
+    await fs.writeText(await target(path), 'both', undefined, undefined, { mode: 'workspace-refs-write', workspaceRoot: workspace, referenceRoots: [ref] })
+    expect(await readFile(path, 'utf8')).toBe('both')
   })
 })
 

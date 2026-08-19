@@ -36,4 +36,21 @@ describe('writableRoots', () => {
     // Deduplicated after canonicalization (/tmp and os.tmpdir() may coincide).
     expect(new Set(roots).size).toBe(roots.length)
   })
+
+  it('workspace-refs-write grants the workspace root, the attached reference roots, and the platform temp areas', () => {
+    const ws = mkdtempSync(join(tmpdir(), 'dsh-ws-refs-'))
+    const roots = writableRoots({ mode: 'workspace-refs-write', workspaceRoot: ws, referenceRoots: ['/refs/one', '/refs/two'] })
+    expect(roots).toContain(realpathSync.native(ws))
+    expect(roots).toContain('/refs/one')
+    expect(roots).toContain('/refs/two')
+    expect(roots).toContain(canonicalPath('/tmp'))
+    expect(roots).toContain(realpathSync.native(tmpdir()))
+  })
+
+  it('workspace-refs-write without a reference set grants exactly the workspace-write roots', () => {
+    const ws = mkdtempSync(join(tmpdir(), 'dsh-ws-refs-empty-'))
+    expect(writableRoots({ mode: 'workspace-refs-write', workspaceRoot: ws })).toEqual(
+      writableRoots({ mode: 'workspace-write', workspaceRoot: ws }),
+    )
+  })
 })
