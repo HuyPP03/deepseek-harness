@@ -7,11 +7,12 @@
  * `sidebar.settings` registrant's (ui-settings), followed by optional footer
  * actions in `sidebar.footer.action`.
  */
-import type { PropsLocale, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale, PropsRenderSlots, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 // Type-only: pulls ui-layout's SlotMap merge (the 'sidebar' entry) into every
 // program that sees this contract, so PropsRuntime<'sidebar'> resolves.
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
+import type { createSidebarStore, SidebarTab } from '../stores.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
@@ -45,6 +46,8 @@ export interface SidebarSectionOwnerProps {
   wide: boolean
   /** Rail icons request expansion; the browser rides the wide flip for focus. */
   expandSidebar: () => void
+  /** The shell's active browsing tab: the ungrouped chat rows or the workspace tree. */
+  tab: SidebarTab
 }
 
 /**
@@ -64,8 +67,8 @@ export interface SidebarFooterActionOwnerProps {
 
 /**
  * Registrant-private injected share (arrives via the register inject
- * factory). The shell keeps only its own controls: starting a Session from
- * the New Session button and toggling the column.
+ * factory). The shell keeps only its own controls: starting a Session or a
+ * Chat from the New button and toggling the column.
  */
 export type SidebarRootInjected = {
   /**
@@ -74,16 +77,22 @@ export type SidebarRootInjected = {
    * recent Workspace, or clear into the New Session pure view when none exist.
    */
   startSession: (workspaceId?: WorkspaceId) => void
+  /**
+   * Start a New Chat: reuse the ungrouped blank chat session or mint one
+   * under the chat preset, and open it.
+   */
+  startChat: () => void
   /** Toggle the sidebar column through the layout service. */
   toggleSidebar: () => void
 }
 
 /**
  * Full component props: layout owner state/actions plus the declared holes'
- * render shares, this package's injected callbacks, and the standard locale
- * seat. No store is registered.
+ * render shares, this package's injected callbacks, the browsing-tab store,
+ * and the standard locale seat.
  */
 export type SidebarRootComponentProps =
   PropsRuntime<'sidebar'>
   & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.settings' | 'sidebar.footer.action'>
+  & PropsStore<ReturnType<typeof createSidebarStore>>
   & SidebarRootInjected & PropsLocale<'sidebar'>

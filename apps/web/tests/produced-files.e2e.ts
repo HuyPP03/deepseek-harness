@@ -129,11 +129,10 @@ describe('web e2e: a finished turn ends with the files it produced', () => {
 
   it.skipIf(MODE === 'record')('keeps a narrow ten-file summary on one line with +8 and a folder action', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-produced-files'))
-    const groupRow = page.locator('[role="treeitem"]').first()
-    await groupRow.waitFor({ timeout: 15_000 })
-    if (await groupRow.getAttribute('aria-expanded') !== 'true') await groupRow.click()
-    const sessionRow = page.locator('[role="treeitem"]').nth(1)
-    await sessionRow.waitFor({ timeout: 10_000 })
+    // The seeded session is workspace-less, so it is a flat row on the chats
+    // tab (the shell's default); there is no group to open.
+    const sessionRow = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first()
+    await sessionRow.waitFor({ timeout: 15_000 })
     await sessionRow.click()
 
     await expect.poll(() => page.getByText(DONE, { exact: true }).count(), { timeout: 15_000 }).toBe(1)

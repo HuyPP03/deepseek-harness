@@ -12,6 +12,8 @@ The service requires a confining `ctx.shell` executor and `ctx.approval`. A tabl
 
 Two optional children ship the product surfaces over the same service: a `permissions` session-projection unit (`src/types.ts` declares the key; the unit folds the three whole-value knob events and views the select — table options plus a current-only `custom` — over the composition defaults) and the `/permissionPresets` command (bare invocation reports the current preset and the table; a preset argument switches through `set`). Each child activates only when its registry (`ctx.sessionProjections` / `ctx.commands`) is composed.
 
+Chat presets: `Config.chatPresetIds` lists the agent-preset ids whose sessions are chat sessions (the web surface ships `chat`); empty (the default) disables the behavior. A chat session created under a listed preset pins `Config.chatPreset` (default `read-only`, validated against the table) instead of the default preset, and the `/permissionPresets` switch refuses any session still running a listed preset — its mode is fixed by composition, and client surfaces hide the switch for it rather than surfacing a refused action.
+
 ## Model Experience
 
 Indirectly, through `dsh-user-approval` and `dsh-tool-bash`, which render the approval-policy prompt, switch notice, and sandboxed tool outcomes selected by this service's knob events; `permissionPresets/preset` itself is log-only.

@@ -2133,6 +2133,17 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         const requestedReferences = request.payload.referenceWorkspaceIds
         let referenceSet: string[] | undefined
         if (requestedReferences !== undefined && requestedReferences.length > 0) {
+          // Reference projects are anchored to the session's own workspace:
+          // a workspace-less session (a chat) has no directory to compare
+          // against, and its surfaces hide the control, so a direct call is
+          // refused before the create commits.
+          if (workspace === undefined) {
+            return err(request, {
+              code: 'references-require-workspace',
+              message: 'reference projects require a session workspace; a session without one cannot attach them',
+              details: { sessionId },
+            })
+          }
           if (referencesService === undefined) {
             return err(request, {
               code: 'references-unsupported',
@@ -2260,6 +2271,18 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
           return err(request, {
             code: 'references-unsupported',
             message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
+            details: { sessionId },
+          })
+        }
+        // Reference projects are anchored to the session's own workspace: a
+        // workspace-less session (a chat) has no directory to compare
+        // against. A non-empty attach is refused; the empty whole value is
+        // the idempotent detach-all and stays a no-op.
+        if (referenceWorkspaceIds.length > 0
+          && !ctx.workspaceRegistry.list().some(entry => entry.sessionIds.includes(sessionId))) {
+          return err(request, {
+            code: 'references-require-workspace',
+            message: `session "${sessionId}" has no workspace to attach reference projects to`,
             details: { sessionId },
           })
         }

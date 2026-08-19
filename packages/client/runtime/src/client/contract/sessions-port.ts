@@ -10,12 +10,14 @@
 import type { SessionId, WorkspaceId } from '@deepseek-ai/dsh-api-remotes/client'
 import type { ObservableSnapshot } from './store.ts'
 
-/** Session-list row facts sibling domains read: recency, blank-reuse eligibility, and its cwd canon. */
+/** Session-list row facts sibling domains read: recency, blank-reuse eligibility, its cwd canon, and the preset that created it. */
 export interface SessionsPortSummary {
   id: SessionId
   /** Empty-log bit (blank sessions are reused by New Session instead of minting another). */
   blank: boolean
   cwd?: string
+  /** Agent preset that created the session; chat-reuse and preset-scoped UI branch on it. */
+  agentPreset?: string
   updatedAt: number
 }
 
@@ -33,14 +35,16 @@ export interface SessionsPort {
   readonly list: ObservableSnapshot<SessionsPortList>
   /**
    * Create a session on the host.
-   * @param opts - target workspace (absent → plain chat on the host's cwd)
-   *   and the optional reference-project ids (whole value; the host
-   *   normalizes and logs the workspace/references event).
+   * @param opts - target workspace (absent → plain chat on the host's cwd),
+   *   the optional reference-project ids (whole value; the host normalizes
+   *   and logs the workspace/references event), and the optional agent preset
+   *   the session is born under (absent → the deployment default).
    * @returns the new session id.
    */
   create(opts: {
     workspaceId?: WorkspaceId
     referenceWorkspaceIds?: readonly WorkspaceId[]
+    agentPreset?: string
   }): Promise<SessionId>
   /**
    * Select a session as current.

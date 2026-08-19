@@ -18,7 +18,7 @@ import {
   webSnapshotMode,
   type WebScaffold,
 } from './scaffold.ts'
-import { connectFreshWorkspace, conversationContextKey, newEnglishPage, saveFailureShot } from './support.ts'
+import { connectFreshWorkspace, conversationContextKey, newEnglishPage, saveFailureShot, stripLandlockInfoLine } from './support.ts'
 
 const MODE = webSnapshotMode()
 const TURN_COUNT = 12
@@ -310,7 +310,7 @@ describe('web e2e: continuous conversation grown through the composer', () => {
       expect(results[0]?.data.turn).toBe(spec.index)
       expect(results[0]?.data.message.source.callId).toBe(spec.callId)
       expect(results[0]?.data.message.content[0].isError).toBe(false)
-      expect(toolResultText(results[0]!)).toBe(`${spec.toolResultMarker}\n`)
+      expect(stripLandlockInfoLine(toolResultText(results[0]!))).toBe(`${spec.toolResultMarker}\n`)
 
       const toolRow = page.locator(`[data-chat-call-id="${spec.callId}"]`)
       await expect.poll(() => toolRow.count(), { timeout: 10_000 }).toBe(1)

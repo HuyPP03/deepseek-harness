@@ -266,13 +266,10 @@ describe('web e2e: seeded history renders through cold resume', () => {
 
   it.skipIf(MODE === 'record')('lists the seeded session cold and renders its history from the log', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-seeded-history'))
-    // The sidebar tree collapses workspace groups by default: click the group
-    // row (treeitem 0) to expand, then the revealed session row.
-    const groupRow = page.locator('[role="treeitem"]').first()
-    await groupRow.waitFor({ timeout: 15_000 })
-    await groupRow.click()
-    const sessionRow = page.locator('[role="treeitem"]').nth(1)
-    await sessionRow.waitFor({ timeout: 10_000 })
+    // The seeded session is workspace-less, so it is a flat row on the chats
+    // tab (the shell's default); there is no group to open.
+    const sessionRow = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first()
+    await sessionRow.waitFor({ timeout: 15_000 })
     await sessionRow.click()
     // Settled barrier for history: the recorded final assistant text renders.
     await expect.poll(() => page.getByText('DONE', { exact: true }).count(), { timeout: 15_000 }).toBe(1)

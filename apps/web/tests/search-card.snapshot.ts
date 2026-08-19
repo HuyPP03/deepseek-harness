@@ -48,6 +48,9 @@ describe('assembled search card', () => {
   it('renders the grep card, its truncation summary, and its capped head/tail slice from the built bundles', async () => {
     mountAssembledApp()
 
+    // The fixture session is workspace-accounted, so its row browses on the
+    // workspaces tab (the shell's default tab is chats).
+    await fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
     const tree = await screen.findByRole('tree', { name: 'Sessions' }, { timeout: 10_000 })
     fireEvent.click(await within(tree).findByText('Fixture 历史会话'))
     // Wait for chat content to reach the fixture's later turns (the bash sample

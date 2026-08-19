@@ -4,12 +4,12 @@
 // typed draft, same-basename directory adoption, the rename round
 // trip over the real wire (workspace.rename RPC + durable registry), the
 // duplicate-name pre-check, the
-// flat "In one list" view with its persisted group-by preference, the session
+// browsing-tab switch with its persisted order preference, the session
 // hover card and row action menu, and the session archive round trip (row
 // menu → workspace.archiveSession RPC → durable global set → row hidden
 // across reload). Zero model calls: workspace.create/rename/archiveSession
 // are host RPCs with no model involvement, and the one session row the
-// flat/hover/menu/archive scenarios need comes from a seeded fixture (the
+// hover/menu/archive scenarios need comes from a seeded fixture (the
 // seeded-history seed reused verbatim — no new recording).
 import { mkdir, readFile, stat, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
@@ -36,7 +36,7 @@ const SEED_ID = 'workspace-management-web-e2e'
 const POINTER_TRANSIT_MS = 300
 const POINTER_HOLD_MS = 600
 
-describe('web e2e: workspace management (create / rename / flat view / hover affordances)', () => {
+describe('web e2e: workspace management (create / rename / tabs / hover affordances)', () => {
   let scaffold: WebScaffold
   let browser: Browser
   let page: Page
@@ -112,9 +112,17 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     await button.click()
   }
 
+  /**
+   * Switch the shell's browsing tab. The tab persists for the rest of the
+   * spec (survives reload), so one switch per tab keeps both browsable.
+   */
+  async function switchToTab(name: 'Chats' | 'Workspaces'): Promise<void> {
+    await page.getByRole('tab', { name }).click()
+  }
+
   beforeAll(async () => {
     scaffold = await launchWebScaffold({})
-    // Seed one cold session (Ungrouped bucket) for the flat view + hover card.
+    // Seed one cold session (chats tab) for the flat list + hover card.
     const sessionCwd = join(scaffold.workspaceCwd, 'workspace')
     await mkdir(sessionCwd, { recursive: true })
     await writeFile(join(sessionCwd, 'a.txt'), 'alpha\n')
@@ -125,6 +133,9 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    // This spec drives the Workspace tree: leave the default chats tab.
+    await switchToTab('Workspaces')
+    await page.getByRole('tree', { name: 'Sessions' }).waitFor({ timeout: 30_000 })
   }, 120_000)
 
   afterAll(async () => {
@@ -219,7 +230,7 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     await stat(logLocation.path)
 
     // Open the seeded (first/accounted) Session so deletion must preserve the
-    // current selection while it moves into Ungrouped.
+    // current selection while it moves to the chats list.
     const groupRow = page.locator('[role="treeitem"]').filter({ hasText: workspace.title }).first()
     await groupRow.waitFor({ timeout: 10_000 })
     // The header row is wrapped by its HoverCard anchor span, so the section
@@ -244,7 +255,7 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     const copy = await dialog.textContent()
     expect(copy).toContain('workspace list')
     expect(copy).toContain('folder and session logs will be kept')
-    expect(copy).toContain('sessions will appear under Ungrouped')
+    expect(copy).toContain('sessions will appear in Chats')
     await dialog.getByRole('button', { name: 'Delete workspace' }).click()
     await expect.poll(() => dialog.count(), { timeout: 10_000 }).toBe(0)
 
@@ -253,7 +264,10 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
       () => page.getByRole('button', { name: `Workspace actions for ${workspace.title}` }).count(),
       { timeout: 10_000 },
     ).toBe(0)
-    await expect.poll(() => page.getByText('Ungrouped', { exact: true }).count(), { timeout: 10_000 })
+    // The retained Session now browses on the chats tab, still selected.
+    await switchToTab('Chats')
+    const chatsTree = page.getByRole('tree', { name: 'Chats' })
+    await expect.poll(() => chatsTree.getByRole('treeitem').count(), { timeout: 10_000 })
       .toBeGreaterThanOrEqual(1)
     await expect.poll(
       () => page.locator('[role="treeitem"][aria-selected="true"]').count(),
@@ -268,6 +282,7 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     // NOT re-adopt the retained (non-blank) Session; the New Session flow
     // mints a fresh blank session and attaches it to the new registration
     // (no cwd-based blank reuse exists, so the account is never empty).
+    await switchToTab('Workspaces')
     await adoptDirectory(scaffold.workspaceCwd)
     await expect.poll(
       () => scaffold.ctx.workspaceRegistry.resolveByPath(scaffold.workspaceCwd),
@@ -281,8 +296,13 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
       { timeout: 10_000 },
     ).not.toEqual([])
     expect(reregistered?.sessionIds).not.toContain(SEED_ID)
-    await expect.poll(() => page.getByText('Ungrouped', { exact: true }).count(), { timeout: 10_000 })
-      .toBeGreaterThanOrEqual(1)
+    // The retained (non-blank) Session still browses on the chats list —
+    // the new account holds only the fresh blank.
+    await switchToTab('Chats')
+    await expect.poll(
+      () => chatsTree.getByRole('treeitem').count(),
+      { timeout: 10_000 },
+    ).toBeGreaterThanOrEqual(1)
     expect(await readFile(join(scaffold.workspaceCwd, 'workspace', 'a.txt'), 'utf8')).toBe('alpha\n')
     await stat(logLocation.path)
 
@@ -299,7 +319,9 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     await page.reload({ waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
     acknowledgeReloadConnectionLoss(tripwire, warningStart)
-    await expect.poll(() => page.getByText('Ungrouped', { exact: true }).count(), { timeout: 15_000 })
+    // The persisted tab is Chats; the retained Session rebuilds from the
+    // independent Session baseline and stays selected.
+    await expect.poll(() => chatsTree.getByRole('treeitem').count(), { timeout: 15_000 })
       .toBeGreaterThanOrEqual(1)
     await expect.poll(
       () => page.locator('[role="treeitem"][aria-selected="true"]').count(),
@@ -317,6 +339,9 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
 
   it('reuses a deleted title for a different new directory without any transient error surface', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-ws-reuse-title'))
+    // The delete test left the browser on the chats tab; workspace rows
+    // browse on the workspaces tab.
+    await switchToTab('Workspaces')
     const title = 'same-name'
     const oldPath = join(scaffold.workspaceCwd, 'adopted', title)
     await mkdir(oldPath, { recursive: true })
@@ -367,29 +392,32 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     expect(tripwire.pageErrors).toEqual([])
   }, 90_000)
 
-  it('switches to the flat "In one list" view and persists the preference', async () => {
-    onTestFailed(() => saveFailureShot(page, 'web-e2e-ws-flat'))
-    // Grouped default: workspace group rows render (the seeded session sits
-    // under Ungrouped; the created workspaces are empty groups).
-    await expect.poll(() => page.getByText('Workspaces', { exact: true }).count(), { timeout: 10_000 }).toBe(1)
-    // Grouping and ordering moved into the View options menu.
+  it('switches browsing tabs and persists the order preference across reload', async () => {
+    onTestFailed(() => saveFailureShot(page, 'web-e2e-ws-tabs'))
+    // The delete test left the browser on the chats tab (where the retained
+    // Session browses); switch back to the Workspace tree.
+    await switchToTab('Workspaces')
+    await expect.poll(() => page.getByRole('tree', { name: 'Sessions' }).count(), { timeout: 10_000 }).toBe(1)
+    // The view options hold the session-order mode; grouping is the tab itself.
     await page.getByRole('button', { name: 'View options' }).click()
-    await page.getByRole('menuitem', { name: 'In one list' }).click()
-    // Flat mode: the section label flips and the seeded session is a
-    // top-level row with no group headers above it.
-    await expect.poll(() => page.getByText('Sessions', { exact: true }).count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(1)
-    await expect.poll(() => page.getByText('Ungrouped', { exact: true }).count(), { timeout: 5_000 }).toBe(0)
-    await expect.poll(() => page.locator('[role="treeitem"]').count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(1)
-    expect(await page.evaluate(() => localStorage.getItem('dsh.workspace.view.v5'))).toContain('flat')
-    // Persisted across reload; then restore grouped for inter-spec hygiene.
+    await expect.poll(() => page.getByRole('menuitem', { name: 'Manual' }).count(), { timeout: 5_000 }).toBe(1)
+    await page.getByRole('menuitem', { name: 'Manual' }).click()
+    expect(await page.evaluate(() => localStorage.getItem('dsh.workspace.view.v6'))).toContain('manual')
+    // The chats tab lists the seeded session flat, with no group headers.
+    await switchToTab('Chats')
+    const chatsTree = page.getByRole('tree', { name: 'Chats' })
+    await expect.poll(() => chatsTree.getByRole('treeitem').count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(1)
+    // Both the tab and the order mode persist across reload.
     const warningStart = tripwire.warnings.length
     await page.reload({ waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
     acknowledgeReloadConnectionLoss(tripwire, warningStart)
-    await expect.poll(() => page.getByText('Ungrouped', { exact: true }).count(), { timeout: 15_000 }).toBe(0)
-    await page.getByRole('button', { name: 'View options' }).click()
-    await page.getByRole('menuitem', { name: 'WorkSpace' }).click()
-    await expect.poll(() => page.getByText('Ungrouped', { exact: true }).count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(1)
+    await expect.poll(
+      () => page.getByRole('tab', { name: 'Chats' }).getAttribute('aria-selected'),
+      { timeout: 15_000 },
+    ).toBe('true')
+    await expect.poll(() => chatsTree.getByRole('treeitem').count(), { timeout: 15_000 }).toBeGreaterThanOrEqual(1)
+    expect(await page.evaluate(() => localStorage.getItem('dsh.workspace.view.v6'))).toContain('manual')
     expect(tripwire.pageErrors).toEqual([])
   }, 90_000)
 
@@ -401,6 +429,8 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     const staged = join(scaffold.workspaceCwd, 'browse-golden')
     await mkdir(join(staged, 'alpha'), { recursive: true })
     await mkdir(join(staged, 'beta'), { recursive: true })
+    // The header's Add workspace action renders on the workspaces tab.
+    await switchToTab('Workspaces')
     // homedir() reads HOME on POSIX and USERPROFILE on Windows: root both
     // at the scaffold cwd so the golden's ancestry collapses everywhere.
     const realHome = process.env.HOME
@@ -461,26 +491,19 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
   }, 60_000)
 
   /**
-   * Expand Ungrouped and return its seeded session row. The only visible child
-   * is the non-blank persisted Session; the blank Session created while
-   * adopting the Workspace stays hidden.
+   * Return the seeded session's row on the chats tab (which the helper
+   * switches to first). The seeded session is the only visible row there:
+   * blank Sessions — the chat blanks and the adopted Workspaces' New Session
+   * rows — stay hidden, so the single-row poll fails loudly if a second
+   * unaccounted session appears.
    * @returns the session row locator, already present.
    */
   async function seededSessionRow() {
-    const ungroupedRow = page.getByText('Ungrouped', { exact: true }).locator('..').locator('..')
-    const ungroupedSection = ungroupedRow.locator('..')
-    // Initial-current auto-expansion can race this gesture; converge on
-    // expanded rather than assuming which update wins first.
-    await expect.poll(async () => {
-      if (await ungroupedRow.getAttribute('aria-expanded') !== 'true') {
-        await page.getByText('Ungrouped', { exact: true }).click()
-        await page.waitForTimeout(50)
-      }
-      return await ungroupedRow.getAttribute('aria-expanded')
-    }, { timeout: 5_000 }).toBe('true')
-    const row = ungroupedSection.locator('[role="treeitem"]').nth(1)
-    await row.waitFor({ timeout: 10_000 })
-    return row
+    await switchToTab('Chats')
+    const row = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem')
+      .filter({ has: page.locator('button[aria-label^="Session actions for "]') })
+    await expect.poll(() => row.count(), { timeout: 10_000 }).toBe(1)
+    return row.first()
   }
 
   it('shows the session hover card after a dwell on the row', async () => {
@@ -550,35 +573,19 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
 
   it('archives the seeded session from its row menu, hiding it durably across reload', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-ws-archive'))
-    // The seeded session lives under Ungrouped (expanded by the hover-card
-    // test's gesture; converge again for order independence).
-    const ungroupedRow = page.getByText('Ungrouped', { exact: true }).locator('..').locator('..')
-    const ungroupedSection = ungroupedRow.locator('..')
-    await expect.poll(async () => {
-      if (await ungroupedRow.getAttribute('aria-expanded') !== 'true') {
-        await page.getByText('Ungrouped', { exact: true }).click()
-        await page.waitForTimeout(50)
-      }
-      return await ungroupedRow.getAttribute('aria-expanded')
-    }, { timeout: 5_000 }).toBe('true')
-    // Anchor on session rows (the rows carrying a session actions button),
-    // not a positional index, and assert the single-stray assumption loudly
-    // so a fixture gaining a second stray fails here instead of archiving
-    // the wrong row. CSS attribute match, not getByRole: the button is
-    // display:none until its row hovers, and role queries skip hidden nodes.
-    const sessionRows = ungroupedSection.locator('[role="treeitem"]')
-      .filter({ has: page.locator('button[aria-label^="Session actions for "]') })
-    await expect.poll(() => sessionRows.count(), { timeout: 10_000 }).toBe(1)
-    const sessionRow = sessionRows.first()
+    // The seeded session is the chats list's single stray row; the helper
+    // pins that cardinality before the gesture.
+    const sessionRow = await seededSessionRow()
     const rowTitle = await sessionRow.locator('[class*="title"]').innerText()
     // Row menu: hover reveals the actions button; Archive session commits
     // without a confirmation dialog (non-destructive: log + accounting stay).
     await clickHoverAction(sessionRow, `Session actions for ${rowTitle}`)
     await page.getByRole('menuitem', { name: 'Archive session' }).click()
     // The row disappears on the archive-set echo; with no other visible
-    // stray, the whole Ungrouped bucket withdraws.
+    // stray, the chats list shows its empty state.
+    const chatsTree = page.getByRole('tree', { name: 'Chats' })
     await expect.poll(() => page.getByText(rowTitle, { exact: true }).count(), { timeout: 10_000 }).toBe(0)
-    await expect.poll(() => page.getByText('Ungrouped', { exact: true }).count(), { timeout: 10_000 }).toBe(0)
+    await expect.poll(() => chatsTree.getByRole('treeitem').count(), { timeout: 10_000 }).toBe(0)
     // Durable on the host: the registry-global set carries the id while the
     // session log itself stays in persistence untouched.
     expect([...scaffold.ctx.workspaceRegistry.archivedSessionIds]).toEqual([SessionId(SEED_ID)])
@@ -588,16 +595,22 @@ describe('web e2e: workspace management (create / rename / flat view / hover aff
     await page.reload({ waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
     acknowledgeReloadConnectionLoss(tripwire, warningStart)
-    await expect.poll(() => page.getByText('Workspaces', { exact: true }).count(), { timeout: 15_000 }).toBe(1)
-    // The archived row must not resurface (the Ungrouped bucket itself may
-    // reappear if selection restore lands on another stray — not this test's
-    // concern).
+    await expect.poll(
+      () => page.getByRole('tab', { name: 'Chats' }).getAttribute('aria-selected'),
+      { timeout: 15_000 },
+    ).toBe('true')
+    // The archived row must not resurface on the persisted chats tab (the
+    // chats list may gain other stray rows — not this test's concern).
+    await expect.poll(() => chatsTree.getByRole('treeitem').count(), { timeout: 15_000 }).toBe(0)
     expect(await page.getByText(rowTitle, { exact: true }).count()).toBe(0)
     expect(tripwire.pageErrors).toEqual([])
   }, 90_000)
 
   it('opens folders with identical basenames as distinct workspaces', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-ws-duplicate-basename'))
+    // The archive test left the browser on the chats tab; the header's
+    // Add workspace action renders on the workspaces tab.
+    await switchToTab('Workspaces')
     const firstPath = join(scaffold.workspaceCwd, 'same-basename-a', 'xx')
     const secondPath = join(scaffold.workspaceCwd, 'same-basename-b', 'xx')
     await mkdir(firstPath, { recursive: true })

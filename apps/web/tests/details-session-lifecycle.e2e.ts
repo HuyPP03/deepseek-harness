@@ -120,28 +120,39 @@ describe.skipIf(MODE === 'record')('web e2e: details panel follows the current S
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
     expect(await page.getByText('Details', { exact: true }).isVisible()).toBe(false)
 
-    await page.getByRole('button', { name: /^(?:New session|新.*会话)$/ }).last().click()
+    // The default tab is chats, so the sidebar's New button is New chat:
+    // minting it moves ownership without opening the details panel. The
+    // brand wordmark is a second 'New chat' in wide layout, so scope the
+    // click to the labeled button.
+    await page.locator('button[class*="newSession"]').click()
     await page.getByText('Into the Unknown', { exact: false }).waitFor({ timeout: 15_000 })
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
     expect(await page.getByText('Details', { exact: true }).isVisible()).toBe(false)
 
+    // The prompt-driven Session is workspace-accounted, so its row browses on
+    // the workspaces tab. The tree mounts with its group collapsed, so expand
+    // the workspace row first.
+    await page.getByRole('tab', { name: 'Workspaces' }).click()
+    const workspaceRow = page.locator('[role=treeitem]').first()
+    await workspaceRow.waitFor({ timeout: 15_000 })
+    const expansionDeadline = Date.now() + 5_000
+    while (await workspaceRow.getAttribute('aria-expanded') !== 'true') {
+      if (Date.now() >= expansionDeadline) throw new Error('workspace row did not expand')
+      await workspaceRow.click()
+      await new Promise<void>(resolve => setTimeout(resolve, 50))
+    }
     const original = page.locator('[role=treeitem]').filter({ hasText: 'Reply with the single word' }).first()
     await original.click()
     await page.getByText('LIGHTHOUSE', { exact: true }).waitFor({ timeout: 15_000 })
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
     expect(await page.getByText('Details', { exact: true }).isVisible()).toBe(false)
 
-    const ungrouped = page.getByText('Ungrouped', { exact: true })
-    const ungroupedRow = ungrouped.locator('..').locator('..')
-    const ungroupedSection = ungroupedRow.locator('..')
-    await expect.poll(async () => {
-      if (await ungroupedRow.getAttribute('aria-expanded') !== 'true') {
-        await ungrouped.click()
-        await page.waitForTimeout(50)
-      }
-      return await ungroupedRow.getAttribute('aria-expanded')
-    }, { timeout: 5_000 }).toBe('true')
-    const seeded = ungroupedSection.locator('[role="treeitem"]').nth(1)
+    // The seeded Session is workspace-less, so it browses on the chats tab.
+    // Its unaccounted companion — the minted blank chat — stays hidden while
+    // another Session is selected, so the seeded row is the only one.
+    await page.getByRole('tab', { name: 'Chats' }).click()
+    const seeded = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first()
+    await expect.poll(() => seeded.count(), { timeout: 10_000 }).toBe(1)
     await seeded.click()
     await page.getByText('DONE', { exact: true }).waitFor({ timeout: 15_000 })
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)

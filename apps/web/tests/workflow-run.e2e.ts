@@ -140,7 +140,19 @@ describe.skipIf(MODE === 'record')('web e2e: durable workflow run in Chat', () =
     await member.click()
     await page.getByText(CHILD_PROMPT, { exact: true }).waitFor({ timeout: 15_000 })
 
+    // The parent session is workspace-accounted, so its row browses on the
+    // workspaces tab (the shell's default tab is chats). The tree mounts with
+    // its group collapsed, so expand the workspace row first.
+    await page.getByRole('tab', { name: 'Workspaces' }).click()
     const sessions = page.getByRole('tree', { name: 'Sessions' })
+    const workspaceRow = sessions.getByRole('treeitem').first()
+    await workspaceRow.waitFor({ timeout: 15_000 })
+    const expansionDeadline = Date.now() + 10_000
+    while (await workspaceRow.getAttribute('aria-expanded') !== 'true') {
+      if (Date.now() >= expansionDeadline) throw new Error('workspace row did not expand')
+      await workspaceRow.click()
+      await new Promise<void>(resolve => setTimeout(resolve, 50))
+    }
     await sessions.getByRole('treeitem', { name: /Use the workflow tool exactly/ }).click()
     await settled
     await page.locator('[data-workflow-run][data-run-status="completed"]').waitFor()

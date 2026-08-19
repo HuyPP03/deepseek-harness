@@ -22,6 +22,16 @@
   - heading "内置" [level=3]
   - list:
     - listitem:
+      - 'button "设为默认: 聊天模式"':
+        - text: 聊天模式 内置 无工作目录的只读通用助手，用于问答、解释与分析；文件访问只读，不提供编码类工具。
+        - code: chat
+      - 'button "查看: 聊天模式"':
+        - img
+        - text: 查看
+      - 'button "复制: 聊天模式"':
+        - img
+        - text: 复制
+    - listitem:
       - 'button "当前使用: 标准模式" [disabled] [pressed]':
         - text: 标准模式 内置 当前使用 功能完整的编码 Agent，支持文件编辑、Shell、文件与网页检索、Skills、计划、目标、子代理和工作流。
         - code: standard

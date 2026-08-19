@@ -97,11 +97,10 @@ describe('web e2e: message IconActions and clocks on settled history', () => {
 
   it.skipIf(MODE === 'record')('enables branch only on the completed transcript tail', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-message-actions'))
-    const groupRow = page.locator('[role="treeitem"]').first()
-    await groupRow.waitFor({ timeout: 15_000 })
-    await groupRow.click()
-    const sessionRow = page.locator('[role="treeitem"]').nth(1)
-    await sessionRow.waitFor({ timeout: 10_000 })
+    // The seeded session is workspace-less, so it is a flat row on the chats
+    // tab (the shell's default); there is no group to open.
+    const sessionRow = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first()
+    await sessionRow.waitFor({ timeout: 15_000 })
     await sessionRow.click()
     await expect.poll(() => page.getByText(MID_TURN_TEXT, { exact: true }).count(), { timeout: 15_000 }).toBe(1)
     await expect.poll(() => page.getByText('DONE', { exact: true }).count(), { timeout: 15_000 }).toBe(1)
@@ -148,7 +147,7 @@ describe('web e2e: message IconActions and clocks on settled history', () => {
     await expect.poll(
       () => page.locator('[role="treeitem"]').count(),
       { timeout: 10_000 },
-    ).toBe(3)
+    ).toBe(2)
     await expect.poll(
       () => page.locator('[role="treeitem"][aria-selected="true"]').count(),
       { timeout: 10_000 },
@@ -172,7 +171,7 @@ describe('web e2e: message IconActions and clocks on settled history', () => {
     await expect.poll(
       () => page.locator('[role="treeitem"]').count(),
       { timeout: 10_000 },
-    ).toBe(4)
+    ).toBe(3)
     await expect.poll(
       () => page.locator('[role="treeitem"][aria-selected="true"]').count(),
       { timeout: 10_000 },
@@ -185,7 +184,7 @@ describe('web e2e: message IconActions and clocks on settled history', () => {
     ).toContain('Use the read tool twice (2)')
     const tree = await captureStableAria(
       page,
-      '[role="tree"][aria-label="Sessions"]',
+      '[role="tree"][aria-label="Chats"]',
       scaffold.workspaceCwd,
     )
     await compareOrRefreshGolden(FORK_EXPECTED, tree, MODE)

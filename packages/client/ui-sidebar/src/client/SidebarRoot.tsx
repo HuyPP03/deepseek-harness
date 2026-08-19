@@ -45,10 +45,17 @@ export function SidebarRoot({
   collapsed,
   width,
   startSession,
+  startChat,
   toggleSidebar,
   t,
+  useStore,
+  actions,
   renderSlot,
 }: SidebarRootComponentProps) {
+  const tab = useStore(state => state.tab)
+  const startNew = tab === 'chats' ? startChat : () => { startSession() }
+  const newLabel = tab === 'chats' ? t('chat.new') : t('session.new')
+  const newLabelFull = tab === 'chats' ? t('chat.new.label') : t('session.new.label')
   // Wide content stays mounted while the collapse animates (fading via
   // .collapsed .wide), unmounts at settle, and remounts right away on expand.
   const [settled, setSettled] = useState(collapsed)
@@ -128,14 +135,14 @@ export function SidebarRoot({
       onPointerLeave={() => { armLinger() }}
     >
       <div className={css.logoRow}>
-        {/* Expanded, the wordmark doubles as a New Session shortcut; the
-            collapsed rail's logo is the expand toggle below instead. */}
+        {/* Expanded, the wordmark doubles as a New shortcut for the active
+            tab; the collapsed rail's logo is the expand toggle below instead. */}
         {wide && (
           <button
             type="button"
             className={clsx(css.brand, css.wide)}
-            aria-label={t('session.new.label')}
-            onClick={() => { startSession() }}
+            aria-label={newLabelFull}
+            onClick={() => { startNew() }}
           >
             <BrandWordmark />
           </button>
@@ -156,16 +163,36 @@ export function SidebarRoot({
         </Tooltip>
       </div>
 
+      {/* The browsing tabs: the ungrouped chat rows vs the workspace tree.
+          Wide only — the rail has no room, and its New icon follows the
+          persisted tab. */}
+      {wide && (
+        <div className={css.tabs} role="tablist" aria-label={t('tabs.label')}>
+          {(['chats', 'workspaces'] as const).map(candidate => (
+            <button
+              key={candidate}
+              type="button"
+              role="tab"
+              aria-selected={tab === candidate}
+              className={clsx(css.tab, tab === candidate && css.tabActive)}
+              onClick={() => { if (tab !== candidate) actions.setTab(candidate) }}
+            >
+              {t(candidate === 'chats' ? 'tab.chats' : 'tab.workspaces')}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Expanded, the button carries its own label — tooltip only on the rail. */}
-      <Tooltip label={t('session.new.label')} delayMs={500} disabled={wide}>
+      <Tooltip label={newLabelFull} delayMs={500} disabled={wide}>
         <button
           type="button"
           className={css.newSession}
-          aria-label={t('session.new.label')}
-          onClick={() => { startSession() }}
+          aria-label={newLabelFull}
+          onClick={() => { startNew() }}
         >
           <IconNewChatOutline16 size={wide ? 14 : 18} />
-          {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{t('session.new')}</span>}
+          {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{newLabel}</span>}
         </button>
       </Tooltip>
 
@@ -175,6 +202,7 @@ export function SidebarRoot({
         {renderSlot('sidebar.workspaces', {
           wide,
           expandSidebar: () => { if (collapsed) toggleSidebar() },
+          tab,
         })}
       </div>
 

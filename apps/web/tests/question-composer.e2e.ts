@@ -77,6 +77,9 @@ describe('web e2e: resident question composer round trip', () => {
     await composer.waitFor({ timeout: MODE === 'record' ? 120_000 : 30_000 })
     await expect.poll(() => composer.getByText('Which color do you prefer?').count(), { timeout: 10_000 }).toBeGreaterThan(0)
 
+    // The selected session is workspace-accounted, so its row browses on the
+    // workspaces tab (the shell's default tab is chats).
+    await page.getByRole('tab', { name: 'Workspaces' }).click()
     const selectedRow = page.locator('[role="treeitem"][aria-selected="true"]')
     await expect.poll(() => selectedRow.locator('[data-state="warning"]').count(), { timeout: 10_000 }).toBe(1)
     await expect.poll(() => selectedRow.getByText('Waiting for answer', { exact: true }).count(), { timeout: 10_000 }).toBe(1)

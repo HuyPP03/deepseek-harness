@@ -1,22 +1,19 @@
-- button "New session"
+- button "New chat"
 - button "Collapse sidebar":
   - img
-- button "New session":
+- tablist "Browse tabs":
+  - tab "Chats" [selected]
+  - tab "Workspaces"
+- button "New chat":
   - img
-  - text: New Session
-- text: Workspaces
+  - text: New Chat
+- text: Chats
 - button "Search sessions":
   - img
 - textbox "Search sessions..."
 - button "View options":
   - img
-- button "Add workspace":
-  - img
-- tree "Sessions":
-  - treeitem "workspace" [expanded]:
-    - img
-    - text: workspace
-  - treeitem "New Session" [selected]
+- tree "Chats": No chats yet
 - button "Settings":
   - img
   - text: Settings

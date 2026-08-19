@@ -199,7 +199,9 @@ describe('web e2e: lifecycle & chrome (workspace flow / reload / dark mode)', ()
     // Browser: the sidebar tree now carries the auto-created workspace group
     // with its one session, and the opened session is the selected row. The
     // compact layout dropped group session counts, so the group row itself is
-    // the barrier.
+    // the barrier. Workspace rows browse on the workspaces tab (the shell's
+    // default tab is chats).
+    await page.getByRole('tab', { name: 'Workspaces' }).click()
     await expect.poll(
       () => page.locator('[role="treeitem"][aria-expanded]').filter({ hasText: 'workspace' }).count(),
       { timeout: 15_000 },

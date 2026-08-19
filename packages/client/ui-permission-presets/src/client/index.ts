@@ -22,6 +22,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 // (the settings invalidation rides the allowlist) into this program.
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type { ClientContext, SessionFace } from '@deepseek-ai/dsh-client-runtime/client'
+import { CHAT_PRESET_ID } from '@deepseek-ai/dsh-client-runtime/client'
 import type { CommandUiContract, SelectOption } from '@deepseek-ai/dsh-client-ui-commands/client'
 import type { ClientSessionContext } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
 import type { PermissionSelect } from '@deepseek-ai/dsh-permission-presets/client'
@@ -149,8 +150,10 @@ export function apply(ctx: ClientContext): void {
     name: 'permission',
     // The picker exists exactly while the projection does: a permission-less
     // host serves no key and the bare invocation falls through to the host
-    // command (which is absent too — the line simply misses).
-    available: session => selectOf(sessionFor(session)) !== undefined,
+    // command (which is absent too — the line simply misses). Chat sessions
+    // are hidden as well — their read-only preset is fixed by composition.
+    available: session => selectOf(sessionFor(session)) !== undefined
+      && sessions.list.getSnapshot().byId[session.sessionId]?.agentPreset !== CHAT_PRESET_ID,
     ui: {
       kind: 'popupSelect',
       options: (session) => {

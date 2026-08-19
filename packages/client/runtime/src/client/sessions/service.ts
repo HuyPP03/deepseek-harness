@@ -486,6 +486,7 @@ export class SessionRuntime implements ISessions {
     workspaceId?: WorkspaceId
     cwd?: string
     referenceWorkspaceIds?: readonly WorkspaceId[]
+    agentPreset?: string
     sessionId?: SessionId
   } = {}): Promise<SessionId> {
     const result = await this.manager.create(opts)

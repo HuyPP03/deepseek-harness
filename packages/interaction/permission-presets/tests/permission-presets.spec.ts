@@ -1,8 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
+import AgentRegistry, { Inbox } from '@deepseek-ai/dsh-agent'
+import type { Agent, AgentStatus } from '@deepseek-ai/dsh-agent'
+import CommandRuntime from '@deepseek-ai/dsh-commands'
+// Side-effect type import: pulls the `agent-preset/selected` SessionEventMap
+// merge so the switch-ability spec can append it.
+import type {} from '@deepseek-ai/dsh-agent-presets'
 import SessionStore, { Session, SessionId } from '@deepseek-ai/dsh-session'
 import type { SandboxMode } from '@deepseek-ai/dsh-sandbox'
-import type { ApprovalPolicy } from '@deepseek-ai/dsh-user-approval'
+import { ApprovalPolicy, setApprovalPolicy } from '@deepseek-ai/dsh-user-approval'
 import PermissionPresetService, {
   CUSTOM_PRESET, effectivePermissionPreset, PERMISSION_SETTINGS_NAMESPACE,
 } from '@deepseek-ai/dsh-permission-presets'
@@ -312,5 +318,149 @@ describe('new-session default', () => {
       defaultPreset: 'missing',
     })).rejects.toThrow()
     expect(ctx.permissionPresets.defaultPreset).toBe('workspace-write')
+  })
+})
+
+describe('chat session pinning', () => {
+  const chatConfig: Config = {
+    presets: {
+      'read-only': { sandbox: 'read-only', approval: 'ask' },
+      'workspace-write': { sandbox: 'workspace-write', approval: 'ask' },
+      'danger-full-access': { sandbox: 'danger-full-access', approval: 'never' },
+    },
+    chatPresetIds: ['chat'],
+  }
+
+  it('pins the chat preset into a fresh chat session instead of the user default', async () => {
+    const ctx = await mounted({ config: chatConfig })
+    const chat = ctx.sessions.create(SessionId('chat-fresh'), { meta: { agentPreset: 'chat' } })
+    expect(chat.events.map(event => [event.type, event.data])).toEqual([
+      ['permission/preset', { preset: 'read-only' }],
+      ['sandbox/mode', { mode: 'read-only' }],
+      ['approval/policy', { policy: 'ask' }],
+    ])
+  })
+
+  it('keeps the user default for non-chat sessions while chat ids are configured', async () => {
+    const ctx = await mounted({ config: chatConfig })
+    const workspace = ctx.sessions.create(SessionId('workspace-fresh'), { meta: { agentPreset: 'standard' } })
+    expect(workspace.events.map(event => [event.type, event.data])).toEqual([
+      ['permission/preset', { preset: 'workspace-write' }],
+      ['sandbox/mode', { mode: 'workspace-write' }],
+      ['approval/policy', { policy: 'ask' }],
+    ])
+  })
+
+  it('honors a configured chat preset name other than read-only', async () => {
+    const ctx = await mounted({ config: { ...chatConfig, chatPreset: 'workspace-write' } })
+    const chat = ctx.sessions.create(SessionId('chat-named'), { meta: { agentPreset: 'chat' } })
+    expect(chat.events[0]).toMatchObject({ type: 'permission/preset', data: { preset: 'workspace-write' } })
+  })
+
+  it('fails loud at load when the chat preset is missing from the table', async () => {
+    await expect(mounted({ config: { ...chatConfig, presets: chatConfig.presets!, chatPreset: 'missing' } }))
+      .rejects.toThrow(/unknown preset "missing"/)
+  })
+
+  it('pins a chat session created before the service remounts', async () => {
+    const ctx = new Context()
+    await ctx.plugin(SessionStore)
+    ctx.provide('shell', {
+      sandboxMode: 'workspace-write',
+      resolve() { throw new Error('permission tests do not execute bash') },
+      run() { throw new Error('permission tests do not execute bash') },
+      start() { throw new Error('permission tests do not execute bash') },
+    })
+    ctx.provide('approval', { config: { policy: 'ask' } })
+    const existing = ctx.sessions.create(SessionId('existing-chat'), { meta: { agentPreset: 'chat' } })
+    expect(existing.events).toEqual([])
+
+    await ctx.plugin(PermissionPresetService, chatConfig)
+    expect(existing.events.map(event => [event.type, event.data])).toEqual([
+      ['permission/preset', { preset: 'read-only' }],
+      ['sandbox/mode', { mode: 'read-only' }],
+      ['approval/policy', { policy: 'ask' }],
+    ])
+  })
+})
+
+describe('chat /permission switch', () => {
+  const chatConfig: Config = {
+    presets: {
+      'read-only': { sandbox: 'read-only', approval: 'ask' },
+      'workspace-write': { sandbox: 'workspace-write', approval: 'ask' },
+      'danger-full-access': { sandbox: 'danger-full-access', approval: 'never' },
+    },
+    chatPresetIds: ['chat'],
+  }
+
+  /** Store-created session plus an idle stub agent the command executor accepts. */
+  async function harness(agentPreset?: string): Promise<{ ctx: Context; agent: Agent }> {
+    const ctx = new Context()
+    await ctx.plugin(SessionStore)
+    await ctx.plugin(CommandRuntime)
+    await ctx.plugin(AgentRegistry)
+    ctx.provide('shell', {
+      sandboxMode: 'workspace-write',
+      resolve() { throw new Error('permission tests do not execute bash') },
+      run() { throw new Error('permission tests do not execute bash') },
+      start() { throw new Error('permission tests do not execute bash') },
+    })
+    // The command path writes approval through the live setter; the stand-in
+    // records the same durable event the service would.
+    ctx.provide('approval', {
+      config: { policy: 'ask' },
+      setPolicy(agent: Agent, policy: ApprovalPolicy) { setApprovalPolicy(agent.session, policy) },
+    })
+    await ctx.plugin(PermissionPresetService, chatConfig)
+    const session = ctx.sessions.create(SessionId(`switch-${Math.random()}`), {
+      ...agentPreset === undefined ? {} : { meta: { agentPreset } },
+    })
+    const inbox = new Inbox(session, { inserted: () => {}, discarded: () => {}, claimed: () => {} })
+    let status: AgentStatus = 'idle'
+    const agent: Agent = {
+      id: session.id,
+      options: {},
+      session,
+      inbox,
+      ctx: new Context(),
+      get status() { return status },
+      send: () => {},
+      followup: () => {},
+      steer: () => {},
+      inject(input) { inbox.append('next-step', input) },
+      cancel() { status = 'idle' },
+      runMaintenance: task => task(new AbortController().signal),
+      whenIdle() { return Promise.resolve() },
+    }
+    ctx.agents.register(agent)
+    return { ctx, agent }
+  }
+
+  it('refuses the switch while a session runs a chat preset', async () => {
+    const { ctx, agent } = await harness('chat')
+    const execution = await ctx.commands.execute(agent, '/permission workspace-write', new AbortController().signal)
+    expect(execution).not.toBeUndefined()
+    expect(execution!.result.kind).toBe('error')
+    expect(execution!.result.text).toBe('Chat sessions run read-only and cannot switch permission presets.')
+    // No knob moved: the session still folds to the pinned read-only preset.
+    expect(ctx.permissionPresets.current(agent.session.events)).toBe('read-only')
+  })
+
+  it('still switches a non-chat session while chat ids are configured', async () => {
+    const { ctx, agent } = await harness('standard')
+    const execution = await ctx.commands.execute(agent, '/permission danger-full-access', new AbortController().signal)
+    expect(execution).not.toBeUndefined()
+    expect(execution!.result.kind).toBe('success')
+    expect(ctx.permissionPresets.current(agent.session.events)).toBe('danger-full-access')
+  })
+
+  it('unlocks the switch after a blank session leaves the chat preset', async () => {
+    const { ctx, agent } = await harness('chat')
+    agent.session.append('agent-preset/selected', { agentPreset: 'standard' })
+    const execution = await ctx.commands.execute(agent, '/permission workspace-write', new AbortController().signal)
+    expect(execution).not.toBeUndefined()
+    expect(execution!.result.kind).toBe('success')
+    expect(ctx.permissionPresets.current(agent.session.events)).toBe('workspace-write')
   })
 })

@@ -197,6 +197,22 @@ describe('session.create with referenceWorkspaceIds', () => {
     expect(ctx.agents.get(sessionId)).toBeUndefined()
   })
 
+  it('refuses references for a session without a workspace', async () => {
+    const { api, ctx, root } = await harness()
+    const refA = await stageWorkspace(api, root, 'w-ref-a')
+    const sessionId = SessionId('refs-noworkspace')
+
+    const created = await api.sessions.create(request({
+      sessionId,
+      referenceWorkspaceIds: [refA.workspaceId],
+    }))
+    expect(created.result).toMatchObject({
+      ok: false,
+      error: { code: 'references-require-workspace', details: { sessionId } },
+    })
+    expect(ctx.agents.get(sessionId)).toBeUndefined()
+  })
+
   it('treats an empty reference list as no references', async () => {
     const { api, ctx, root } = await harness()
     const main = await stageWorkspace(api, root, 'w-main')
@@ -291,6 +307,37 @@ describe('session.setReferences', () => {
       ok: false,
       error: { code: 'references-invalid', details: { reason: 'invalid-reference-set' } },
     })
+    expect(referenceEvents(session)).toHaveLength(0)
+  })
+
+  it('refuses a non-empty set for a session without a workspace', async () => {
+    const { api, ctx, root } = await harness()
+    const refA = await stageWorkspace(api, root, 'w-ref-a')
+    const created = expectOk(await api.sessions.create(request({})))
+    const session = ctx.sessions.get(created.sessionId)
+    if (session === undefined) throw new Error('created session missing from store')
+
+    const response = await api.sessions.setReferences(request({
+      sessionId: created.sessionId,
+      referenceWorkspaceIds: [refA.workspaceId],
+    }))
+    expect(response.result).toMatchObject({
+      ok: false,
+      error: { code: 'references-require-workspace', details: { sessionId: created.sessionId } },
+    })
+    expect(referenceEvents(session)).toHaveLength(0)
+  })
+
+  it('treats the empty set as a no-op for a session without a workspace', async () => {
+    const { api, ctx } = await harness()
+    const created = expectOk(await api.sessions.create(request({})))
+    const session = ctx.sessions.get(created.sessionId)
+    if (session === undefined) throw new Error('created session missing from store')
+
+    expectOk(await api.sessions.setReferences(request({
+      sessionId: created.sessionId,
+      referenceWorkspaceIds: [],
+    })))
     expect(referenceEvents(session)).toHaveLength(0)
   })
 

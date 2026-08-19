@@ -23,17 +23,25 @@ export interface IWorkspaces {
   /**
    * Start the session a hero New-Session selection lands in:
    * main-only reuses or mints that Workspace's blank session
-   * (connectWorkspace); any reference selection mints a FRESH session
+   * (connectWorkspace); a main plus references mints a FRESH session
    * carrying referenceWorkspaceIds (a blank reuse would drop the references);
-   * a project-less selection mints a plain chat session on the host's cwd.
+   * a project-less selection mints a Chat session under the chat agent preset.
    * @param selection - main project id (first selection) and the ordered
-   *   reference project ids.
+   *   reference project ids (always paired with a main; the Host rejects
+   *   references on a workspace-less session).
    * @returns the session id (already in the list store; the caller opens it).
    */
   startNewSession(selection: {
     main?: WorkspaceId | undefined
     references?: readonly WorkspaceId[] | undefined
   }): Promise<SessionId>
+  /**
+   * The New Chat flow: reuse the ungrouped blank chat session (chat preset,
+   * not archived) or mint one under the chat preset.
+   * @returns the chat session id (already in the list store; the caller opens
+   *   it).
+   */
+  startChat(): Promise<SessionId>
   /**
    * The New Session flow: connect the explicit, current-Session, or recent
    * Workspace and open the resulting session; failures surface on the session

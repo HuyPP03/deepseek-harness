@@ -532,7 +532,9 @@ export class SessionManager {
    * (entity birth precedes the first message).
    * @param opts - target workspace or working directory, the optional
    *   reference-project ids (whole value; the Host normalizes and logs the
-   *   workspace/references event), and an optional caller-owned id.
+   *   workspace/references event), the agent preset the session is born
+   *   under (absent → the deployment default), and an optional caller-owned
+   *   id.
    * @returns the create result.
    */
   async create(
@@ -540,6 +542,7 @@ export class SessionManager {
       workspaceId?: WorkspaceId
       cwd?: string
       referenceWorkspaceIds?: readonly WorkspaceId[]
+      agentPreset?: string
       sessionId?: SessionId
     } = {},
   ): Promise<RpcResult<{ sessionId: SessionId }>> {
@@ -548,11 +551,13 @@ export class SessionManager {
         workspaceId?: WorkspaceId
         cwd?: string
         sessionId?: SessionId
+        agentPreset?: string
         referenceWorkspaceIds?: WorkspaceId[]
       } = {}
       if (opts.sessionId !== undefined) payload.sessionId = opts.sessionId
       if (opts.workspaceId !== undefined) payload.workspaceId = opts.workspaceId
       else if (opts.cwd !== undefined) payload.cwd = opts.cwd
+      if (opts.agentPreset !== undefined) payload.agentPreset = opts.agentPreset
       if (opts.referenceWorkspaceIds !== undefined && opts.referenceWorkspaceIds.length > 0) {
         payload.referenceWorkspaceIds = [...opts.referenceWorkspaceIds]
       }

@@ -71,6 +71,18 @@ export class TestWorkspaces implements IWorkspaces {
   }
 
   /**
+   * New-chat flow (recorded). The default echoes a fixed chat session id;
+   * stub for cross-session flows.
+   * @returns the chat session id the flow lands in.
+   */
+  async startChat(): Promise<SessionId> {
+    this.calls.push({ method: 'startChat', args: [] })
+    const stub = this.stubs.get('startChat')
+    if (stub !== undefined) return await (stub() as Promise<SessionId>)
+    return 'chat-session' as SessionId
+  }
+
+  /**
    * Hero New-Session flow (recorded). The default echoes the main workspace
    * id back as the session id (`plain` when project-less); stub for
    * reference-carrying or cross-session flows.

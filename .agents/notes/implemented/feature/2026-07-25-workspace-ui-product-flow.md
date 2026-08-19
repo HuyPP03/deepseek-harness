@@ -21,13 +21,13 @@ The Host provides the following GUI wiring on the Workspace entity:
 | `workspace.list` | Returns persistent Workspaces in order and filters out Session ids that fail header validation |
 | `workspace.create({ path })` | Adopts an existing directory by canonical path; basename-derived display titles may repeat |
 | `workspace.insertBefore({ workspaceId, beforeWorkspaceId? })` | Moves one Workspace within durable registry order and returns the complete committed order |
-| `workspace.delete({ workspaceId })` | Removes the Workspace registration while retaining its directory and session logs; its Sessions become Ungrouped |
+| `workspace.delete({ workspaceId })` | Removes the Workspace registration while retaining its directory and session logs; its Sessions move to the chats list |
 | `session.create({ workspaceId, sessionId? })` | Resolves cwd from the Workspace, idempotently creates a Session with an optional preallocated id, and attaches it |
-| `session.create({ cwd })` | Remains available to non-Workspace callers and creates an Ungrouped Session |
+| `session.create({ cwd })` | Remains available to non-Workspace callers and creates a workspace-less Session (chats list) |
 
 The Host stream pushes Workspace and Session deltas, including `host/workspace-removed`, and the Client refreshes the `workspace.list` and `session.list` baselines separately after reconnecting. Registration-deletion ownership and safety are defined in the [Workspace registration deletion Agent Note](2026-07-27-workspace-registration-deletion.md).
 
-A Workspace's `sessionIds` is an ordered candidate index. A membership projection requires both that an id appear in the index and that the corresponding canonicalized `SessionHeader.cwd` equal the Workspace path; SessionHeader does not gain a `workspaceId`. A Session whose cwd matches but whose id is absent from the index remains Ungrouped, while an indexed id is filtered out if its header is missing, its cwd is invalid, or its cwd does not match. Two Workspace indexes claiming the same Session is corrupt state and fails loudly.
+A Workspace's `sessionIds` is an ordered candidate index. A membership projection requires both that an id appear in the index and that the corresponding canonicalized `SessionHeader.cwd` equal the Workspace path; SessionHeader does not gain a `workspaceId`. A Session whose cwd matches but whose id is absent from the index remains workspace-less (chats list), while an indexed id is filtered out if its header is missing, its cwd is invalid, or its cwd does not match. Two Workspace indexes claiming the same Session is corrupt state and fails loudly.
 
 The Workspace domain uses a durable marker to distinguish “never initialized” from “initialized but empty.” When the marker is absent, the Registry calls only `SessionPersistence.list()` to read header metadata; it calls neither `load` nor `inspect`, reads no history, and parses no event bodies. Valid cwd values are grouped by canonical path, and both Sessions within each group and the Workspace groups themselves are initialized in descending header `createdAt` order. Bootstrap is reentrant and writes the marker last; after the marker is written, new Sessions created without `workspaceId` are no longer adopted automatically.
 
@@ -52,7 +52,7 @@ When no Workspace exists, the page creates a frontend Workspace object named `wo
 
 Top-level New Session, the plus button on a Workspace row, and the Workspace picker all invoke the same New Session action. An explicit Workspace id becomes the target directly; when none is specified, the action uses the current Session's Workspace, then the most recent Workspace, and enters the blank New Session page when no real Workspace exists. The Workspace picker's one Add workspace action ([one-route Note](../simplification/2026-07-31-one-route-to-add-a-workspace.md); it was a pair of Use-an-existing-folder and create-by-name actions when this was decided) immediately creates a real Workspace when the user confirms a directory, then retargets the frontend Session to it; an explicitly created empty Workspace remains even if the user sends no message.
 
-A new Workspace takes its display name from the directory it was created in. Distinct canonical paths may share the same basename-derived title ([identity decision](../bug-fix/2026-07-31-same-basename-workspace-adoption.md)); the explicit rename operation retains its duplicate-title check. Moving Sessions across Workspaces, manual adoption from Ungrouped, and separate display-name and directory-name inputs remain outside this flow.
+A new Workspace takes its display name from the directory it was created in. Distinct canonical paths may share the same basename-derived title ([identity decision](../bug-fix/2026-07-31-same-basename-workspace-adoption.md)); the explicit rename operation retains its duplicate-title check. Moving Sessions across Workspaces, manual adoption from the chats list, and separate display-name and directory-name inputs remain outside this flow.
 
 ### First send and recovery
 
@@ -74,9 +74,9 @@ The Host account remains the manual `Workspace.sessionIds` order: a newly attach
 
 The current blank Session appears as a “New session” row without a count, time label, or row menu; other blank Sessions remain hidden and eligible for per-Workspace reuse. Search excludes blank rows.
 
-Real Sessions that cannot be assigned to any Workspace appear under Ungrouped. Host `session-added` and `workspace-changed` events may arrive in either order; list merging does not depend on frame order.
+Real Sessions that cannot be assigned to any Workspace appear in the chats list ([browsing tabs](2026-08-20-web-chat-sessions-and-sidebar-tabs.md)). Host `session-added` and `workspace-changed` events may arrive in either order; list merging does not depend on frame order.
 
-Deleting a Workspace registration removes its group without deleting or closing any Session. Its accounted Sessions immediately join Ungrouped, including the current Session; a reload reconstructs the same result from the independent Workspace and Session baselines.
+Deleting a Workspace registration removes its group without deleting or closing any Session. Its accounted Sessions immediately move to the chats list, including the current Session; a reload reconstructs the same result from the independent Workspace and Session baselines.
 
 ### React and slot boundaries
 
@@ -108,14 +108,14 @@ The Sidebar and conversation empty hero receive standardized actions through slo
 - Workspace list performs one reentrant bootstrap using only headers; an initialized empty registry does not initialize again after restart, and membership reads validate both the index and canonical cwd.
 - The initial default target is determined exactly once after both baselines are ready; Workspace groups are not reordered by hydration or Session activity, and explicit Workspace drag order survives reconnect.
 - The current blank Session can appear as a single New Session row without exposing other reusable blanks or a Session count.
-- The UI and Host admit distinct same-basename directories as separate Workspaces, while the explicit rename operation rejects duplicate titles; cwd-only Sessions, Sessions with invalid historical cwd values, and unattached Sessions remain Ungrouped.
+- The UI and Host admit distinct same-basename directories as separate Workspaces, while the explicit rename operation rejects duplicate titles; cwd-only Sessions, Sessions with invalid historical cwd values, and unattached Sessions remain workspace-less (chats list).
 - Confirmed Workspace deletion removes only the registration, retains the current Session, directory, files, and session log, and survives reload; package tests pin unary/frame/baseline races and failure rollback.
 - Keyless runnable snapshots cover the zero state, explicit creation, and the first send; package-level tests cover bootstrap, membership validation, ordering, idempotency, failure recovery, and arbitrary frame order.
 
 ## Consequences
 
 - SessionHeader does not record last-active time, so historical bootstrap can initialize the Host manual order only by `createdAt`; the browser's optional recent-update view begins from Session summaries after hydration.
-- Historical Sessions with a missing cwd, an invalid directory, or a failed realpath remain Ungrouped; this iteration has no manual-adoption entry point.
+- Historical Sessions with a missing cwd, an invalid directory, or a failed realpath remain workspace-less (chats list); this iteration has no manual-adoption entry point.
 - Refreshing the page discards unmaterialized Workspace and Session Intents and input not yet accepted by the Host; this is the page-local contract.
 - Explicit Create Workspace writes to disk immediately, so leaving without sending still leaves an empty Workspace.
 - Before its first event, a Host Session retains the existing lazy-persistence semantics; frontend Intents do not change empty-Session behavior after a Host restart.

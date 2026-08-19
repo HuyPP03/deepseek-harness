@@ -1,9 +1,10 @@
 /**
  * Derives the workspace browser tree from Host Workspace order and membership.
- * Unassigned Sessions trail under Ungrouped; only the selected blank Session
- * remains visible.
+ * The chats tab lists the sessions outside every workspace in one flat list
+ * (deriveChats); the workspace tree keeps one group per entity.
  */
 import {
+  CHAT_PRESET_ID,
   indexSubagentDescendants, type PendingInteractionStatus, type SessionId, type SessionListState,
   type SessionSearchResultItem, type SessionSummary, type SubagentDescendantSummary,
   type WorkspaceId, type WorkspaceView,
@@ -15,6 +16,9 @@ export const UNGROUPED_KEY = ''
 /** Display label for the ungrouped bucket row. */
 export const UNGROUPED_LABEL = 'Ungrouped'
 
+/** Search-row label for sessions on the chat preset (workspace-less by definition). */
+export const CHAT_LABEL = 'Chats'
+
 /** One top-level session row in a group or the flat list. */
 export interface SessionNode {
   id: SessionId
@@ -22,6 +26,8 @@ export interface SessionNode {
   title: string
   /** The provisional blank session (renderer shows the localized New Session title). */
   blank: boolean
+  /** Blank session on the chat preset: the renderer shows the New Chat title instead. */
+  blankChat: boolean
   /** The runtime Session list reports an interaction awaiting this user. */
   pendingInteraction?: PendingInteractionStatus
   running: boolean
@@ -37,13 +43,14 @@ export type SessionOrderBy = 'manual' | 'updated'
 
 /** One workspace group section: header row facts + visible top-level session rows. */
 export interface GroupNode {
-  /** Group key: the workspace id or {@link UNGROUPED_KEY}. */
+  /** Group key: the workspace id. */
   key: string
-  /** Backing Workspace id; absent only for the ungrouped bucket. */
-  workspaceId: WorkspaceId | undefined
-  cwd: string | undefined
-  /** Workspace creation time (epoch ms); absent only for the ungrouped bucket. */
-  createdAt: number | undefined
+  /** Backing Workspace id (every derived group is a real workspace; the
+      ungrouped bucket is a flat list, see {@link deriveChats}). */
+  workspaceId: WorkspaceId
+  cwd: string
+  /** Workspace creation time (epoch ms). */
+  createdAt: number
   label: string
   /** Total visible sessions in the group. */
   sessionCount: number
@@ -78,15 +85,13 @@ export interface SearchResultSet {
 /** Viewing state consumed by the derivation. */
 export interface TreeView {
   expandedGroups: readonly string[]
-  /** Browser-local order for Sessions without a backing Workspace account. */
-  ungroupedOrder?: readonly string[]
 }
 
 interface Group {
   key: string
-  workspaceId: WorkspaceId | undefined
-  cwd: string | undefined
-  createdAt: number | undefined
+  workspaceId: WorkspaceId
+  cwd: string
+  createdAt: number
   label: string
   sessions: SessionSummary[]
 }
@@ -133,21 +138,16 @@ function sessionTitle(session: SessionSummary): string {
 /** Build one group without projecting session lineage into presentation. */
 function buildGroup(
   key: string,
-  workspaceId: WorkspaceId | undefined,
-  cwd: string | undefined,
-  createdAt: number | undefined,
+  workspaceId: WorkspaceId,
+  cwd: string,
+  createdAt: number,
   label: string,
   members: readonly SessionSummary[],
-  order: 'account' | 'recency',
 ): Group {
-  const sessions = [...members]
-  // Real Workspace order comes from sessionIds. Ungrouped falls back to
-  // recency until the browser supplies its persisted local order.
-  if (order === 'recency') sessions.sort(byRecency)
-  return { key, workspaceId, cwd, createdAt, label, sessions }
+  return { key, workspaceId, cwd, createdAt, label, sessions: [...members] }
 }
 
-/** Apply a stored Ungrouped order and append newly loose Sessions by recency. */
+/** Apply a stored browser-local order and append new loose Sessions by recency. */
 function orderedUngrouped(members: readonly SessionSummary[], stored: readonly string[]): SessionSummary[] {
   const byId = new Map(members.map(session => [session.id as string, session]))
   const included = new Set<string>()
@@ -167,45 +167,27 @@ function orderedUngrouped(members: readonly SessionSummary[], stored: readonly s
 
 /**
  * Group Sessions by Host Workspace: one group per entity in stable Host
- * order, with members resolved from sessionIds in their stored order. Sessions
- * outside every Workspace trail in the browser-local Ungrouped order, which
- * falls back to recency before that order is initialized.
+ * order, with members resolved from sessionIds in their stored order.
+ * Sessions outside every workspace are the chats tab's list
+ * (see {@link deriveChats}), not a trailing bucket.
  */
 function groupByWorkspace(
   list: SessionListState,
   workspaces: readonly WorkspaceView[],
   archived: ReadonlySet<SessionId>,
-  ungroupedOrder: readonly string[] | undefined,
 ): Group[] {
   const groups: Group[] = []
-  const accounted = new Set<SessionId>()
   for (const workspace of workspaces) {
     const members: SessionSummary[] = []
     for (const id of workspace.sessionIds) {
       const summary = list.byId[id]
       if (summary === undefined) continue // account may lead the list pull; the row appears when the summary lands
-      accounted.add(id)
       if (!sessionVisible(summary, list.current, archived)) continue
       members.push(summary)
     }
     groups.push(buildGroup(
       workspace.workspaceId, workspace.workspaceId, workspace.path,
-      Date.parse(workspace.createdAt), workspace.title, members, 'account',
-    ))
-  }
-  const stray = list.ids
-    .map(id => list.byId[id])
-    .filter((s): s is SessionSummary =>
-      s !== undefined && !accounted.has(s.id) && sessionVisible(s, list.current, archived))
-  if (stray.length > 0) {
-    groups.push(buildGroup(
-      UNGROUPED_KEY,
-      undefined,
-      undefined,
-      undefined,
-      UNGROUPED_LABEL,
-      ungroupedOrder === undefined ? stray : orderedUngrouped(stray, ungroupedOrder),
-      ungroupedOrder === undefined ? 'recency' : 'account',
+      Date.parse(workspace.createdAt), workspace.title, members,
     ))
   }
   return groups
@@ -219,6 +201,7 @@ function sessionNode(
     id: s.id,
     title: sessionTitle(s),
     blank: s.blank,
+    blankChat: s.blank && s.agentPreset === CHAT_PRESET_ID,
     running: s.running,
     runningSubagentCount: descendants.get(s.id)?.runningCount ?? 0,
     completed: s.completed === true,
@@ -228,17 +211,19 @@ function sessionNode(
 }
 
 /**
- * Derive the workspace browser groups with every session as a top-level row.
+ * Derive the workspace browser's group sections with every session as a
+ * top-level row.
  *
- * Every group shows; sessions populate under expanded groups in the selected
- * local order. Blank sessions are excluded except for the selected
+ * Every real Workspace shows; sessions populate under expanded groups in the
+ * selected local order. Blank sessions are excluded except for the selected
  * provisional New Session row; archived sessions are excluded everywhere.
- * Content search lives outside this derivation
+ * Sessions outside every workspace are the chats tab's list
+ * (see {@link deriveChats}). Content search lives outside this derivation
  * (see {@link deriveSearchResults}).
  * @param list - sessions list snapshot (`current` feeds containsCurrent).
  * @param workspaces - real workspaces in stable Host order.
  * @param archivedSessionIds - registry-global archive set.
- * @param view - local expansion arrays.
+ * @param view - local expansion state.
  * @returns group sections in render order.
  */
 export function deriveGroups(
@@ -255,7 +240,7 @@ export function deriveGroups(
     : (workspaces.find(w => w.sessionIds.includes(list.current as SessionId))?.workspaceId as string | undefined)
         ?? UNGROUPED_KEY
   const groups: GroupNode[] = []
-  for (const g of groupByWorkspace(list, workspaces, archived, view.ungroupedOrder)) {
+  for (const g of groupByWorkspace(list, workspaces, archived)) {
     const expanded = expandedGroups.has(g.key)
     groups.push({
       key: g.key,
@@ -273,28 +258,36 @@ export function deriveGroups(
 }
 
 /**
- * Derive the flat session list ("In one list" mode): every session — fork
- * children included — as a top-level row, strictly newest-first. No grouping,
- * no parent/child adjacency. Content search lives outside this derivation
+ * Derive the chats tab's flat list: every visible session outside every
+ * workspace — chat sessions and legacy ungrouped sessions alike — in the
+ * browser-local order with the recency fallback. Blank sessions are excluded
+ * except for the selected provisional New Chat row; archived sessions are
+ * excluded everywhere. Content search lives outside this derivation
  * (see {@link deriveSearchResults}).
  * @param list - sessions list snapshot.
+ * @param workspaces - real workspaces (members are excluded from the list).
  * @param archivedSessionIds - registry-global archive set.
+ * @param ungroupedOrder - stored browser-local order; recency applies when absent.
  * @returns flat rows in render order.
  */
-export function deriveFlat(
+export function deriveChats(
   list: SessionListState,
+  workspaces: readonly WorkspaceView[],
   archivedSessionIds: readonly SessionId[],
+  ungroupedOrder: readonly string[] | undefined,
 ): SessionNode[] {
   const archived = new Set(archivedSessionIds)
+  const accounted = new Set<SessionId>()
+  for (const workspace of workspaces) for (const id of workspace.sessionIds) accounted.add(id)
+  const stray = list.ids
+    .map(id => list.byId[id])
+    .filter((s): s is SessionSummary =>
+      s !== undefined && !accounted.has(s.id) && sessionVisible(s, list.current, archived))
+  const ordered = ungroupedOrder === undefined
+    ? [...stray].sort(byRecency)
+    : orderedUngrouped(stray, ungroupedOrder)
   const descendants = indexSubagentDescendants(list.byId)
-  const rows: SessionSummary[] = []
-  for (const id of list.ids) {
-    const s = list.byId[id]
-    if (s === undefined || !sessionVisible(s, list.current, archived)) continue
-    rows.push(s)
-  }
-  rows.sort(byRecency)
-  return rows.map(session => sessionNode(session, descendants))
+  return ordered.map(session => sessionNode(session, descendants))
 }
 
 /** Relative-time bucket of a session row's trailing label. */
@@ -338,7 +331,8 @@ export function deriveSearchResults(
     }
   }
   const labelOf = (summary: SessionSummary): string =>
-    workspaceBySession.get(summary.id) ?? workspaceLabel(summary.cwd)
+    workspaceBySession.get(summary.id)
+      ?? (summary.agentPreset === CHAT_PRESET_ID ? CHAT_LABEL : workspaceLabel(summary.cwd))
   const contentBySession = new Map<SessionId, SessionSearchResultItem>()
   for (const item of content.items) {
     if (!contentBySession.has(item.sessionId)) contentBySession.set(item.sessionId, item)

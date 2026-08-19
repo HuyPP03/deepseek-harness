@@ -31,6 +31,15 @@ export interface WorkspaceListState {
   recentWorkspaceId: WorkspaceId | undefined
 }
 
+/**
+ * The shipped `chat` agent preset id (the sidebar's New Chat flow). Its
+ * sessions are born without a workspace, run the read-only permission preset
+ * the Host pins at creation, and are the only rows of the sidebar's Chats tab
+ * that mint a chat — legacy ungrouped sessions of other presets list there
+ * unchanged.
+ */
+export const CHAT_PRESET_ID = 'chat'
+
 /** Structured create failure for UI flows that distinguish Host business errors. */
 export class WorkspaceCreateError extends Error {
   constructor(readonly rpcError: RpcError) {
@@ -55,6 +64,8 @@ export class WorkspaceRuntime implements IWorkspaces {
   private readonly manager: WorkspaceManager
   /** In-flight blank-session creates keyed by workspace (connectWorkspace coalescing). */
   private readonly connecting = new Map<WorkspaceId, Promise<SessionId>>()
+  /** In-flight blank-chat create (startChat coalescing; a chat is ungrouped, so one global slot). */
+  private connectingChat: Promise<SessionId> | undefined
   /** Guards the runtime-owned one-shot initial-selection subscription. */
   private initialSelectionStarted = false
 
@@ -120,9 +131,10 @@ export class WorkspaceRuntime implements IWorkspaces {
    * session (connectWorkspace, blank-reuse intact); any reference selection
    * mints a FRESH session carrying referenceWorkspaceIds — a blank reuse would
    * drop the references, so the reuse scan is skipped entirely; a project-less
-   * selection mints a plain chat session (no workspaceId → host cwd). The
-   * resolution guarantee of connectWorkspace holds on every arm: the returned
-   * id is already in the list store.
+   * selection mints a Chat session under the chat preset (no workspaceId →
+   * host cwd, read-only pinned by the Host). The resolution guarantee of
+   * connectWorkspace holds on every arm: the returned id is already in the
+   * list store.
    * @param selection - main project id (first selection) and ordered references.
    * @returns the session id the flow lands in (the caller opens it).
    */
@@ -132,11 +144,43 @@ export class WorkspaceRuntime implements IWorkspaces {
   } = {}): Promise<SessionId> {
     const references = selection.references ?? []
     if (selection.main === undefined) {
-      if (references.length > 0) return this.sessions.create({ referenceWorkspaceIds: references })
-      return this.sessions.create({})
+      // A project-less selection is a Chat session. References require a
+      // workspace (the Host rejects them on a workspace-less session), and the
+      // picker only ever pairs references with a main, so none ride this arm.
+      return this.sessions.create({ agentPreset: CHAT_PRESET_ID })
     }
     if (references.length === 0) return this.connectWorkspace(selection.main)
     return this.sessions.create({ workspaceId: selection.main, referenceWorkspaceIds: references })
+  }
+
+  /**
+   * The New Chat flow: reuse the ungrouped blank chat session when one is in
+   * the list mirror, else mint a fresh one under the chat preset. A chat
+   * session belongs to no workspace, so its reuse scan is the ungrouped rows
+   * (id not in any workspace's account) that are blank, not archived, and
+   * stamped with the chat preset. The returned id is already in the list
+   * store (the caller opens it).
+   * @returns the reused or newly created chat session id.
+   */
+  async startChat(): Promise<SessionId> {
+    const archived = this.list.getSnapshot().archivedSessionIds
+    const workspaces = this.list.getSnapshot().items
+    const sessions = this.sessions.list.getSnapshot()
+    const owned = new Set<SessionId>()
+    for (const workspace of workspaces) for (const id of workspace.sessionIds) owned.add(id)
+    for (const id of sessions.ids) {
+      const summary = sessions.byId[id]
+      if (summary !== undefined && summary.blank && summary.agentPreset === CHAT_PRESET_ID
+        && !owned.has(id) && !archived.includes(id)) return id
+    }
+    // Coalesce concurrent New Chat presses: a create's summary lands without
+    // the agentPreset until the host frame arrives, so a second call inside
+    // that window would miss the reuse scan and mint another blank chat.
+    if (this.connectingChat === undefined) {
+      this.connectingChat = this.sessions.create({ agentPreset: CHAT_PRESET_ID })
+        .finally(() => { this.connectingChat = undefined })
+    }
+    return this.connectingChat
   }
 
   /**

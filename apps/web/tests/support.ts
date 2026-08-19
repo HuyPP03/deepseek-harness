@@ -140,3 +140,21 @@ export async function saveFailureShot(page: Page, name: string): Promise<void> {
 export function conversationContextKey(kind: string, id: string): string {
   return `${kind.length}:${kind}${id}`
 }
+
+/**
+ * The Landlock launcher prints this benign informational line to the stderr
+ * of every confined command on a kernel with an older Landlock ABI (it is
+ * classified as informational by the sandbox-local runner rules). Exact-text
+ * bash-result assertions strip it, together with a stderr section left empty
+ * by the removal.
+ * @param text - a bash tool result text.
+ * @returns the text without the launcher's informational line.
+ */
+export function stripLandlockInfoLine(text: string): string {
+  const lines = text.split('\n')
+  const index = lines.indexOf('landlock-run: partial enforcement (older Landlock ABI)')
+  if (index === -1) return text
+  lines.splice(index, 1)
+  if (lines[index - 1] === '[stderr]' && lines.slice(index).every(line => line === '')) lines.splice(index - 1, 1)
+  return lines.join('\n')
+}

@@ -7,12 +7,17 @@
  * `permissions` session projection; the write side ships as the
  * `/permission` command — both optional children over the same service.
  *
+ * Chat sessions (the `chatPresetIds` agent presets) are pinned to the
+ * configured read-only preset at creation and refuse the `/permission`
+ * switch: their mode is fixed by composition, not user-selectable.
+ *
  * @module dsh-permission-presets
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { z as zod } from 'zod'
+import { resolveSessionPreset } from '@deepseek-ai/dsh-agent-presets'
 import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
 import type { SandboxMode } from '@deepseek-ai/dsh-sandbox'
 import { SANDBOX_MODES, effectiveSandboxMode, setSandboxMode } from '@deepseek-ai/dsh-sandbox-policy'
@@ -149,6 +154,21 @@ export interface Config {
    * sandbox and approval defaults is used.
    */
   defaultPreset?: string
+  /**
+   * Agent preset ids whose sessions are chat sessions (no project directory):
+   * a freshly created one pins {@link chatPreset} instead of the default, and
+   * the `/permission` switch is refused for it while it runs a listed preset.
+   * Empty (the default) disables the behavior; deployments without a chat
+   * preset compose this service unchanged.
+   */
+  chatPresetIds?: string[]
+  /**
+   * The permission preset pinned for chat sessions, a `presets` table entry
+   * whose bundle is the read-only one the deployment wants for them. Defaults
+   * to `read-only`; validated against the table at load when chat sessions
+   * are enabled.
+   */
+  chatPreset?: string
 }
 
 /**
@@ -175,20 +195,29 @@ export class PermissionPresetService extends Service {
       },
     }),
     defaultPreset: z.string(),
+    chatPresetIds: z.array(z.string()).default([]),
+    chatPreset: z.string(),
   })
 
   static inject = ['shell', 'approval', 'sessions']
 
   private readonly presets: Record<string, PresetSpec>
+  private readonly chatPresetIds: readonly string[]
+  private readonly chatPreset: string
   private defaultSettings: () => PermissionSettings
 
   constructor(ctx: Context, config: Config) {
     super(ctx, 'permissionPresets')
     // The schema defaulted the table — the cast records that runtime fact.
     this.presets = config.presets as Record<string, PresetSpec>
+    this.chatPresetIds = [...(config.chatPresetIds ?? [])]
+    this.chatPreset = config.chatPreset ?? 'read-only'
     if (CUSTOM_PRESET in this.presets) {
       throw new Error(`permission: "${CUSTOM_PRESET}" is reserved for the derived not-a-preset state and cannot name a table entry`)
     }
+    // Fails loud at load: a deployment that names chat sessions must also
+    // name a pinned preset that exists in the table.
+    if (this.chatPresetIds.length > 0) this.resolve(this.chatPreset)
     if (ctx.shell.sandboxMode === undefined) {
       throw new Error('permission: the mounted bash executor does not confine (no sandboxMode) — presets bundle a sandbox mode, so composing this plugin over an unconfined executor is a misconfiguration')
     }
@@ -263,6 +292,13 @@ export class PermissionPresetService extends Service {
         // surface that renders `name · text` (the web command row) would
         // otherwise read `permission · Permission preset: workspace-write.`
         handler: ({ agent, rawInput }) => {
+          // Chat sessions are pinned read-only at creation; the switch is
+          // refused while the session runs a listed chat preset (a blank
+          // switch away from it unlocks the preset, matching the composition
+          // its next turn will run under).
+          if (this.chatPresetIds.includes(resolveSessionPreset(agent.session) ?? '')) {
+            return { kind: 'error', text: 'Chat sessions run read-only and cannot switch permission presets.' }
+          }
           const name = rawInput.trim()
           if (name === '') {
             return { kind: 'success', text: `current preset ${this.current(agent.session.events)} (available: ${this.names.join(', ')})` }
@@ -393,9 +429,10 @@ export class PermissionPresetService extends Service {
 
   /**
    * Fill every missing permission fact before a session is published. A
-   * genuinely fresh session uses the current user default; seeded or partially
-   * initialized sessions preserve their effective knob values and only gain
-   * the missing durable facts.
+   * genuinely fresh session uses the current user default — or the
+   * configured chat preset when its header names a chat agent preset;
+   * seeded or partially initialized sessions preserve their effective knob
+   * values and only gain the missing durable facts.
    */
   private pinInitialPermission(session: Session): void {
     const events = session.events
@@ -404,7 +441,11 @@ export class PermissionPresetService extends Service {
     const approval = effectiveApprovalPolicy(events)
     const seeded = events.some(event => event.type === 'session/end-seed')
     if (selected === undefined && sandbox === undefined && approval === undefined && !seeded) {
-      const name = this.defaultPreset
+      // A freshly created chat session pins the configured read-only preset
+      // instead of the user default; the header carries the creation-time
+      // preset (no logged selection can exist on a blank session yet).
+      const chat = this.chatPresetIds.includes(session.header.agentPreset ?? '')
+      const name = chat ? this.chatPreset : this.defaultPreset
       const spec = this.resolve(name)
       session.append('permission/preset', { preset: name })
       setSandboxMode(session, spec.sandbox)

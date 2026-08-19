@@ -20,6 +20,9 @@ it('boots the built plugin graph and renders a fixture session end to end', asyn
   mountAssembledApp()
 
   // The sidebar renders from the boot graph: every inject layer activated.
+  // The fixture session is workspace-accounted, so its row browses on the
+  // workspaces tab (the shell's default tab is chats).
+  await fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
   const tree = await screen.findByRole('tree', { name: 'Sessions' }, { timeout: 10_000 })
   // The compact layout dropped group session counts; the fixture workspace
   // group row renders immediately with its sessions beneath it.

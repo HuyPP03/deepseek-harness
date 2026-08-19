@@ -292,24 +292,81 @@ describe('WorkspaceRuntime', () => {
     await Promise.all([workspaces.refresh(), sessions.refresh()])
     await Promise.resolve()
 
-    // Plain chat (no main): always a fresh session, no workspaceId.
+    // Plain chat (no main): always a fresh session under the chat preset.
     await expect(workspaces.startNewSession({})).resolves.toBe('s-plain')
-    expect(api.callsOf('session.create')).toEqual([{}])
+    expect(api.callsOf('session.create')).toEqual([{ agentPreset: 'chat' }])
 
     // Bare main: the connectWorkspace blank-reuse scan, no create RPC.
     api.onCreate = () => Promise.resolve(ok({ sessionId: sid('s-x') }))
     await expect(workspaces.startNewSession({ main: wid('alpha') })).resolves.toBe('s-blank')
-    expect(api.callsOf('session.create')).toEqual([{}])
+    expect(api.callsOf('session.create')).toEqual([{ agentPreset: 'chat' }])
 
     // Main + references: always a fresh session carrying both ids (no reuse).
     api.onCreate = () => Promise.resolve(ok({ sessionId: sid('s-ref') }))
     await expect(workspaces.startNewSession({ main: wid('alpha'), references: [wid('beta')] })).resolves.toBe('s-ref')
-    expect(api.callsOf('session.create')).toEqual([{}, { workspaceId: 'alpha', referenceWorkspaceIds: ['beta'] }])
+    expect(api.callsOf('session.create')).toEqual([{ agentPreset: 'chat' }, { workspaceId: 'alpha', referenceWorkspaceIds: ['beta'] }])
 
-    // References without a main: fresh session, references only.
+    // References without a main: the Host rejects them on a workspace-less
+    // session, so this arm mints a plain chat (the picker never pairs
+    // references without a main).
     api.onCreate = () => Promise.resolve(ok({ sessionId: sid('s-refs-only') }))
     await expect(workspaces.startNewSession({ references: [wid('alpha')] })).resolves.toBe('s-refs-only')
-    expect(api.callsOf('session.create')).toEqual([{}, { workspaceId: 'alpha', referenceWorkspaceIds: ['beta'] }, { referenceWorkspaceIds: ['alpha'] }])
+    expect(api.callsOf('session.create')).toEqual([{ agentPreset: 'chat' }, { workspaceId: 'alpha', referenceWorkspaceIds: ['beta'] }, { agentPreset: 'chat' }])
+  })
+
+  it('startChat reuses the ungrouped blank chat and mints one otherwise', async () => {
+    const ctx = new Context()
+    const api = new FakeApiClient()
+    const sessions = new SessionRuntime(ctx, api, fakeRemote())
+    const workspaces = new WorkspaceRuntime(ctx, api, sessions)
+    api.onWorkspaceList = () => Promise.resolve(ok({
+      items: [workspace('alpha', [sid('s-ws')])] as never[],
+    }))
+    api.onList = () => Promise.resolve(ok({
+      items: [
+        // Ungrouped blank chat: the reuse hit.
+        { sessionId: sid('s-chat'), updatedAt: 5, running: false, blank: true, agentPreset: 'chat' },
+        // Ungrouped blank of another preset: never a chat-reuse hit.
+        { sessionId: sid('s-plain'), updatedAt: 4, running: false, blank: true },
+        // Chat session accounted under a workspace: never ungrouped, skipped.
+        { sessionId: sid('s-ws'), updatedAt: 3, running: false, blank: true, agentPreset: 'chat', cwd: '/w/alpha' },
+        // Non-blank chat: already has history, never reused.
+        { sessionId: sid('s-busy'), updatedAt: 2, running: false, blank: false, agentPreset: 'chat' },
+      ] as never[],
+    }))
+    await Promise.all([workspaces.refresh(), sessions.refresh()])
+    await Promise.resolve()
+
+    // Hit: the ungrouped blank chat is reused, no create RPC.
+    await expect(workspaces.startChat()).resolves.toBe('s-chat')
+    expect(api.callsOf('session.create')).toEqual([])
+    expect(sessions.binding(sid('s-chat'))).toBeDefined()
+
+    // Miss: archive the hit, then a fresh chat is minted under the preset.
+    await workspaces.archiveSession(sid('s-chat'))
+    api.onCreate = () => Promise.resolve(ok({ sessionId: sid('s-chat-2') }))
+    await expect(workspaces.startChat()).resolves.toBe('s-chat-2')
+    expect(api.callsOf('session.create')).toEqual([{ agentPreset: 'chat' }])
+    expect(sessions.binding(sid('s-chat-2'))).toBeDefined()
+  })
+
+  it('startChat coalesces concurrent presses into one create', async () => {
+    const ctx = new Context()
+    const api = new FakeApiClient()
+    const sessions = new SessionRuntime(ctx, api, fakeRemote())
+    const workspaces = new WorkspaceRuntime(ctx, api, sessions)
+    api.onWorkspaceList = () => Promise.resolve(ok({ items: [] }))
+    api.onList = () => Promise.resolve(ok({ items: [] }))
+    const gate = deferred<Awaited<ReturnType<FakeApiClient['onCreate']>>>()
+    api.onCreate = () => gate.promise
+    await Promise.all([workspaces.refresh(), sessions.refresh()])
+    await Promise.resolve()
+
+    const first = workspaces.startChat()
+    const second = workspaces.startChat()
+    gate.resolve(ok({ sessionId: sid('s-coalesced') }))
+    await expect(Promise.all([first, second])).resolves.toEqual(['s-coalesced', 's-coalesced'])
+    expect(api.callsOf('session.create')).toEqual([{ agentPreset: 'chat' }])
   })
   it('a rejected first prompt keeps the blank session eligible for connectWorkspace reuse', async () => {
     const ctx = new Context()

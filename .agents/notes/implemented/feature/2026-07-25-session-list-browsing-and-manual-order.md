@@ -12,9 +12,9 @@ Two existing mechanisms stood in the way. First, the host durably promoted the a
 
 ## Decision
 
-### Flat rows and viewing state
+### Browsing tabs and order state
 
-The group-by menu offers two modes, WorkSpace / In one list. WorkSpace mode renders peer session rows within each group in the manual order from `WorkspaceView.sessionIds`; In one list combines every session and sorts them strictly newest-first by `updatedAt`. Neither mode projects `parentId` into a list hierarchy; fork lineage remains session data only. [Web session fork actions](2026-07-27-web-session-fork-actions.md) define the complete fork behavior. The mode choice persists in the browser (`dsh.workspace.view`) across reloads. [Workspace Sidebar Order and Folding](2026-08-11-workspace-sidebar-order-and-folding.md) later added a browser-local recent-update view without changing the Host account's manual-order authority.
+The browsing tab (shell-owned; [Web chat sessions and the sidebar browsing tabs](2026-08-20-web-chat-sessions-and-sidebar-tabs.md)) selects the presentation: the Workspaces tab renders the grouped tree — peer session rows within each group in the manual order from `WorkspaceView.sessionIds` — and the Chats tab renders the flat list of every session no Workspace accounts for. Neither tab projects `parentId` into a list hierarchy; fork lineage remains session data only. [Web session fork actions](2026-07-27-web-session-fork-actions.md) define the complete fork behavior. The order choice persists in the browser (`dsh.workspace.view`) across reloads. [Workspace Sidebar Order and Folding](2026-08-11-workspace-sidebar-order-and-folding.md) later added a browser-local recent-update view without changing the Host account's manual-order authority.
 
 ### Row interactions
 
@@ -34,7 +34,7 @@ The UI is HTML5 drag on session rows inside a group (workspace grouping only, ou
 
 ### Shell/region split
 
-ui-sidebar shrinks to the column-geometry shell: brand row, fold state machine, New Session, Settings, and one `sidebar.workspaces` hole; the shell↔region contract is two facts, `{ wide, expandSidebar }`. ui-workspace fully owns the browsing region (section header, search, grouped tree and flat list, every workspace dialog, drag) plus its groupBy store; the rail-state search/add-workspace icons belong to the region too and request shell expansion via `expandSidebar()`. The picker splits into the core `WorkspacePickFlow` (composed directly inside the region; named `WorkspaceCreateFlow` until the [one-route Note](../simplification/2026-07-31-one-route-to-add-a-workspace.md)) and the thin `WorkspacePicker` wrapper (still filling ui-conversation's hero slot); the old `sidebar.workspace` picker slot and its declaration-aware deferral are deleted with it.
+ui-sidebar shrinks to the column-geometry shell: brand row, fold state machine, New Session, Settings, and one `sidebar.workspaces` hole; the shell↔region contract is `{ wide, expandSidebar, tab }` — the browsing tab is shell-owned since [Web chat sessions and the sidebar browsing tabs](2026-08-20-web-chat-sessions-and-sidebar-tabs.md). ui-workspace fully owns the browsing region (section header, search, workspace tree and chats list, every workspace dialog, drag) plus its view store (order, expansion, order accounts); the rail-state search/add-workspace icons belong to the region too and request shell expansion via `expandSidebar()`. The picker splits into the core `WorkspacePickFlow` (composed directly inside the region; named `WorkspaceCreateFlow` until the [one-route Note](../simplification/2026-07-31-one-route-to-add-a-workspace.md)) and the thin `WorkspacePicker` wrapper (still filling ui-conversation's hero slot); the old `sidebar.workspace` picker slot and its declaration-aware deferral are deleted with it.
 
 ## Alternatives considered
 
@@ -51,10 +51,10 @@ ui-sidebar shrinks to the column-geometry shell: brand row, fold state machine, 
 ## Consequences
 
 - Manual order is the sole authority over the Host workspace account: activity never mutates `WorkspaceView.sessionIds`. A later browser-local recent-update view may promote active rows without changing that account; its separate semantics are defined in [Workspace Sidebar Order and Folding](2026-08-11-workspace-sidebar-order-and-folding.md).
-- The two-fact shell/region contract funnels every future workspace-domain feature (Delete confirmation, cross-group moves, Ungrouped adoption) into the single ui-workspace package; ui-sidebar no longer evolves with session-list features.
-- Flat mode supports neither reordering nor a create-in-workspace entry point (switching back to grouped view is required) — an accepted scope reduction.
+- The shell/region contract funnels every future workspace-domain feature (Delete confirmation, cross-group moves, chats-list adoption) into the single ui-workspace package; ui-sidebar no longer evolves with session-list features.
+- The chats tab supports browser-local reordering (no Workspace account to update) but no create-in-workspace entry point — an accepted scope reduction.
 - Wiring session Delete and growing the wire status enum remain future iterations.
 
 ## Testing
 
-Package-level suites cover the derivations (deriveGroups/deriveFlat), peer session rows, both apply registrations and passthroughs, host entity move semantics, and the rename/insertSessionBefore RPC implementations with their fixture stubs; the `apps/web` keyless snapshots regress the assembled application and pin that a fork does not introduce session expansion controls.
+Package-level suites cover the derivations (deriveGroups/deriveChats), peer session rows, both apply registrations and passthroughs, host entity move semantics, and the rename/insertSessionBefore RPC implementations with their fixture stubs; the `apps/web` keyless snapshots regress the assembled application and pin that a fork does not introduce session expansion controls.

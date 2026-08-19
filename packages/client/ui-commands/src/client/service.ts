@@ -14,6 +14,7 @@ import type { Context } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type { CommandResult } from '@deepseek-ai/dsh-commands/types'
 import type { ClientContext, ISessions, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
+import { CHAT_PRESET_ID } from '@deepseek-ai/dsh-client-runtime/client'
 import type {
   CandidateRequest, ClientSessionContext, CommandClaim, PickOutcome, InputTriggerCandidate, InputTriggerPick,
   SubmitOutcome,
@@ -242,9 +243,14 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
   /** Menu candidates: host catalog + contribution availability, then position filtering and fuzzy name ranking. */
   private async candidates(session: ClientSessionContext, req: CandidateRequest): Promise<readonly InputTriggerCandidate[]> {
     const list = await this.directory.ensureReady(session.sessionId, req.signal)
+    // Chat sessions run the fixed read-only preset: the host refuses the
+    // `/permission` switch, so the menu hides the row (a typed line still
+    // reaches the host and gets its error).
+    const chatSession = this.sessions().list.getSnapshot().byId[session.sessionId]?.agentPreset === CHAT_PRESET_ID
     const rows: InputTriggerCandidate[] = []
     const seen = new Set<string>()
     for (const c of list) {
+      if (chatSession && c.name === 'permission') continue
       seen.add(c.name)
       rows.push({ name: c.name, description: c.description, ...(c.input !== undefined ? { hint: c.input.hint } : {}) })
     }
