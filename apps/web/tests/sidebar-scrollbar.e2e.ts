@@ -139,8 +139,8 @@ interface ListMetrics {
  */
 function measureList(page: Page): Promise<ListMetrics> {
   return page.evaluate(() => {
-    const list = document.querySelector<HTMLElement>('[role="tree"][aria-label="Sessions"]')
-    if (list === null) throw new Error('sidebar session list not in the DOM')
+    const list = document.querySelector<HTMLElement>('[role="tree"][aria-label="Chats"]')
+    if (list === null) throw new Error('sidebar chats list not in the DOM')
     const time = list.querySelector<HTMLElement>('[class*="time"]')
     if (time === null) throw new Error('no row relative-time element in the sidebar list')
     const row = list.querySelector<HTMLElement>('[role="treeitem"]')
@@ -218,8 +218,8 @@ function measureList(page: Page): Promise<ListMetrics> {
  */
 function measureRowInset(page: Page): Promise<Pick<ListMetrics, 'overflows' | 'rowEdgeInset'>> {
   return page.evaluate(() => {
-    const list = document.querySelector<HTMLElement>('[role="tree"][aria-label="Sessions"]')
-    if (list === null) throw new Error('sidebar session list not in the DOM')
+    const list = document.querySelector<HTMLElement>('[role="tree"][aria-label="Chats"]')
+    if (list === null) throw new Error('sidebar chats list not in the DOM')
     const row = list.querySelector<HTMLElement>('[role="treeitem"]')
     if (row === null) throw new Error('no row in the sidebar list')
     const sidebarEdge = list.parentElement?.getBoundingClientRect().right
@@ -314,8 +314,8 @@ function renderGeometry(light: PaletteMetrics, dark: PaletteMetrics): string {
  */
 function resolveThumb(page: Page): Promise<string> {
   return page.evaluate(() => {
-    const list = document.querySelector<HTMLElement>('[role="tree"][aria-label="Sessions"]')
-    if (list === null) throw new Error('sidebar session list not in the DOM')
+    const list = document.querySelector<HTMLElement>('[role="tree"][aria-label="Chats"]')
+    if (list === null) throw new Error('sidebar chats list not in the DOM')
     const probe = document.createElement('span')
     probe.style.color = 'var(--dsh-scrollbar-thumb)'
     list.append(probe)
@@ -337,8 +337,8 @@ const NO_THUMB = 'rgba(0, 0, 0, 0)'
  * of the viewport (the conversation column).
  */
 async function pointAt(page: Page, where: 'list' | 'away'): Promise<void> {
-  const box = await page.locator('[role="tree"][aria-label="Sessions"]').boundingBox()
-  if (box === null) throw new Error('sidebar session list has no layout box')
+  const box = await page.locator('[role="tree"][aria-label="Chats"]').boundingBox()
+  if (box === null) throw new Error('sidebar chats list has no layout box')
   const viewport = page.viewportSize()
   if (viewport === null) throw new Error('page has no viewport')
   const target = where === 'list'
@@ -348,33 +348,56 @@ async function pointAt(page: Page, where: 'list' | 'away'): Promise<void> {
 }
 
 /**
- * Reveal the seeded rows: every seeded session is unattached, so they all sit
- * in the collapsed Ungrouped bucket. Open the bucket, then use its transient
- * Show-more control because an open group intentionally renders only five
- * rows by default. Hand-rolled polling because
+ * Wait for the seeded rows to render. Every seeded session is workspace-less,
+ * so the chats tab lists them all as flat rows — no group to open, no
+ * transient Show-more control to page through. Hand-rolled polling because
  * `expect.poll` is test-scoped and this runs in `beforeAll`.
  * @param page - the page under test.
  */
-async function expandSeededSessions(page: Page): Promise<void> {
-  const bucket = page.getByText('Ungrouped', { exact: true }).locator('..').locator('..')
-  await bucket.waitFor({ timeout: 15_000 })
-  const rows = page.locator('[role="tree"][aria-label="Sessions"] [role="treeitem"]')
+async function waitSeededSessions(page: Page): Promise<void> {
+  const rows = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem')
   const deadline = Date.now() + 30_000
   for (;;) {
-    if (await bucket.getAttribute('aria-expanded') !== 'true') {
-      await page.getByText('Ungrouped', { exact: true }).click()
-    }
-    const showMore = page.getByRole('button', { name: /Show \d+ more sessions/ })
-    if (await bucket.getAttribute('aria-expanded') === 'true'
-      && await rows.count() <= SEED_COUNT / 2
-      && await showMore.count() > 0) {
-      await showMore.click()
-    }
-    if (await bucket.getAttribute('aria-expanded') === 'true' && await rows.count() > SEED_COUNT / 2) return
+    if ((await rows.count()) >= SEED_COUNT) return
     if (Date.now() > deadline) {
-      throw new Error(`Ungrouped bucket never revealed more than ${SEED_COUNT / 2} rows`)
+      throw new Error(`chats list never rendered more than ${SEED_COUNT} seeded rows`)
     }
     await page.waitForTimeout(200)
+  }
+}
+
+/**
+ * Archive every seeded session except `keep` through the row menu, so the
+ * list stops overflowing. Archive is non-destructive and durable; the spec
+ * is throwaway, so the archive set is left behind on purpose. The count is
+ * read from the raw DOM: the role query's accessibility tree can lag a frame
+ * behind an archive echo, and a stale count makes the loop archive past
+ * `keep`. Each archive settles (the fresh count must fall) before the next
+ * iteration.
+ * @param page - the page under test.
+ * @param keep - the row count to leave standing.
+ */
+async function archiveDownTo(page: Page, keep: number): Promise<void> {
+  const tree = page.getByRole('tree', { name: 'Chats' })
+  const domCount = (): Promise<number> => page.evaluate(() =>
+    document.querySelectorAll('[role="tree"][aria-label="Chats"] [role="treeitem"]').length,
+  )
+  const deadline = Date.now() + 90_000
+  for (;;) {
+    const count = await domCount()
+    if (count <= keep) return
+    if (Date.now() > deadline) throw new Error('archiving the seeded rows timed out')
+    const row = tree.getByRole('treeitem').last()
+    const trigger = row.locator('button[aria-label^="Session actions for "]')
+    const triggerName = await trigger.getAttribute('aria-label')
+    if (triggerName === null) throw new Error('seeded row has no actions label')
+    await expect.poll(async () => {
+      await row.hover()
+      return await trigger.isVisible()
+    }, { timeout: 10_000 }).toBe(true)
+    await trigger.click()
+    await page.getByRole('menuitem', { name: 'Archive session' }).click()
+    await expect.poll(domCount, { timeout: 10_000 }).toBeLessThan(count)
   }
 }
 
@@ -397,7 +420,7 @@ describe('web e2e: sidebar session list scrollbar (reserved gutter / themed thum
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
-    await expandSeededSessions(page)
+    await waitSeededSessions(page)
     // Every assertion about a thumb colour needs a drawn thumb, and the column
     // only draws one under the pointer; the quiet state is asserted where it is
     // the subject rather than left as an ambient condition of the whole file.
@@ -442,6 +465,18 @@ describe('web e2e: sidebar session list scrollbar (reserved gutter / themed thum
     expect(tripwire.pageErrors).toEqual([])
   }, 60_000)
 
+  // The geometry golden is committed against the overflowing list, so it runs
+  // before the archiving test below shrinks the list to a single row.
+  it('matches the committed scrollbar geometry golden in both palettes', async () => {
+    onTestFailed(() => saveFailureShot(page, 'web-e2e-sidebar-scrollbar-golden'))
+    const light = await measurePalette(page)
+    await page.evaluate(() => { document.body.setAttribute('data-ds-dark-theme', '') })
+    const dark = await measurePalette(page)
+    await page.evaluate(() => { document.body.removeAttribute('data-ds-dark-theme') })
+    await compareOrRefreshGolden(GEOMETRY_EXPECTED, renderGeometry(light, dark), MODE)
+    expect(tripwire.pageErrors).toEqual([])
+  }, 60_000)
+
   it('draws no thumb until the pointer is over the column, and lingers on the way out', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-sidebar-scrollbar-pointer'))
     const revealed = await resolveThumb(page)
@@ -462,7 +497,7 @@ describe('web e2e: sidebar session list scrollbar (reserved gutter / themed thum
     // leaves the column quiet. This is the one deliberate loss, and
     // it is pinned here rather than only described, so making a scroll
     // re-reveal the bar has to be a decision rather than a side effect.
-    await page.locator('[role="tree"][aria-label="Sessions"]').evaluate((el) => { el.scrollTop += 200 })
+    await page.locator('[role="tree"][aria-label="Chats"]').evaluate((el) => { el.scrollTop += 200 })
     await page.waitForTimeout(500)
     expect(await resolveThumb(page)).toBe(NO_THUMB)
     await pointAt(page, 'list')
@@ -473,16 +508,13 @@ describe('web e2e: sidebar session list scrollbar (reserved gutter / themed thum
   it('keeps the row background inset when overflow disappears', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-sidebar-scrollbar-stable-inset'))
     expect(await measureRowInset(page)).toEqual({ overflows: true, rowEdgeInset: 12 })
-    const bucket = page.getByText('Ungrouped', { exact: true }).locator('..').locator('..')
-    await bucket.click()
-    try {
-      await expect.poll(async () => (await measureRowInset(page)).overflows, { timeout: 10_000 }).toBe(false)
-      expect(await measureRowInset(page)).toEqual({ overflows: false, rowEdgeInset: 12 })
-    } finally {
-      await expandSeededSessions(page)
-    }
+    // The chats list has no collapse or Show-more control, so the overflow is
+    // removed by archiving all but one seeded row.
+    await archiveDownTo(page, 1)
+    await expect.poll(async () => (await measureRowInset(page)).overflows, { timeout: 10_000 }).toBe(false)
+    expect(await measureRowInset(page)).toEqual({ overflows: false, rowEdgeInset: 12 })
     expect(tripwire.pageErrors).toEqual([])
-  }, 60_000)
+  }, 90_000)
 
   it('renders the themed thumb through the WebKit path in both palettes', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-sidebar-scrollbar-theme'))
@@ -516,16 +548,6 @@ describe('web e2e: sidebar session list scrollbar (reserved gutter / themed thum
     const restored = await measureList(page)
     expect(restored.token).toBe(light.token)
     expect(restored.hoverToken).toBe(light.hoverToken)
-    expect(tripwire.pageErrors).toEqual([])
-  }, 60_000)
-
-  it('matches the committed scrollbar geometry golden in both palettes', async () => {
-    onTestFailed(() => saveFailureShot(page, 'web-e2e-sidebar-scrollbar-golden'))
-    const light = await measurePalette(page)
-    await page.evaluate(() => { document.body.setAttribute('data-ds-dark-theme', '') })
-    const dark = await measurePalette(page)
-    await page.evaluate(() => { document.body.removeAttribute('data-ds-dark-theme') })
-    await compareOrRefreshGolden(GEOMETRY_EXPECTED, renderGeometry(light, dark), MODE)
     expect(tripwire.pageErrors).toEqual([])
   }, 60_000)
 

@@ -1,0 +1,95 @@
+# The `chat` agent preset: the general-purpose assistant for sessions without a
+# project directory (the sidebar's New Chat flow).
+#
+# It composes the agent PLANE the same way `standard` does, minus everything
+# that presupposes a working directory: no `agent-instructions` (there is no
+# AGENTS.md to load), no `skill-filesystem`/`tool-skill` (the skill catalog is
+# project-rooted), no plan mode, no goals, no todo, and no delegation
+# (subagents/workflows/ralph) — those are coding-agent surfaces. The
+# model-facing read/write tools stay: at chat-creation time the host pins the
+# session to the `read-only` permission preset, so every confined operation
+# runs read-only through the same sandbox the workspace sessions use.
+#
+# The persona below shadows the deployment default (the coding-agent line with
+# `{{cwd}}`) for this preset's agents; `{{model}}` resolves from the agent's
+# own route as everywhere else.
+#
+# A service row here MUST sit inside a group carrying an `isolate` realm, same
+# as `standard`: the compaction group below is the only one.
+
+# ── identity ────────────────────────────────────────────────────────────────
+
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    text: >-
+      You are an AI assistant powered by the {{model}} model. You help the user with questions, explanations, and analysis. You have no working directory and cannot create or modify files; filesystem access is read-only. Answer directly and completely; use your tools when they help.
+
+# ── shell ───────────────────────────────────────────────────────────────────
+
+# `shell-env` and the sandboxed executors stay in the HOST composition, same as
+# `standard`; the session's read-only sandbox mode confines what these tools
+# may do.
+- id: tool-bash
+  name: '@deepseek-ai/dsh-tool-bash'
+  disabled: !!js process.platform === 'win32'
+
+- id: tool-pwsh
+  name: '@deepseek-ai/dsh-tool-pwsh'
+  disabled: !!js process.platform !== 'win32'
+
+# ── filesystem ──────────────────────────────────────────────────────────────
+
+# Read-side tools only in effect: the read-only sandbox mode pins the write
+# paths, so these register into the host registry like `standard`'s and need
+# no realm.
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+- id: tool-fs-search
+  name: '@deepseek-ai/dsh-tool-fs-search'
+  config:
+    sampleOverCapGlobResults: false
+
+# ── background jobs ─────────────────────────────────────────────────────────
+
+# Only the model-facing controls, over the host-plane task registry.
+- id: tool-jobs
+  name: '@deepseek-ai/dsh-tool-jobs'
+
+# ── compaction ──────────────────────────────────────────────────────────────
+
+# Same realm reasoning as `standard`: `compaction-basic` reads
+# `toolResultPrune` through `ctx.get`, so the pruner shares its realm.
+- id: compaction
+  name: cordis:group
+  group: true
+  isolate:
+    compaction: true
+    toolResultPruner: true
+  config:
+    - id: compaction-basic
+      name: '@deepseek-ai/dsh-compaction-basic'
+
+    - id: command-compact
+      name: '@deepseek-ai/dsh-command-compact'
+
+    - id: tool-result-pruner
+      name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+      config:
+        thresholdChars: 8192
+        headChars: 4096
+        tailChars: 1024
+
+# ── remaining model-facing rows ─────────────────────────────────────────────
+
+- id: tool-ask-user
+  name: '@deepseek-ai/dsh-tool-ask-user'
+
+# The `web` service and its search provider stay in the host composition; only
+# the model-facing tool is per-session. Search-only, as in `standard`.
+- id: tool-web
+  name: '@deepseek-ai/dsh-tool-web'
+  config:
+    fetch: false
+    searchTimeoutMs: 60000

@@ -150,9 +150,10 @@ describe('web e2e: multi-workspace session', () => {
   }, 120_000)
 
   it('No project starts a plain-chat session whose composer sends', async () => {
-    // The sidebar's top-level New Session button starts a blank session for
-    // the current Workspace (alpha); from its hero, No project + Start mints
-    // a session with no workspace.
+    // The sidebar's top-level New Session button (workspaces tab) starts a
+    // blank session for the current Workspace (alpha); from its hero, No
+    // project + Start mints a session with no workspace.
+    await page.getByRole('tab', { name: 'Workspaces' }).click()
     await page.getByRole('button', { name: 'New session' }).last().click()
     await page.locator('textarea:enabled[placeholder="Describe what you want to build"]')
       .waitFor({ timeout: 15_000 })
@@ -178,10 +179,11 @@ describe('web e2e: multi-workspace session', () => {
   }, 120_000)
 
   it('chip toggles whole-value sets through the host', async () => {
-    // Back to the reference session: open its row (titled by its first
-    // prompt), expanding its project group only when the row is not already
-    // listed — the earlier legs may have left the group open, and a blind
-    // group click would collapse it.
+    // Back to the reference session: its row browses on the workspaces tab;
+    // expand its project group only when the row is not already listed — the
+    // earlier legs may have left the group open, and a blind group click
+    // would collapse it.
+    await page.getByRole('tab', { name: 'Workspaces' }).click()
     const sessionRow = page.getByRole('treeitem', { name: /^MULTI_WS_REF_PROMPT/ })
     if ((await sessionRow.count()) === 0) {
       await page.getByRole('treeitem', { name: /^alpha/ }).click()

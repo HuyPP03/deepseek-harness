@@ -38,7 +38,7 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
       </button>
     </div>
     <button
-      aria-label="New session"
+      aria-label="New chat"
       class="newSession"
       type="button"
     >
@@ -96,7 +96,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       class="logoRow"
     >
       <button
-        aria-label="New session"
+        aria-label="New chat"
         class="brand wide"
         type="button"
       >
@@ -125,8 +125,30 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
         />
       </button>
     </div>
+    <div
+      aria-label="Browse tabs"
+      class="tabs"
+      role="tablist"
+    >
+      <button
+        aria-selected="true"
+        class="tab tabActive"
+        role="tab"
+        type="button"
+      >
+        Chats
+      </button>
+      <button
+        aria-selected="false"
+        class="tab"
+        role="tab"
+        type="button"
+      >
+        Workspaces
+      </button>
+    </div>
     <button
-      aria-label="New session"
+      aria-label="New chat"
       class="newSession"
       type="button"
     >
@@ -141,7 +163,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       <span
         class="newSessionLabel wide"
       >
-        New Session
+        New Chat
       </span>
     </button>
     <div
@@ -189,7 +211,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       class="logoRow"
     >
       <button
-        aria-label="新建会话"
+        aria-label="新建聊天"
         class="brand wide"
         type="button"
       >
@@ -218,8 +240,30 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
         />
       </button>
     </div>
+    <div
+      aria-label="浏览标签"
+      class="tabs"
+      role="tablist"
+    >
+      <button
+        aria-selected="true"
+        class="tab tabActive"
+        role="tab"
+        type="button"
+      >
+        聊天
+      </button>
+      <button
+        aria-selected="false"
+        class="tab"
+        role="tab"
+        type="button"
+      >
+        工作区
+      </button>
+    </div>
     <button
-      aria-label="新建会话"
+      aria-label="新建聊天"
       class="newSession"
       type="button"
     >
@@ -234,7 +278,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       <span
         class="newSessionLabel wide"
       >
-        新会话
+        新聊天
       </span>
     </button>
     <div

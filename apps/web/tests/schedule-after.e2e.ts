@@ -344,6 +344,9 @@ describe.skipIf(MODE === 'record')('web e2e: conversational reminders', () => {
     await workspace.attachSession(atHandle.agent.id)
     await page.reload({ waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    // The attached Sessions browse on the workspaces tab (the shell's
+    // default tab is chats).
+    await page.getByRole('tab', { name: 'Workspaces' }).click()
     const workspaceItem = page.locator('[role="treeitem"]').first()
     await workspaceItem.waitFor({ timeout: 15_000 })
     const expansionDeadline = Date.now() + 5_000

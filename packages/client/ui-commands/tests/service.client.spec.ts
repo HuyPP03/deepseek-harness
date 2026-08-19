@@ -39,6 +39,8 @@ interface BenchOptions {
   commands?: (payload: { sessionId: SessionId }) => Promise<{ commands: CommandDescriptor[] }>
   execute?: (payload: { sessionId: SessionId; line: string }) => Promise<ExecuteValue>
   addressed?: SessionId
+  /** Marks one session a chat preset (summary row), hiding /permission from its menu. */
+  chatSession?: SessionId
 }
 
 /**
@@ -98,14 +100,23 @@ async function bench(opts: BenchOptions = {}) {
       return () => { registered.delete(key) }
     },
   })
-  // Real scope tags behind a fake sessions face.
+  // Real scope tags behind a fake sessions face; `list` carries the
+  // summary rows the chat-preset menu filter reads.
   const scopes = new Map<SessionId, { ctx: Context; fiber: { dispose(): Promise<void> } }>()
+  const chat = opts.chatSession
+  const listState = {
+    ids: chat === undefined ? [] : [chat],
+    byId: chat === undefined ? {} : { [chat]: { agentPreset: 'chat' } },
+    current: undefined, phase: 'ready' as const,
+    subagentsByParent: {}, jobsBySession: {}, currentAddress: undefined,
+  }
   ctx.provide('sessions', {
     scope: (id: SessionId) => scopes.get(id)?.ctx,
     scopeOf: (c: Context) => scopeOf(c),
     subagentAddress: (id: SessionId) => id === opts.addressed
       ? { parentSessionId: sid('parent'), childSessionId: id, mode: 'continuable' as const }
       : undefined,
+    list: { getSnapshot: () => listState, subscribe: () => () => {} },
   })
   const forwarded = new Map<string, Array<(...args: never[]) => void>>()
   ctx.provide('remote', {
@@ -218,6 +229,19 @@ describe('candidates', () => {
     expect(list).toEqual([{ name: 'goal', description: 'leadingInput kind', hint: 'goal text' }])
   })
 
+  it('hides /permission from a chat session menu but keeps it for ordinary sessions', async () => {
+    const commands = () => Promise.resolve({
+      commands: [...S1_CMDS, { name: 'permission', description: 'switch preset', input: { hint: 'preset' } }],
+    })
+    const chat = await bench({ commands, chatSession: sid('s1') })
+    const names = (await chat.source.candidates(proj('s1'), req(''))).map(c => c.name)
+    expect(names).toEqual(['plan', 'goal'])
+
+    const plain = await bench({ commands })
+    const plainNames = (await plain.source.candidates(proj('s1'), req(''))).map(c => c.name)
+    expect(plainNames).toEqual(['plan', 'goal', 'permission'])
+  })
+
   it('matches case-insensitive subsequences and ranks prefixes, boundaries, adjacency, gaps, then source order', async () => {
     const commands: CommandDescriptor[] = [
       { name: 'q-xylophone', description: '' },
@@ -249,6 +273,19 @@ describe('candidates', () => {
     const { source } = await bench()
     const names = (await source.candidates(proj('s1'), req('', 'inline'))).map(c => c.name)
     expect(names).toEqual(['plan'])
+  })
+
+  it('hides the /permission row from a chat session menu, not from others', async () => {
+    const commands: CommandDescriptor[] = [
+      { name: 'plan', description: 'bare kind' },
+      { name: 'permission', description: 'switch the permission preset' },
+    ]
+    const { source } = await bench({
+      chatSession: sid('s1'),
+      commands: () => Promise.resolve({ commands }),
+    })
+    expect((await source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['plan'])
+    expect((await source.candidates(proj('s2'), req(''))).map(c => c.name)).toEqual(['plan', 'permission'])
   })
 
   it('merges available contributions and filters unavailable ones with the per-call projection', async () => {

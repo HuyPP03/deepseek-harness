@@ -1,4 +1,5 @@
 - menu:
+  - menuitem "Chat mode Read-only general assistant with no working directory, for questions, explanations, and analysis; file access stays read-only and no coding tools are provided."
   - menuitem "Standard mode Full coding agent with file editing, shell, file and web search, skills, planning, goals, subagents, and workflows.":
     - text: Standard mode Full coding agent with file editing, shell, file and web search, skills, planning, goals, subagents, and workflows.
     - img

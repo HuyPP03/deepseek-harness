@@ -221,6 +221,41 @@
   max-width: 0;
 }
 
+/* Browsing tabs (wide only): the two-part segmented control switching the
+   region between the ungrouped chat rows and the workspace tree. The rail
+   has no control; its New icon follows the persisted tab. */
+.tabs {
+  flex: none;
+  display: flex;
+  gap: 2px;
+  margin: 0 2px 8px;
+  padding: 2px;
+  border-radius: 10px;
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.tab {
+  flex: 1;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 18px;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--dsw-alias-label-primary);
+}
+
+.tabActive {
+  background: var(--dsw-alias-button-elevated-fill);
+  color: var(--dsw-alias-label-primary);
+}
+
 /* Region seat: always mounted so the foot never moves. Its trailing margin
    cancels the wide shell inset so the nested scrollbar can sit at the sidebar
    edge; the browser restores that inset inside its own rows. */

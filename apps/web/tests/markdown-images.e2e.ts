@@ -165,11 +165,10 @@ describe('web e2e: remote Markdown image rendering', () => {
 
   it.skipIf(MODE === 'record')('loads only the remote image and matches the conversation golden', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-markdown-images'))
-    const groupRow = page.locator('[role="treeitem"]').first()
-    await groupRow.waitFor({ timeout: 15_000 })
-    await groupRow.click()
-    const sessionRow = page.locator('[role="treeitem"]').nth(1)
-    await sessionRow.waitFor({ timeout: 10_000 })
+    // The seeded session is workspace-less, so it is a flat row on the chats
+    // tab (the shell's default); there is no group to open.
+    const sessionRow = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first()
+    await sessionRow.waitFor({ timeout: 15_000 })
     await sessionRow.click()
     await expect.poll(() => page.getByText('REMOTE_IMAGE_DONE', { exact: true }).count(), {
       timeout: 15_000,

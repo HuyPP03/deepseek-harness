@@ -44,6 +44,9 @@ describe('assembled todo surfaces', () => {
   it('renders the parallel plan as a row summary, a separate active count, and the dock plan strip', async () => {
     mountAssembledApp()
 
+    // The fixture session is workspace-accounted, so its row browses on the
+    // workspaces tab (the shell's default tab is chats).
+    await fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
     const tree = await screen.findByRole('tree', { name: 'Sessions' }, { timeout: 10_000 })
     fireEvent.click(await within(tree).findByText('Fixture 历史会话'))
     // The todo turn is the fixture's last, so wait for its keyed row rather

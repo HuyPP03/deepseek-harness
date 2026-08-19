@@ -48,10 +48,9 @@ describe('web e2e: durable per-message feedback', () => {
    * and hide the session row.
    */
   async function openSeededSession(): Promise<void> {
-    const groupRow = page.locator('[role="treeitem"]').first()
-    await groupRow.waitFor({ timeout: 15_000 })
-    if (await groupRow.getAttribute('aria-expanded') !== 'true') await groupRow.click()
-    const sessionRow = page.locator('[role="treeitem"]').nth(1)
+    // The seeded session is workspace-less, so it is a flat row on the chats
+    // tab (the shell's default); there is no group to open.
+    const sessionRow = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first()
     await sessionRow.waitFor({ timeout: 15_000 })
     await sessionRow.click()
   }

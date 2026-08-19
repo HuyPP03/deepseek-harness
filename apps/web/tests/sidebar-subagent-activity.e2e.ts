@@ -135,6 +135,9 @@ describe('web e2e: sidebar subagent activity', () => {
 
   it('pins a running descendant on its visible idle owner row', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-sidebar-subagent-activity'))
+    // The owner Session is workspace-accounted, so its row browses on the
+    // workspaces tab (the shell's default tab is chats).
+    await page.getByRole('tab', { name: 'Workspaces' }).click()
     const sidebar = page.getByRole('tree', { name: 'Sessions' })
     const ownerRow = sidebar.getByRole('treeitem', { name: /1 subagent running Delegate a background job/ })
     await ownerRow.waitFor({ timeout: 10_000 })

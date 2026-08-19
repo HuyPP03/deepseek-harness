@@ -12,7 +12,7 @@ import {
 } from '@deepseek-ai/dsh-client-runtime/client'
 import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
 import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
-import type { ClientContext, ConversationSnapshot, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ClientContext, ConversationSnapshot, SessionId, SessionListState } from '@deepseek-ai/dsh-client-runtime/client'
 import { SessionInputShell } from '../src/client/input/facade.ts'
 import type { ComposerAttachment } from '../src/client/contract/slots.ts'
 import type { DraftAttachmentId } from '../src/client/input/contract.ts'
@@ -64,6 +64,10 @@ interface BenchOptions {
     maxImagePixels: number
     mediaTypes: readonly ('image/png' | 'image/jpeg' | 'image/webp' | 'image/gif')[]
   }
+  /** Marks the session a chat (agentPreset summary), hiding the Access chip. */
+  chatSession?: boolean
+  /** Renders the hero seat (no session id). */
+  hero?: boolean
   draft?: string
   running?: boolean
   subagent?: Exclude<ConversationSnapshot['subagent'], null>
@@ -142,13 +146,17 @@ function bench(over?: BenchOptions) {
     return null
   }) as InputBarProps['renderSlot']
   const props: InputBarProps = {
-    sessionId: SID,
+    sessionId: over?.hero === true ? undefined : SID,
     SessionProvider: ({ children }) => children(SID),
     useSession: bindSnapshotSelector(session),
     useSessions: bindSnapshotSelector(createSnapshotStore({
-      ids: [], byId: {}, current: undefined, phase: 'ready',
+      ids: over?.chatSession === true ? [SID] : [],
+      byId: over?.chatSession === true
+        ? { [SID]: { id: SID, displayTitle: 'chat', running: false, blank: false, updatedAt: 0, agentPreset: 'chat' } }
+        : {},
+      current: undefined, phase: 'ready',
       subagentsByParent: {}, jobsBySession: {}, currentAddress: undefined,
-    })),
+    } as unknown as SessionListState)),
     useWorkspaces: bindSnapshotSelector(createSnapshotStore({
       items: [], archivedSessionIds: [], state: 'idle', phase: 'ready', error: null,
       baselinesReady: true, recentWorkspaceId: undefined,
@@ -1316,6 +1324,34 @@ describe('command launcher chrome and control seats', () => {
     expect(command).toHaveBeenCalledWith('/permission workspace-write')
     await act(async () => {})
     expect((view.getByLabelText(/^访问模式/) as HTMLButtonElement).disabled).toBe(false)
+  })
+
+  it('the Access chip is absent on a chat session even with a permissions projection', () => {
+    const command = vi.fn(() => Promise.resolve(true))
+    const permissions = {
+      options: [
+        { value: 'read-only', name: 'read-only' },
+        { value: 'workspace-write', name: 'workspace-write' },
+      ],
+      currentValue: 'read-only',
+    }
+    const { view } = bench({ permissions, command, chatSession: true })
+    // The fixed read-only mode is not selectable: the seat renders nothing.
+    expect(view.queryByLabelText(/^访问模式/)).toBeNull()
+  })
+
+  it('keeps the Access seat on the hero seat (no session is a chat session)', () => {
+    const command = vi.fn(() => Promise.resolve(true))
+    const permissions = {
+      options: [
+        { value: 'read-only', name: 'read-only' },
+        { value: 'workspace-write', name: 'workspace-write' },
+      ],
+      currentValue: 'read-only',
+    }
+    const { view } = bench({ permissions, command, hero: true })
+    // No session id means no chat preset: the seat follows the command face.
+    expect(view.getByLabelText(/^访问模式/)).toBeTruthy()
   })
 
   it('renders the write-workspace preset with its own glyph and the product label', async () => {

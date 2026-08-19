@@ -1313,6 +1313,21 @@ export interface Config {
    * sandbox and approval defaults is used.
    */
   defaultPreset?: string
+  /**
+   * Agent preset ids whose sessions are chat sessions (no project directory):
+   * a freshly created one pins {@link chatPreset} instead of the default, and
+   * the `/permission` switch is refused for it while it runs a listed preset.
+   * Empty (the default) disables the behavior; deployments without a chat
+   * preset compose this service unchanged.
+   */
+  chatPresetIds?: string[]
+  /**
+   * The permission preset pinned for chat sessions, a `presets` table entry
+   * whose bundle is the read-only one the deployment wants for them. Defaults
+   * to `read-only`; validated against the table at load when chat sessions
+   * are enabled.
+   */
+  chatPreset?: string
 }
 
 /** One preset's sandbox/approval bundle and optional client presentation. */
@@ -1330,7 +1345,7 @@ export interface PresetSpec {
 
 Depends on: [`ApprovalPolicy`](subsystems/approval.md) · [`SandboxMode`](subsystems/sandbox.md)
 
-Source: [`packages/interaction/permission-presets/src/index.ts:140`](../packages/interaction/permission-presets/src/index.ts)
+Source: [`packages/interaction/permission-presets/src/index.ts:145`](../packages/interaction/permission-presets/src/index.ts)
 
 <a id="deepseek-aidsh-persona"></a>
 
@@ -2887,7 +2902,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/bundle/web-app/src/index.ts:38`](../packages/bundle/web-app/src/index.ts)
+Source: [`packages/bundle/web-app/src/index.ts:41`](../packages/bundle/web-app/src/index.ts)
 
 <a id="deepseek-aidsh-web-fetch-http"></a>
 

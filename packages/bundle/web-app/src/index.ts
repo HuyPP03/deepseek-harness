@@ -18,6 +18,9 @@ import z from '@deepseek-ai/schemastery'
 import { addHarnessSourceSection } from '@deepseek-ai/dsh-app-boot'
 import * as FrontendStatic from '@deepseek-ai/dsh-host-frontend-static'
 import type {} from '@deepseek-ai/cordis-plugin-loader'
+// Type-only: pulls the `AssembleContext.agent` merge so the surface section
+// can tell a chat assembly from a workspace one.
+import type {} from '@deepseek-ai/dsh-agent'
 import type {} from '@deepseek-ai/dsh-host-webserver'
 import type {} from '@deepseek-ai/dsh-system-prompt'
 import type {} from '@deepseek-ai/dsh-shell-env'
@@ -91,14 +94,24 @@ export function resolveLanTrust(bindHost: string, extra: readonly string[]): Web
   return { lanAddresses, trustedHosts: [...lanAddresses, ...extra] }
 }
 
-/** Model-visible orientation and acceptance boundary for sessions created through `dsh web`. */
-function webSurfacePrompt(webUrl: string): string {
+/** The chat agent preset id (the shipped `apps/cli/config/agent-presets/chat` preset). */
+const CHAT_PRESET_ID = 'chat'
+
+/**
+ * Model-visible orientation and acceptance boundary for sessions created
+ * through `dsh web`. Chat sessions run without a project directory, so they
+ * get the orientation lines only — the client-plugin update contract is
+ * coding-workflow vocabulary a general assistant does not need.
+ */
+function webSurfacePrompt(webUrl: string, chat: boolean): string {
   const updateContract = 'The client-plugin HMR receiver is active, but client-plugin changes reload without a refresh only while '
     + '`pnpm run dev:web` is also running from this same checkout to rebuild their bundles; verify that watcher before promising automatic updates. '
     + 'Every other change — the apps/web shell and plain packages — requires rebuilding the affected Web artifacts and verifying this existing URL after a page refresh. '
-  return `You are interacting with the user through the DeepSeek Harness Web GUI at ${webUrl}. `
+  const base = `You are interacting with the user through the DeepSeek Harness Web GUI at ${webUrl}. `
     + 'When the user refers to "this page", "this GUI", or "this app" without naming another target, they mean this GUI. '
     + 'The browser provides no implicit DOM, route, or screenshot context. '
+  if (chat) return base
+  return base
     + updateContract
     + 'Starting another server does not update this GUI. '
     + 'The apps/web Vite entry builds the shell but is not a standalone application because only dsh web injects window.__DSH_BOOT__. '
@@ -143,7 +156,10 @@ export function apply(ctx: Context, config: Config): void {
       promptCtx.systemPrompt.section({
         name: 'app:web-surface',
         order: -98,
-        text: () => webSurfacePrompt(localWebUrl(promptCtx)),
+        text: context => webSurfacePrompt(
+          localWebUrl(promptCtx),
+          context.agent?.session.header.agentPreset === CHAT_PRESET_ID,
+        ),
       })
     })
     ctx.inject(['shellEnv'], (runtimeCtx) => {

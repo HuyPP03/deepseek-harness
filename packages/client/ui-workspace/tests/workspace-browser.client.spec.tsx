@@ -8,7 +8,7 @@ import type {
 import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
 import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
 import type { WorkspaceBrowserProps } from '../src/client/contract/slots.ts'
-import { createWorkspaceViewStore, FLAT_SESSION_ORDER_KEY } from '../src/client/stores.ts'
+import { createWorkspaceViewStore } from '../src/client/stores.ts'
 import { UNGROUPED_KEY } from '../src/client/tree.ts'
 import { WorkspaceBrowser } from '../src/client/WorkspaceBrowser.tsx'
 import { zh } from '../src/client/locales.ts'
@@ -63,6 +63,7 @@ function mount(overrides: Partial<WorkspaceBrowserProps> = {}) {
   const props: WorkspaceBrowserProps = {
     wide: true,
     expandSidebar: vi.fn(),
+    tab: 'workspaces',
     useSessions: hook(sessionState([])),
     useWorkspaces: hook(workspaceState([])),
     useStore: bindSnapshotSelector(store),
@@ -117,63 +118,55 @@ describe('WorkspaceBrowser', () => {
     })
   })
 
-  it('renders the grouped tree by default and switches to the flat list via Group by', () => {
-    const sessions = sessionState([summary('alpha-s', 2), summary('beta-s', 1)])
+  it('renders the workspace tree on the workspaces tab and the flat chats list on the chats tab', () => {
+    const sessions = sessionState([summary('alpha-s', 2), summary('loose', 1)])
     const b = mount({
       useSessions: hook(sessions),
-      useWorkspaces: hook(workspaceState([workspace('alpha', ['alpha-s']), workspace('beta', ['beta-s'])])),
+      useWorkspaces: hook(workspaceState([workspace('alpha', ['alpha-s'])])),
     })
     expect(screen.getByText('工作区')).toBeTruthy()
     expect(screen.getByText('alpha')).toBeTruthy()
-    // Sessions hidden while their group is folded.
+    // Sessions hidden while their group is folded; the loose session stays out.
     expect(screen.queryByText('alpha-s')).toBeNull()
+    expect(screen.queryByText('loose')).toBeNull()
 
+    // View options offer the order modes only (the tabs replace grouping).
     fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-    expect(screen.getByText('分组方式')).toBeTruthy() // the menu heading label
-    expect(screen.getByRole('separator')).toBeTruthy()
+    expect(screen.getByText('排序方式')).toBeTruthy() // the menu heading label
     expect(screen.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
-      '按工作区', '单列表', '手动排序', '最近更新',
+      '手动排序', '最近更新',
     ])
-    expect(screen.getByRole('menuitem', { name: '按工作区' }).querySelector('svg')).toBeTruthy()
     expect(screen.getByRole('menuitem', { name: '手动排序' }).querySelector('svg')).toBeTruthy()
-    fireEvent.click(screen.getByRole('menuitem', { name: '单列表' }))
-    // Store-driven flip: title changes, rows flatten newest-first, headers gone.
-    expect(b.store.getSnapshot().groupBy).toBe('flat')
-    expect(screen.getByText('会话')).toBeTruthy()
-    expect(screen.queryByText('alpha')).toBeNull()
-    expect(screen.getByText('alpha-s')).toBeTruthy()
-    expect(screen.getByText('beta-s')).toBeTruthy()
 
-    // Back to workspace grouping through the same menu.
-    fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-    expect(screen.getByRole('menuitem', { name: '手动排序' }).hasAttribute('disabled')).toBe(false)
-    fireEvent.click(screen.getByRole('menuitem', { name: '按工作区' }))
-    expect(b.store.getSnapshot().groupBy).toBe('workspace')
+    // The shell's tab flip re-renders the region as the flat chats list.
+    rerender(b, { tab: 'chats' })
+    expect(screen.getByText('聊天')).toBeTruthy()
+    expect(screen.queryByText('alpha')).toBeNull()
+    expect(screen.getByText('loose')).toBeTruthy()
+
+    // Back to the workspace tree through the same owner prop.
+    rerender(b, { tab: 'workspaces' })
     expect(screen.getByText('工作区')).toBeTruthy()
+    expect(screen.queryByText('loose')).toBeNull()
 
     // Escape closes the menu without picking.
     fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
     fireEvent.keyDown(document, { key: 'Escape' })
     expect(screen.queryByRole('menu')).toBeNull()
-    expect(b.store.getSnapshot().groupBy).toBe('workspace')
+    expect(b.store.getSnapshot().orderBy).toBe('manual')
   })
 
-  it('persists flat-list drag order locally and applies Last updated within that account', async () => {
+  it('persists chats-list drag order locally and applies Last updated within that account', async () => {
     const insertSessionBefore = vi.fn(async () => {})
     const sessions = sessionState([summary('one', 3), summary('two', 2), summary('three', 1)])
-    const workspaces = workspaceState([
-      workspace('alpha', ['one']),
-      workspace('beta', ['two']),
-    ])
     const b = mount({
       useSessions: hook(sessions),
-      useWorkspaces: hook(workspaces),
+      useWorkspaces: hook(workspaceState([])),
+      tab: 'chats',
       insertSessionBefore,
     })
-    fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: '单列表' }))
     await waitFor(() => {
-      expect(b.store.getSnapshot().sessionOrderByAccount[FLAT_SESSION_ORDER_KEY])
+      expect(b.store.getSnapshot().sessionOrderByAccount[UNGROUPED_KEY])
         .toEqual(['one', 'two', 'three'])
     })
 
@@ -185,14 +178,14 @@ describe('WorkspaceBrowser', () => {
     })
     fireEvent.dragStart(one, { dataTransfer: dragData() })
     fireDrag(three, 'drop', 180)
-    expect(b.store.getSnapshot().sessionOrderByAccount[FLAT_SESSION_ORDER_KEY])
+    expect(b.store.getSnapshot().sessionOrderByAccount[UNGROUPED_KEY])
       .toEqual(['two', 'three', 'one'])
     expect(insertSessionBefore).not.toHaveBeenCalled()
 
     fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
     fireEvent.click(screen.getByRole('menuitem', { name: '最近更新' }))
     await waitFor(() => {
-      expect(b.store.getSnapshot().sessionOrderByAccount[FLAT_SESSION_ORDER_KEY])
+      expect(b.store.getSnapshot().sessionOrderByAccount[UNGROUPED_KEY])
         .toEqual(['one', 'two', 'three'])
     })
 
@@ -202,8 +195,7 @@ describe('WorkspaceBrowser', () => {
     fireDrag(three, 'drop', 180)
     b.view.unmount()
 
-    const restored = mount({ useSessions: hook(sessions), useWorkspaces: hook(workspaces) })
-    expect(restored.store.getSnapshot().groupBy).toBe('flat')
+    const restored = mount({ useSessions: hook(sessions), tab: 'chats' })
     expect(restored.store.getSnapshot().orderBy).toBe('manual')
     expect(screen.getAllByRole('treeitem').map(row => row.textContent)).toEqual([
       expect.stringContaining('two'),
@@ -314,23 +306,23 @@ describe('WorkspaceBrowser', () => {
     expect(screen.getAllByRole('treeitem').slice(1)[0]?.textContent).toContain('two')
   })
 
-  it('archives a session from the row menu and hides archived rows in both modes', async () => {
+  it('archives a session from the row menu and hides archived rows in tree and chats views', async () => {
     const archiveSession = vi.fn(async () => {})
     const b = mount({
       useSessions: hook(sessionState([summary('kept-s', 2), summary('gone-s', 1)])),
-      useWorkspaces: hook(workspaceState([workspace('alpha', ['kept-s', 'gone-s'])])),
+      useWorkspaces: hook(workspaceState([])),
+      tab: 'chats',
       archiveSession,
     })
-    fireEvent.click(screen.getByText('alpha'))
+    // Both sessions are loose: the chats tab lists them.
+    expect(screen.getByText('kept-s')).toBeTruthy()
+    expect(screen.getByText('gone-s')).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: '会话“gone-s”的操作' }))
     fireEvent.click(screen.getByRole('menuitem', { name: '归档会话' }))
     expect(archiveSession).toHaveBeenCalledWith(sid('gone-s'))
 
-    // The archive-set echo hides the row in grouped and flat modes.
-    rerender(b, { useWorkspaces: hook(workspaceState([workspace('alpha', ['kept-s', 'gone-s'])], [sid('gone-s')])) })
-    expect(screen.queryByText('gone-s')).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: '视图选项' }))
-    fireEvent.click(screen.getByRole('menuitem', { name: '单列表' }))
+    // The archive-set echo hides the row in the chats list and the tree alike.
+    rerender(b, { useWorkspaces: hook(workspaceState([], [sid('gone-s')])) })
     expect(screen.getByText('kept-s')).toBeTruthy()
     expect(screen.queryByText('gone-s')).toBeNull()
   })
@@ -387,17 +379,20 @@ describe('WorkspaceBrowser', () => {
     expect(startSession).toHaveBeenCalledWith(wid('alpha'))
   })
 
-  it('auto-expands the Ungrouped bucket for a loose current session; its header has no menu and its ＋ is inert', () => {
+  it('keeps loose sessions out of the workspace tree and lists them on the chats tab', () => {
     const startSession = vi.fn()
-    mount({
+    const b = mount({
       useSessions: hook(sessionState([summary('loose', 1)], { current: sid('loose') })),
       useWorkspaces: hook(workspaceState([workspace('alpha', [])])),
       startSession,
     })
-    // The loose session's group is UNGROUPED_KEY: expanded by the effect.
-    expect(screen.getByText('loose')).toBeTruthy()
+    // The workspaces tab has no ungrouped bucket: the loose row stays hidden.
+    expect(screen.queryByText('loose')).toBeNull()
     expect(screen.queryByRole('button', { name: '工作区“未分组”的操作' })).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: '在“未分组”中新建会话' }))
+
+    // The chats tab lists it, with no group header to click.
+    rerender(b, { tab: 'chats' })
+    expect(screen.getByText('loose')).toBeTruthy()
     expect(startSession).not.toHaveBeenCalled()
   })
 
@@ -416,7 +411,7 @@ describe('WorkspaceBrowser', () => {
     expect(screen.queryByText('b')).toBeNull()
   })
 
-  it('shows only the current blank session as the localized New Session, excluded from search', () => {
+  it('shows only the current blank session, localized per preset, and excludes blanks from search', () => {
     const currentBlank = summary('alpha-blank', 9, { blank: true })
     const staleBlank = summary('beta-blank', 8, { blank: true })
     const sessions = sessionState(
@@ -435,15 +430,24 @@ describe('WorkspaceBrowser', () => {
 
     rerender(b, { useSessions: hook({ ...sessions, current: staleBlank.id }) })
     expect(screen.getAllByText('新会话')).toHaveLength(1)
-    b.store.actions.setGroupBy('flat')
-    rerender(b, {})
-    expect(screen.getAllByText('新会话')).toHaveLength(1)
+
+    // The chats tab lists the ungrouped blank under the New Chat label when
+    // the session carries the chat preset.
+    const chatBlank = summary('chat-blank', 9, { blank: true, agentPreset: 'chat' })
+    const chatSessions = sessionState([chatBlank], { current: chatBlank.id })
+    rerender(b, {
+      tab: 'chats',
+      useSessions: hook(chatSessions),
+      useWorkspaces: hook(workspaceState([])),
+    })
+    expect(screen.getByText('新聊天')).toBeTruthy()
+    expect(screen.getAllByText('新聊天')).toHaveLength(1)
     // Search excludes blank rows entirely — neither the canonical stored
     // title nor the localized display label participates in matching.
     fireEvent.change(screen.getByPlaceholderText('搜索会话…'), { target: { value: 'new session' } })
-    expect(screen.queryByText('新会话')).toBeNull()
-    fireEvent.change(screen.getByPlaceholderText('搜索会话…'), { target: { value: '新会话' } })
-    expect(screen.queryByText('新会话')).toBeNull()
+    expect(screen.queryByText('新聊天')).toBeNull()
+    fireEvent.change(screen.getByPlaceholderText('搜索会话…'), { target: { value: '新聊天' } })
+    expect(screen.queryByText('新聊天')).toBeNull()
   })
 
   it('shows local metadata matches immediately, then clears back to the grouped tree', async () => {
@@ -662,14 +666,13 @@ describe('WorkspaceBrowser', () => {
     }
   })
 
-  it('shows the no-sessions empty state in both modes and resolves an empty search', async () => {
+  it('shows the empty state in both tabs and resolves an empty search', async () => {
     vi.useFakeTimers()
     try {
       const b = mount()
       expect(screen.getByText('暂无会话')).toBeTruthy()
-      b.store.actions.setGroupBy('flat')
-      rerender(b, {})
-      expect(screen.getByText('暂无会话')).toBeTruthy()
+      rerender(b, { tab: 'chats' })
+      expect(screen.getByText('暂无聊天')).toBeTruthy()
       fireEvent.change(screen.getByPlaceholderText('搜索会话…'), { target: { value: 'x' } })
       expect(screen.getByText('正在搜索会话历史…')).toBeTruthy()
       await act(async () => { await vi.advanceTimersByTimeAsync(250) })
@@ -837,15 +840,15 @@ describe('WorkspaceBrowser', () => {
     expect(insertSessionBefore).toHaveBeenCalledTimes(1)
   })
 
-  it('persists Ungrouped drag order in both modes without writing a Host Workspace account', async () => {
+  it('persists chats drag order without writing a Host Workspace account', async () => {
     const insertSessionBefore = vi.fn(async () => {})
     const sessions = sessionState([summary('one', 3), summary('two', 2), summary('three', 1)])
     const b = mount({
       useSessions: hook(sessions),
       useWorkspaces: hook(workspaceState([])),
+      tab: 'chats',
       insertSessionBefore,
     })
-    fireEvent.click(screen.getByText('未分组'))
 
     const dragAfter = (sourceTitle: string, targetTitle: string): void => {
       const source = screen.getByText(sourceTitle).closest('[role="treeitem"]') as HTMLElement
@@ -876,10 +879,11 @@ describe('WorkspaceBrowser', () => {
     const restored = mount({
       useSessions: hook(sessions),
       useWorkspaces: hook(workspaceState([])),
+      tab: 'chats',
       insertSessionBefore,
     })
     expect(restored.store.getSnapshot().sessionOrderByAccount[UNGROUPED_KEY]).toEqual(['two', 'three', 'one'])
-    expect(screen.getAllByRole('treeitem').slice(1).map(row => row.textContent)).toEqual([
+    expect(screen.getAllByRole('treeitem').map(row => row.textContent)).toEqual([
       expect.stringContaining('two'),
       expect.stringContaining('three'),
       expect.stringContaining('one'),
@@ -1060,7 +1064,7 @@ describe('WorkspaceBrowser', () => {
     const dialog = screen.getByRole('dialog', { name: '删除工作区' })
     expect(dialog.textContent).toContain('将把“Alpha”从工作区列表中移除')
     expect(dialog.textContent).toContain('文件夹与会话记录会保留')
-    expect(dialog.textContent).toContain('其会话将显示在“未分组”下')
+    expect(dialog.textContent).toContain('其会话将显示在“聊天”下')
 
     const confirm = screen.getByRole<HTMLButtonElement>('button', { name: '删除工作区' })
     fireEvent.click(confirm)

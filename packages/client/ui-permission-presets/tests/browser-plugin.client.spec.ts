@@ -82,13 +82,20 @@ async function bench() {
         : { ok: false as const, error: { code: 'internal', message: 'boom' } })
     },
   })
+  // `list` carries the summary rows the chat-preset availability filter reads.
+  const listState = {
+    ids: [] as SessionId[], byId: {} as Record<SessionId, { agentPreset?: string }>,
+    current: undefined, phase: 'ready' as const,
+    subagentsByParent: {}, jobsBySession: {}, currentAddress: undefined,
+  }
   ctx.provide('sessions', {
     binding: (id: SessionId) => (values.has(id) ? { sessionId: id, session: session(id) } : undefined),
+    list: { getSnapshot: () => listState, subscribe: () => () => {} },
   })
   const fiber = ctx.plugin({ inject: [...inject], apply })
   await fiber.await()
   return {
-    ctx, fiber, values, commands,
+    ctx, fiber, values, commands, listState,
     setResult: (r: { ok: boolean; matched?: boolean }) => { commandResult = r },
     decoration: () => decoration,
     permissionRow: () => ctx.slots.entries('settings.general.item')
@@ -141,6 +148,18 @@ describe('ui-permission browser plugin', () => {
     // A projection that vanished between availability and open throws.
     expect(() => c.ui.options({ sessionId: sid('ghost') }, new AbortController().signal))
       .toThrow(/not available on this host/)
+  })
+
+  it('a chat session is never available, even with a permissions projection', async () => {
+    const b = await bench()
+    const c = b.decoration()!
+    const chat = { sessionId: sid('chat') }
+    b.values.set(sid('chat'), SELECT)
+    // A plain session with the projection is available…
+    expect(c.available(chat)).toBe(true)
+    // …the same session under the chat preset is not.
+    b.listState.byId[sid('chat')] = { agentPreset: 'chat' }
+    expect(c.available(chat)).toBe(false)
   })
 
   it('a pick submits the /permission line; rejection and unmatched throw', async () => {

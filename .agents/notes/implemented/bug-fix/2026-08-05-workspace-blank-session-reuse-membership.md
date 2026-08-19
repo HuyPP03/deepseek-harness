@@ -22,7 +22,7 @@ The reuse scan now requires workspace membership: `blank` AND `summary.cwd === w
 
 ## Consequences
 
-Stray blank sessions remain visible in Ungrouped (the user can still open them) but are never hijacked by a Workspace's New Session flow. Membership is a new condition on the reuse scan, and it has one observable stale-mirror edge: in the window where the session mirror is fresh but the Workspace account frame lags, the Workspace's own member blank can fail the membership check and a duplicate blank is minted where the old code reused — a second `New Session` row under that Workspace rather than the old failure shape (a session that no grouping surface shows). Both windows are transient and the per-Workspace coalescing still prevents duplicate creates racing one another. No host, wire, or durable-format change.
+Stray blank sessions remain visible in the chats list (the user can still open them) but are never hijacked by a Workspace's New Session flow. Membership is a new condition on the reuse scan, and it has one observable stale-mirror edge: in the window where the session mirror is fresh but the Workspace account frame lags, the Workspace's own member blank can fail the membership check and a duplicate blank is minted where the old code reused — a second `New Session` row under that Workspace rather than the old failure shape (a session that no browsing surface shows). Both windows are transient and the per-Workspace coalescing still prevents duplicate creates racing one another. No host, wire, or durable-format change.
 
 ## Testing
 

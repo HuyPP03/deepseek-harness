@@ -40,6 +40,31 @@
     # once the web UI owns the choice per session.
     mode: !!js process.env.DSH_TOOLS_MODE
 
+# The Web surface ships the `chat` agent preset (New Chat): its sessions pin
+# the `read-only` permission preset at creation and refuse the `/permission`
+# switch. The patch replaces the base row's whole config, so the table is
+# restated here.
+- id: permission
+  config:
+    presets:
+      read-only:
+        sandbox: read-only
+        approval: ask
+      workspace-write:
+        sandbox: workspace-write
+        approval: ask
+        name: 'Write Only'
+      write-workspace:
+        sandbox: workspace-refs-write
+        approval: ask
+        name: 'Write All'
+        description: 'Write inside the workspace and the attached reference projects; reads are unrestricted. Wider retries require approval.'
+      danger-full-access:
+        sandbox: danger-full-access
+        approval: never
+    chatPresetIds:
+      - chat
+
 # ── web-only host rows, the transport layer, and the browser roster ─────────
 
 # `dsh.client` rows are the browser roster the modules node half scans into

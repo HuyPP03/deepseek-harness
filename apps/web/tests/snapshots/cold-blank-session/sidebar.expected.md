@@ -1,1 +1,1 @@
-- tree "Sessions": No sessions yet
+- tree "Chats": No chats yet
