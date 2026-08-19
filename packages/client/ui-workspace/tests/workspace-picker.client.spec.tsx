@@ -196,11 +196,11 @@ describe('WorkspacePicker (multi-select New-Session flow)', () => {
   it('caps the selection at one main plus two references, until an uncheck frees a slot', () => {
     const b = mountFlow('multi', { items: [workspace('alpha', 'Alpha'), workspace('beta', 'Beta'), workspace('gamma', 'Gamma'), workspace('delta', 'Delta')] })
     for (const name of ['Alpha', 'Beta', 'Gamma']) fireEvent.click(screen.getByRole('menuitem', { name: new RegExp(`^${name}`) }))
-    expect((screen.getByRole('menuitem', { name: /^Delta/ }) as HTMLButtonElement).disabled).toBe(true)
+    expect(screen.getByRole<HTMLButtonElement>('menuitem', { name: /^Delta/ }).disabled).toBe(true)
     fireEvent.click(screen.getByRole('menuitem', { name: START }))
     expect(b.onConfirm).toHaveBeenCalledWith({ main: wid('alpha'), references: [wid('beta'), wid('gamma')] })
     fireEvent.click(screen.getByRole('menuitem', { name: /^Alpha/ }))
-    expect((screen.getByRole('menuitem', { name: /^Delta/ }) as HTMLButtonElement).disabled).toBe(false)
+    expect(screen.getByRole<HTMLButtonElement>('menuitem', { name: /^Delta/ }).disabled).toBe(false)
   })
 
   it('submits plain chat when Start is pressed with nothing checked', () => {
@@ -265,7 +265,7 @@ describe('WorkspacePicker (multi-select New-Session flow)', () => {
     await waitFor(() => { expect(screen.getByRole('dialog', { name: '无法打开文件夹' })).toBeTruthy() })
     expect(screen.getByRole('alert').textContent).toBe('permission denied')
     expect(b.probe.owner!.open).toBe(false)
-    fireEvent.click(screen.getByRole('button', { name: '重新选择' }))
+    fireEvent.click(screen.getByRole<HTMLButtonElement>('button', { name: '重新选择' }))
     expect(b.probe.owner!.open).toBe(true)
   })
 
@@ -275,7 +275,7 @@ describe('WorkspacePicker (multi-select New-Session flow)', () => {
     await act(async () => { b.probe.owner!.onPicked('/one/project') })
     await waitFor(() => { expect(screen.getByRole('dialog', { name: '无法打开文件夹' })).toBeTruthy() })
     act(() => { b.occupancy.flip(false) })
-    expect((screen.getByRole('button', { name: '重新选择' }) as HTMLButtonElement).disabled).toBe(true)
+    expect(screen.getByRole<HTMLButtonElement>('button', { name: '重新选择' }).disabled).toBe(true)
     fireEvent.click(screen.getByRole('button', { name: '取消' }))
     expect(screen.queryByRole('dialog')).toBeNull()
   })
@@ -286,7 +286,7 @@ describe('WorkspacePicker (multi-select New-Session flow)', () => {
     const b = mountFlow('multi', { items: [workspace('alpha', 'Alpha')], createWorkspace: vi.fn(() => pending) })
     chooseAdd()
     for (const name of [PLAIN, /^Alpha/, ADD, START]) {
-      expect((screen.getByRole('menuitem', { name }) as HTMLButtonElement).disabled).toBe(true)
+      expect(screen.getByRole<HTMLButtonElement>('menuitem', { name }).disabled).toBe(true)
     }
     expect(b.probe.owner!.busy).toBe(false)
     act(() => { b.probe.owner!.onPicked('/tmp/project') })
