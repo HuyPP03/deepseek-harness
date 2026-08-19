@@ -17,7 +17,7 @@ import SessionStore, { SessionId, type Session } from '@deepseek-ai/dsh-session'
 import UserQuestionService from '@deepseek-ai/dsh-user-questions'
 import { RpcId, type RpcRequest } from '../src/api/rpc.ts'
 import { createApiProxy } from '../src/api-proxy.ts'
-import { FILES_MAX_ENTRIES } from '../src/files-walk.ts'
+import { FILES_MAX_RESULTS } from '../src/files-walk.ts'
 
 let nextRpc = 0
 function request<P>(payload: P): RpcRequest<P> {
@@ -92,11 +92,44 @@ describe('files.list', () => {
 
     expect(response.result).toMatchObject({ ok: true, value: { truncated: false } })
     if (response.result.ok) {
-      expect(response.result.value.files.map(f => f.relative)).toEqual(['README.md', 'src/main.ts'])
+      // .env is skipped by the dot rule; the src directory is listed.
+      expect(response.result.value.files.map(f => f.relative)).toEqual(['README.md', 'src', 'src/main.ts'])
       for (const file of response.result.value.files) {
         expect(file.root).toBe('workspace')
         expect(file.path).toBe(join(cwd, file.relative))
       }
+      expect(response.result.value.files.find(f => f.relative === 'src')?.isDirectory).toBe(true)
+    }
+  })
+
+  it('passes the query through to the host-side filter', async () => {
+    const { api, ctx, cwd } = await harness()
+    writeFileSync(join(cwd, 'README.md'), '')
+    mkdirSync(join(cwd, 'src'), { recursive: true })
+    writeFileSync(join(cwd, 'src/main.ts'), '')
+    ctx.sessions.create(SessionId('s5'), { meta: { cwd } })
+
+    const response = await api.files.list(request({ sessionId: SessionId('s5'), query: 'MAIN' }))
+
+    expect(response.result).toMatchObject({ ok: true })
+    if (response.result.ok) {
+      expect(response.result.value.files.map(f => f.relative)).toEqual(['src/main.ts'])
+    }
+  })
+
+  it('lists the prefix directory itself for a trailing-slash query', async () => {
+    const { api, ctx, cwd } = await harness()
+    mkdirSync(join(cwd, 'src'), { recursive: true })
+    writeFileSync(join(cwd, 'src/main.ts'), '')
+    writeFileSync(join(cwd, 'src/other.md'), '')
+    ctx.sessions.create(SessionId('s6'), { meta: { cwd } })
+
+    const response = await api.files.list(request({ sessionId: SessionId('s6'), query: 'src/' }))
+
+    expect(response.result).toMatchObject({ ok: true })
+    if (response.result.ok) {
+      expect(response.result.value.files.map(f => f.relative)).toEqual(['src', 'src/main.ts', 'src/other.md'])
+      expect(response.result.value.files[0]?.isDirectory).toBe(true)
     }
   })
 
@@ -139,9 +172,9 @@ describe('files.list', () => {
     }
   })
 
-  it('reports the entry bound from the walk as truncation', async () => {
+  it('caps the result rows at the result bound', async () => {
     const { api, ctx, cwd } = await harness()
-    for (let i = 0; i < FILES_MAX_ENTRIES + 1; i += 1) {
+    for (let i = 0; i < FILES_MAX_RESULTS + 5; i += 1) {
       writeFileSync(join(cwd, `f${String(i).padStart(5, '0')}.txt`), '')
     }
     ctx.sessions.create(SessionId('s4'), { meta: { cwd } })
@@ -150,8 +183,24 @@ describe('files.list', () => {
 
     expect(response.result).toMatchObject({ ok: true })
     if (response.result.ok) {
-      expect(response.result.value.files).toHaveLength(FILES_MAX_ENTRIES)
-      expect(response.result.value.truncated).toBe(true)
+      expect(response.result.value.files).toHaveLength(FILES_MAX_RESULTS)
+      expect(response.result.value.truncated).toBe(false)
     }
+  })
+
+  it('serves a partial result when the request signal is aborted', async () => {
+    const { api, ctx, cwd } = await harness()
+    mkdirSync(join(cwd, 'src'), { recursive: true })
+    writeFileSync(join(cwd, 'README.md'), '')
+    writeFileSync(join(cwd, 'src/main.ts'), '')
+    ctx.sessions.create(SessionId('s7'), { meta: { cwd } })
+    const aborted = new AbortController()
+    aborted.abort()
+
+    const response = await api.files.list(request({ sessionId: SessionId('s7') }), aborted.signal)
+
+    // The walk stops at its first boundary check: an aborted request gets
+    // the (empty) partial result, not an error.
+    expect(response.result).toMatchObject({ ok: true, value: { files: [], truncated: false } })
   })
 })

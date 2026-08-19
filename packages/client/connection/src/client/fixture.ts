@@ -32,7 +32,7 @@ import type { CommandId } from '@deepseek-ai/dsh-commands/brand'
 import type { CommandDescriptor, CommandExecution, CommandResult } from '@deepseek-ai/dsh-commands/types'
 import { deriveEventMessage, foldSurface } from '@deepseek-ai/dsh-session/surface'
 import type {
-  ApiProxy, ClientRequest, ClientResponse, HistoryEntry, HostFrame, MuxFrame, RpcReceipt,
+  ApiProxy, ClientRequest, ClientResponse, FileEntry, HistoryEntry, HostFrame, MuxFrame, RpcReceipt,
   ModelProviderGroup, ModelSelection, RpcRequest, RpcResponse, RpcResult, ServerRequest, ServerResponse, SessionSummary,
   ToolCallView, ToolEventView, ToolResultView, WorkspaceId, WorkspaceView,
 } from './api.ts'
@@ -2801,15 +2801,39 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
       list: (request) => {
         const missing = requireSession(request)
         if (missing !== undefined) return missing
-        // Browser fixture: a static working set, no filesystem behind it.
-        return ok(request, {
-          files: [
-            { path: '/fixture/README.md', relative: 'README.md', root: 'workspace' },
-            { path: '/fixture/src/main.ts', relative: 'src/main.ts', root: 'workspace' },
-            { path: '/fixture-ref/lib.ts', relative: 'lib.ts', root: 'fixture-ref' },
-          ],
-          truncated: false,
-        })
+        // Browser fixture: a static working set, no filesystem behind it. The
+        // optional query filters and ranks with the host's semantics
+        // (basename prefix beats path prefix beats substring; '/' and '\'
+        // are the same separator; byte-wise alphabetical tie-break).
+        const rows: FileEntry[] = [
+          { path: '/fixture/README.md', relative: 'README.md', root: 'workspace', isDirectory: false },
+          { path: '/fixture/src', relative: 'src', root: 'workspace', isDirectory: true },
+          { path: '/fixture/src/main.ts', relative: 'src/main.ts', root: 'workspace', isDirectory: false },
+          { path: '/fixture-ref/lib.ts', relative: 'lib.ts', root: 'fixture-ref', isDirectory: false },
+        ]
+        const q = request.payload.query?.trim().toLowerCase().replace(/\\/gu, '/') ?? ''
+        const matched = q === ''
+          ? rows
+          : rows
+            .map((row) => {
+              const normalized = row.relative.toLowerCase().replace(/\\/gu, '/')
+              const base = normalized.slice(normalized.lastIndexOf('/') + 1)
+              const matchRel = row.isDirectory ? normalized + '/' : normalized
+              if (matchRel.includes(q)) {
+                return { row, score: base.startsWith(q) ? 0 : matchRel.startsWith(q) ? 1 : 2 }
+              }
+              return undefined
+            })
+            .filter((x): x is { row: FileEntry; score: number } => x !== undefined)
+            .sort((a, b) => {
+              const ka = a.row.relative.toLowerCase().replace(/\\/gu, '/')
+              const kb = b.row.relative.toLowerCase().replace(/\\/gu, '/')
+              return a.score - b.score
+                || ka.length - kb.length
+                || (ka < kb ? -1 : ka > kb ? 1 : 0)
+            })
+            .map(x => x.row)
+        return ok(request, { files: matched, truncated: false })
       },
     },
     goals: {

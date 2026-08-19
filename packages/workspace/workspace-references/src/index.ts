@@ -23,7 +23,7 @@
  * @module @deepseek-ai/dsh-workspace-references
  */
 
-import { realpathSync, statSync } from 'node:fs'
+import { realpath, stat } from 'node:fs/promises'
 import { isAbsolute, resolve } from 'node:path'
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
@@ -100,17 +100,17 @@ export async function normalizeReferencePaths(paths: readonly string[], cwd: str
     }
     let canonical: string
     try {
-      canonical = realpathSync.native(resolve(raw))
+      canonical = await realpath(resolve(raw))
     } catch {
       throw new Error(`workspace/references: reference does not exist: ${raw}`)
     }
-    if (!statSync(canonical).isDirectory()) {
+    if (!(await stat(canonical)).isDirectory()) {
       throw new Error(`workspace/references: reference is not a directory: ${raw}`)
     }
     if (cwd !== undefined) {
       let cwdCanonical: string
       try {
-        cwdCanonical = realpathSync.native(resolve(cwd))
+        cwdCanonical = await realpath(resolve(cwd))
       } catch {
         cwdCanonical = resolve(cwd)
       }

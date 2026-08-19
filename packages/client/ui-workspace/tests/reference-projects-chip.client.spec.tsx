@@ -115,7 +115,7 @@ describe('ReferenceProjectsChip menu', () => {
     const seats = [workspace('own', [SESSION]), workspace('one'), workspace('two')]
     render(<ReferenceProjectsChip {...props({ references: ['/projects/one'], limit: 2 }, seats)} />)
     openMenu()
-    expect(isChecked(screen.getByRole('menuitem', { name: 'one' }))).toBe(true)
+    expect(isChecked(screen.getByRole<HTMLButtonElement>('menuitem', { name: 'one' }))).toBe(true)
     expect(isChecked(screen.getByRole('menuitem', { name: 'two' }))).toBe(false)
     expect(screen.queryByRole('menuitem', { name: 'own' })).toBeNull()
   })
@@ -124,7 +124,7 @@ describe('ReferenceProjectsChip menu', () => {
     const setReferences = vi.fn(async () => OK)
     render(<ReferenceProjectsChip {...props({ references: [], limit: 2 }, [workspace('own', [SESSION]), workspace('one'), workspace('two')], setReferences)} />)
     openMenu()
-    await act(async () => { fireEvent.click(screen.getByRole('menuitem', { name: 'one' })) })
+    await act(async () => { fireEvent.click(screen.getByRole<HTMLButtonElement>('menuitem', { name: 'one' })) })
     expect(setReferences).toHaveBeenCalledWith([wid('one')])
   })
 
@@ -153,9 +153,9 @@ describe('ReferenceProjectsChip menu', () => {
     const seats = [workspace('own', [SESSION]), workspace('one'), workspace('two'), workspace('three')]
     render(<ReferenceProjectsChip {...props({ references: ['/projects/one', '/projects/two'], limit: 2 }, seats, setReferences)} />)
     openMenu()
-    expect((screen.getByRole('menuitem', { name: 'three' }) as HTMLButtonElement).disabled).toBe(true)
-    expect((screen.getByRole('menuitem', { name: 'one' }) as HTMLButtonElement).disabled).toBe(false)
-    await act(async () => { fireEvent.click(screen.getByRole('menuitem', { name: 'one' })) })
+    expect(screen.getByRole<HTMLButtonElement>('menuitem', { name: 'three' }).disabled).toBe(true)
+    expect(screen.getByRole<HTMLButtonElement>('menuitem', { name: 'one' }).disabled).toBe(false)
+    await act(async () => { fireEvent.click(screen.getByRole<HTMLButtonElement>('menuitem', { name: 'one' })) })
     expect(setReferences).toHaveBeenCalledWith([wid('two')])
   })
 
@@ -165,7 +165,7 @@ describe('ReferenceProjectsChip menu', () => {
     const setReferences = vi.fn(async () => rejected)
     render(<ReferenceProjectsChip {...props({ references: [], limit: 2 }, [workspace('own', [SESSION]), workspace('one')], setReferences)} />)
     openMenu()
-    await act(async () => { fireEvent.click(screen.getByRole('menuitem', { name: 'one' })) })
+    await act(async () => { fireEvent.click(screen.getByRole<HTMLButtonElement>('menuitem', { name: 'one' })) })
     expect(warn).toHaveBeenCalledWith('reference update rejected:', rejected.error)
     warn.mockRestore()
   })

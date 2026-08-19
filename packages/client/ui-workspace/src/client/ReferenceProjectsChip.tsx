@@ -83,7 +83,7 @@ export function ReferenceProjectsChip({
     const stalePaths = view.references.filter(path => pathToId.get(path) === undefined)
     const atCapacity = view.references.length >= view.limit
     const rows: MenuEntry[] = workspaces
-      .filter(workspace => workspace.workspaceId !== own?.workspaceId)
+      .filter(workspace => workspace.workspaceId !== own.workspaceId)
       .map((workspace) => {
         const isReferenced = view.references.includes(workspace.path)
         return {

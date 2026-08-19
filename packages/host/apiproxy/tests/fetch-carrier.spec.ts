@@ -228,7 +228,21 @@ function fakeApi(overrides: Partial<{ muxFrames: MuxFrame[]; hostFrames: HostFra
     },
     files: {
       async list(request) {
-        return { rpcId: request.rpcId, result: { ok: true, value: { files: [{ path: '/work/src/main.ts', relative: 'src/main.ts', root: 'workspace' }], truncated: false } } }
+        return {
+          rpcId: request.rpcId,
+          result: {
+            ok: true,
+            value: {
+              files: [
+                { path: '/work/src/main.ts', relative: 'src/main.ts', root: 'workspace', isDirectory: false },
+                ...(request.payload.query === undefined || request.payload.query === ''
+                  ? []
+                  : [{ path: '/work/src', relative: 'src', root: 'workspace', isDirectory: true }]),
+              ],
+              truncated: false,
+            },
+          },
+        }
       },
     },
     goals: {
@@ -439,10 +453,24 @@ describe('unary round trip (handler ⇄ client, no network)', () => {
     expect(skills.result).toEqual({ ok: true, value: { skills: [{ name: 'commit-helper', description: 'Git commits', modelInvocable: true }] } })
   })
 
-  it('round-trips files.list through the wire form', async () => {
+  it('round-trips files.list through the wire form, with and without a query', async () => {
     const c = client()
     const files = await c.files.list({ sessionId: 's' as never })
-    expect(files.result).toEqual({ ok: true, value: { files: [{ path: '/work/src/main.ts', relative: 'src/main.ts', root: 'workspace' }], truncated: false } })
+    expect(files.result).toEqual({
+      ok: true,
+      value: { files: [{ path: '/work/src/main.ts', relative: 'src/main.ts', root: 'workspace', isDirectory: false }], truncated: false },
+    })
+    const queried = await c.files.list({ sessionId: 's' as never, query: 'src' })
+    expect(queried.result).toEqual({
+      ok: true,
+      value: {
+        files: [
+          { path: '/work/src/main.ts', relative: 'src/main.ts', root: 'workspace', isDirectory: false },
+          { path: '/work/src', relative: 'src', root: 'workspace', isDirectory: true },
+        ],
+        truncated: false,
+      },
+    })
   })
 
   it('lets host.pickDirectory finish after the 30-second default unary deadline', async () => {

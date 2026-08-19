@@ -352,7 +352,7 @@ export function WorkspacePicker({
       onConfirm={onConfirm}
       // The owner share has no separate close channel: an unconfirmed close
       // and a cancel are the same event (selection null).
-      onClose={() => onConfirm(null)}
+      onClose={() => { onConfirm(null) }}
     />
   )
 }
