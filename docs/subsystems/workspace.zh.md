@@ -174,7 +174,7 @@ async set(session: Session, paths: readonly string[]): Promise<void>
 
 Types: [Session](session.md)
 
-Source: [`packages/workspace/workspace-references/src/index.ts:180`](../../packages/workspace/workspace-references/src/index.ts)
+Source: [`packages/workspace/workspace-references/src/index.ts:179`](../../packages/workspace/workspace-references/src/index.ts)
 
 <a id="ctxworkspaceregistry--workspaceregistry"></a>
 

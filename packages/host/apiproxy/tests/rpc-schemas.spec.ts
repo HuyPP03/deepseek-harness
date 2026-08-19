@@ -29,6 +29,7 @@ import {
   workspaceRenameRequestSchema, workspaceRenameValueSchema, workspaceViewSchema,
 } from '../src/api/workspace.schema.ts'
 import { skillEntrySchema, skillListRequestSchema, skillListValueSchema } from '../src/api/skills.schema.ts'
+import { fileEntrySchema, fileListRequestSchema, fileListValueSchema } from '../src/api/files.schema.ts'
 import {
   agentPresetEntrySchema, agentPresetListValueSchema, agentPresetOpenDocumentValueSchema,
 } from '../src/api/agent-presets.schema.ts'
@@ -426,6 +427,28 @@ describe('skills domain schemas', () => {
     expect(() => skillEntrySchema.parse({ name: '', description: 'd', modelInvocable: true })).toThrow()
     // modelInvocable is required wire data: an entry without it fails.
     expect(() => skillEntrySchema.parse({ name: 'n', description: 'd' })).toThrow()
+  })
+})
+
+describe('files domain schemas', () => {
+  it('validates the list request/value pair', () => {
+    expect(fileListRequestSchema.parse({ sessionId: 's1' })).toEqual({ sessionId: 's1' })
+    // The wire is session-addressed only: a sessionId-less payload fails.
+    expect(() => fileListRequestSchema.parse({})).toThrow()
+    expect(fileListValueSchema.parse({ files: [], truncated: false }).files).toEqual([])
+    const value = fileListValueSchema.parse({
+      files: [
+        { path: '/w/src/main.ts', relative: 'src/main.ts', root: 'workspace' },
+        { path: '/r/lib.ts', relative: 'lib.ts', root: 'myref' },
+      ],
+      truncated: true,
+    })
+    expect(value.files).toHaveLength(2)
+    expect(value.files[1]?.root).toBe('myref')
+    expect(value.truncated).toBe(true)
+    // Every field is required wire data: a bare path fails.
+    expect(() => fileEntrySchema.parse({ path: '/w/a.txt' })).toThrow()
+    expect(() => fileEntrySchema.parse({ path: '', relative: 'a', root: 'w' })).toThrow()
   })
 })
 
