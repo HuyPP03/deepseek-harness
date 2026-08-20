@@ -520,10 +520,13 @@ serviceFor<K extends string & keyof Context>(agent: { ctx: Context }, name: K): 
 /**
  * Re-link one agent to a different preset's standing composition.
  *
- * Only valid while the agent has produced nothing: swapping tools mid
- * conversation would leave logged tool calls the new composition cannot
- * make. The CALLER owns that check — this method does not read session
- * history.
+ * Swapping a session that already produced a conversation is legal but
+ * caller-gated: the log keeps every earlier turn as the record of the old
+ * composition (logged tool calls are inert history, exactly as on a
+ * mid-conversation model switch), while later turns run under the new one.
+ * The CALLER owns that gate — the `agentPresets.select` RPC requires a
+ * blank session, and the `/mode` command requires an idle agent. This
+ * method does not read session history.
  *
  * The swap is a parent re-link, not an unmount: standing mounts are shared
  * and permanent, so the old composition stays for its other agents and the
@@ -556,7 +559,7 @@ async standingKeyFor(id?: string): Promise<ScopeKey>
 
 Types: [ScopeKey](scope.md)
 
-Source: [`packages/preset/agent-presets/src/index.ts:82`](../../packages/preset/agent-presets/src/index.ts)
+Source: [`packages/preset/agent-presets/src/index.ts:88`](../../packages/preset/agent-presets/src/index.ts)
 
 <a id="ctxagents--agentregistry"></a>
 

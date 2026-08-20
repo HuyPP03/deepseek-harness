@@ -22,6 +22,9 @@
       "path": "../../core/tools"
     },
     {
+      "path": "../mcp-registry"
+    },
+    {
       "path": "../../subprocess/subprocess"
     },
     {

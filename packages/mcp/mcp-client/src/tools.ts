@@ -21,6 +21,7 @@ import type { Context } from '@deepseek-ai/cordis'
 import { isImageAdmissionError } from '@deepseek-ai/dsh-attachment'
 import type { AttachmentStore, ImageAttachmentRef, ImageMediaType, SaveImageAttachment } from '@deepseek-ai/dsh-attachment'
 import type { ContentBlock } from '@deepseek-ai/dsh-llm'
+import type { McpToolInfo } from '@deepseek-ai/dsh-mcp-registry'
 import type { ToolDefinition, ToolExecution, ToolExecutionResult } from '@deepseek-ai/dsh-tools'
 import { assertSupportedJsonSchema } from '@deepseek-ai/dsh-tools'
 import type { JsonSchemaNode, JsonValue } from '@deepseek-ai/dsh-tools'
@@ -35,6 +36,18 @@ export interface ToolBridgeOptions {
 
 /** State for one sync generation: the current set of disposers keyed by public name. */
 export type ToolDisposers = Map<string, () => void>
+
+/**
+ * One synchronized generation: the registered public tool names to their
+ * unregister disposers, plus the tool snapshot the reporter reads while the
+ * generation is installed.
+ */
+export interface SyncGeneration {
+  /** The generation's registered public tool names to their disposers. */
+  readonly disposers: ToolDisposers
+  /** The generation's tool snapshot in registration order. */
+  readonly tools: readonly McpToolInfo[]
+}
 
 /** Canonical MCP result exposed to Code Mode without discarding protocol blocks. */
 export type McpResult<Structured extends JsonValue = JsonValue> = {
@@ -137,17 +150,18 @@ export function publicToolName(serverName: string, rawName: string): string {
  * @param opts - Bridge options: server namespace and per-call timeout.
  * @param previous - Disposer map from the prior sync generation; disposed
  *   during the swap phase (only after the fetch phase succeeded).
- * @returns A map of registered public tool names to their unregister
- *   disposers — the exact set of live registrations owned by this server.
+ * @returns The new generation: the registered public tool names to their
+ *   unregister disposers and the tool snapshot the reporter reads.
  */
 export async function syncTools(
   client: Client,
   ctx: Context,
   opts: ToolBridgeOptions,
   previous: ToolDisposers,
-): Promise<ToolDisposers> {
+): Promise<SyncGeneration> {
   // Phase 1: fetch and build the next generation without touching the registry.
   const definitions = new Map<string, ToolDefinition>()
+  const tools: McpToolInfo[] = []
   let cursor: string | undefined
   do {
     const response = await listToolsUncached(client, cursor)
@@ -158,6 +172,7 @@ export async function syncTools(
           `mcp-client(${opts.serverName}): server listed tool "${tool.name}" more than once — invalid tool list`,
         )
       }
+      tools.push({ name: publicName, description: tool.description ?? '' })
       definitions.set(publicName, createDefinition(
         client,
         ctx,
@@ -187,9 +202,9 @@ export async function syncTools(
     for (const dispose of disposers.values()) dispose()
     ctx.logger.error(`mcp-client(${opts.serverName}): tool registration failed, no tools registered: ${String(error)}`)
     if (opts.registrationFailure === 'throw') throw error
-    return new Map()
+    return { disposers: new Map(), tools: [] }
   }
-  return disposers
+  return { disposers, tools }
 }
 
 /**

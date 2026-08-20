@@ -71,6 +71,14 @@
 - id: command-search
   name: '@deepseek-ai/dsh-command-search'
 
+# Human-facing `/simplify` and `/code-review`: agent steering and parallel
+# one-shot subagent review over the code the session changed. The command
+# REGISTRY and the subagent SERVICE stay on the host plane (this row consumes
+# both), so it needs no realm; a chat session has no code changes to review,
+# so the chat preset does not mount it.
+- id: command-agent-actions
+  name: '@deepseek-ai/dsh-command-agent-actions'
+
 # ── background jobs ────────────────────────────────────────────────────────
 
 # Only the model-facing controls. The task REGISTRY stays on the host plane:

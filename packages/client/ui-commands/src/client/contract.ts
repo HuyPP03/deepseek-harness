@@ -15,6 +15,14 @@ export interface SelectConfirmation {
   readonly confirmLabel: string
 }
 
+/** One slash-menu row for one session: name + description of a host command or a client contribution. */
+export interface CommandMenuRow {
+  /** Command name without the leading slash. */
+  readonly name: string
+  /** Menu row description. */
+  readonly description: string
+}
+
 /** One option row of a popupSelect shell. */
 export interface SelectOption {
   readonly id: string
@@ -86,6 +94,14 @@ export interface CommandDecoration {
   readonly ui: CommandUiSpec
 }
 
+/** One merged slash-menu row: a host command or an available client contribution. */
+export interface CommandMenuRow {
+  /** Command name without the leading slash. */
+  readonly name: string
+  /** Menu row description. */
+  readonly description: string
+}
+
 /** The `ctx.commandUi` service face visible to business packages. */
 export interface CommandUiContract {
   /**
@@ -100,4 +116,14 @@ export interface CommandUiContract {
   decorate(decoration: CommandDecoration): () => void
   /** Resolve the per-session popup controller for one session scope (wiring/overlay layer). */
   popupFor(actx: ClientContext): unknown
+  /**
+   * The slash-menu rows the session's agent currently serves: the host
+   * catalog merged with the available client contributions, in menu order.
+   * A contribution/host name collision fails loud; a directory pull failure
+   * rejects.
+   * @param session - session scope whose menu to read.
+   * @param signal - aborts the awaited directory pull.
+   * @returns the merged rows, menu order.
+   */
+  menuRows(session: ClientSessionContext, signal: AbortSignal): Promise<readonly CommandMenuRow[]>
 }

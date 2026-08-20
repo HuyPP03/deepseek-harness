@@ -7,6 +7,7 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
+import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
 import ToolRuntime from '@deepseek-ai/dsh-tools'
 import { CallId } from '@deepseek-ai/dsh-llm'
 import type { Config } from '@deepseek-ai/dsh-mcp-client'
@@ -471,6 +472,77 @@ describe('reconnect supervisor', () => {
     const staleHandler = mockSetNotificationHandler.mock.calls[0]![1] as () => Promise<void>
     await staleHandler()
     expect(mockListTools).toHaveBeenCalledTimes(listCalls)
+  })
+})
+
+// ---- Reporter snapshots ----
+
+describe('connection.report snapshot', () => {
+  let ctx: Context
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    instances.length = 0
+    mockConnect.mockResolvedValue(undefined)
+    mockClose.mockImplementation(function (this: { onclose?: () => void }) {
+      this.onclose?.()
+      return Promise.resolve()
+    })
+    mockListTools.mockResolvedValue(listing('remote'))
+    ctx = await mountRegistry()
+  })
+
+  it('reports connecting, connected, reconnecting, and connected across the supervisor lifecycle', async () => {
+    const handle = startConnection(ctx, stdioConfig({ initialDelayMs: 5, maxDelayMs: 40, maxAttempts: 5 }), resolveReconnectPolicy(undefined, 'reconnect'))
+    expect(handle.report()?.status).toBe('connecting')
+
+    await handle.ready
+    expect(handle.report()).toEqual({
+      serverName: 'srv',
+      status: 'connected',
+      tools: [{ name: 'mcp__srv__remote', description: '' }],
+    })
+
+    instances[0]!.onclose?.()
+    await vi.waitFor(() => { expect(handle.report()?.status).toBe('reconnecting') })
+    await vi.waitFor(() => { expect(handle.report()?.status).toBe('connected') })
+
+    await handle.dispose()
+    expect(handle.report()).toBeUndefined()
+  })
+
+  it('reports down with no tools after the failure cap', async () => {
+    const { errors } = captureLogs(ctx)
+    mockConnect.mockRejectedValue(new Error('server gone'))
+    const config = stdioConfig({ initialDelayMs: 2, maxDelayMs: 8, maxAttempts: 2 })
+    const handle = startConnection(ctx, config, resolveReconnectPolicy(config.reconnect, 'reconnect'))
+    await vi.waitFor(() => {
+      expect(errors.some(line => line.includes('giving up after 2 consecutive failed reconnect attempts'))).toBe(true)
+    })
+    expect(handle.report()).toEqual({ serverName: 'srv', status: 'down', tools: [] })
+  })
+
+  it('reports down when reconnect is disabled and the initial connection fails', async () => {
+    mockConnect.mockRejectedValue(new Error('refused'))
+    const config = stdioConfig({ enabled: false })
+    const handle = startConnection(ctx, config, resolveReconnectPolicy(config.reconnect, 'reconnect'))
+    await vi.waitFor(() => { expect(handle.report()?.status).toBe('down') })
+    expect(handle.report()?.tools).toEqual([])
+  })
+
+  it('apply reports the server into a mounted mcp-registry and drops it on disposal', async () => {
+    await ctx.plugin(McpRegistry)
+    const plugin = await ctx.plugin({ name: 'mcp-client', inject: ['tools'], apply }, stdioConfig())
+    await vi.waitFor(() => { expect(ctx.tools.get('mcp__srv__remote')).toBeDefined() })
+
+    expect(ctx.mcpRegistry.servers()).toEqual([{
+      serverName: 'srv',
+      status: 'connected',
+      tools: [{ name: 'mcp__srv__remote', description: '' }],
+    }])
+
+    await plugin.dispose()
+    expect(ctx.mcpRegistry.servers()).toEqual([])
   })
 })
 

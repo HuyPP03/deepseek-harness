@@ -16,6 +16,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { MAX_TIMER_DELAY_MS } from '@deepseek-ai/dsh-timeout'
+import type { McpRegistry } from '@deepseek-ai/dsh-mcp-registry'
 import { RECONNECT_DEFAULTS, resolveReconnectPolicy, startConnection } from './connection.ts'
 import type { ReconnectConfig } from './connection.ts'
 // Side-effect type import: declaration-merges `ctx.tools` onto Context.
@@ -168,6 +169,15 @@ export async function apply(ctx: Context, config: Config): Promise<void> {
   ctx.effect(() => {
     return () => connection.dispose()
   }, 'mcp-client.connection')
+
+  // Report the server's live state to the shared MCP registry when mounted —
+  // an optional service read, so a deployment without mcp-registry keeps the
+  // bridge unchanged. The reader closure pulls connection.report() on every
+  // snapshot; the disposer drops the entry when this instance tears down.
+  const registry: McpRegistry | undefined = ctx.get('mcpRegistry')
+  if (registry !== undefined) {
+    ctx.effect(() => registry.report(config.serverName, () => connection.report()), 'mcp-client.report')
+  }
 
   // Block plugin activation on the initial connection + tool discovery so
   // Cordis consumers observe the tools immediately after the fiber activates.
