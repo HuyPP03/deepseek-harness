@@ -12,9 +12,11 @@ import type { Agent, ModelSelection, ModelSelectionRef, AgentOptions, AgentStatu
 import type {} from '@deepseek-ai/dsh-agent-presets/types'
 import { AttachmentError } from '@deepseek-ai/dsh-attachment'
 import type { ImageAttachmentRef } from '@deepseek-ai/dsh-attachment'
-import { contentHasImage, createUserMessage, freezeMessage, ReasoningEffortId } from '@deepseek-ai/dsh-llm'
+import { contentHasImage, createUserMessage, freezeMessage, LlmError, ReasoningEffortId } from '@deepseek-ai/dsh-llm'
 import { errorChain } from '@deepseek-ai/dsh-llm'
-import type { ContentBlock, MessageSource } from '@deepseek-ai/dsh-llm'
+import type { ContentBlock, LlmCallConfig, LlmResolvedModelInfo, MessageSource } from '@deepseek-ai/dsh-llm'
+import type {} from '@deepseek-ai/dsh-commands'
+import type { CommandResult } from '@deepseek-ai/dsh-commands/types'
 import { isAppendSurfaceEvent, isJsonValue } from '@deepseek-ai/dsh-session'
 import type { JsonValue, Session, SessionEvent, SessionEventMap, SessionHeader, SessionId, UserMessage } from '@deepseek-ai/dsh-session'
 import type { SessionPersistence } from '@deepseek-ai/dsh-session-persistence'
@@ -1161,6 +1163,100 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
     if (agent === undefined) throw new Error('api-proxy: agent setup has no scoped agent')
     selectionFor(agent)
   }
+
+  /**
+   * The `/effort` handler: report or switch the reasoning effort of the
+   * session's current model selection. The switch resolves through
+   * `resolveCallConfig` — the same pre-network validation the `selectModel`
+   * wire row uses — so an effort the model's metadata rejects fails before
+   * any provider call. It then sets the process-local selection and persists
+   * it as the deployment default, exactly as `selectModel` does. The bare
+   * form reports the effective effort (the selection's, else the model's
+   * default, else the provider default) plus the supported set.
+   * @param agent - the command's receiving agent.
+   * @param rawInput - the text following the command name.
+   * @returns the command result.
+   */
+  async function effortCommand(agent: Agent, rawInput: string): Promise<CommandResult> {
+    const current = selectionFor(agent).current
+    let info: LlmResolvedModelInfo
+    try {
+      info = await ctx.llm.resolveModelInfo(current.provider, current.model)
+    } catch (error: unknown) {
+      return {
+        kind: 'error',
+        text: `cannot read model metadata: ${error instanceof Error ? error.message : String(error)}`,
+      }
+    }
+    const reasoning = info.reasoning
+    if (reasoning === undefined || reasoning.efforts.length === 0) {
+      return {
+        kind: rawInput.trim() === '' ? 'success' : 'error',
+        text: `model "${current.model}" has no selectable reasoning effort`,
+      }
+    }
+    const supported = reasoning.efforts.map(effort => effort.name).join(', ')
+    const level = rawInput.trim()
+    if (level === '') {
+      const active = current.reasoningEffort ?? reasoning.defaultEffort
+      const shown = (value: string | undefined): string =>
+        value === undefined ? 'provider default' : value
+      return {
+        kind: 'success',
+        text: `effort ${shown(active)} (supported: ${supported}; default: ${shown(reasoning.defaultEffort)})`,
+      }
+    }
+    const match = reasoning.efforts.find(effort =>
+      effort.id === ReasoningEffortId(level)
+      || effort.name.toLowerCase() === level.toLowerCase(),
+    )
+    if (match === undefined) {
+      return { kind: 'error', text: `unknown effort "${level}" (supported: ${supported})` }
+    }
+    let resolved: LlmCallConfig
+    try {
+      resolved = await ctx.llm.resolveCallConfig({
+        provider: current.provider,
+        model: current.model,
+        reasoningEffort: match.id,
+      })
+    } catch (error: unknown) {
+      if (error instanceof LlmError && error.failure.code === 'UNSUPPORTED_REASONING_EFFORT') {
+        return { kind: 'error', text: error.message }
+      }
+      throw error
+    }
+    const selected: ModelSelection = {
+      provider: current.provider,
+      model: current.model,
+      ...resolved.reasoningEffort === undefined
+        ? {}
+        : { reasoningEffort: resolved.reasoningEffort },
+    }
+    selectionFor(agent).current = selected
+    try {
+      await defaults.saveDefaultModelSelection?.(selected)
+    } catch (error: unknown) {
+      ctx.logger.warn(
+        `api-proxy: the effort switch applies to this session but was not saved as the default: ${String(error)}`,
+      )
+    }
+    return { kind: 'success', text: `effort ${String(match.id)}` }
+  }
+
+  // The /effort command: the user-facing write path for a session's reasoning
+  // effort, beside the `selectModel` wire row that the composer uses. It
+  // resolves and persists through the same faces, so a switch here and a
+  // switch through the composer agree on the next turn's header. The child
+  // activates only when a command registry is composed (the Web surface).
+  ctx.inject(['commands'], (commandCtx) => {
+    commandCtx.commands.register({
+      name: 'effort',
+      description: 'Report or switch this session model reasoning effort',
+      input: { hint: '<level>' },
+      handler: ({ agent, rawInput }) => effortCommand(agent, rawInput),
+    })
+  })
 
   /**
    * Reject an attempt to run an existing session under a different preset.
