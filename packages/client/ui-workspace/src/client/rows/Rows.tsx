@@ -191,8 +191,6 @@ export function ProjectRowItem({ group, onToggle, onCreate, actions, drag, t }: 
       </span>
     </div>
   )
-  // The ungrouped bucket has no backing Workspace: no card to show.
-  if (row.createdAt === undefined) return ownRow
   return (
     <HoverCard
       anchor={ownRow}

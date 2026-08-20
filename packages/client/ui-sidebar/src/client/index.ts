@@ -38,7 +38,7 @@ export function apply(ctx: ClientContext): void {
     // New Chat rides the runtime's shared chat action (reuse-or-mint the
     // ungrouped blank chat).
     startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
-    startChat: () => { void ctx.workspaces.startChat().then(id => ctx.sessions.open(id)) },
+    startChat: () => { void ctx.workspaces.startChat().then((id) => { ctx.sessions.open(id) }) },
     toggleSidebar: () => { ctx.layout.toggleSidebar() },
   })
   ctx.effect(

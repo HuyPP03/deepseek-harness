@@ -16,7 +16,7 @@ installAssembledBootEnv()
 async function openFixtureSession(): Promise<void> {
   // The fixture session is workspace-accounted, so its row browses on the
   // workspaces tab (the shell's default tab is chats).
-  await fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
+  fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
   const tree = await screen.findByRole('tree', { name: 'Sessions' }, { timeout: 10_000 })
   const group = (await within(tree).findAllByText('fixture'))
     .map(el => el.closest<HTMLElement>('[role="treeitem"]'))
@@ -86,7 +86,7 @@ it('accepts pasted images into the composer rail in order and removes them', asy
 
   // The fixture session is workspace-accounted, so its row browses on the
   // workspaces tab (the shell's default tab is chats).
-  await fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
+  fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
   const tree = await screen.findByRole('tree', { name: 'Sessions' }, { timeout: 10_000 })
   const start = tree.querySelector<HTMLButtonElement>('button[aria-label="New session in fixture"]')
   if (start === null) throw new Error('fixture Workspace new-session action missing')
@@ -160,7 +160,7 @@ it('accepts a whole-page drop under the limits-labeled overlay and refuses an ov
 
   // The fixture session is workspace-accounted, so its row browses on the
   // workspaces tab (the shell's default tab is chats).
-  await fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
+  fireEvent.click(await screen.findByRole('tab', { name: 'Workspaces' }, { timeout: 10_000 }))
   const tree = await screen.findByRole('tree', { name: 'Sessions' }, { timeout: 10_000 })
   const start = tree.querySelector<HTMLButtonElement>('button[aria-label="New session in fixture"]')
   if (start === null) throw new Error('fixture Workspace new-session action missing')
