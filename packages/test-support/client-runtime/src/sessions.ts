@@ -6,7 +6,7 @@ import { createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 import type {
   AgentContext, ConversationSnapshot, ISessions, ObservableSnapshot, ProjectionsFace, SessionFace, SessionId,
   SessionListState, SessionProvideDescriptor, SessionSearchResultItem, SessionSummary, SnapshotStore,
-  SubagentAddress,
+  SubagentAddress, WorkspaceId,
 } from '@deepseek-ai/dsh-client-runtime/client'
 // The double reports the wire schema's own search bound, like the production
 // service — a transport-varying limit would be a fiction no client can see.
@@ -193,9 +193,12 @@ export class TestSessions implements ISessions {
   /** Calls observed on the service-level face, newest last. */
   readonly calls: {
     method: 'open' | 'openSubagent' | 'setSubagentCatalogOpen' | 'refreshSubagents'
-      | 'clear' | 'search' | 'fork'
+      | 'clear' | 'search' | 'fork' | 'create'
     args: unknown[]
   }[] = []
+
+  /** Counter minted by the create stub for sessions without a preallocated id. */
+  private created = 0
 
   /** The wire schema's `session.search` result bound (production parity). */
   readonly searchResultLimit = SESSION_SEARCH_RESULT_LIMIT
@@ -495,6 +498,32 @@ export class TestSessions implements ISessions {
   fork(opts: { sessionId: SessionId; atSeq?: number; increaseTitle?: boolean }): Promise<SessionId> {
     this.calls.push({ method: 'fork', args: [opts] })
     return Promise.resolve(opts.sessionId)
+  }
+
+  /**
+   * Recorded create stub: materializes a blank fixture session (so
+   * `open()` can target it at resolution) and returns its id; the requested
+   * preset and working directory ride the created row's summary.
+   * @param opts - the requested create options (recorded for assertions).
+   * @returns the new blank session id (not selected; the caller opens it).
+   */
+  async create(opts: {
+    workspaceId?: WorkspaceId
+    cwd?: string
+    referenceWorkspaceIds?: readonly WorkspaceId[]
+    agentPreset?: string
+    sessionId?: SessionId
+  } = {}): Promise<SessionId> {
+    this.calls.push({ method: 'create', args: [opts] })
+    const id = opts.sessionId ?? `created-${String(++this.created)}`
+    return this.add({
+      id,
+      summary: {
+        blank: true,
+        ...(opts.agentPreset !== undefined ? { agentPreset: opts.agentPreset } : {}),
+        ...(opts.cwd !== undefined ? { cwd: opts.cwd } : {}),
+      },
+    }, { current: false })
   }
 
   /**

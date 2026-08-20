@@ -13,7 +13,7 @@ import { describe, expect, it } from 'vitest'
 import { SlotRegistry, type SessionId } from '@deepseek-ai/dsh-client-runtime/client'
 import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
 import { TestRemote } from '@deepseek-ai/dsh-client-test-runtime'
-import type { CommandDecoration } from '@deepseek-ai/dsh-client-ui-commands/client'
+import type { CommandDecoration, CommandPopupSelectSpec } from '@deepseek-ai/dsh-client-ui-commands/client'
 import type { PermissionSelect } from '@deepseek-ai/dsh-permission-presets/client'
 import {
   PermissionRow, type PermissionRowInjected,
@@ -97,7 +97,7 @@ async function bench() {
   return {
     ctx, fiber, values, commands, listState,
     setResult: (r: { ok: boolean; matched?: boolean }) => { commandResult = r },
-    decoration: () => decoration,
+    decoration: () => decoration as (CommandDecoration & { ui: CommandPopupSelectSpec }) | undefined,
     permissionRow: () => ctx.slots.entries('settings.general.item')
       .find(entry => entry.component === PermissionRow),
   }

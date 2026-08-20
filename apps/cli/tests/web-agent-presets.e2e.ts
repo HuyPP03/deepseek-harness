@@ -410,6 +410,43 @@ describe('the shipped Web composition', () => {
     }
   })
 
+  it('ships the project-operation skills inside each preset directory', async () => {
+    // The preset's skill root is derived from its own `baseUrl`, so the skills
+    // travel with the directory wherever the preset is installed.
+    for (const preset of ['standard', 'code']) {
+      for (const skill of ['verify', 'run']) {
+        const path = join(CONFIG_DIR, 'agent-presets', preset, 'skills', skill, 'SKILL.md')
+        expect((await readFile(path, 'utf8')).startsWith(`---\nname: ${skill}`)).toBe(true)
+      }
+    }
+  })
+
+  it('registers the verify and run skills into each preset agent layer', async () => {
+    // The skills register into the preset's own layer: agents composed from
+    // `standard` or `code` see them, the global registry does not.
+    const standard = await ctx.agents.create({
+      sessionId: SessionId('preset-ops-standard'),
+      setup: agentCtx => ctx.agentPresets.mount(agentCtx, 'standard').then(() => undefined),
+    })
+    const coded = await ctx.agents.create({
+      sessionId: SessionId('preset-ops-code'),
+      setup: agentCtx => ctx.agentPresets.mount(agentCtx, 'code').then(() => undefined),
+    })
+    try {
+      for (const agent of [standard.agent, coded.agent]) {
+        const scoped = (await ctx.skills.list({ scope: agent })).map(skill => skill.name)
+        expect(scoped).toContain('verify')
+        expect(scoped).toContain('run')
+      }
+      const global = (await ctx.skills.list()).map(skill => skill.name)
+      expect(global).not.toContain('verify')
+      expect(global).not.toContain('run')
+    } finally {
+      await standard.dispose()
+      await coded.dispose()
+    }
+  })
+
   it('never rewrites the preset file it composed from', async () => {
     // The Loader persists a tree whose plugin self-disposed, and tearing an
     // agent down disposes its whole subtree. Inherited, that rewrote the

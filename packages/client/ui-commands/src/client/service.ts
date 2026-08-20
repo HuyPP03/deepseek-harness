@@ -19,7 +19,7 @@ import type {
   CandidateRequest, ClientSessionContext, CommandClaim, PickOutcome, InputTriggerCandidate, InputTriggerPick,
   SubmitOutcome,
 } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
-import type { CommandContribution, CommandDecoration, CommandUiContract } from './contract.ts'
+import type { CommandActionSpec, CommandContribution, CommandDecoration, CommandPopupSelectSpec, CommandUiContract, CommandUiSpec } from './contract.ts'
 import type { CommandDescriptor } from './directory.ts'
 import { CommandDirectory } from './directory.ts'
 import { PopupSelectController } from './popup.ts'
@@ -267,13 +267,15 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     )
   }
 
-  /** Decision table, menu column: contribution/decorated-host → popup; host input → claim; host bare → detached execute. */
+  /**
+   * Decision table, menu column: contribution action → detached run;
+   * contribution/decorated-host → popup; host input → claim; host bare → detached execute.
+   */
   private dispatch(pick: InputTriggerPick): PickOutcome {
     const name = pick.candidate.name
     const contribution = this.live.contributions.get(name)
     if (contribution !== undefined && contribution.available(pick.session)) {
-      this.openPopup(name, contribution.ui, pick.session, { via: 'menu', span: pick.span })
-      return 'handled'
+      return this.runUi(name, contribution.ui, pick.session, { via: 'menu', span: pick.span })
     }
     const desc = this.directory.resolve(pick.session.sessionId, name)
     if (desc === undefined) return undefined // snapshot swapped between menu and pick → miss
@@ -282,8 +284,7 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     // manufactures one, and never touches the argument claim below.
     const decoration = this.live.decorations.get(name)
     if (decoration !== undefined && decoration.available(pick.session)) {
-      this.openPopup(name, decoration.ui, pick.session, { via: 'menu', span: pick.span })
-      return 'handled'
+      return this.runUi(name, decoration.ui, pick.session, { via: 'menu', span: pick.span })
     }
     if (desc.input !== undefined) return { claim: this.leadingClaim(desc, pick.session) }
     // Menu-pick execute consumes the trigger span before the detached run
@@ -297,7 +298,7 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
   private matchSpace(session: ClientSessionContext, token: string): PickOutcome {
     if (!token.startsWith('/')) return undefined
     const name = token.slice(1)
-    if (this.live.contributions.has(name)) return undefined // popup kinds never claim on space
+    if (this.live.contributions.has(name)) return undefined // contributions never claim on space (popup or action)
     const desc = this.directory.resolve(session.sessionId, name)
     if (desc === undefined || desc.input === undefined) return undefined
     return { claim: this.leadingClaim(desc, session) }
@@ -320,8 +321,7 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     const contribution = this.live.contributions.get(name)
     if (contribution !== undefined && contribution.available(session)) {
       if (!bare) return undefined
-      this.openPopup(name, contribution.ui, session, { via: 'enter', token })
-      return 'handled'
+      return this.runUi(name, contribution.ui, session, { via: 'enter', token })
     }
     await this.directory.ensureReady(session.sessionId, signal)
     const desc = this.directory.resolve(session.sessionId, name)
@@ -331,8 +331,7 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     if (bare) {
       const decoration = this.live.decorations.get(name)
       if (decoration !== undefined && decoration.available(session)) {
-        this.openPopup(name, decoration.ui, session, { via: 'enter', token })
-        return 'handled'
+        return this.runUi(name, decoration.ui, session, { via: 'enter', token })
       }
     }
     if (desc.input !== undefined) return { claim: this.leadingClaim(desc, session) }
@@ -342,16 +341,42 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     return 'handled'
   }
 
-  /** Open the session's popup for one contribution or decoration (menu pick / bare enter). */
+  /**
+   * Run one menu-picked or bare-entered UI spec: an action is a detached run
+   * (the trigger span is consumed first); a popupSelect opens its popup.
+   * @returns `'handled'` — the pick consumed the trigger.
+   */
+  private runUi(name: string, ui: CommandUiSpec, session: ClientSessionContext, segment: TokenSegment): PickOutcome {
+    if (ui.kind === 'action') {
+      this.consumeVia(session.sessionId, segment)
+      this.runAction(name, ui, session)
+      return 'handled'
+    }
+    this.openPopup(name, ui, session, segment)
+    return 'handled'
+  }
+
+  /** Open the session's popup for one popupSelect contribution or decoration (menu pick / bare enter). */
   private openPopup(
     name: string,
-    ui: CommandContribution['ui'],
+    ui: CommandPopupSelectSpec,
     session: ClientSessionContext,
     segment: TokenSegment,
   ): void {
     const actx = this.scopeFor(session.sessionId)
     if (actx === undefined) return
     this.popupFor(actx).open(name, ui, session, segment)
+  }
+
+  /**
+   * Fire-and-forget run of one action contribution (menu pick / bare enter).
+   * Actions have no result channel: a failure is logged, never surfaced.
+   */
+  private runAction(name: string, ui: CommandActionSpec, session: ClientSessionContext): void {
+    void Promise.resolve(ui.run(session)).catch((error: unknown) => {
+      this.ctx.logger.warn(`client command: action /${name} failed`)
+      this.ctx.logger.warn(error)
+    })
   }
 
   /** Build the leadingInput claim: token `/name ` + the command.execute submit transaction. */

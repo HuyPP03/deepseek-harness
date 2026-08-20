@@ -47,10 +47,13 @@ describe('ui-sidebar apply', () => {
     expect(b.workspaces.startSession).toHaveBeenCalledWith('workspace')
     injected.startSession()
     expect(b.workspaces.startSession).toHaveBeenLastCalledWith(undefined)
-    // The chats arm resolves the chat session and opens it.
-    await injected.startChat()
+    // The chats arm resolves the chat session and opens it (a microtask
+    // later: the arm is fire-and-forget on the injected face).
+    injected.startChat()
     expect(b.workspaces.startChat).toHaveBeenCalledOnce()
-    expect(b.sessions.open).toHaveBeenCalledWith('chat-1')
+    await vi.waitFor(() => {
+      expect(b.sessions.open).toHaveBeenCalledWith('chat-1')
+    })
     injected.toggleSidebar()
     expect(b.layout.toggleSidebar).toHaveBeenCalledOnce()
   })

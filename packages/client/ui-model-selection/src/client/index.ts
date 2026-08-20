@@ -1,15 +1,16 @@
 /**
- * Model selection plugin, browser half — TWO entries over ONE per-session
+ * Model selection plugin, browser half — THREE entries over ONE per-session
  * directory owned by ModelDirectoryResolver (`ctx.modelDirectories`). The /model popupSelect
- * contribution and the composer's named `conversation.input.model` seat both
- * load the session's provider-grouped advisory directory (`session.models`)
- * and submit through `session.selectModel` via the same directory instance,
- * so the host-reported current selection is the single fact both surfaces echo
- * — a switch made in either entry is what the other shows next. Failures
- * ride each entry's own retry surface (popup shell error/retry; seat menu
- * inline error) without forking the state. Addressed subagent sessions expose
- * neither entry because those Agent-bound RPCs would activate persisted
- * history outside the direct-parent continuation path.
+ * contribution, the /effort decoration (the bare host command opens the
+ * current model's effort list), and the composer's named
+ * `conversation.input.model` seat all load the session's provider-grouped
+ * advisory directory (`session.models`) and submit through `session.selectModel`
+ * via the same directory instance, so the host-reported current selection is
+ * the single fact every surface echoes — a switch made in any entry is what
+ * the others show next. Failures ride each entry's own retry surface
+ * (popup shell error/retry; seat menu inline error) without forking the state.
+ * Addressed subagent sessions expose no entry because those Agent-bound RPCs
+ * would activate persisted history outside the direct-parent continuation path.
  */
 // Type-only: the carrier types, the forwarded Host-event face and the ctx.remote merge.
 import type { ModelSelection, SessionModels } from '@deepseek-ai/dsh-api-remotes/client'
@@ -148,6 +149,67 @@ export function apply(ctx: ClientContext): void {
         },
       },
     }), 'ui-model-selection: /model contribution')
+
+    // The /effort decoration: the BARE host command opens a popup over the
+    // current model's effort list; an argued line (/effort <level>) is the
+    // host command's own claim, untouched. The popup submits through the same
+    // selectModel wire row the /model entry uses, so every effort write path
+    // converges on one selection. The provider-default row mirrors the seat's
+    // effort pane: it exists only when the model names no default effort, and
+    // submits no reasoningEffort.
+    scope.effect(() => command.decorate({
+      name: 'effort',
+      available: session => sessions.subagentAddress(session.sessionId) === undefined,
+      ui: {
+        kind: 'popupSelect',
+        options: async (session) => {
+          if (sessions.subagentAddress(session.sessionId) !== undefined) {
+            throw new Error('model selection is unavailable for addressed subagent sessions')
+          }
+          const directory = await models.directoryFor(session.sessionId).load()
+          const current = directory.current
+          const reasoning = directory.groups
+            .find(group => group.id === current.provider)
+            ?.models
+            .find(model => model.id === current.model)
+            ?.reasoning
+          if (reasoning === undefined) return []
+          const effective = current.reasoningEffort ?? reasoning.defaultEffort
+          const rows: SelectOption[] = []
+          if (reasoning.defaultEffort === undefined) {
+            rows.push({
+              id: 'provider-default',
+              label: t('effort.providerDefault'),
+              ...current.reasoningEffort === undefined ? { active: true } : {},
+            })
+          }
+          for (const effort of reasoning.efforts) {
+            rows.push({
+              id: effort.id,
+              label: effort.name,
+              ...effort.description === undefined ? {} : { detail: effort.description },
+              ...effective === effort.id ? { active: true } : {},
+            })
+          }
+          return rows
+        },
+        onSelect: async (option, session) => {
+          if (sessions.subagentAddress(session.sessionId) !== undefined) {
+            throw new Error('model selection is unavailable for addressed subagent sessions')
+          }
+          const directory = models.directoryFor(session.sessionId)
+          const current = directory.store.getSnapshot().current
+          if (current === null) {
+            throw new Error('the model directory has not loaded yet — reopen the menu')
+          }
+          await directory.select({
+            provider: current.provider,
+            model: current.model,
+            ...option.id === 'provider-default' ? {} : { reasoningEffort: option.id },
+          })
+        },
+      },
+    }), 'ui-model-selection: /effort decoration')
   })
 
   // Entry 2: the composer's named model seat over the SAME directory.

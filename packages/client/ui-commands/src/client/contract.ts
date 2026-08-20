@@ -31,11 +31,25 @@ export interface SelectOption {
  * The shell component is owned by ui-commands; business never sees it. Both
  * callbacks receive the ClientSessionContext captured at popup open.
  */
-export type CommandUiSpec = {
+export interface CommandPopupSelectSpec {
   readonly kind: 'popupSelect'
   options(session: ClientSessionContext, signal: AbortSignal): Promise<readonly SelectOption[]>
   onSelect(option: SelectOption, session: ClientSessionContext): void | Promise<void>
 }
+
+/**
+ * A client-owned command whose pick runs a behavior directly: menu pick and
+ * bare enter consume the trigger and run `run` detached (no popup, no
+ * arguments, no host lifecycle). Failures are logged, never surfaced — the
+ * kind has no result channel.
+ */
+export interface CommandActionSpec {
+  readonly kind: 'action'
+  run(session: ClientSessionContext): void | Promise<void>
+}
+
+/** The behavior a client contribution or decoration owns per invocation. */
+export type CommandUiSpec = CommandPopupSelectSpec | CommandActionSpec
 
 /**
  * One client-owned command contribution: a slash-menu entry whose behavior
@@ -50,7 +64,7 @@ export interface CommandContribution {
   readonly description: string
   /** Capability filter, called with a fresh projection per candidate pass. */
   available(session: ClientSessionContext): boolean
-  /** The command's UI behavior (this phase: popupSelect only). */
+  /** The command's UI behavior (popupSelect or action). */
   readonly ui: CommandUiSpec
 }
 
@@ -68,7 +82,7 @@ export interface CommandDecoration {
   readonly name: string
   /** Capability filter, called with a fresh projection per bare invocation. */
   available(session: ClientSessionContext): boolean
-  /** The bare-invocation UI (this phase: popupSelect only). */
+  /** The bare-invocation UI (popupSelect or action). */
   readonly ui: CommandUiSpec
 }
 

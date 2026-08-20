@@ -13,7 +13,7 @@ import type { CommandResult } from '@deepseek-ai/dsh-commands/types'
 import { createScope, scopeOf } from '@deepseek-ai/dsh-client-runtime/client'
 import type { SessionId } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ClientSessionContext, ConsumeTokenRequest, InputTriggerPick, InputTriggerSource } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
-import type { CommandContribution, CommandDecoration, CommandUiSpec, SelectOption } from '../src/client/contract.ts'
+import type { CommandContribution, CommandDecoration, CommandPopupSelectSpec, SelectOption } from '../src/client/contract.ts'
 import type { CommandDescriptor } from '../src/client/directory.ts'
 import { CommandUiRuntime } from '../src/client/service.ts'
 
@@ -175,7 +175,7 @@ function menuPick(source: InputTriggerSource, name: string, session: ClientSessi
   return source.onPick(pick)
 }
 
-const themeUi = (over: Partial<CommandUiSpec> = {}): CommandUiSpec => ({
+const themeUi = (over: Partial<Omit<CommandPopupSelectSpec, 'kind'>> = {}): CommandPopupSelectSpec => ({
   kind: 'popupSelect',
   options: () => Promise.resolve([{ id: 'dark', label: 'Dark' }]),
   onSelect: () => undefined,
@@ -187,6 +187,17 @@ const themeContribution = (over: Partial<CommandContribution> = {}): CommandCont
   description: 'client popup kind',
   available: () => true,
   ui: themeUi(),
+  ...over,
+})
+
+const actionContribution = (
+  run: (session: ClientSessionContext) => void | Promise<void>,
+  over: Partial<CommandContribution> = {},
+): CommandContribution => ({
+  name: 'wipe',
+  description: 'client action kind',
+  available: () => true,
+  ui: { kind: 'action', run },
   ...over,
 })
 
@@ -436,6 +447,92 @@ describe('dispatch (menu column)', () => {
   })
 })
 
+describe('action kind (client-run commands)', () => {
+  const signal = () => new AbortController().signal
+
+  it('menu pick consumes the span and runs the action detached: no popup, no host execute', async () => {
+    const { command, source, mint, warm, executeCalls } = await bench()
+    const run = vi.fn()
+    command.register(actionContribution(run))
+    const scope = mint('s1')
+    const consumes: ConsumeTokenRequest[] = []
+    scope.ctx.on('slash/input-consume-token', (r) => {
+      consumes.push(r)
+      return true
+    })
+    await warm(proj('s1'))
+    const session = proj('s1')
+    expect(menuPick(source, 'wipe', session, 5)).toBe('handled')
+    expect(run).toHaveBeenCalledExactlyOnceWith(session)
+    expect(consumes).toEqual([{ guard: { kind: 'span', span: { start: 0, end: 5, draftRev: 3 } } }])
+    expect(command.popupFor(scope.ctx).state.getSnapshot().open).toBe(false)
+    expect(executeCalls).toEqual([])
+  })
+
+  it('an unavailable action falls through to the host catalog (no run, no popup)', async () => {
+    const { command, source, mint, warm } = await bench()
+    const run = vi.fn()
+    command.register(actionContribution(run, { available: () => false }))
+    const scope = mint('s1')
+    await warm(proj('s1'))
+    expect(menuPick(source, 'wipe', proj('s1'))).toBeUndefined() // no host 'wipe' either
+    expect(run).not.toHaveBeenCalled()
+    expect(command.popupFor(scope.ctx).state.getSnapshot().open).toBe(false)
+  })
+
+  it('a rejecting run is logged and never surfaces: no notice, no thrown rejection', async () => {
+    const { ctx, command, source, mint, warm, notices } = await bench()
+    const warn = vi.spyOn(ctx.logger, 'warn').mockImplementation(() => undefined)
+    const run = vi.fn(() => Promise.reject(new Error('action failure')))
+    command.register(actionContribution(run))
+    mint('s1')
+    await warm(proj('s1'))
+    expect(menuPick(source, 'wipe', proj('s1'))).toBe('handled')
+    await vi.waitFor(() => {
+      expect(warn).toHaveBeenCalled()
+    })
+    expect(warn.mock.calls.some(call => call[0] === 'client command: action /wipe failed')).toBe(true)
+    expect(warn.mock.calls.some(call => call[0] instanceof Error && call[0].message === 'action failure')).toBe(true)
+    expect(notices).toEqual([])
+    await vi.waitFor(() => {
+      expect(run).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  it('bare enter consumes the bare token and runs; args stay undefined', async () => {
+    const { command, source, mint, warm } = await bench()
+    const run = vi.fn()
+    command.register(actionContribution(run))
+    const scope = mint('s1')
+    const consumes: ConsumeTokenRequest[] = []
+    scope.ctx.on('slash/input-consume-token', (r) => {
+      consumes.push(r)
+      return true
+    })
+    await warm(proj('s1'))
+    const session = proj('s1')
+    await expect(source.matchEnter!(session, '/wipe', signal())).resolves.toBe('handled')
+    expect(run).toHaveBeenCalledExactlyOnceWith(session)
+    expect(consumes).toEqual([{ guard: { kind: 'bare-token', token: '/wipe' } }])
+    expect(command.popupFor(scope.ctx).state.getSnapshot().open).toBe(false)
+    await expect(source.matchEnter!(proj('s1'), '/wipe all', signal())).resolves.toBeUndefined()
+    expect(run).toHaveBeenCalledTimes(1)
+  })
+
+  it('the disposer removes the contribution: the next pick misses', async () => {
+    const { command, source, mint, warm } = await bench()
+    const run = vi.fn()
+    const dispose = command.register(actionContribution(run))
+    mint('s1')
+    await warm(proj('s1'))
+    expect(menuPick(source, 'wipe', proj('s1'))).toBe('handled')
+    dispose()
+    await warm(proj('s1'))
+    expect(menuPick(source, 'wipe', proj('s1'))).toBeUndefined()
+    expect(run).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('matchSpace (space column)', () => {
   it('answers undefined from a not-ready key (no waiting, no RPC)', async () => {
     const { source, listCalls } = await bench()
@@ -456,9 +553,13 @@ describe('matchSpace (space column)', () => {
   it('bare kind and contribution names stay plain text', async () => {
     const { command, source, warm } = await bench()
     command.register(themeContribution())
+    const run = vi.fn()
+    command.register(actionContribution(run))
     await warm(proj('s1'))
     expect(source.matchSpace!(proj('s1'), '/plan')).toBeUndefined()
     expect(source.matchSpace!(proj('s1'), '/theme')).toBeUndefined()
+    expect(source.matchSpace!(proj('s1'), '/wipe')).toBeUndefined()
+    expect(run).not.toHaveBeenCalled()
   })
 
   it('unknown token / non-slash token → undefined', async () => {

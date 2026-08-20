@@ -68,6 +68,16 @@
   config:
     sampleOverCapGlobResults: false
 
+# ── search ──────────────────────────────────────────────────────────────────
+
+# Human-facing `/search`: a literal ripgrep run over the session's project
+# directory and its attached reference projects. The command REGISTRY and the
+# subprocess SERVICE stay on the host plane (this row consumes both), so it
+# needs no realm; a chat session has no project directory to search, so the
+# chat preset does not mount it.
+- id: command-search
+  name: '@deepseek-ai/dsh-command-search'
+
 # ── background jobs ────────────────────────────────────────────────────────
 
 # Only the model-facing controls. The task REGISTRY stays on the host plane:
@@ -87,8 +97,17 @@
 # `skill-filesystem` contributes local-root discovery for agents on this preset, and
 # `tool-skill` gives them the catalog and loader; the merged catalog also
 # carries whatever the deployment registered globally (repository plugins).
+#
+# The project-operation skills (`verify`, `run`) travel with this preset the
+# way the cordis preset ships its composition-authoring skills: a runbook that
+# documents how to probe THIS environment (package manager, venv, entry
+# points), and the preset is the unit that gets copied and edited. `baseUrl`
+# is the preset's own directory, so the root resolves wherever it is installed.
 - id: skill-filesystem
   name: '@deepseek-ai/dsh-skill-filesystem'
+  config:
+    customSkillDirs:
+      - !!js "process.getBuiltinModule('node:url').fileURLToPath(new URL('skills/', baseUrl))"
 
 - id: tool-skill
   name: '@deepseek-ai/dsh-tool-skill'

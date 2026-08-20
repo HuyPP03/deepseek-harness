@@ -25,8 +25,13 @@ import { stat } from 'node:fs/promises'
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { bindScopeParent, createScope, scopeOf, type Scope, type ScopeKey, type ScopeParentBinding } from '@deepseek-ai/dsh-scope'
-// Type-only: resolves the `agent/created` lifecycle event this service watches.
-import type {} from '@deepseek-ai/dsh-agent'
+// Type-only: the `agent/created` lifecycle event this service watches and the
+// Agent handle the `/mode` command operates on.
+import type { Agent } from '@deepseek-ai/dsh-agent'
+// Side-effect type import: declaration-merges the `ctx.commands` face the
+// `/mode` registration needs.
+import type {} from '@deepseek-ai/dsh-commands'
+import type { CommandResult } from '@deepseek-ai/dsh-commands/types'
 import { settingsNamespace, type SettingsScope, type default as SettingsService } from '@deepseek-ai/dsh-settings'
 import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
 import { discoverPresets, USER_PRESET_DIR } from './discovery.ts'
@@ -34,6 +39,7 @@ import { copyComposition, deleteComposition, readComposition } from './authoring
 import { mountPreset, serviceForAgent, standingMountFor } from './mount.ts'
 import { PresetExistsError } from './authoring.ts'
 import { PresetMountError, UnknownPresetError, type AgentPreset, type Config, type PresetRoot } from './preset.ts'
+import { resolveSessionPreset } from './session.ts'
 import type {} from './types.ts'
 
 /** Settings namespace carrying the user's chosen default preset. */
@@ -90,6 +96,7 @@ export class AgentPresets extends Service {
       trust: z.union(['system', 'user'] as const).default('user'),
     })).default([]),
     includeUserRoot: z.boolean().default(true),
+    chatPresetIds: z.array(z.string()).default([]),
   }) as z<Config>
 
   /**
@@ -103,6 +110,19 @@ export class AgentPresets extends Service {
    * locally authored directory that claimed its name.
    */
   private readonly resolvedRoots: readonly PresetRoot[]
+
+  /**
+   * Presets a session is created ONTO, never switched from or into by
+   * `/mode`: a chat preset is a fixed conversation surface, not a mode.
+   */
+  private readonly chatPresetIds: readonly string[]
+
+  /**
+   * Per-session queue serializing `/mode` switches, mirroring the api-proxy's
+   * preset-switch queue: the switch re-reads the idle state under the lock,
+   * because a turn may have started since the request arrived.
+   */
+  private readonly modeSwitches = new Map<string, Promise<unknown>>()
 
   /**
    * The user layer over `config.default`, present only while a settings
@@ -133,6 +153,7 @@ export class AgentPresets extends Service {
     this.resolvedRoots = config.includeUserRoot
       ? [...config.roots, { path: dshHomePath(USER_PRESET_DIR), trust: 'user' }]
       : [...config.roots]
+    this.chatPresetIds = [...(config.chatPresetIds ?? [])]
     // Deliberately not `installSettingsSection`: that helper exists to re-judge
     // what a consumer DERIVED from the source — memoized resolutions,
     // registration-level facts — across attach, detach, and change. Nothing
@@ -178,6 +199,27 @@ export class AgentPresets extends Service {
     ctx.on('session/event', (session, event) => {
       if (event.type !== 'agent-preset/selected') return
       ctx.emit('agent-preset/selected', session.id, event.data.agentPreset)
+    })
+
+    // The /mode command: the write path that switches a session's agent preset
+    // AFTER its conversation has started. The `agentPresets.select` RPC stays
+    // blank-only (the composer seat's flow); this command widens the switch to
+    // started sessions under two guards — the agent must be idle (a running
+    // turn owns its composition for the duration of its steps), and a
+    // configured chat preset is never crossed in either direction. The swap
+    // reuses `recompose` (a standing-mount re-link that cannot leave a
+    // torn-down state) and records the same `agent-preset/selected` event the
+    // RPC writes, so a resumed or forked session rebuilds the switched
+    // composition. The child activates only when a command registry is
+    // composed.
+    ctx.inject(['commands'], (commandCtx) => {
+      commandCtx.commands.register({
+        name: 'mode',
+        description: 'Switch this session agent preset (mode)',
+        input: { hint: '<preset>' },
+        recordInput: false, // the agent-preset/selected event owns the payload
+        handler: ({ agent, rawInput }) => this.switchModeCommand(agent, rawInput),
+      })
     })
   }
 
@@ -236,6 +278,81 @@ export class AgentPresets extends Service {
       throw new PresetMountError(preset.id, preset.broken)
     }
     return preset
+  }
+
+  /**
+   * The `/mode` handler: report the current preset and roster, or switch to a
+   * named preset. A switch is refused on unknown ids, across a configured
+   * chat preset in either direction, and while the agent runs a turn; the
+   * switch itself serializes per session and re-reads the idle state under
+   * the lock.
+   * @param agent - the command's receiving agent.
+   * @param rawInput - the text following the command name.
+   * @returns the command result.
+   */
+  private async switchModeCommand(agent: Agent, rawInput: string): Promise<CommandResult> {
+    const roster = await this.list()
+    const ids = roster.map(preset => preset.id)
+    const target = rawInput.trim()
+    if (target === '') {
+      const current = resolveSessionPreset(agent.session) ?? '(none)'
+      return { kind: 'success', text: `current preset ${current} (available: ${ids.join(', ')})` }
+    }
+    const current = resolveSessionPreset(agent.session) ?? ''
+    if (this.chatPresetIds.includes(current) || this.chatPresetIds.includes(target)) {
+      return {
+        kind: 'error',
+        text: 'A chat session is fixed to its preset; switching out of or into a chat preset is refused.',
+      }
+    }
+    if (agent.status === 'running') {
+      return { kind: 'error', text: 'The session runs a turn; switch modes after it finishes.' }
+    }
+    try {
+      const outcome = await this.switchMode(agent, target)
+      return 'busy' in outcome
+        ? { kind: 'error', text: 'The session runs a turn; switch modes after it finishes.' }
+        : { kind: 'success', text: `preset ${outcome.id}` }
+    } catch (error) {
+      if (error instanceof UnknownPresetError) {
+        return {
+          kind: 'error',
+          text: `unknown preset "${error.presetId}" (available: ${error.available.join(', ') || 'none'})`,
+        }
+      }
+      if (error instanceof PresetMountError) {
+        return { kind: 'error', text: `cannot switch to preset "${target}": ${error.message}` }
+      }
+      throw error
+    }
+  }
+
+  /**
+   * One serialized mid-conversation preset switch: re-read the idle state
+   * under the per-session lock (a turn may have started since the request
+   * arrived), re-link the composition, and record the switch. The event is
+   * appended only after the swap committed, so a rejected mount leaves the
+   * previous composition unrecorded.
+   * @param agent - the session's agent.
+   * @param target - the preset id to switch to.
+   * @returns the installed preset, or the busy marker when a turn started first.
+   * @throws when the preset is unknown or its composition is unusable.
+   */
+  private async switchMode(agent: Agent, target: string): Promise<AgentPreset | { readonly busy: true }> {
+    const key = String(agent.session.id)
+    const queued = this.modeSwitches.get(key) ?? Promise.resolve()
+    const turn = queued.then(async (): Promise<AgentPreset | { readonly busy: true }> => {
+      if (agent.status === 'running') return { busy: true }
+      const preset = await this.recompose(agent.ctx, target)
+      agent.session.append('agent-preset/selected', { agentPreset: preset.id })
+      return preset
+    })
+    this.modeSwitches.set(key, turn.catch(() => undefined))
+    try {
+      return await turn
+    } finally {
+      if (this.modeSwitches.get(key) === turn) this.modeSwitches.delete(key)
+    }
   }
 
   /**
@@ -437,10 +554,13 @@ export class AgentPresets extends Service {
   /**
    * Re-link one agent to a different preset's standing composition.
    *
-   * Only valid while the agent has produced nothing: swapping tools mid
-   * conversation would leave logged tool calls the new composition cannot
-   * make. The CALLER owns that check — this method does not read session
-   * history.
+   * Swapping a session that already produced a conversation is legal but
+   * caller-gated: the log keeps every earlier turn as the record of the old
+   * composition (logged tool calls are inert history, exactly as on a
+   * mid-conversation model switch), while later turns run under the new one.
+   * The CALLER owns that gate — the `agentPresets.select` RPC requires a
+   * blank session, and the `/mode` command requires an idle agent. This
+   * method does not read session history.
    *
    * The swap is a parent re-link, not an unmount: standing mounts are shared
    * and permanent, so the old composition stays for its other agents and the

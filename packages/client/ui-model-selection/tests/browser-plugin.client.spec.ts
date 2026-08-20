@@ -1,11 +1,11 @@
 /**
  * ui-model-selection browser half on a real cordis Context with fake command/slots/
  * connection faces and real session scopes: the plugin mounts ModelDirectoryResolver
- * as `models`, the /model contribution and the conversation.input.model
- * seat both register, and BOTH entries resolve the SAME per-session
- * directory through the service — a selection submitted through the seat's
- * inject face is the current the popup's next options pass marks active
- * (and the reverse), the one-shared-state contract of the dual entry.
+ * as `models`, the /model contribution, the /effort decoration, and the
+ * conversation.input.model seat all register, and every entry resolves the SAME
+ * per-session directory through the service — a selection submitted through any
+ * entry is the current the others' next options pass marks active,
+ * the one-shared-state contract of the triple entry.
  * Scope disposal drops the directory (HMR safety).
  */
 import { Context } from '@deepseek-ai/cordis'
@@ -14,8 +14,8 @@ import { createScope } from '@deepseek-ai/dsh-client-runtime/client'
 import type { SessionId } from '@deepseek-ai/dsh-client-runtime/client'
 import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
 import { TestRemote } from '@deepseek-ai/dsh-client-test-runtime'
-import type { ModelSelection } from '@deepseek-ai/dsh-api-remotes/client'
-import type { CommandContribution, SelectOption } from '@deepseek-ai/dsh-client-ui-commands/client'
+import type { ModelProviderGroup, ModelSelection } from '@deepseek-ai/dsh-api-remotes/client'
+import type { CommandContribution, CommandDecoration, CommandPopupSelectSpec, SelectOption } from '@deepseek-ai/dsh-client-ui-commands/client'
 import type { ModelSelectInjected } from '../src/client/slots.ts'
 import { apply, inject } from '../src/client/index.ts'
 import { zh } from '../src/client/locales.ts'
@@ -57,12 +57,13 @@ const GROUPS = [{
 async function bench() {
   const ctx = new Context()
   let current: ModelSelection = { provider: 'deepseek-official', model: 'deepseek-v4-flash' }
+  let groups: ModelProviderGroup[] = GROUPS
   const calls = { models: 0, select: 0 }
   ctx.provide('connection', { api: { sessions: {
     models: () => {
       calls.models += 1
       return Promise.resolve({
-        result: { ok: true as const, value: { current, routable, groups: GROUPS, failures: [] } },
+        result: { ok: true as const, value: { current, routable, groups, failures: [] } },
       })
     },
     selectModel: (payload: { provider: string; model: string; reasoningEffort?: string }) => {
@@ -87,10 +88,15 @@ async function bench() {
     },
   })
   let contribution: CommandContribution | undefined
+  let decoration: CommandDecoration | undefined
   ctx.provide('commandUi', {
     register(c: CommandContribution) {
       contribution = c
       return () => { contribution = undefined }
+    },
+    decorate(d: CommandDecoration) {
+      decoration = d
+      return () => { decoration = undefined }
     },
   })
   const seats = new Map<string, {
@@ -124,10 +130,12 @@ async function bench() {
   }
   return {
     ctx, fiber, mint, calls,
-    contribution: () => contribution!,
+    contribution: () => contribution as (CommandContribution & { ui: CommandPopupSelectSpec }),
+    decoration: () => decoration as (CommandDecoration & { ui: CommandPopupSelectSpec }),
     seat: () => seats.get('conversation.input.model')!,
     hostCurrent: () => current,
     setHostCurrent: (selection: ModelSelection) => { current = selection },
+    setGroups: (next: ModelProviderGroup[]) => { groups = next },
     address: (id: SessionId) => { addressed.add(id) },
     setRoutable: (next: boolean) => { routable = next },
     blockOf: (key: string) => blocks.get(sid(key)),
@@ -192,6 +200,118 @@ describe('ui-model-selection dual entry', () => {
       model: 'deepseek-v4-pro',
       reasoningEffort: 'high',
     })
+  })
+
+  it('the /effort decoration registers on the host command with a popupSelect', async () => {
+    const b = await bench()
+    expect(b.decoration().name).toBe('effort')
+    expect(b.decoration().ui.kind).toBe('popupSelect')
+  })
+
+  it('the /effort popup lists the current model efforts, marking the effective one active', async () => {
+    const b = await bench()
+    b.mint('s1')
+    // No explicit effort: the model default ('high') is the effective row.
+    let options = await b.decoration().ui.options(projection('s1'), new AbortController().signal)
+    expect(options.map((o: SelectOption) => o.label)).toEqual(['Off', 'High', 'Max'])
+    expect(options[1]).toMatchObject({ active: true })
+    expect(options[0]?.active).toBeUndefined()
+    expect(options[2]?.active).toBeUndefined()
+    // The model names a default effort, so no provider-default row exists.
+    expect(options.some((o: SelectOption) => o.id === 'provider-default')).toBe(false)
+
+    b.setHostCurrent({ provider: 'deepseek-official', model: 'deepseek-v4-flash', reasoningEffort: 'max' })
+    options = await b.decoration().ui.options(projection('s1'), new AbortController().signal)
+    expect(options.find((o: SelectOption) => o.id === 'max')).toMatchObject({ active: true })
+    expect(options.find((o: SelectOption) => o.id === 'high')?.active).toBeUndefined()
+  })
+
+  it('offers a provider-default row only when the model names no default effort', async () => {
+    const b = await bench()
+    b.mint('s1')
+    b.setGroups([{
+      id: 'deepseek-official',
+      name: 'DeepSeek',
+      models: [{
+        id: 'deepseek-v4-flash',
+        name: 'DeepSeek-V4-Flash',
+        reasoning: { efforts: [{ id: 'low', name: 'Low', description: 'Lowest' }, { id: 'high', name: 'High' }] },
+      }],
+    }])
+    // No explicit effort: the provider-default row is the active one.
+    let options = await b.decoration().ui.options(projection('s1'), new AbortController().signal)
+    expect(options).toEqual([
+      { id: 'provider-default', label: 'Default', active: true },
+      { id: 'low', label: 'Low', detail: 'Lowest' },
+      { id: 'high', label: 'High' },
+    ])
+    // An explicit effort: the effort row is active, the default row is not.
+    b.setHostCurrent({ provider: 'deepseek-official', model: 'deepseek-v4-flash', reasoningEffort: 'low' })
+    options = await b.decoration().ui.options(projection('s1'), new AbortController().signal)
+    expect(options).toEqual([
+      { id: 'provider-default', label: 'Default' },
+      { id: 'low', label: 'Low', detail: 'Lowest', active: true },
+      { id: 'high', label: 'High' },
+    ])
+  })
+
+  it('answers a model without reasoning metadata with an empty popup', async () => {
+    const b = await bench()
+    b.mint('s1')
+    b.setHostCurrent({ provider: 'deepseek-official', model: 'no-reasoning' })
+    const options = await b.decoration().ui.options(projection('s1'), new AbortController().signal)
+    expect(options).toEqual([])
+  })
+
+  it('a /effort popup pick submits the same model with the picked effort through selectModel', async () => {
+    const b = await bench()
+    b.mint('s1')
+    const seatFace = b.seat().inject!(sid('s1'))
+    const options = await b.decoration().ui.options(projection('s1'), new AbortController().signal)
+    await b.decoration().ui.onSelect(options.find((o: SelectOption) => o.id === 'max')!, projection('s1'))
+    expect(b.hostCurrent()).toEqual({
+      provider: 'deepseek-official',
+      model: 'deepseek-v4-flash',
+      reasoningEffort: 'max',
+    })
+    // The shared directory reflects the switch for the other entries.
+    expect(seatFace.directory.getSnapshot().current).toMatchObject({ model: 'deepseek-v4-flash', reasoningEffort: 'max' })
+  })
+
+  it('a /effort provider-default pick clears the explicit effort from the selection', async () => {
+    const b = await bench()
+    b.mint('s1')
+    b.setGroups([{
+      id: 'deepseek-official',
+      name: 'DeepSeek',
+      models: [{
+        id: 'deepseek-v4-flash',
+        name: 'DeepSeek-V4-Flash',
+        reasoning: { efforts: [{ id: 'low', name: 'Low' }, { id: 'high', name: 'High' }] },
+      }],
+    }])
+    b.setHostCurrent({ provider: 'deepseek-official', model: 'deepseek-v4-flash', reasoningEffort: 'low' })
+    const options = await b.decoration().ui.options(projection('s1'), new AbortController().signal)
+    await b.decoration().ui.onSelect(options.find((o: SelectOption) => o.id === 'provider-default')!, projection('s1'))
+    expect(b.hostCurrent()).toEqual({ provider: 'deepseek-official', model: 'deepseek-v4-flash' })
+  })
+
+  it('refuses a /effort pick before the directory has loaded', async () => {
+    const b = await bench()
+    b.mint('s1')
+    await expect(b.decoration().ui.onSelect({ id: 'off', label: 'Off' }, projection('s1')))
+      .rejects.toThrow('the model directory has not loaded yet')
+  })
+
+  it('withholds the /effort decoration from addressed subagent sessions', async () => {
+    const b = await bench()
+    b.mint('child')
+    b.address(sid('child'))
+    expect(b.decoration().available(projection('child'))).toBe(false)
+    await expect(b.decoration().ui.options(projection('child'), new AbortController().signal))
+      .rejects.toThrow('model selection is unavailable for addressed subagent sessions')
+    await expect(b.decoration().ui.onSelect({ id: 'off', label: 'Off' }, projection('child')))
+      .rejects.toThrow('model selection is unavailable for addressed subagent sessions')
   })
 
   it('both entries share one directory instance per session, isolated across sessions', async () => {

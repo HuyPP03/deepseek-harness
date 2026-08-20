@@ -28,6 +28,9 @@
       "path": "../../core/session"
     },
     {
+      "path": "../../interaction/commands"
+    },
+    {
       "path": "../../core/system-prompt"
     },
     {
