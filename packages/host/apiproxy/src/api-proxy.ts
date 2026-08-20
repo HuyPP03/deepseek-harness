@@ -485,6 +485,97 @@ function sessionBlank(session: Session): boolean {
   return !session.events.some(event => event.type === 'turn/start')
 }
 
+/**
+ * Resolve reference workspace ids to project paths through the workspace registry.
+ * @returns the resolved paths, or the first id the registry does not hold.
+ */
+function resolveReferencePaths(
+  ctx: Context,
+  referenceIds: readonly string[],
+): { paths: string[] } | { notFound: string } {
+  const paths: string[] = []
+  for (const referenceId of referenceIds) {
+    const reference = ctx.workspaceRegistry.get(brandWorkspaceId(referenceId))
+    if (reference === undefined) return { notFound: referenceId }
+    paths.push(reference.path)
+  }
+  return { paths }
+}
+
+/** The deployment refused: the reference-project service is not mounted. */
+function referencesUnsupported(request: RpcRequest<unknown>, sessionId: SessionId): RpcResponse<never> {
+  return err(request, {
+    code: 'references-unsupported',
+    message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
+    details: { sessionId },
+  })
+}
+
+/**
+ * Settle a session-read failure: a missing session is the named wire error;
+ * anything else is an internal failure over the same read.
+ */
+function sessionReadError(request: RpcRequest<unknown>, sessionId: SessionId, label: string, error: unknown): RpcResponse<never> {
+  if (error instanceof SessionNotFound) {
+    return err(request, { code: 'session-not-found', message: error.message, details: { sessionId } })
+  }
+  return err(request, {
+    code: 'internal',
+    message: `${label} unavailable for session "${sessionId}": ${String(error)}`,
+    details: {},
+  })
+}
+
+/**
+ * Canonicalize an optional client time zone: `undefined` passes through, and a
+ * named zone must resolve to a canonical IANA name or be refused.
+ */
+function canonicalizeTimeZone(
+  request: RpcRequest<unknown>,
+  clientTimeZone: string | undefined,
+): { value: string | undefined } | { refused: RpcResponse<never> } {
+  const value = clientTimeZone === undefined ? undefined : canonicalClientTimeZone(clientTimeZone)
+  if (clientTimeZone !== undefined && value === undefined) {
+    return {
+      refused: err(request, {
+        code: 'invalid-time-zone',
+        message: 'clientTimeZone must be UTC or a valid IANA Area/Location name',
+        details: { value: clientTimeZone },
+      }),
+    }
+  }
+  return { value }
+}
+
+/**
+ * The project cwd of a served session: every served session records its
+ * project at create time, so a cwd-less header is a pre-project legacy log
+ * (not served) and an unknown id was never attached. The session is returned
+ * alongside because both callers need it for scope or reference resolution.
+ */
+function sessionProjectCwd(
+  ctx: Context,
+  request: RpcRequest<unknown>,
+  sessionId: SessionId,
+): { cwd: string; session: Session } | { refused: RpcResponse<never> } {
+  const session = ctx.sessions.get(sessionId)
+  if (session === undefined) {
+    return {
+      refused: err(request, {
+        code: 'session-not-found',
+        message: `session "${sessionId}" not found (not attached)`,
+        details: { sessionId },
+      }),
+    }
+  }
+  if (session.header.cwd === undefined) {
+    return {
+      refused: err(request, { code: 'internal', message: `session "${sessionId}" has no project cwd`, details: {} }),
+    }
+  }
+  return { cwd: session.header.cwd, session }
+}
+
 /** Advance the Session-list hint projection by one committed event. */
 function applySessionListMetadata(state: SessionListMetadata, event: SessionEvent): SessionListMetadata {
   const blank = state.blank && event.type !== 'turn/start'
@@ -2241,24 +2332,17 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             })
           }
           if (referencesService === undefined) {
+            return referencesUnsupported(request, sessionId)
+          }
+          const resolved = resolveReferencePaths(ctx, requestedReferences)
+          if ('notFound' in resolved) {
             return err(request, {
-              code: 'references-unsupported',
-              message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
-              details: { sessionId },
+              code: 'workspace-not-found',
+              message: `workspace "${resolved.notFound}" not found`,
+              details: { workspaceId: resolved.notFound },
             })
           }
-          const paths: string[] = []
-          for (const referenceId of requestedReferences) {
-            const reference = ctx.workspaceRegistry.get(brandWorkspaceId(referenceId))
-            if (reference === undefined) {
-              return err(request, {
-                code: 'workspace-not-found',
-                message: `workspace "${referenceId}" not found`,
-                details: { workspaceId: referenceId },
-              })
-            }
-            paths.push(reference.path)
-          }
+          const paths = resolved.paths
           try {
             referenceSet = await normalizeReferencePaths(paths, cwd, referencesService.maxReferences)
           } catch (error: unknown) {
@@ -2321,11 +2405,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
           // validation above already proved it mounted).
           const references = ctx.get('workspaceReferences')
           if (references === undefined) {
-            return err(request, {
-              code: 'references-unsupported',
-              message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
-              details: { sessionId },
-            })
+            return referencesUnsupported(request, sessionId)
           }
           const attached = ctx.agents.get(sessionId)
           if (attached === undefined) {
@@ -2364,11 +2444,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         if ('error' in found) return err(request, found.error)
         const references = ctx.get('workspaceReferences')
         if (references === undefined) {
-          return err(request, {
-            code: 'references-unsupported',
-            message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
-            details: { sessionId },
-          })
+          return referencesUnsupported(request, sessionId)
         }
         // Reference projects are anchored to the session's own workspace: a
         // workspace-less session (a chat) has no directory to compare
@@ -2382,20 +2458,16 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             details: { sessionId },
           })
         }
-        const paths: string[] = []
-        for (const referenceId of referenceWorkspaceIds) {
-          const reference = ctx.workspaceRegistry.get(brandWorkspaceId(referenceId))
-          if (reference === undefined) {
-            return err(request, {
-              code: 'workspace-not-found',
-              message: `workspace "${referenceId}" not found`,
-              details: { workspaceId: referenceId },
-            })
-          }
-          paths.push(reference.path)
+        const resolved = resolveReferencePaths(ctx, referenceWorkspaceIds)
+        if ('notFound' in resolved) {
+          return err(request, {
+            code: 'workspace-not-found',
+            message: `workspace "${resolved.notFound}" not found`,
+            details: { workspaceId: resolved.notFound },
+          })
         }
         try {
-          await references.set(found.agent.session, paths)
+          await references.set(found.agent.session, resolved.paths)
         } catch (error: unknown) {
           return err(request, {
             code: 'references-invalid',
@@ -2425,14 +2497,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             ...cut.projections === undefined ? {} : { projections: cut.projections },
           })
         } catch (error: unknown) {
-          if (error instanceof SessionNotFound) {
-            return err(request, { code: 'session-not-found', message: error.message, details: { sessionId } })
-          }
-          return err(request, {
-            code: 'internal',
-            message: `history unavailable for session "${sessionId}": ${String(error)}`,
-            details: {},
-          })
+          return sessionReadError(request, sessionId, 'history', error)
         }
       },
 
@@ -2533,14 +2598,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         try {
           source = await readSessionState(sessionId)
         } catch (error: unknown) {
-          if (error instanceof SessionNotFound) {
-            return err(request, { code: 'session-not-found', message: error.message, details: { sessionId } })
-          }
-          return err(request, {
-            code: 'internal',
-            message: `fork source unavailable for session "${sessionId}": ${String(error)}`,
-            details: {},
-          })
+          return sessionReadError(request, sessionId, 'fork source', error)
         }
         const events = source.events
         // An in-log anchor belongs to the turn containing it and must never
@@ -2627,16 +2685,9 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
 
       async prompt(request) {
         const { sessionId, mode, content, clientTimeZone } = request.payload
-        const canonicalTimeZone = clientTimeZone === undefined
-          ? undefined
-          : canonicalClientTimeZone(clientTimeZone)
-        if (clientTimeZone !== undefined && canonicalTimeZone === undefined) {
-          return err(request, {
-            code: 'invalid-time-zone',
-            message: 'clientTimeZone must be UTC or a valid IANA Area/Location name',
-            details: { value: clientTimeZone },
-          })
-        }
+        const timeZone = canonicalizeTimeZone(request, clientTimeZone)
+        if ('refused' in timeZone) return timeZone.refused
+        const canonicalTimeZone = timeZone.value
         const resolved = await turnAgentFor<{ accepted: true }>(request, sessionId)
         if ('refused' in resolved) return resolved.refused
         const agent = resolved.agent
@@ -2903,16 +2954,9 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
 
       async prompt(request, signal) {
         const { parentSessionId, childSessionId, content, clientTimeZone } = request.payload
-        const canonicalTimeZone = clientTimeZone === undefined
-          ? undefined
-          : canonicalClientTimeZone(clientTimeZone)
-        if (clientTimeZone !== undefined && canonicalTimeZone === undefined) {
-          return err(request, {
-            code: 'invalid-time-zone',
-            message: 'clientTimeZone must be UTC or a valid IANA Area/Location name',
-            details: { value: clientTimeZone },
-          })
-        }
+        const timeZone = canonicalizeTimeZone(request, clientTimeZone)
+        if ('refused' in timeZone) return timeZone.refused
+        const canonicalTimeZone = timeZone.value
         const parent = ctx.agents.get(parentSessionId)
         if (parent === undefined) {
           return err(request, {
@@ -3375,20 +3419,9 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
       // the view scope is the live agent or the preset's standing key.
       async list(request) {
         const { sessionId } = request.payload
-        const session = ctx.sessions.get(sessionId)
-        if (session === undefined) {
-          return err(request, {
-            code: 'session-not-found',
-            message: `session "${sessionId}" not found (not attached)`,
-            details: { sessionId },
-          })
-        }
-        if (session.header.cwd === undefined) {
-          // Every served session records its project at create time; a
-          // cwd-less header is a pre-project legacy log (not served).
-          return err(request, { code: 'internal', message: `session "${sessionId}" has no project cwd`, details: {} })
-        }
-        const cwd = session.header.cwd
+        const project = sessionProjectCwd(ctx, request, sessionId)
+        if ('refused' in project) return project.refused
+        const { cwd, session } = project
         // The host registry is layered per scope and serves every session. A
         // composition may still realm-mount its own registry instead; that
         // instance is invisible to host contexts, so address it through the
@@ -3436,20 +3469,9 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
       // outliving it.
       async list(request, signal) {
         const { sessionId, query } = request.payload
-        const session = ctx.sessions.get(sessionId)
-        if (session === undefined) {
-          return err(request, {
-            code: 'session-not-found',
-            message: `session "${sessionId}" not found (not attached)`,
-            details: { sessionId },
-          })
-        }
-        const cwd = session.header.cwd
-        if (cwd === undefined) {
-          // Every served session records its project at create time; a
-          // cwd-less header is a pre-project legacy log (not served).
-          return err(request, { code: 'internal', message: `session "${sessionId}" has no project cwd`, details: {} })
-        }
+        const project = sessionProjectCwd(ctx, request, sessionId)
+        if ('refused' in project) return project.refused
+        const { cwd, session } = project
         const roots: FileWalkRoot[] = [{ dir: cwd, root: 'workspace' }]
         for (const reference of referencesOf(session)) {
           roots.push({ dir: reference, root: basename(reference) })
