@@ -224,6 +224,7 @@ export default defineConfig({
         'packages/client/ui-skill/src/index.ts',
         'packages/client/ui-input-trigger/src/index.ts',
         'packages/client/ui-subagent/src/index.ts',
+        'packages/client/ui-slash-tools/src/index.ts',
         'packages/client/ui-commands/src/client/popup.ts',
         'packages/client/ui-commands/src/client/directory.ts',
         'packages/client/ui-commands/src/client/service.ts',

@@ -258,6 +258,9 @@
     - id: ui-commands
       name: '@deepseek-ai/dsh-client-ui-commands'
 
+    - id: ui-slash-tools
+      name: '@deepseek-ai/dsh-client-ui-slash-tools'
+
     - id: ui-skill
       name: '@deepseek-ai/dsh-client-ui-skill'
 

@@ -271,6 +271,26 @@ describe('sessions', () => {
     ])
     await runtime.dispose()
   })
+
+  it('mints a blank, unselected fixture row on create and carries preset and cwd onto the summary', async () => {
+    const runtime = await runtimeWithFrame()
+    await runtime.sessions.add({ id: 's1' })
+    const created = await runtime.sessions.create({ agentPreset: 'standard', cwd: '/tmp/dir' })
+    expect(created).toBe('created-1')
+    expect(runtime.sessions.calls).toContainEqual({
+      method: 'create',
+      args: [{ agentPreset: 'standard', cwd: '/tmp/dir' }],
+    })
+    const row = runtime.sessions.list.getSnapshot().byId[created]
+    expect(row?.blank).toBe(true)
+    expect(row?.agentPreset).toBe('standard')
+    expect(row?.cwd).toBe('/tmp/dir')
+    expect(runtime.sessions.list.getSnapshot().current).toBe('s1')
+    // A preallocated id is honored.
+    const named = await runtime.sessions.create({ sessionId: 'mine' as SessionId })
+    expect(named).toBe('mine')
+    await runtime.dispose()
+  })
 })
 
 describe('stores', () => {
