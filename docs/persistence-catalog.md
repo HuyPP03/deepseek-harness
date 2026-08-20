@@ -125,15 +125,16 @@ Source: [`packages/core/agent/src/types.ts:19`](../packages/core/agent/src/types
 
 ```ts persistence-catalog
 /**
- * The session's agent preset was chosen after creation, while the session
- * was still blank. Log-only: it records the composition later turns ran
- * under, so a resumed or forked session rebuilds the same one instead of
- * the header's creation-time value.
+ * The session's agent preset was chosen after creation — while the
+ * session was still blank (the seat flow), or mid-conversation through
+ * the `/mode` command. Log-only: it records the composition later turns
+ * ran under, so a resumed or forked session rebuilds the same one instead
+ * of the header's creation-time value.
  */
 'agent-preset/selected': { agentPreset: string }
 ```
 
-Source: [`packages/preset/agent-presets/src/session.ts:26`](../packages/preset/agent-presets/src/session.ts)
+Source: [`packages/preset/agent-presets/src/session.ts:28`](../packages/preset/agent-presets/src/session.ts)
 
 ### `approval/*`
 

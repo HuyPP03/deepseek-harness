@@ -18,10 +18,11 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { ToolListChangedNotificationSchema } from '@modelcontextprotocol/sdk/types.js'
 import type { Context } from '@deepseek-ai/cordis'
+import type { McpServerStatus, McpServerView } from '@deepseek-ai/dsh-mcp-registry'
 import { MAX_TIMER_DELAY_MS } from '@deepseek-ai/dsh-timeout'
 import { createTransport } from './transport.ts'
 import { syncTools } from './tools.ts'
-import type { ToolBridgeOptions, ToolDisposers } from './tools.ts'
+import type { SyncGeneration, ToolBridgeOptions } from './tools.ts'
 import type { Config } from './index.ts'
 
 /** Automatic reconnect policy for one MCP server connection. */
@@ -109,6 +110,14 @@ export interface ConnectionHandle {
    * still owns.
    */
   dispose(): Promise<void>
+  /**
+   * Current registry report for this server, or `null` once disposed.
+   * Pulled on demand by the mcp-registry reporter; never mutates the
+   * supervisor.
+   *
+   * @returns the live snapshot, or `null` after disposal.
+   */
+  report(): McpServerView | undefined
 }
 
 /**
@@ -139,8 +148,8 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
   let client: Client | undefined
   /** Close signal paired with {@link client}; captured by dispose before current ownership is cleared. */
   let clientClosed: Promise<void> | undefined
-  /** Live tool registrations owned by this server; only {@link enqueueSync} and dispose swap it. */
-  let disposers: ToolDisposers = new Map()
+  /** Live tool generation owned by this server; only {@link enqueueSync} and dispose swap it. */
+  let synced: SyncGeneration = { disposers: new Map(), tools: [] }
   let reconnectTimer: NodeJS.Timeout | undefined
   /** Consecutive failed connection attempts within the current outage. */
   let failedAttempts = 0
@@ -162,7 +171,7 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
   function enqueueSync(generation: Client, syncOpts: ToolBridgeOptions = opts): Promise<void> {
     const run = syncChain.then(async () => {
       if (!isCurrent(generation)) return
-      disposers = await syncTools(generation, ctx, syncOpts, disposers)
+      synced = await syncTools(generation, ctx, syncOpts, synced.disposers)
     })
     // The chain tail must survive a failed sync; the enqueuing caller owns reporting.
     syncChain = run.catch(() => {})
@@ -207,8 +216,8 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
       // Enqueue the give-up disposal so it cannot race an in-flight sync's
       // phase-2 swap (which checks isCurrent inside the queue).
       syncChain = syncChain.then(() => {
-        for (const dispose of disposers.values()) dispose()
-        disposers = new Map()
+        for (const dispose of synced.disposers.values()) dispose()
+        synced = { disposers: new Map(), tools: [] }
       })
       ctx.logger.error(`${label}: giving up after ${policy.maxAttempts} consecutive failed reconnect attempts — tools unregistered; reload the plugin or restart the Host to reconnect`)
       return
@@ -341,11 +350,25 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
         }
       }
       // Quiesce, don't just request it: the in-flight attempt enqueues its
-      // sync before settling, so awaiting both leaves `disposers` final.
+      // sync before settling, so awaiting both leaves the generation final.
       await settling
       await syncChain
-      for (const dispose of disposers.values()) dispose()
-      disposers = new Map()
+      for (const dispose of synced.disposers.values()) dispose()
+      synced = { disposers: new Map(), tools: [] }
+    },
+    report(): McpServerView | undefined {
+      if (disposed) return undefined
+      // No client and no armed retry means nothing is running and nothing is
+      // scheduled: the server contributes nothing, which is down by definition.
+      const status: McpServerStatus =
+        client !== undefined
+          ? connectedAt !== undefined ? 'connected' : 'connecting'
+          : reconnectTimer !== undefined ? 'reconnecting' : 'down'
+      return {
+        serverName: config.serverName,
+        status,
+        tools: synced.tools,
+      }
     },
   }
 }

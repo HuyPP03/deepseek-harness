@@ -184,6 +184,12 @@ export interface Config {
    * configured root. False mounts a roster over `roots` alone.
    */
   includeUserRoot: boolean
+  /**
+   * Presets a session is created ONTO, never switched from or into by
+   * `/mode`: a chat preset is a fixed conversation surface, not a mode.
+   * Empty (the default) leaves every preset switchable.
+   */
+  chatPresetIds?: string[]
 }
 
 /** One directory scanned for preset subdirectories. */
@@ -466,6 +472,26 @@ export interface Config {
 ```
 
 来源：[`packages/code-runtime/code-runtime-worker-thread/src/index.ts:25`](../packages/code-runtime/code-runtime-worker-thread/src/index.ts)
+
+<a id="deepseek-aidsh-command-agent-actions"></a>
+
+## `@deepseek-ai/dsh-command-agent-actions`
+
+需要：`commands` · `subagents`
+
+```ts config-catalog
+/** Config: the one-shot subagent provider /code-review spawns on. */
+export interface Config {
+  /**
+   * The `ctx.subagents` provider name /code-review starts its review
+   * children on (default `spawn`). When the provider is not registered the
+   * command degrades to steering the receiving agent instead.
+   */
+  provider?: string
+}
+```
+
+来源：[`packages/interaction/command-agent-actions/src/index.ts:17`](../packages/interaction/command-agent-actions/src/index.ts)
 
 <a id="deepseek-aidsh-compaction-basic"></a>
 
@@ -1277,7 +1303,7 @@ export interface ReconnectConfig {
 }
 ```
 
-来源：[`packages/mcp/mcp-client/src/index.ts:98`](../packages/mcp/mcp-client/src/index.ts)
+来源：[`packages/mcp/mcp-client/src/index.ts:99`](../packages/mcp/mcp-client/src/index.ts)
 
 <a id="deepseek-aidsh-message-feedback"></a>
 
@@ -3087,6 +3113,7 @@ export interface Config {
 - `@deepseek-ai/dsh-client-ui-settings-plugins`（[`packages/client/ui-settings-plugins/src/index.ts`](../packages/client/ui-settings-plugins/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-sidebar`（[`packages/client/ui-sidebar/src/index.ts`](../packages/client/ui-sidebar/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-skill`（[`packages/client/ui-skill/src/index.ts`](../packages/client/ui-skill/src/index.ts)）
+- `@deepseek-ai/dsh-client-ui-slash-tools`（[`packages/client/ui-slash-tools/src/index.ts`](../packages/client/ui-slash-tools/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-subagent`（[`packages/client/ui-subagent/src/index.ts`](../packages/client/ui-subagent/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-theme`（[`packages/client/ui-theme/src/index.ts`](../packages/client/ui-theme/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-tool`（[`packages/client/ui-tool/src/index.ts`](../packages/client/ui-tool/src/index.ts)）
@@ -3097,6 +3124,8 @@ export interface Config {
 - `@deepseek-ai/dsh-command-compact` — 需要 `commands` · `compact`（[`packages/compaction/command-compact/src/index.ts`](../packages/compaction/command-compact/src/index.ts)）
 - `@deepseek-ai/dsh-command-feedback` — 需要 `commands`（[`packages/feedback/command-feedback/src/index.ts`](../packages/feedback/command-feedback/src/index.ts)）
 - `@deepseek-ai/dsh-command-goal` — 需要 `commands` · `goals`（[`packages/goal/command-goal/src/index.ts`](../packages/goal/command-goal/src/index.ts)）
+- `@deepseek-ai/dsh-command-mcp` — 需要 `commands` · `mcpRegistry`（[`packages/mcp/command-mcp/src/index.ts`](../packages/mcp/command-mcp/src/index.ts)）
+- `@deepseek-ai/dsh-command-search` — 需要 `commands` · `subprocess`（[`packages/interaction/command-search/src/index.ts`](../packages/interaction/command-search/src/index.ts)）
 - `@deepseek-ai/dsh-commands`（[`packages/interaction/commands/src/index.ts`](../packages/interaction/commands/src/index.ts)）
 - `@deepseek-ai/dsh-cordis-client-runner`（[`packages/extensions/cordis-client-runner/src/index.ts`](../packages/extensions/cordis-client-runner/src/index.ts)）
 - `@deepseek-ai/dsh-fs-e2b` — 需要 `e2b`（[`packages/e2b/fs-e2b/src/index.ts`](../packages/e2b/fs-e2b/src/index.ts)）
@@ -3107,6 +3136,7 @@ export interface Config {
 - `@deepseek-ai/dsh-host-plugin-inventory` — 需要 `loader`（[`packages/host/plugin-inventory/src/index.ts`](../packages/host/plugin-inventory/src/index.ts)）
 - `@deepseek-ai/dsh-llm`（[`packages/llm/llm/src/index.ts`](../packages/llm/llm/src/index.ts)）
 - `@deepseek-ai/dsh-lsp`（[`packages/lsp/lsp/src/index.ts`](../packages/lsp/lsp/src/index.ts)）
+- `@deepseek-ai/dsh-mcp-registry`（[`packages/mcp/mcp-registry/src/index.ts`](../packages/mcp/mcp-registry/src/index.ts)）
 - `@deepseek-ai/dsh-schedule` — 需要 `agents` · `sessions` · `tools` · `sessionPersistence`（[`packages/schedule/schedule/src/index.ts`](../packages/schedule/schedule/src/index.ts)）
 - `@deepseek-ai/dsh-session`（[`packages/core/session/src/index.ts`](../packages/core/session/src/index.ts)）
 - `@deepseek-ai/dsh-session-checkpoint-policy` — 需要 `llm` · `sessionPersistence` · `sessions` · `tools`（[`packages/session/session-checkpoint-policy/src/index.ts`](../packages/session/session-checkpoint-policy/src/index.ts)）

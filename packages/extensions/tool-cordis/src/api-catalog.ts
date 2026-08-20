@@ -195,7 +195,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
       },
       {
         signature: 'async recompose(agentCtx: Context, id: string): Promise<AgentPreset>',
-        description: 'Re-link one agent to a different preset\'s standing composition.\n\nOnly valid while the agent has produced nothing: swapping tools mid conversation would leave logged tool calls the new composition cannot make. The CALLER owns that check — this method does not read session history.\n\nThe swap is a parent re-link, not an unmount: standing mounts are shared and permanent, so the old composition stays for its other agents and the new one is ensured BEFORE the link moves. An unknown or unusable preset therefore throws with the agent exactly as it was — there is no torn-down state to restore. The re-link runs through the binding this roster kept from the agent\'s mount — dsh-scope\'s only re-link authority. An agent that never composed one has nothing to re-link: the switch is then the agent\'s first bind, exactly a mount.',
+        description: 'Re-link one agent to a different preset\'s standing composition.\n\nSwapping a session that already produced a conversation is legal but caller-gated: the log keeps every earlier turn as the record of the old composition (logged tool calls are inert history, exactly as on a mid-conversation model switch), while later turns run under the new one. The CALLER owns that gate — the `agentPresets.select` RPC requires a blank session, and the `/mode` command requires an idle agent. This method does not read session history.\n\nThe swap is a parent re-link, not an unmount: standing mounts are shared and permanent, so the old composition stays for its other agents and the new one is ensured BEFORE the link moves. An unknown or unusable preset therefore throws with the agent exactly as it was — there is no torn-down state to restore. The re-link runs through the binding this roster kept from the agent\'s mount — dsh-scope\'s only re-link authority. An agent that never composed one has nothing to re-link: the switch is then the agent\'s first bind, exactly a mount.',
         parameters: [{ name: 'agentCtx', description: 'the agent\'s scope context.' }, { name: 'id', description: 'the preset to compose the agent from instead.' }],
         returns: 'the preset now installed.',
         throws: ['when the preset is unknown or its composition is unusable.'],
@@ -884,6 +884,25 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         description: 'Select a provider by the file\'s extension and run one query. Selection is per-query and order-independent; no match throws `LspError` `LSP_UNAVAILABLE`.',
         parameters: [{ name: 'request', description: 'the normalized query.' }, { name: 'signal', description: 'optional cancellation forwarded to the selected provider.' }],
         returns: 'the normalized, closed-union result.',
+      },
+    ],
+  },
+  {
+    key: 'mcpRegistry',
+    summary: 'Live MCP server registry over one app root.',
+    description: 'Live MCP server registry over one app root.',
+    methods: [
+      {
+        signature: 'report(serverName: string, read: McpServerReader): () => void',
+        description: 'Report one MCP server. The reader is pulled on every servers read; a `null`/`undefined` result removes the server from the snapshot.',
+        parameters: [{ name: 'serverName', description: 'stable local server namespace, unique across live reporters.' }, { name: 'read', description: 'closure computing the server\'s current snapshot.' }],
+        returns: 'the exact disposer that removes this reporter.',
+      },
+      {
+        signature: 'servers(): readonly McpServerView[]',
+        description: 'Snapshot of every reported MCP server, sorted by serverName.',
+        parameters: [],
+        returns: 'the current views; reporters that yield nothing are omitted.',
       },
     ],
   },
@@ -3383,6 +3402,22 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'ManualCompactAgentContext',
     declaration: 'export interface ManualCompactAgentContext extends CompactionAgentContext {\n    runMaintenance<T>(task: (signal: AbortSignal) => Promise<T>): Promise<T>;\n}',
+  },
+  {
+    name: 'McpServerReader',
+    declaration: 'export type McpServerReader = () => McpServerView | undefined;',
+  },
+  {
+    name: 'McpServerStatus',
+    declaration: 'export type McpServerStatus = \'connecting\' | \'connected\' | \'reconnecting\' | \'down\';',
+  },
+  {
+    name: 'McpServerView',
+    declaration: 'export interface McpServerView {\n    readonly serverName: string;\n    readonly status: McpServerStatus;\n    readonly tools: readonly McpToolInfo[];\n}',
+  },
+  {
+    name: 'McpToolInfo',
+    declaration: 'export interface McpToolInfo {\n    readonly name: string;\n    readonly description: string;\n}',
   },
   {
     name: 'Message',

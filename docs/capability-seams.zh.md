@@ -88,6 +88,10 @@ flowchart LR
   pkg_tool_skill["tool-skill"]
   pkg_tool_subagent["tool-subagent"]
   pkg_tool_todo["tool-todo"]
+  pkg_mcp_registry["mcp-registry"]
+  svc_mcpRegistry["ctx.mcpRegistry<br/>Live MCP server registry"]
+  pkg_mcp_client["mcp-client"]
+  pkg_command_mcp["command-mcp"]
   pkg_user_questions["user-questions"]
   svc_userQuestions["ctx.userQuestions<br/>Human question/answer seam"]
   pkg_plan_mode["plan-mode"]
@@ -237,6 +241,7 @@ flowchart LR
   pkg_llm_replay --> svc_llm
   pkg_lsp --> svc_lsp
   pkg_lsp_local --> svc_lsp
+  pkg_mcp_registry --> svc_mcpRegistry
   pkg_message_feedback --> svc_messageFeedback
   pkg_modules --> svc_clientModules
   pkg_permission_presets --> svc_permissionPresets
@@ -333,6 +338,8 @@ flowchart LR
   svc_llm --> pkg_agent_loop
   svc_llm --> pkg_compaction_basic
   svc_lsp --> pkg_tool_lsp
+  svc_mcpRegistry --> pkg_command_mcp
+  svc_mcpRegistry --> pkg_mcp_client
   svc_sandbox --> pkg_bash_sandbox
   svc_sandbox --> pkg_terminal_bash
   svc_sandboxPolicy --> pkg_bash_sandbox
@@ -440,6 +447,7 @@ flowchart LR
 | `ctx.sessionTitle` | `seam` | [`session-title`](../packages/session/session-title) | [`session-title-first-prompt-llm`](../packages/session/session-title-first-prompt-llm), [`session-title-all-prompts-llm`](../packages/session/session-title-all-prompts-llm) | - | - | 负责确定性回退、最新标题折叠区，以及唯一的可选异步提供方注册。 |
 | `ctx.systemPrompt` | `core` | [`system-prompt`](../packages/core/system-prompt) | - | [`agent-loop`](../packages/core/agent-loop), [`tools`](../packages/core/tools), [`tool-fs`](../packages/fs/tool-fs), [`tool-terminal`](../packages/terminal/tool-terminal), [`tool-web`](../packages/web/tool-web) | - | 为每个步骤收集提示词各部分和面向模型的工具 schema。 |
 | `ctx.tools` | `core` | [`tools`](../packages/core/tools) | - | [`agent-loop`](../packages/core/agent-loop), [`tool-ask-user`](../packages/interaction/tool-ask-user), [`tool-bash`](../packages/shell/tool-bash), [`tool-cordis`](../packages/extensions/tool-cordis), [`tool-fs`](../packages/fs/tool-fs), [`tool-terminal`](../packages/terminal/tool-terminal), [`tool-skill`](../packages/skill/tool-skill), [`tool-subagent`](../packages/subagent/tool-subagent), [`tool-todo`](../packages/todo/tool-todo), [`tool-web`](../packages/web/tool-web) | - | 注册能力，负责 Code Mode 传输，并让调用依次经过策略前处理、单调守卫、环绕分派、策略后处理和最终结果观测。 |
+| `ctx.mcpRegistry` | `core` | [`mcp-registry`](../packages/mcp/mcp-registry) | - | [`mcp-client`](../packages/mcp/mcp-client), [`command-mcp`](../packages/mcp/command-mcp) | - | MCP 客户端实例上报其服务器快照；`/mcp` 命令读取它们。 |
 | `ctx.userQuestions` | `seam` | [`user-questions`](../packages/interaction/user-questions) | - | [`tool-ask-user`](../packages/interaction/tool-ask-user) | - | UI 前端提供当前生效的人工回答提供方；tool-ask-user 在提供方无关的 ask() promise 上暂停工具调用。 |
 | `ctx.planMode` | `core` | [`plan-mode`](../packages/plan/plan-mode) | - | - | - | 折叠已记录的计划／模式状态，在轮次边界刷新用户选择，渲染由部署方拥有的指导信息，注册 /plan，并在状态转换期间保持计划退出 schema 稳定。 |
 | `ctx.agentPresets` | `core` | [`agent-presets`](../packages/preset/agent-presets) | - | - | - | 在受信任根目录与用户创作根目录上发现 preset 目录，并在创建期把一份 preset cordis.yml 挂载到 agent 作用域之下，拒绝始终未激活或向根服务 realm 发布服务的行。 |

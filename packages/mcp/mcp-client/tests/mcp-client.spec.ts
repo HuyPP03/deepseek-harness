@@ -191,14 +191,19 @@ describe('syncTools', () => {
       { name: 'add', description: 'Add numbers', inputSchema: { type: 'object', properties: {} } },
     ])
 
-    const disposers = await syncTools(client as never, ctx, defaultOpts, new Map())
+    const generation = await syncTools(client as never, ctx, defaultOpts, new Map())
 
-    expect(disposers.size).toBe(2)
+    expect(generation.disposers.size).toBe(2)
     expect(ctx.tools.get('mcp__srv__greet')).toBeDefined()
     expect(ctx.tools.get('mcp__srv__add')).toBeDefined()
     // Raw names are NOT registered.
     expect(ctx.tools.get('greet')).toBeUndefined()
     expect(ctx.tools.get('add')).toBeUndefined()
+    // The reporter snapshot mirrors the registered generation.
+    expect(generation.tools).toEqual([
+      { name: 'mcp__srv__greet', description: 'Say hello' },
+      { name: 'mcp__srv__add', description: 'Add numbers' },
+    ])
   })
 
   it('lets two servers publish the same raw name side by side', async () => {
@@ -248,7 +253,7 @@ describe('syncTools', () => {
     expect(ctx.tools.get('mcp__srv__stable')).toBeDefined()
 
     client.listTools.mockRejectedValue(new Error('network down'))
-    await expect(syncTools(client as never, ctx, defaultOpts, first)).rejects.toThrow('network down')
+    await expect(syncTools(client as never, ctx, defaultOpts, first.disposers)).rejects.toThrow('network down')
 
     // The previous generation is still live.
     expect(ctx.tools.get('mcp__srv__stable')).toBeDefined()
@@ -268,10 +273,11 @@ describe('syncTools', () => {
       { name: 'taken', inputSchema: { type: 'object' } },
     ])
 
-    const disposers = await syncTools(client as never, ctx, defaultOpts, new Map())
+    const generation = await syncTools(client as never, ctx, defaultOpts, new Map())
 
     // All-or-nothing: the non-conflicting tool is rolled back too.
-    expect(disposers.size).toBe(0)
+    expect(generation.disposers.size).toBe(0)
+    expect(generation.tools).toEqual([])
     expect(ctx.tools.get('mcp__srv__free')).toBeUndefined()
     // The squatter is untouched.
     expect(ctx.tools.get('mcp__srv__taken')).toBeDefined()
@@ -282,15 +288,16 @@ describe('syncTools', () => {
       { name: 'old_tool', inputSchema: { type: 'object' } },
     ])
 
-    const firstDisposers = await syncTools(client as never, ctx, defaultOpts, new Map())
+    const first = await syncTools(client as never, ctx, defaultOpts, new Map())
     expect(ctx.tools.get('mcp__srv__old_tool')).toBeDefined()
 
     client.listTools.mockResolvedValue({ tools: [{ name: 'new_tool', inputSchema: { type: 'object' } }], nextCursor: undefined })
-    const secondDisposers = await syncTools(client as never, ctx, defaultOpts, firstDisposers)
+    const second = await syncTools(client as never, ctx, defaultOpts, first.disposers)
 
     expect(ctx.tools.get('mcp__srv__old_tool')).toBeUndefined()
     expect(ctx.tools.get('mcp__srv__new_tool')).toBeDefined()
-    expect(secondDisposers.size).toBe(1)
+    expect(second.disposers.size).toBe(1)
+    expect(second.tools).toEqual([{ name: 'mcp__srv__new_tool', description: '' }])
   })
 
   it('drains paginated listTools responses', async () => {
@@ -299,9 +306,10 @@ describe('syncTools', () => {
       .mockResolvedValueOnce({ tools: [{ name: 'page1', inputSchema: { type: 'object' } }], nextCursor: 'cursor1' })
       .mockResolvedValueOnce({ tools: [{ name: 'page2', inputSchema: { type: 'object' } }], nextCursor: undefined })
 
-    const disposers = await syncTools(client as never, ctx, defaultOpts, new Map())
+    const generation = await syncTools(client as never, ctx, defaultOpts, new Map())
 
-    expect(disposers.size).toBe(2)
+    expect(generation.disposers.size).toBe(2)
+    expect(generation.tools.map(tool => tool.name)).toEqual(['mcp__srv__page1', 'mcp__srv__page2'])
     expect(ctx.tools.get('mcp__srv__page1')).toBeDefined()
     expect(ctx.tools.get('mcp__srv__page2')).toBeDefined()
   })

@@ -278,6 +278,14 @@ const SERVICE_ROLES: ServiceRole[] = [
     note: 'Registers capabilities, owns Code Mode transport, and routes calls through pre-policy, monotonic guards, around dispatch, post-policy, and final-result observation.',
   },
   {
+    key: 'mcpRegistry',
+    pkg: 'mcp-registry',
+    title: 'Live MCP server registry',
+    mode: 'core',
+    consumers: ['mcp-client', 'command-mcp'],
+    note: 'MCP client instances report their server snapshots; the /mcp command reads them.',
+  },
+  {
     key: 'userQuestions',
     pkg: 'user-questions',
     title: 'Human question/answer seam',

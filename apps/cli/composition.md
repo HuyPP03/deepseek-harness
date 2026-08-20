@@ -108,6 +108,10 @@ flowchart LR
   cfg --> plugin_dsh_base_compaction_basic
   plugin_dsh_base_command_compact["command-compact<br/>@deepseek-ai/dsh-command-compact"]
   cfg --> plugin_dsh_base_command_compact
+  plugin_dsh_base_mcp_registry["mcp-registry<br/>@deepseek-ai/dsh-mcp-registry"]
+  cfg --> plugin_dsh_base_mcp_registry
+  plugin_dsh_base_command_mcp["command-mcp<br/>@deepseek-ai/dsh-command-mcp"]
+  cfg --> plugin_dsh_base_command_mcp
   plugin_dsh_base_subagent["subagent<br/>@deepseek-ai/dsh-subagent"]
   cfg --> plugin_dsh_base_subagent
   plugin_dsh_base_subagent_spawn_in_process["subagent-spawn-in-process<br/>@deepseek-ai/dsh-subagent-spawn-in-process"]
@@ -218,6 +222,8 @@ flowchart LR
 | `token-meter` | `@deepseek-ai/dsh-token-meter` |
 | `compaction-basic` | `@deepseek-ai/dsh-compaction-basic` |
 | `command-compact` | `@deepseek-ai/dsh-command-compact` |
+| `mcp-registry` | `@deepseek-ai/dsh-mcp-registry` |
+| `command-mcp` | `@deepseek-ai/dsh-command-mcp` |
 | `subagent` | `@deepseek-ai/dsh-subagent` |
 | `subagent-spawn-in-process` | `@deepseek-ai/dsh-subagent-spawn-in-process` |
 | `subagent-fork-in-process` | `@deepseek-ai/dsh-subagent-fork-in-process` |

@@ -295,6 +295,15 @@
     - id: command-compact
       name: '@deepseek-ai/dsh-command-compact'
 
+    - id: mcp-registry
+      name: '@deepseek-ai/dsh-mcp-registry'
+
+    # Human `/mcp`: lists the MCP servers reporting into the registry. Mounted
+    # in the base so every mcp-client instance in any preset reports into the
+    # same registry; a deployment with no mcp-client simply lists none.
+    - id: command-mcp
+      name: '@deepseek-ai/dsh-command-mcp'
+
     - id: subagent
       name: '@deepseek-ai/dsh-subagent'
 
