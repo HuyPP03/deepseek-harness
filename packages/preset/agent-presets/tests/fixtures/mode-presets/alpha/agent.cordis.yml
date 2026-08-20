@@ -1,0 +1,6 @@
+# /mode test fixture preset: one named tool, so a switch is observable in the
+# agent's model-facing catalog.
+- id: alpha-tool
+  name: ../../plugins/contribute.js
+  config:
+    tool: alpha_tool

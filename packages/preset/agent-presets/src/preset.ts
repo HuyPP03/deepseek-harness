@@ -59,6 +59,12 @@ export interface Config {
    * configured root. False mounts a roster over `roots` alone.
    */
   includeUserRoot: boolean
+  /**
+   * Presets a session is created ONTO, never switched from or into by
+   * `/mode`: a chat preset is a fixed conversation surface, not a mode.
+   * Empty (the default) leaves every preset switchable.
+   */
+  chatPresetIds?: string[]
 }
 
 /**

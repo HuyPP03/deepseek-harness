@@ -22,7 +22,7 @@ Deriving the owner event from the logged event rather than from the RPC handler'
 
 ## Alternatives considered
 
-**Invalidate in the client's own `agentPresets.select` callback.** Smallest change, and the preset is locked after the first turn, so the hero chip is the only place a switch can originate. Rejected because the invalidation would then live in the surface that happens to issue the RPC rather than at the commit point: a second tab on the same blank session keeps a stale menu, and any future host-side recomposition has no signal at all.
+**Invalidate in the client's own `agentPresets.select` callback.** Smallest change, and at the time the preset was locked after the first turn, so the hero chip was the only place a switch could originate ([`/mode`](../feature/2026-08-20-mode-mid-conversation-preset-switch.md) later added a second origin for started sessions, and its commit reuses the same owner event). Rejected because the invalidation would then live in the surface that happens to issue the RPC rather than at the commit point: a second tab on the same blank session keeps a stale menu, and any future host-side recomposition has no signal at all.
 
 **Derive the client event from the existing `session/event` mux frame.** The logged event already reaches every subscribed client, so no new wire type would be needed. Rejected on face separation: narrowing `event.type` to `agent-preset/selected` requires the `SessionEventMap` augmentation, and the only ways to load it in the Client program are a project reference to `dsh-agent-presets` — which drags the host `ctx.sessions` merge into a program that publishes its own — or a cast that defeats the discriminant.
 

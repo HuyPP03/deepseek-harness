@@ -459,3 +459,8 @@
       name: '@deepseek-ai/dsh-agent-presets'
       config:
         default: standard
+        # A chat preset is a fixed conversation surface, not a mode: `/mode`
+        # refuses to switch a session out of or into one, matching the way
+        # permission presets pin chat sessions read-only at creation.
+        chatPresetIds:
+          - chat
