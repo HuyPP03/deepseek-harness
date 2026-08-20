@@ -19,7 +19,7 @@ import type {
   CandidateRequest, ClientSessionContext, CommandClaim, PickOutcome, InputTriggerCandidate, InputTriggerPick,
   SubmitOutcome,
 } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
-import type { CommandActionSpec, CommandContribution, CommandDecoration, CommandPopupSelectSpec, CommandUiContract, CommandUiSpec } from './contract.ts'
+import type { CommandActionSpec, CommandContribution, CommandDecoration, CommandMenuRow, CommandPopupSelectSpec, CommandUiContract, CommandUiSpec } from './contract.ts'
 import type { CommandDescriptor } from './directory.ts'
 import { CommandDirectory } from './directory.ts'
 import { PopupSelectController } from './popup.ts'
@@ -240,12 +240,26 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     }
   }
 
-  /** Menu candidates: host catalog + contribution availability, then position filtering and fuzzy name ranking. */
+  /**
+   * Menu candidates: host catalog + contribution availability, then position
+   * filtering and fuzzy name ranking.
+   */
   private async candidates(session: ClientSessionContext, req: CandidateRequest): Promise<readonly InputTriggerCandidate[]> {
-    const list = await this.directory.ensureReady(session.sessionId, req.signal)
-    // Chat sessions run the fixed read-only preset: the host refuses the
-    // `/permission` switch, so the menu hides the row (a typed line still
-    // reaches the host and gets its error).
+    return fuzzyCandidates(
+      (await this.menuRowCandidates(session, req.signal)).filter(c => req.position === 'leading' || c.hint === undefined),
+      req.query,
+    )
+  }
+
+  /**
+   * The merged slash-menu rows before position and query filtering: host
+   * catalog + available contributions, in menu order.
+   * Chat sessions run the fixed read-only preset: the host refuses the
+   * `/permission` switch, so the menu hides the row (a typed line still
+   * reaches the host and gets its error).
+   */
+  private async menuRowCandidates(session: ClientSessionContext, signal: AbortSignal): Promise<readonly InputTriggerCandidate[]> {
+    const list = await this.directory.ensureReady(session.sessionId, signal)
     const chatSession = this.sessions().list.getSnapshot().byId[session.sessionId]?.agentPreset === CHAT_PRESET_ID
     const rows: InputTriggerCandidate[] = []
     const seen = new Set<string>()
@@ -261,10 +275,12 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
       }
       rows.push({ name: contribution.name, description: contribution.description })
     }
-    return fuzzyCandidates(
-      rows.filter(c => req.position === 'leading' || c.hint === undefined),
-      req.query,
-    )
+    return rows
+  }
+
+  /** Merged slash-menu rows for one session (host catalog + available contributions), in menu order. */
+  async menuRows(session: ClientSessionContext, signal: AbortSignal): Promise<readonly CommandMenuRow[]> {
+    return (await this.menuRowCandidates(session, signal)).map(row => ({ name: row.name, description: row.description ?? '' }))
   }
 
   /**

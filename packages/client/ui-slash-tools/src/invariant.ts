@@ -15,9 +15,10 @@ export const name = 'client-ui-slash-tools-invariant'
 export const inject = ['invariants']
 
 /**
- * No runtime invariant: a single action-kind command registration whose
- * disposal is proven by the HMR-safety spec — it emits no cordis events and
- * owns no cross-plugin mutable state.
+ * No runtime invariant: client command registrations (one action, one
+ * popupSelect contribution, one host-command decoration) whose disposal is
+ * proven by the HMR-safety specs — they emit no cordis events and own no
+ * cross-plugin mutable state.
  */
 const install: InvariantInstaller = () => {}
 

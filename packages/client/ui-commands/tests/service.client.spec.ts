@@ -322,7 +322,66 @@ describe('candidates', () => {
     command.register(themeContribution({ name: 'plan' }))
     await expect(source.candidates(proj('s1'), req(''))).rejects.toThrow('collides with a host command')
   })
+})
 
+describe('menuRows (the merged menu face)', () => {
+  it('serves host rows plus available contributions, in menu order, hint-free', async () => {
+    const { command } = await bench()
+    command.register(themeContribution())
+    const rows = await command.menuRows(proj('s1'), new AbortController().signal)
+    expect(rows).toEqual([
+      { name: 'plan', description: 'bare kind' },
+      { name: 'goal', description: 'leadingInput kind' },
+      { name: 'theme', description: 'client popup kind' },
+    ])
+  })
+
+  it('hides the /permission row from a chat session, like the menu does', async () => {
+    const commands: CommandDescriptor[] = [
+      { name: 'plan', description: 'bare kind' },
+      { name: 'permission', description: 'switch the permission preset' },
+    ]
+    const { command } = await bench({
+      chatSession: sid('s1'),
+      commands: () => Promise.resolve({ commands }),
+    })
+    expect(await command.menuRows(proj('s1'), new AbortController().signal)).toEqual([
+      { name: 'plan', description: 'bare kind' },
+    ])
+    expect(await command.menuRows(proj('s2'), new AbortController().signal)).toEqual([
+      { name: 'plan', description: 'bare kind' },
+      { name: 'permission', description: 'switch the permission preset' },
+    ])
+  })
+
+  it('filters unavailable contributions with the per-call projection', async () => {
+    const { command } = await bench()
+    const available = vi.fn((session: ClientSessionContext) => session.sessionId === sid('s1'))
+    command.register(themeContribution({ available }))
+    expect((await command.menuRows(proj('s1'), new AbortController().signal)).map(row => row.name)).toContain('theme')
+    expect((await command.menuRows(proj('s2'), new AbortController().signal)).map(row => row.name)).not.toContain('theme')
+    expect(available).toHaveBeenLastCalledWith(proj('s2'))
+  })
+
+  it('fails loud on a contribution/host name collision', async () => {
+    const { command } = await bench()
+    command.register(themeContribution({ name: 'plan' }))
+    await expect(command.menuRows(proj('s1'), new AbortController().signal)).rejects.toThrow('collides with a host command')
+  })
+
+  it('rejects on a directory pull failure', async () => {
+    const { command } = await bench({
+      commands: () => Promise.reject(new Error('catalog refused')),
+    })
+    await expect(command.menuRows(proj('s1'), new AbortController().signal)).rejects.toThrow('catalog refused')
+  })
+
+  it('rejects when the directory pull aborts', async () => {
+    const { command } = await bench()
+    const controller = new AbortController()
+    controller.abort()
+    await expect(command.menuRows(proj('s1'), controller.signal)).rejects.toBeDefined()
+  })
 })
 
 describe('decorations (bare-invocation UI on host commands)', () => {
