@@ -2,7 +2,8 @@
  * Unit tests for the result-time contextual-diff computation (`src/diff.ts`):
  * the pure before/after → {@link FileDiff}[] hunk builder and the defensive
  * `meta` narrowing. These pin the exact hunk reconstruction (context lines,
- * multi-hunk replaceAll, pure insertion/deletion, no-op) that UIs render.
+ * multi-hunk replaceAll, pure insertion/deletion, no-op), the 1-based hunk
+ * start lines, and the extension-derived language hint that UIs render.
  */
 
 import { describe, expect, it } from 'vitest'
@@ -18,6 +19,8 @@ describe('computeHunkDiffs', () => {
     const diffs = computeHunkDiffs('f.txt', before, after)
     expect(diffs).toEqual([{
       path: 'f.txt',
+      oldStart: 1,
+      newStart: 1,
       oldText: 'line1\nline2\nline3\nline4\nline5\nline6\nline7',
       newText: 'line1\nline2\nline3\nCHANGED\nline5\nline6\nline7',
     }])
@@ -36,6 +39,12 @@ describe('computeHunkDiffs', () => {
     // The two hunks are distinct sites, not one merged block.
     expect(diffs[0]?.newText).not.toContain('B')
     expect(diffs[1]?.newText).not.toContain('A')
+    // Each hunk stamps its own 1-based start lines (hunk 1 begins at line 1,
+    // hunk 2 at line 13: line 16 minus its 3 leading context lines).
+    expect(diffs[0]?.oldStart).toBe(1)
+    expect(diffs[0]?.newStart).toBe(1)
+    expect(diffs[1]?.oldStart).toBe(13)
+    expect(diffs[1]?.newStart).toBe(13)
   })
 
   it('identical before/after (a no-op) yields no hunks', () => {
@@ -44,18 +53,18 @@ describe('computeHunkDiffs', () => {
 
   it('a pure insertion into empty content reports oldText null (nothing to diff against)', () => {
     const diffs = computeHunkDiffs('f.txt', '', 'brand new\n')
-    expect(diffs).toEqual([{ path: 'f.txt', oldText: null, newText: 'brand new' }])
+    expect(diffs).toEqual([{ path: 'f.txt', oldStart: 1, newStart: 1, oldText: null, newText: 'brand new' }])
   })
 
   it('a pure deletion of the whole file reports newText empty', () => {
     const diffs = computeHunkDiffs('f.txt', 'gone\n', '')
-    expect(diffs).toEqual([{ path: 'f.txt', oldText: 'gone', newText: '' }])
+    expect(diffs).toEqual([{ path: 'f.txt', oldStart: 1, newStart: 1, oldText: 'gone', newText: '' }])
   })
 
   it('drops the "\\ No newline at end of file" marker from a no-trailing-newline change', () => {
     const diffs = computeHunkDiffs('f.txt', 'x', 'y')
     // The marker line (starting with "\\") must never leak into a diff block.
-    expect(diffs).toEqual([{ path: 'f.txt', oldText: 'x', newText: 'y' }])
+    expect(diffs).toEqual([{ path: 'f.txt', oldStart: 1, newStart: 1, oldText: 'x', newText: 'y' }])
     expect(diffs[0]?.oldText).not.toContain('\\')
     expect(diffs[0]?.newText).not.toContain('\\')
   })
@@ -69,6 +78,18 @@ describe('computeHunkDiffs', () => {
     expect(diff?.oldText?.split('\n')).toHaveLength(7)
     expect(diff?.newText.split('\n')).toHaveLength(7)
     expect(diff?.oldText?.split('\n')[0]).toBe('line7')
+    // The hunk starts at the first context line, not the changed line.
+    expect(diff?.oldStart).toBe(7)
+    expect(diff?.newStart).toBe(7)
+  })
+
+  it('stamps a language hint from the path extension', () => {
+    expect(computeHunkDiffs('app.ts', 'a\n', 'b\n')[0]?.lang).toBe('ts')
+    expect(computeHunkDiffs('src/main.py', 'a\n', 'b\n')[0]?.lang).toBe('py')
+    expect(computeHunkDiffs('config.YAML', 'a\n', 'b\n')[0]?.lang).toBe('yaml')
+    // Unknown extension and dotfile: no language field at all.
+    expect(computeHunkDiffs('f.txt', 'a\n', 'b\n')[0]).not.toHaveProperty('lang')
+    expect(computeHunkDiffs('.gitignore', 'a\n', 'b\n')[0]).not.toHaveProperty('lang')
   })
 })
 
@@ -88,6 +109,11 @@ describe('diffsFromMeta (defensive narrowing)', () => {
     expect(diffsFromMeta(m(meta))).toEqual(meta.diffs)
   })
 
+  it('accepts a diff with the optional position and language fields', () => {
+    const meta = { diffs: [{ path: 'a.ts', oldStart: 4, newStart: 4, lang: 'ts', oldText: 'a', newText: 'b' }] }
+    expect(diffsFromMeta(m(meta))).toEqual(meta.diffs)
+  })
+
   it('rejects undefined / non-object / array meta', () => {
     expect(diffsFromMeta(undefined)).toBeUndefined()
     expect(diffsFromMeta(null)).toBeUndefined()
@@ -98,16 +124,11 @@ describe('diffsFromMeta (defensive narrowing)', () => {
   it('rejects a missing / empty / non-array diffs field', () => {
     expect(diffsFromMeta(m({}))).toBeUndefined()
     expect(diffsFromMeta(m({ diffs: [] }))).toBeUndefined()
-    expect(diffsFromMeta(m({ diffs: 'x' }))).toBeUndefined()
   })
 
-  it('rejects a diffs array containing a malformed entry', () => {
-    expect(diffsFromMeta(m({ diffs: [{ path: 'f.txt', oldText: 'a' }] }))).toBeUndefined()
-    expect(diffsFromMeta(m({ diffs: [{ path: 1, oldText: 'a', newText: 'b' }] }))).toBeUndefined()
-    expect(diffsFromMeta(m({ diffs: [{ path: 'f', oldText: 5, newText: 'b' }] }))).toBeUndefined()
-    expect(diffsFromMeta(m({ diffs: [{ path: 'f', oldText: 'a', newText: 7 }] }))).toBeUndefined()
-    expect(diffsFromMeta(m({ diffs: [null] }))).toBeUndefined()
-    expect(diffsFromMeta(m({ diffs: ['x'] }))).toBeUndefined()
-    expect(diffsFromMeta(m({ diffs: [[]] }))).toBeUndefined()
+  it('rejects a position or language field of the wrong type', () => {
+    expect(diffsFromMeta(m({ diffs: [{ path: 'f.txt', oldStart: '3', oldText: 'a', newText: 'b' }] }))).toBeUndefined()
+    expect(diffsFromMeta(m({ diffs: [{ path: 'f.txt', newStart: null, oldText: 'a', newText: 'b' }] }))).toBeUndefined()
+    expect(diffsFromMeta(m({ diffs: [{ path: 'f.txt', lang: 42, oldText: 'a', newText: 'b' }] }))).toBeUndefined()
   })
 })

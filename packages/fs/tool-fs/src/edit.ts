@@ -11,6 +11,7 @@ import type { DiffCallView, DiffResultView, ToolResult } from '@deepseek-ai/dsh-
 import type {} from '@deepseek-ai/dsh-fs'
 import type {} from '@deepseek-ai/dsh-system-prompt'
 import { computeHunkDiffs, diffsFromMeta } from './diff.ts'
+import { langFromPath } from './read-render.ts'
 import { remediateFsError } from './error.ts'
 import { sessionResolveOptions } from './session-cwd.ts'
 import type { FsSandboxController } from './sandbox.ts'
@@ -104,9 +105,10 @@ export function applyEditTool(ctx: Context, sandbox: FsSandboxController): void 
         type: 'text',
         text: formatEditOutput(value.path, args.replace_all ?? false),
       }],
+      // The hunk diffs pass through un-mapped: computeHunkDiffs already stamps
+      // the positions and language hint a capable UI needs.
       presentationMeta: (args, value) => ({
-        diffs: computeHunkDiffs(args.file_path, value.before, value.after)
-          .map(({ path, oldText, newText }) => ({ path, oldText, newText })),
+        diffs: computeHunkDiffs(args.file_path, value.before, value.after),
       }),
     },
     async execute(args: EditToolArgs, exec) {
@@ -149,10 +151,16 @@ export function applyEditTool(ctx: Context, sandbox: FsSandboxController): void 
     // from the call args. `oldText: old_string || null` matches claude-agent-acp's Edit arm;
     // new_string is a required arg here, so it maps straight to newText.
     presentCall(args): DiffCallView {
+      const lang = langFromPath(args.file_path)
       return {
         card: 'diff',
         title: `Edit ${args.file_path}`,
-        diffs: [{ path: args.file_path, oldText: args.old_string || null, newText: args.new_string }],
+        diffs: [{
+          path: args.file_path,
+          ...(lang === undefined ? {} : { lang }),
+          oldText: args.old_string || null,
+          newText: args.new_string,
+        }],
         locations: [{ path: args.file_path }],
       }
     },

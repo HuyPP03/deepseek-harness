@@ -33,7 +33,7 @@ export interface FileLocation {
  * capable UI number gutter lines and highlight tokens without re-deriving them;
  * absent fields mean the UI falls back to unnumbered plain rendering.
  */
-export interface FileDiff {
+export type FileDiff = {
   path: string
   /** Prior content, or `null` for a new file / an overwrite (no prior content available at call time). */
   oldText: string | null
@@ -43,7 +43,7 @@ export interface FileDiff {
   oldStart?: number
   /** 1-based line number where the hunk begins on the added side (first context or added line), when the tool knows it. */
   newStart?: number
-  /** Grammar hint for a highlighter, derived from the file path's extension (e.g. `typescript`, `python`). */
+  /** Grammar hint for a highlighter, derived from the file path's extension (e.g. `ts`, `py`). */
   lang?: string
 }
 
