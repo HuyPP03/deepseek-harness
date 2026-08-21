@@ -5,7 +5,7 @@
  * created; the client never submits a path.
  */
 
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, rmSync, symlinkSync, writeFileSync, chmodSync } from 'node:fs'
 import { realpathSync, mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, basename } from 'node:path'
@@ -18,6 +18,7 @@ import UserQuestionService from '@deepseek-ai/dsh-user-questions'
 import { RpcId, type RpcRequest } from '../src/api/rpc.ts'
 import { createApiProxy } from '../src/api-proxy.ts'
 import { FILES_MAX_RESULTS } from '../src/files-walk.ts'
+import { FILE_READ_MAX_BYTES, FILE_READ_MAX_LINES } from '../src/files-read.ts'
 
 let nextRpc = 0
 function request<P>(payload: P): RpcRequest<P> {
@@ -202,5 +203,168 @@ describe('files.list', () => {
     // The walk stops at its first boundary check: an aborted request gets
     // the (empty) partial result, not an error.
     expect(response.result).toMatchObject({ ok: true, value: { files: [], truncated: false } })
+  })
+})
+
+describe('files.read', () => {
+  it('fails an unknown session with session-not-found', async () => {
+    const { api } = await harness()
+    const response = await api.files.read(request({ sessionId: SessionId('nope'), path: '/x' }))
+    expect(response.result).toMatchObject({ ok: false, error: { code: 'session-not-found' } })
+  })
+
+  it('reads a session-cwd file with its line count and size', async () => {
+    const { api, ctx, cwd } = await harness()
+    const path = join(cwd, 'notes.md')
+    // No trailing newline: the final line still counts.
+    writeFileSync(path, 'alpha\nbeta\n')
+    ctx.sessions.create(SessionId('r1'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r1'), path }))
+
+    expect(response.result).toMatchObject({
+      ok: true,
+      value: { path, content: 'alpha\nbeta\n', lines: 2, truncated: false, binary: false, size: 11 },
+    })
+  })
+
+  it('reads an attached reference file', async () => {
+    const { api, ctx, cwd } = await harness()
+    const reference = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-files-ref-')))
+    const path = join(reference, 'data.txt')
+    writeFileSync(path, 'ref\n')
+    const session = ctx.sessions.create(SessionId('r2'), { meta: { cwd } })
+    attachReference(session, reference)
+
+    const response = await api.files.read(request({ sessionId: SessionId('r2'), path }))
+
+    expect(response.result).toMatchObject({ ok: true, value: { content: 'ref\n', lines: 1, truncated: false } })
+  })
+
+  it('refuses a path outside the working set with file-path-escape', async () => {
+    const { api, ctx, cwd } = await harness()
+    const outside = join(realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-files-out-'))), 'secret.txt')
+    writeFileSync(outside, 'hidden\n')
+    ctx.sessions.create(SessionId('r3'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r3'), path: outside }))
+
+    expect(response.result).toMatchObject({ ok: false, error: { code: 'file-path-escape', details: { path: outside } } })
+  })
+
+  it('refuses a traversal escape with file-path-escape', async () => {
+    const { api, ctx, cwd } = await harness()
+    ctx.sessions.create(SessionId('r4'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r4'), path: join(cwd, '..', 'escape.txt') }))
+
+    expect(response.result).toMatchObject({ ok: false, error: { code: 'file-path-escape' } })
+  })
+
+  it('refuses a symlink that points outside the working set', async () => {
+    const { api, ctx, cwd } = await harness()
+    const outside = join(realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-files-out-'))), 'secret.txt')
+    writeFileSync(outside, 'hidden\n')
+    const link = join(cwd, 'sneaky.txt')
+    symlinkSync(outside, link)
+    ctx.sessions.create(SessionId('r5'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r5'), path: link }))
+
+    expect(response.result).toMatchObject({ ok: false, error: { code: 'file-path-escape' } })
+  })
+
+  it('reports a vanished file with file-not-found', async () => {
+    const { api, ctx, cwd } = await harness()
+    ctx.sessions.create(SessionId('r6'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r6'), path: join(cwd, 'gone.txt') }))
+
+    expect(response.result).toMatchObject({ ok: false, error: { code: 'file-not-found' } })
+  })
+
+  it('reports a directory with file-is-directory', async () => {
+    const { api, ctx, cwd } = await harness()
+    mkdirSync(join(cwd, 'dir'))
+    ctx.sessions.create(SessionId('r7'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r7'), path: join(cwd, 'dir') }))
+
+    expect(response.result).toMatchObject({ ok: false, error: { code: 'file-is-directory' } })
+  })
+
+  it('serves an empty file with zero lines', async () => {
+    const { api, ctx, cwd } = await harness()
+    const path = join(cwd, 'empty.txt')
+    writeFileSync(path, '')
+    ctx.sessions.create(SessionId('r8'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r8'), path }))
+
+    expect(response.result).toMatchObject({ ok: true, value: { content: '', lines: 0, truncated: false, size: 0 } })
+  })
+
+  it('marks a NUL-leading file binary with empty content', async () => {
+    const { api, ctx, cwd } = await harness()
+    const path = join(cwd, 'blob.bin')
+    writeFileSync(path, Buffer.from([0x7f, 0x00, 0x80, 0xff, 0x01, 0x02]))
+    ctx.sessions.create(SessionId('r9'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r9'), path }))
+
+    expect(response.result).toMatchObject({ ok: true, value: { content: '', lines: 0, binary: true, size: 6 } })
+  })
+
+  it('cuts a byte-bound file at 2 MiB on a line boundary', async () => {
+    const { api, ctx, cwd } = await harness()
+    const line = 'a'.repeat(12_000)
+    const path = join(cwd, 'big.txt')
+    // 200 lines of 12001 bytes: 2,400,200 bytes, past the 2 MiB bound.
+    writeFileSync(path, Array.from({ length: 200 }, () => `${line}\n`).join(''))
+    ctx.sessions.create(SessionId('r10'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r10'), path }))
+
+    expect(response.result).toMatchObject({ ok: true, value: { truncated: true, binary: false, size: 2_400_200 } })
+    if (response.result.ok) {
+      // 174 whole lines fit under 2 MiB (174 * 12001 = 2,088,174); the
+      // partial 175th line is dropped so the content ends on a boundary.
+      expect(response.result.value.lines).toBe(174)
+      expect(response.result.value.content.length).toBe(174 * 12_001)
+      expect(response.result.value.content.endsWith('\n')).toBe(true)
+      expect(response.result.value.content.length).toBeLessThanOrEqual(FILE_READ_MAX_BYTES)
+    }
+  })
+
+  it('cuts a line-bound file at 20000 lines', async () => {
+    const { api, ctx, cwd } = await harness()
+    const path = join(cwd, 'long.txt')
+    // 30000 two-byte lines: 60000 bytes.
+    writeFileSync(path, Array.from({ length: 30_000 }, () => 'x\n').join(''))
+    ctx.sessions.create(SessionId('r11'), { meta: { cwd } })
+
+    const response = await api.files.read(request({ sessionId: SessionId('r11'), path }))
+
+    expect(response.result).toMatchObject({ ok: true, value: { lines: FILE_READ_MAX_LINES, truncated: true, size: 60_000 } })
+    if (response.result.ok) {
+      expect(response.result.value.content.length).toBe(FILE_READ_MAX_LINES * 2)
+      expect(response.result.value.content.endsWith('\n')).toBe(true)
+    }
+  })
+
+  it.skipIf(process.platform === 'win32')('reports a permission-denied read with file-unreadable', async () => {
+    const { api, ctx, cwd } = await harness()
+    const path = join(cwd, 'locked.txt')
+    writeFileSync(path, 'secret\n')
+    chmodSync(path, 0o000)
+    try {
+      ctx.sessions.create(SessionId('r12'), { meta: { cwd } })
+
+      const response = await api.files.read(request({ sessionId: SessionId('r12'), path }))
+
+      expect(response.result).toMatchObject({ ok: false, error: { code: 'file-unreadable' } })
+    } finally {
+      chmodSync(path, 0o600)
+    }
   })
 })

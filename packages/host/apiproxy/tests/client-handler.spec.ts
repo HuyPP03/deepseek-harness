@@ -93,7 +93,12 @@ function scriptedApi(overrides: {
       archiveSession: r => ok(r, { archivedSessionIds: [r.payload.sessionId] }),
     },
     skills: { list: r => ok(r, { skills: [] }), ...overrides.skills },
-    files: { list: r => ok(r, { files: [], truncated: false }), ...overrides.files },
+    files: {
+      list: r => ok(r, { files: [], truncated: false }),
+      read: r => ok(r, { path: r.payload.path, content: '', lines: 0, truncated: false, binary: false, size: 0 }),
+      raw: (_request, _signal) => Promise.resolve(new Response('raw channel is not scripted', { status: 501 })),
+      ...overrides.files,
+    },
     agentPresets: {
       list: r => ok(r, { presets: [], authorable: false, hasDocument: false }),
       select: r => ok(r, { agentPreset: r.payload.agentPreset }),

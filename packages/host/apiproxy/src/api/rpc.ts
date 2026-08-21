@@ -104,6 +104,14 @@ export interface RpcErrorDetailsMap {
   'mcp-server-exists': { serverName: string }
   /** The deployment composes no mcp-manager, so the user-server lifecycle is unavailable. */
   'mcp-manager-unavailable': {}
+  /** The requested file path resolves outside the session's working set (cwd or attached references), lexically or after symlinks. */
+  'file-path-escape': { path: string }
+  /** The admitted path names no existing file (vanished between listing and read). */
+  'file-not-found': { path: string }
+  /** The admitted path is a directory, not a file. */
+  'file-is-directory': { path: string }
+  /** The file exists but could not be read (permission or platform error); the message carries the cause. */
+  'file-unreadable': { path: string }
   'internal': {}
 }
 

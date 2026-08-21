@@ -42,7 +42,7 @@ import {
   workspaceRenameValueSchema,
 } from '../api/workspace.schema.ts'
 import { skillListValueSchema } from '../api/skills.schema.ts'
-import { fileListValueSchema } from '../api/files.schema.ts'
+import { fileListValueSchema, fileReadValueSchema } from '../api/files.schema.ts'
 import {
   agentPresetCopyValueSchema, agentPresetListValueSchema, agentPresetOpenDocumentValueSchema,
   agentPresetReadValueSchema, agentPresetRemoveValueSchema, agentPresetSelectValueSchema,
@@ -132,6 +132,7 @@ export interface IApiClient {
   }
   files: {
     list(payload: RequestPayload<'files.list'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'files.list'>>>
+    read(payload: RequestPayload<'files.read'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'files.read'>>>
   }
   agentPresets: {
     list(payload: RequestPayload<'agentPreset.list'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'agentPreset.list'>>>
@@ -216,6 +217,7 @@ const UNARY_VALUE_SCHEMAS: { [K in keyof RpcMethodMap]: z.ZodType<Wire<ResponseV
   'workspace.archiveSession': workspaceArchiveSessionValueSchema,
   'skill.list': skillListValueSchema,
   'files.list': fileListValueSchema,
+  'files.read': fileReadValueSchema,
   'agentPreset.list': agentPresetListValueSchema,
   'agentPreset.select': agentPresetSelectValueSchema,
   'agentPreset.read': agentPresetReadValueSchema,
@@ -481,6 +483,7 @@ export abstract class AbstractApiClient implements IApiClient {
 
   readonly files: IApiClient['files'] = {
     list: (payload, signal) => this.callUnary('files.list', payload, signal),
+    read: (payload, signal) => this.callUnary('files.read', payload, signal),
   }
 
   // Annotated like every sibling, and load-bearing rather than cosmetic:

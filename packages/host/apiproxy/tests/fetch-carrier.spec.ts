@@ -244,6 +244,25 @@ function fakeApi(overrides: Partial<{ muxFrames: MuxFrame[]; hostFrames: HostFra
           },
         }
       },
+      async read(request) {
+        return {
+          rpcId: request.rpcId,
+          result: {
+            ok: true,
+            value: {
+              path: request.payload.path,
+              content: 'read-back\n',
+              lines: 1,
+              truncated: false,
+              binary: false,
+              size: 10,
+            },
+          },
+        }
+      },
+      async raw(_request, _signal) {
+        return new Response('raw channel is not scripted', { status: 501 })
+      },
     },
     goals: {
       async create(request) {
