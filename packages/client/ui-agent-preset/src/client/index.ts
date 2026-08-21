@@ -1,14 +1,20 @@
 /**
- * Agent-preset surface plugin, browser half — four surfaces over one roster:
+ * Agent-preset surface plugin, browser half — five surfaces over one roster:
  * a General-settings row for the default preset, a chip on the new-session
  * screen for the session about to start, a read-only label in the session
- * header, and a settings section that manages the roster (copy, delete,
- * default, and the way into a preset's own files).
+ * header, a settings section that manages the roster (copy, delete,
+ * default, and the way into a preset's own files), and the /mode DECORATION
+ * — the host preset switch's bare invocation becomes a roster popup that
+ * submits a completed `/mode <preset>` line through the host command.
  *
  * A running session keeps the composition it began with (the host refuses to
  * adopt an existing session under a different preset). That is what splits
  * the choice from the display: the General row and the hero chip are both
  * before-the-fact, while the header only reports what a session already runs.
+ *
+ * Every roster surface here renders names and descriptions through
+ * {@link presetDisplayText}, so the shipped presets read in the active Web
+ * locale rather than in whatever language their metadata files were written.
  */
 
 import type { ConnectionHandle } from '@deepseek-ai/dsh-api-remotes/client'
@@ -17,9 +23,11 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 // Type-only: pulls the ctx.remote merge and the forwarded-event key face
 // (the settings invalidation rides the allowlist) into this program.
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
+// Type-only: pulls the command surface contract (the /mode decoration face).
+import type { CommandUiContract } from '@deepseek-ai/dsh-client-ui-commands/client'
 // Type-only: pulls the settings shell's SlotMap merge (the 'settings.section' entry).
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import { CHAT_PRESET_ID, type ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import { AgentPresetLabel } from './AgentPresetLabel.tsx'
 import type { AgentPresetLabelInjected } from './AgentPresetLabel.tsx'
 import { AgentPresetRow } from './AgentPresetRow.tsx'
@@ -31,7 +39,7 @@ import type { AgentPresetSectionInjected } from './AgentPresetSection.tsx'
 import { AgentPresetSeatController } from './seat-store.ts'
 import type { SeatSessionSummary } from './seat-store.ts'
 import { AgentPresetSectionController } from './section-store.ts'
-import { en, zh } from './locales.ts'
+import { en, presetDisplayText, zh } from './locales.ts'
 import { AGENT_PRESET_SETTINGS_NS, AgentPresetSettingsController } from './settings-store.ts'
 
 export type { AgentPresetLabelInjected, AgentPresetLabelProps } from './AgentPresetLabel.tsx'
@@ -221,4 +229,55 @@ export function apply(ctx: ClientContext): void {
     locale: 'settings.agentPreset',
     inject: sectionInjected,
   }, AgentPresetSection))
+
+  // The /mode decoration: a bare /mode pick opens the preset roster. The
+  // roster read filters broken presets the same way the pickers do (a
+  // broken preset cannot recompose a session), rows render through
+  // presetDisplayText so shipped presets read in the active Web locale, and
+  // the pick submits the completed line through the host command — not the
+  // agentPreset.select RPC, which is blank-only (the composer seat's flow) —
+  // so the command service's own admission path keeps the `command/executed`
+  // observers (the log export's /export trigger) pointed at one submit
+  // channel. The host command keeps its catalog row, argument claim, and
+  // lifecycle logging, and owns the idle guard, the chat guard, and the
+  // `agent-preset/selected` record.
+  ctx.inject(['commandUi', 'sessions', 'remote.commands'], (scope: ClientContext) => {
+    const command = scope.get('commandUi') as CommandUiContract
+    const t = ctx.locale.bind('settings.agentPreset')
+    scope.effect(() => command.decorate({
+      name: 'mode',
+      available: (session) => {
+        const preset = scope.sessions.list.getSnapshot().byId[session.sessionId]?.agentPreset
+        // A chat session is fixed read-only: the host refuses the switch in
+        // both directions, so the popup has nothing to offer.
+        return preset !== CHAT_PRESET_ID
+      },
+      ui: {
+        kind: 'popupSelect',
+        options: async (session, signal) => {
+          const connection = scope.get('connection') as ConnectionHandle
+          const response = await connection.api.agentPresets.list({}, signal)
+          if (!response.result.ok) {
+            throw new Error(`agentPreset.list failed: ${response.result.error.code}: ${response.result.error.message}`)
+          }
+          const current = scope.sessions.list.getSnapshot().byId[session.sessionId]?.agentPreset
+          return response.result.value.presets
+            .filter(preset => preset.broken === undefined)
+            .map((preset) => {
+              const text = presetDisplayText(preset, t)
+              return {
+                id: preset.id,
+                label: text.name,
+                ...(text.description === undefined ? {} : { detail: text.description }),
+                ...(preset.id === current ? { active: true } : {}),
+              }
+            })
+        },
+        onSelect: async (option, session) => {
+          const result = await scope.remote.commands.execute(session.sessionId, `/mode ${option.id}`)
+          if (!result.ok) throw new Error(`command.execute failed: ${result.error.code}: ${result.error.message}`)
+        },
+      },
+    }), 'ui-agent-preset: /mode decoration')
+  })
 }

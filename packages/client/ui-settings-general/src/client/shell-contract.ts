@@ -12,6 +12,8 @@ import type { HostObservable, InjectFace, PropsRenderSlots, PropsRuntime } from 
 import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
 // Type-only: pulls the settings slot declarations the shell renders into.
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
+// Type-only: pulls the panel controller's state type.
+import type { SettingsPanelState } from './panel-service.ts'
 
 /** One nav row projected from a settings.section registration's options. */
 export interface SettingsSectionRow {
@@ -28,8 +30,10 @@ export interface SettingsOnboardingStep {
 
 /**
  * Registrant-private injected share of the settings shell (assembled in
- * apply): the ledger's nav-row projection as a hooks-compartment source —
- * the shell reads no locale state and subscribes through the bound hook.
+ * apply): the ledger's nav-row projection and the panel controller's store as
+ * hooks-compartment sources — the shell subscribes through the bound hooks —
+ * plus the panel's actions, so a registrant outside the panel (a command
+ * popup, a sidebar row) can deep link into one of its sections.
  */
 export type SettingsRootInjected = {
   hooks: {
@@ -37,14 +41,22 @@ export type SettingsRootInjected = {
     sections: HostObservable<readonly SettingsSectionRow[]>
     /** settings.onboarding ledger projected into coordinator order. */
     onboardingSteps: HostObservable<readonly SettingsOnboardingStep[]>
+    /** The settings panel's open state and active section. */
+    settingsPanel: HostObservable<SettingsPanelState>
   }
+  /** Open the panel; an id selects its section, absent keeps the selection. */
+  openSection: (id?: string) => void
+  /** Close the panel and drop its section selection. */
+  closePanel: () => void
+  /** Select one section of the open panel. */
+  setActiveId: (id: string) => void
 }
 
 /**
  * Full component props of the settings shell root: the sidebar owner share
  * (wide/rail state) plus the declared render shares and the injected face
- * (hooks compartment bound to useSections). No store is registered — modal
- * open state and active section id are component-local viewing state.
+ * (hooks compartment bound to useSections/useSettingsPanel). The panel's
+ * open state is the controller's store, not component-local state.
  */
 export type SettingsRootComponentProps =
   PropsRuntime<'sidebar.settings'>

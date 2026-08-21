@@ -286,6 +286,14 @@ const SERVICE_ROLES: ServiceRole[] = [
     note: 'MCP client instances report their server snapshots; the /mcp command reads them.',
   },
   {
+    key: 'mcpManager',
+    pkg: 'mcp-manager',
+    title: 'User MCP server manager',
+    mode: 'core',
+    consumers: ['host-apiproxy'],
+    note: 'Persists user-added MCP servers under the harness home and mounts them as mcp-client instances; the host mcp RPC verbs wrap it.',
+  },
+  {
     key: 'userQuestions',
     pkg: 'user-questions',
     title: 'Human question/answer seam',

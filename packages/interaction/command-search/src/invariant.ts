@@ -16,8 +16,9 @@ export const inject = ['invariants']
 
 /**
  * No runtime invariant: this command adapter owns no state or event stream; the
- * command registry owns registration and dispatch lifecycle, and the subprocess
- * service owns the ripgrep process tree and its collected streams.
+ * command registry owns registration and dispatch lifecycle, and the steered
+ * agent owns the search itself (the tool calls and reply settle through the
+ * agent's own turn lifecycle, not through this plugin).
  */
 const install: InvariantInstaller = () => {}
 

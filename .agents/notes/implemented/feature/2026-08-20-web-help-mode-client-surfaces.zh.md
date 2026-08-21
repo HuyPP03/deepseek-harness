@@ -10,7 +10,7 @@ Status: implemented
 
 ## 决策
 
-`@deepseek-ai/dsh-client-ui-slash-tools`（Web 斜杠工具特性归属方）增加两个客户端表面，都建在 `ctx.commandUi` 之上；`@deepseek-ai/dsh-client-ui-commands` 增加这项需求所需的唯一契约方法。
+`/help` 是 `@deepseek-ai/dsh-client-ui-slash-tools`（Web 斜杠工具特性归属方）中建于 `ctx.commandUi` 之上的客户端表面；`/mode` 装饰由 `@deepseek-ai/dsh-client-ui-agent-preset` 注册——表面住在它渲染的预设名册所属的包里（见 [斜杠表面所有权](../architecture/2026-08-21-slash-surface-ownership-to-feature-packages.md)）；`@deepseek-ai/dsh-client-ui-commands` 增加这项需求所需的唯一契约方法。
 
 `CommandUiContract` 增加 `menuRows(session, signal)`：合并的斜杠菜单视图（宿主目录 + 可用的客户端贡献项，菜单顺序，含 chat 会话隐藏 `/permission` 的规则），不做位置或查询过滤。它与 `/` 菜单走同一套行合成逻辑，从 `candidates()` 中抽出，使菜单与该面永不漂移。
 

@@ -28,5 +28,5 @@ Status: implemented
 
 - `mcp-client` 新增可选的 `mcp-registry` peer；其 `SyncGeneration` 返回类型是供上报者使用的公开 surface，不是意外。
 - 注册表与所有 Cordis 服务一样按 realm 隔离：preset 中挂载的 mcp-client 报告到该 preset 的注册表，因此 preset 内的 `/mcp` 只看到该 preset 的服务器。
-- `/mcp` 仅宿主侧（无客户端 surface）：命令文本即呈现，无需 Web/CLI 专门处理。
+- Web 端现在有了同一读 face 上的客户端表面：`@deepseek-ai/dsh-client-ui-mcp` 中的 MCP 设置区与 `/mcp` popupSelect 装饰，与命令一样从 `mcp.list` 拉取（见 [`/mcp` Web surface 笔记](2026-08-21-mcp-client-surface-and-settings-panel-deep-link.md)）。
 - 快照按服务器是时点式的；抖动的服务器在排序读取轮到它时报告其读取闭包当时计算的状态。

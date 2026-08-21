@@ -92,6 +92,9 @@ flowchart LR
   svc_mcpRegistry["ctx.mcpRegistry<br/>Live MCP server registry"]
   pkg_mcp_client["mcp-client"]
   pkg_command_mcp["command-mcp"]
+  pkg_mcp_manager["mcp-manager"]
+  svc_mcpManager["ctx.mcpManager<br/>User MCP server manager"]
+  pkg_host_apiproxy["host-apiproxy"]
   pkg_user_questions["user-questions"]
   svc_userQuestions["ctx.userQuestions<br/>Human question/answer seam"]
   pkg_plan_mode["plan-mode"]
@@ -102,7 +105,6 @@ flowchart LR
   svc_commands["ctx.commands<br/>Human command registry"]
   pkg_session_projection["session-projection"]
   svc_sessionProjections["ctx.sessionProjections<br/>Session projection units"]
-  pkg_host_apiproxy["host-apiproxy"]
   pkg_session_projection_cache["session-projection-cache"]
   svc_sessionProjectionCache["ctx.sessionProjectionCache<br/>Persisted projection cache"]
   pkg_skill["skill"]
@@ -241,6 +243,7 @@ flowchart LR
   pkg_llm_replay --> svc_llm
   pkg_lsp --> svc_lsp
   pkg_lsp_local --> svc_lsp
+  pkg_mcp_manager --> svc_mcpManager
   pkg_mcp_registry --> svc_mcpRegistry
   pkg_message_feedback --> svc_messageFeedback
   pkg_modules --> svc_clientModules
@@ -338,6 +341,7 @@ flowchart LR
   svc_llm --> pkg_agent_loop
   svc_llm --> pkg_compaction_basic
   svc_lsp --> pkg_tool_lsp
+  svc_mcpManager --> pkg_host_apiproxy
   svc_mcpRegistry --> pkg_command_mcp
   svc_mcpRegistry --> pkg_mcp_client
   svc_sandbox --> pkg_bash_sandbox
@@ -448,6 +452,7 @@ flowchart LR
 | `ctx.systemPrompt` | `core` | [`system-prompt`](../packages/core/system-prompt) | - | [`agent-loop`](../packages/core/agent-loop), [`tools`](../packages/core/tools), [`tool-fs`](../packages/fs/tool-fs), [`tool-terminal`](../packages/terminal/tool-terminal), [`tool-web`](../packages/web/tool-web) | - | 为每个步骤收集提示词各部分和面向模型的工具 schema。 |
 | `ctx.tools` | `core` | [`tools`](../packages/core/tools) | - | [`agent-loop`](../packages/core/agent-loop), [`tool-ask-user`](../packages/interaction/tool-ask-user), [`tool-bash`](../packages/shell/tool-bash), [`tool-cordis`](../packages/extensions/tool-cordis), [`tool-fs`](../packages/fs/tool-fs), [`tool-terminal`](../packages/terminal/tool-terminal), [`tool-skill`](../packages/skill/tool-skill), [`tool-subagent`](../packages/subagent/tool-subagent), [`tool-todo`](../packages/todo/tool-todo), [`tool-web`](../packages/web/tool-web) | - | 注册能力，负责 Code Mode 传输，并让调用依次经过策略前处理、单调守卫、环绕分派、策略后处理和最终结果观测。 |
 | `ctx.mcpRegistry` | `core` | [`mcp-registry`](../packages/mcp/mcp-registry) | - | [`mcp-client`](../packages/mcp/mcp-client), [`command-mcp`](../packages/mcp/command-mcp) | - | MCP 客户端实例上报其服务器快照；`/mcp` 命令读取它们。 |
+| `ctx.mcpManager` | `core` | [`mcp-manager`](../packages/mcp/mcp-manager) | - | [`host-apiproxy`](../packages/host/apiproxy) | - | 在 harness home 下持久化用户添加的 MCP 服务器，并将其挂载为 mcp-client 实例；宿主 mcp RPC 动词对其封装。 |
 | `ctx.userQuestions` | `seam` | [`user-questions`](../packages/interaction/user-questions) | - | [`tool-ask-user`](../packages/interaction/tool-ask-user) | - | UI 前端提供当前生效的人工回答提供方；tool-ask-user 在提供方无关的 ask() promise 上暂停工具调用。 |
 | `ctx.planMode` | `core` | [`plan-mode`](../packages/plan/plan-mode) | - | - | - | 折叠已记录的计划／模式状态，在轮次边界刷新用户选择，渲染由部署方拥有的指导信息，注册 /plan，并在状态转换期间保持计划退出 schema 稳定。 |
 | `ctx.agentPresets` | `core` | [`agent-presets`](../packages/preset/agent-presets) | - | - | - | 在受信任根目录与用户创作根目录上发现 preset 目录，并在创建期把一份 preset cordis.yml 挂载到 agent 作用域之下，拒绝始终未激活或向根服务 realm 发布服务的行。 |

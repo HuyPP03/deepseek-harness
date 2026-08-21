@@ -10,7 +10,8 @@
  * the next disconnect starts a fresh budget while a crash-looping server —
  * even one whose connects briefly succeed — still exhausts the cap instead of
  * restarting forever. Exhaustion unregisters the server's tools and stops;
- * disposal (including HMR) is the only way back from that state.
+ * a manual {@link ConnectionHandle.reconnect} (or disposal, including HMR)
+ * is the way back from that state.
  *
  * @module
  */
@@ -111,6 +112,18 @@ export interface ConnectionHandle {
    */
   dispose(): Promise<void>
   /**
+   * Manual reconnect: cancels an armed backoff, resets the outage budget
+   * (including the exhausted give-up state), tears down the current
+   * generation, and starts a fresh connection attempt immediately — no
+   * backoff delay. Ignores `reconnect.enabled`, which governs automatic
+   * retries only; an explicit retry is the operator's call. A disposed
+   * handle is a no-op.
+   *
+   * @returns once the fresh attempt has started and settled (success or
+   *   failure; a failed attempt re-enters the automatic retry policy).
+   */
+  reconnect(): Promise<void>
+  /**
    * Current registry report for this server, or `null` once disposed.
    * Pulled on demand by the mcp-registry reporter; never mutates the
    * supervisor.
@@ -118,6 +131,19 @@ export interface ConnectionHandle {
    * @returns the live snapshot, or `null` after disposal.
    */
   report(): McpServerView | undefined
+  /**
+   * Manual reconnect: cancels any armed backoff retry, resets the outage
+   * budget (including the exhausted give-up state, whose only other way out
+   * was a reload), tears down the current generation, and starts a fresh
+   * connection attempt immediately with no backoff delay.
+   *
+   * Explicit operator action, so it runs regardless of `reconnect.enabled`
+   * — that switch governs automatic retries only. A disposed handle is a
+   * no-op. Awaits the old generation's teardown and the fresh attempt's
+   * settlement: on success the server is connected, on failure it is back in
+   * the automatic retry cycle (or has exhausted the policy again).
+   */
+  reconnect(): Promise<void>
 }
 
 /**
@@ -202,8 +228,8 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
     const lostEstablishedConnection = connectedAt !== undefined
     if (!policy.enabled) {
       const message = lostEstablishedConnection
-        ? 'connection lost and reconnect is disabled — registered tools will fail until an HMR reload or Host restart'
-        : 'connection failed and reconnect is disabled — no tools were registered; reload the plugin or restart the Host to connect'
+        ? 'connection lost and automatic reconnect is disabled — registered tools will fail until a manual reconnect, an HMR reload, or a Host restart'
+        : 'connection failed and automatic reconnect is disabled — no tools were registered; a manual reconnect, a reload, or a Host restart can connect'
       ctx.logger.error(`${label}: ${message}`)
       return
     }
@@ -219,7 +245,7 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
         for (const dispose of synced.disposers.values()) dispose()
         synced = { disposers: new Map(), tools: [] }
       })
-      ctx.logger.error(`${label}: giving up after ${policy.maxAttempts} consecutive failed reconnect attempts — tools unregistered; reload the plugin or restart the Host to reconnect`)
+      ctx.logger.error(`${label}: giving up after ${policy.maxAttempts} consecutive failed reconnect attempts — tools unregistered; a manual reconnect, a reload, or a Host restart can retry`)
       return
     }
     const delayMs = Math.min(policy.maxDelayMs, policy.initialDelayMs * 2 ** (failedAttempts - 1))
@@ -297,7 +323,7 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
       if (!quiesced) {
         client = undefined
         clientClosed = undefined
-        ctx.logger.error(`${label}: failed generation did not close within ${GENERATION_CLOSE_TIMEOUT_MS}ms — reconnect stopped to avoid overlapping server processes; reload the plugin or restart the Host to retry`)
+        ctx.logger.error(`${label}: failed generation did not close within ${GENERATION_CLOSE_TIMEOUT_MS}ms — automatic reconnect stopped to avoid overlapping server processes; a manual reconnect can retry`)
         return
       }
       generationDown(generation)
@@ -315,6 +341,35 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
 
   /** The in-flight (or last settled) connection attempt; dispose awaits it for quiescence. */
   let settling = connectGeneration(true)
+
+  /**
+   * Manual reconnect: drop the current generation (if any), reset the outage
+   * budget, and start a fresh attempt immediately. The current-ownership
+   * swap before the close is what keeps the old generation's failure paths
+   * quiet: every one of them re-checks isCurrent before acting.
+   */
+  async function reconnectNow(): Promise<void> {
+    if (disposed) return
+    if (reconnectTimer !== undefined) {
+      clearTimeout(reconnectTimer)
+      reconnectTimer = undefined
+    }
+    failedAttempts = 0
+    connectedAt = undefined
+    const current = client
+    const currentClosed = clientClosed
+    client = undefined
+    clientClosed = undefined
+    if (current !== undefined && currentClosed !== undefined) {
+      try { await current.close() } catch { /* transport already gone */ }
+      if (!await waitForClose(currentClosed)) {
+        ctx.logger.error(`${label}: manual reconnect: previous generation did not close within ${GENERATION_CLOSE_TIMEOUT_MS}ms; continuing with a fresh transport`)
+      }
+    }
+    ctx.logger.info(`${label}: manual reconnect requested; starting a fresh connection attempt`)
+    settling = connectGeneration(false)
+    await settling
+  }
 
   // The ready promise settles when the first attempt finishes (regardless of
   // success). If the first attempt fails and reconnect is enabled, the
@@ -356,6 +411,7 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
       for (const dispose of synced.disposers.values()) dispose()
       synced = { disposers: new Map(), tools: [] }
     },
+    reconnect: reconnectNow,
     report(): McpServerView | undefined {
       if (disposed) return undefined
       // No client and no armed retry means nothing is running and nothing is

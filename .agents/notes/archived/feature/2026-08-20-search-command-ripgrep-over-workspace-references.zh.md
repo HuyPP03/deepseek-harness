@@ -1,6 +1,7 @@
 # Agent Note: `/search` —— 在会话工作区与其参考项目上跑字面 ripgrep
 
 Status: implemented
+Archived: 2026-08-21
 
 [English](2026-08-20-search-command-ripgrep-over-workspace-references.md) | 中文
 

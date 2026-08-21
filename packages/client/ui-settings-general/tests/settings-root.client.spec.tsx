@@ -49,11 +49,45 @@ function mount({
       byId: { 'active-session': { blank: false } },
     })) as never
   const unusedHook = (() => { throw new Error('unused by SettingsRoot') }) as never
+  // The panel's open state and section selection: the controller store's test
+  // stand-in — a mutable object plus a subscribe channel, the same observable
+  // contract the bound useSettingsPanel hook reads.
+  const panel = { open: false, activeId: undefined as string | undefined }
+  const panelListeners = new Set<() => void>()
+  const notifyPanel = () => {
+    for (const fn of [...panelListeners]) fn()
+  }
+  const openSection = (id?: string) => {
+    panel.open = true
+    if (id !== undefined) panel.activeId = id
+    notifyPanel()
+  }
+  const closePanel = () => {
+    panel.open = false
+    panel.activeId = undefined
+    notifyPanel()
+  }
+  const selectActiveId = (id: string) => {
+    panel.activeId = id
+    notifyPanel()
+  }
   const props: SettingsRootComponentProps = {
     useSessions,
     useWorkspaces: unusedHook,
     wide,
     useOnboardingSteps: select => select(steps),
+    useSettingsPanel: ((select: (s: typeof panel) => unknown) => {
+      const [, force] = useState(0)
+      useEffect(() => {
+        const listener = () => { force(n => n + 1) }
+        panelListeners.add(listener)
+        return () => { panelListeners.delete(listener) }
+      }, [])
+      return select(panel)
+    }) as never,
+    openSection,
+    closePanel,
+    setActiveId: selectActiveId,
     useSections: (select) => {
       const [, force] = useState(0)
       useEffect(() => {

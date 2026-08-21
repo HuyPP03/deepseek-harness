@@ -18,13 +18,7 @@
       "path": "../commands"
     },
     {
-      "path": "../../workspace/workspace-references"
-    },
-    {
-      "path": "../../subprocess/subprocess"
-    },
-    {
-      "path": "../../util/timeout"
+      "path": "../../llm/llm"
     },
     {
       "path": "../../runtime-diagnostics/invariants"

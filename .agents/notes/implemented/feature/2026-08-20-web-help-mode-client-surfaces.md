@@ -10,7 +10,7 @@ Two of the deployment's most-used slash commands had no comfortable Web path. `/
 
 ## Decision
 
-`@deepseek-ai/dsh-client-ui-slash-tools` (the Web slash-tool feature owner) grows two client surfaces, both over `ctx.commandUi`, and `@deepseek-ai/dsh-client-ui-commands` gains the one contract method this requires.
+`/help` is a client surface in `@deepseek-ai/dsh-client-ui-slash-tools` (the Web slash-tool feature owner) over `ctx.commandUi`; `/mode` is a decoration registered by `@deepseek-ai/dsh-client-ui-agent-preset`, the package that owns the preset roster it renders (see [slash-surface ownership](../architecture/2026-08-21-slash-surface-ownership-to-feature-packages.md)); and `@deepseek-ai/dsh-client-ui-commands` gains the one contract method this requires.
 
 `CommandUiContract` gains `menuRows(session, signal)`: the merged slash-menu view (host catalog + available client contributions, menu order, the chat-session `/permission` hide included) without position or query filtering. It is the same row synthesis the `/` menu already runs, factored out of `candidates()` so the menu and the face cannot drift apart.
 

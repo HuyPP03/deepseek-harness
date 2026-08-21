@@ -35,7 +35,8 @@ export type {} from '@deepseek-ai/dsh-settings/types'
 export type {
   ClientResponse, ConfigurableProviderView, ConnectionHandle, ConnectionSinks, ContentBlock,
   CredentialView, DirectoryListing, DiscoveredModelView, HistoryEntry, HostFrame, IApiClient,
-  MessageId, ModelCatalogFailure, ModelProviderGroup, ModelReasoningEffort, ModelSelection,
+  McpApi, McpServerRow, McpServerSpec, McpServerStatus, McpStdioServerSpec, McpStreamableHttpServerSpec,
+  McpToolRow, MessageId, ModelCatalogFailure, ModelProviderGroup, ModelReasoningEffort, ModelSelection,
   MuxFrame, PromptContentPart, QuestionResponsePayload, QueueAction, RpcError, RpcId, RpcReceipt,
   RpcRequest, RpcResponse, RpcResult, SessionId, SessionModels, SessionSearchItem,
   SessionSummary, SettingsNamespaceView, SettingsPathOpView, FileEntry, FilesApi, SkillEntry, StreamChunk,

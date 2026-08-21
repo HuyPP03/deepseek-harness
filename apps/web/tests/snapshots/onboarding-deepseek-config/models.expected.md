@@ -13,6 +13,9 @@
     - button "Agent 预设":
       - img
       - text: Agent 预设
+    - button "MCP 服务器":
+      - img
+      - text: MCP 服务器
   - button "打开配置文件"
   - button "关闭":
     - img

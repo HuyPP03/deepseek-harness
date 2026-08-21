@@ -95,6 +95,18 @@
       "path": "../../workspace/workspace-references"
     },
     {
+      "path": "../../mcp/mcp-registry"
+    },
+    {
+      "path": "../../mcp/mcp-manager"
+    },
+    {
+      "path": "../../mcp/mcp-registry"
+    },
+    {
+      "path": "../../mcp/mcp-manager"
+    },
+    {
       "path": "../directory-picker"
     },
     {

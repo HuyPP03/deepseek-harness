@@ -8,8 +8,11 @@ Shared registry over the live [`mcp-client`](../mcp-client/README.md) instances 
 
 | Method | Returns |
 |---|---|
-| `report(serverName, read)` | disposer that removes the reporter; throws on a duplicate live `serverName` |
+| `report(serverName, reporter)` | disposer that removes the reporter; throws on a duplicate live `serverName` |
 | `servers()` | the current views of every reporter, sorted by `serverName` |
+| `reconnect(serverName)` | resolves once the reporter's manual reconnect hook has settled; a reporter without a hook is a no-op; throws `McpServerNotReportedError` when no server reports the name |
+
+The `reconnect` hook is optional in `McpServerReporter`: a backend that cannot start an explicit retry simply omits it, and the registry passes the call through without interpreting the result — the hook's own settlement is the completion signal, and the next `servers()` read observes the new status.
 
 A reporter holds a **reader closure** that computes the current `McpServerView` on demand:
 

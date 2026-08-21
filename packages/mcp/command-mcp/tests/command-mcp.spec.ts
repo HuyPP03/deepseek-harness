@@ -73,8 +73,8 @@ describe('@deepseek-ai/dsh-command-mcp registration', () => {
 describe('/mcp listing', () => {
   it('lists every reported server with its status and tools, sorted by name', async () => {
     const test = await harness()
-    test.ctx.mcpRegistry.report('web', () => view('web', 1))
-    test.ctx.mcpRegistry.report('github', () => view('github', 2, 'reconnecting'))
+    test.ctx.mcpRegistry.report('web', { read: () => view('web', 1) })
+    test.ctx.mcpRegistry.report('github', { read: () => view('github', 2, 'reconnecting') })
 
     const result = await run(test, '/mcp')
     expect(result.kind).toBe('success')
@@ -90,7 +90,7 @@ describe('/mcp listing', () => {
 
   it('reports a server with no registered tools as a one-line entry', async () => {
     const test = await harness()
-    test.ctx.mcpRegistry.report('down', () => view('down', 0, 'down'))
+    test.ctx.mcpRegistry.report('down', { read: () => view('down', 0, 'down') })
 
     const result = await run(test, '/mcp')
     expect(result).toEqual({ kind: 'success', text: 'down (down) — no tools' })
@@ -98,11 +98,11 @@ describe('/mcp listing', () => {
 
   it('renders a description-less tool without a trailing separator', async () => {
     const test = await harness()
-    test.ctx.mcpRegistry.report('plain', () => ({
+    test.ctx.mcpRegistry.report('plain', { read: () => ({
       serverName: 'plain',
       status: 'connected',
       tools: [{ name: 'mcp__plain__bare', description: '' }],
-    }))
+    }) })
 
     const result = await run(test, '/mcp')
     expect(result).toEqual({ kind: 'success', text: 'plain (connected) — 1 tool:\n  - mcp__plain__bare' })
@@ -110,8 +110,8 @@ describe('/mcp listing', () => {
 
   it('narrows to one server by name', async () => {
     const test = await harness()
-    test.ctx.mcpRegistry.report('github', () => view('github', 1))
-    test.ctx.mcpRegistry.report('web', () => view('web', 3))
+    test.ctx.mcpRegistry.report('github', { read: () => view('github', 1) })
+    test.ctx.mcpRegistry.report('web', { read: () => view('web', 3) })
 
     const result = await run(test, '/mcp github')
     expect(result).toEqual({ kind: 'success', text: 'github (connected) — 1 tool:\n  - mcp__github__tool0 — tool 0 does things' })
@@ -119,8 +119,8 @@ describe('/mcp listing', () => {
 
   it('rejects an unknown server and names the available ones', async () => {
     const test = await harness()
-    test.ctx.mcpRegistry.report('github', () => view('github', 0))
-    test.ctx.mcpRegistry.report('web', () => view('web', 0))
+    test.ctx.mcpRegistry.report('github', { read: () => view('github', 0) })
+    test.ctx.mcpRegistry.report('web', { read: () => view('web', 0) })
 
     const result = await run(test, '/mcp missing')
     expect(result).toEqual({ kind: 'error', text: 'Unknown MCP server "missing" (available: github, web).' })

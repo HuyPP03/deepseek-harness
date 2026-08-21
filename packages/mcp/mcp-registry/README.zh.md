@@ -8,8 +8,11 @@
 
 | 方法 | 返回 |
 |---|---|
-| `report(serverName, read)` | 移除该上报者的 disposer；重复的存活 `serverName` 会抛错 |
+| `report(serverName, reporter)` | 移除该上报者的 disposer；重复的存活 `serverName` 会抛错 |
 | `servers()` | 所有上报者的当前视图，按 `serverName` 排序 |
+| `reconnect(serverName)` | 在该上报者的手动重连钩子结算后 resolve；没有钩子的上报者是空操作；没有服务器报告该名称时抛 `McpServerNotReportedError` |
+
+`McpServerReporter` 中的 `reconnect` 钩子是可选的：无法发起显式重试的后端直接省略它，注册表透传该调用且不解释结果——钩子自身的结算就是完成信号，下一次 `servers()` 读取会看到新状态。
 
 上报者持有一个**读取闭包**，按需计算当前的 `McpServerView`：
 

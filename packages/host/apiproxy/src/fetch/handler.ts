@@ -67,6 +67,9 @@ import {
 } from '../api/credentials.schema.ts'
 import { llmDiscoverModelsRequestSchema, llmModelsRequestSchema, llmProvidersRequestSchema } from '../api/llm.schema.ts'
 import {
+  mcpAddRequestSchema, mcpListRequestSchema, mcpReconnectRequestSchema, mcpRemoveRequestSchema,
+} from '../api/mcp.schema.ts'
+import {
   subagentHistoryRequestSchema,
   subagentInterruptRequestSchema,
   subagentListRequestSchema,
@@ -144,6 +147,10 @@ const UNARY_ROUTES: UnaryRoutes = {
   'llm.providers': { schema: llmProvidersRequestSchema, invoke: (api, r) => api.llm.providers(r) },
   'llm.models': { schema: llmModelsRequestSchema, invoke: (api, r) => api.llm.models(r) },
   'llm.discoverModels': { schema: llmDiscoverModelsRequestSchema, invoke: (api, r, signal) => api.llm.discoverModels(r, signal) },
+  'mcp.list': { schema: mcpListRequestSchema, invoke: (api, r) => api.mcp.list(r) },
+  'mcp.add': { schema: mcpAddRequestSchema, invoke: (api, r) => api.mcp.add(r) },
+  'mcp.remove': { schema: mcpRemoveRequestSchema, invoke: (api, r) => api.mcp.remove(r) },
+  'mcp.reconnect': { schema: mcpReconnectRequestSchema, invoke: (api, r) => api.mcp.reconnect(r) },
 }
 
 /** Route lookup that narrows an arbitrary path segment to a map key (single cast point for the string→key refinement). */

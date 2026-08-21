@@ -333,7 +333,7 @@ describe('reconnect supervisor', () => {
     expect(mockConnect).toHaveBeenCalledTimes(1)
     // Pre-reconnect contract: the generation stays registered until disposal.
     expect(ctx.tools.get('mcp__srv__remote')).toBeDefined()
-    expect(errors.some(line => line.includes('connection lost and reconnect is disabled'))).toBe(true)
+    expect(errors.some(line => line.includes('connection lost and automatic reconnect is disabled'))).toBe(true)
   })
   it('reconnect disabled after a failed initial connect reports no registered tools', async () => {
     const { errors } = captureLogs(ctx)
@@ -341,7 +341,7 @@ describe('reconnect supervisor', () => {
     await apply(ctx, stdioConfig({ enabled: false }))
     await sleep(30)
     expect(ctx.tools.get('mcp__srv__remote')).toBeUndefined()
-    expect(errors.some(line => line.includes('connection failed and reconnect is disabled'))).toBe(true)
+    expect(errors.some(line => line.includes('connection failed and automatic reconnect is disabled'))).toBe(true)
     expect(errors.some(line => line.includes('no tools were registered'))).toBe(true)
   })
 
@@ -541,8 +541,143 @@ describe('connection.report snapshot', () => {
       tools: [{ name: 'mcp__srv__remote', description: '' }],
     }])
 
+    // The registry's manual reconnect reaches the connection supervisor.
+    await ctx.mcpRegistry.reconnect('srv')
+    expect(ctx.mcpRegistry.servers()).toEqual([{
+      serverName: 'srv',
+      status: 'connected',
+      tools: [{ name: 'mcp__srv__remote', description: '' }],
+    }])
+    expect(instances).toHaveLength(2)
+
     await plugin.dispose()
     expect(ctx.mcpRegistry.servers()).toEqual([])
+  })
+})
+
+// ---- Manual reconnect ----
+
+describe('manual reconnect', () => {
+  let ctx: Context
+
+  beforeEach(async () => {
+    vi.clearAllMocks()
+    instances.length = 0
+    mockConnect.mockResolvedValue(undefined)
+    mockClose.mockImplementation(function (this: { onclose?: () => void }) {
+      this.onclose?.()
+      return Promise.resolve()
+    })
+    mockListTools.mockResolvedValue(listing('remote'))
+    ctx = await mountRegistry()
+  })
+
+  it('skips an armed backoff and starts a fresh attempt immediately', async () => {
+    const handle = startConnection(ctx, stdioConfig({ initialDelayMs: 60_000, maxDelayMs: 60_000, maxAttempts: 5 }), resolveReconnectPolicy(undefined, 'reconnect'))
+    await handle.ready
+    expect(handle.report()?.status).toBe('connected')
+
+    instances[0]!.onclose?.()
+    await vi.waitFor(() => { expect(handle.report()?.status).toBe('reconnecting') })
+
+    // The automatic retry is armed for 60s; the manual reconnect must not wait it out.
+    await handle.reconnect()
+    expect(handle.report()).toEqual({
+      serverName: 'srv',
+      status: 'connected',
+      tools: [{ name: 'mcp__srv__remote', description: '' }],
+    })
+    expect(instances).toHaveLength(2)
+    expect(mockConnect).toHaveBeenCalledTimes(2)
+    await handle.dispose()
+  })
+
+  it('resets the exhausted failure budget that manual recovery used to be unable to leave', async () => {
+    const { errors } = captureLogs(ctx)
+    const config = stdioConfig({ initialDelayMs: 2, maxDelayMs: 8, maxAttempts: 1 })
+    const handle = startConnection(ctx, config, resolveReconnectPolicy(config.reconnect, 'reconnect'))
+    await handle.ready
+
+    mockConnect.mockRejectedValue(new Error('server gone'))
+    instances[0]!.onclose?.()
+    await vi.waitFor(() => {
+      expect(errors.some(line => line.includes('giving up after 1 consecutive failed reconnect attempts'))).toBe(true)
+    })
+    expect(handle.report()).toEqual({ serverName: 'srv', status: 'down', tools: [] })
+
+    // The server comes back to life: the manual reconnect re-enters the budget fresh.
+    mockConnect.mockResolvedValue(undefined)
+    await handle.reconnect()
+    expect(handle.report()).toEqual({
+      serverName: 'srv',
+      status: 'connected',
+      tools: [{ name: 'mcp__srv__remote', description: '' }],
+    })
+    expect(instances).toHaveLength(3)
+    await handle.dispose()
+  })
+
+  it('continues a manual reconnect when the replaced generation hangs past the close budget', async () => {
+    vi.useFakeTimers()
+    try {
+      const { infos, errors } = captureLogs(ctx)
+      const handle = startConnection(ctx, stdioConfig(), resolveReconnectPolicy(undefined, 'reconnect'))
+      await handle.ready
+      // The replaced generation's transport refuses to close: the fresh
+      // attempt must still start, and the close budget must fire instead of
+      // wedging the manual reconnect. The replacement's own close settles
+      // normally so disposal does not need a second budget advance.
+      let closeCalls = 0
+      mockClose.mockImplementation(async function (this: { onclose?: () => void }) {
+        closeCalls += 1
+        if (closeCalls === 1) throw new Error('stuck transport')
+        this.onclose?.()
+      })
+      const reconnecting = handle.reconnect()
+      await vi.advanceTimersByTimeAsync(5_000)
+      await reconnecting
+      expect(handle.report()).toEqual({
+        serverName: 'srv',
+        status: 'connected',
+        tools: [{ name: 'mcp__srv__remote', description: '' }],
+      })
+      expect(errors.some(line => line.includes('manual reconnect: previous generation did not close within 5000ms; continuing with a fresh transport'))).toBe(true)
+      expect(infos.some(line => line.includes('manual reconnect requested'))).toBe(true)
+      await handle.dispose()
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('replaces a connected generation and re-syncs the tools', async () => {
+    const { infos } = captureLogs(ctx)
+    const handle = startConnection(ctx, stdioConfig(), resolveReconnectPolicy(undefined, 'reconnect'))
+    await handle.ready
+
+    await handle.reconnect()
+    expect(handle.report()).toEqual({
+      serverName: 'srv',
+      status: 'connected',
+      tools: [{ name: 'mcp__srv__remote', description: '' }],
+    })
+    expect(instances).toHaveLength(2)
+    expect(infos.some(line => line.includes('manual reconnect requested'))).toBe(true)
+    // The replaced generation's stale close signal must not schedule a retry.
+    instances[0]!.onclose?.()
+    await sleep(30)
+    expect(instances).toHaveLength(2)
+    await handle.dispose()
+  })
+
+  it('is a no-op once the handle is disposed', async () => {
+    const handle = startConnection(ctx, stdioConfig(), resolveReconnectPolicy(undefined, 'reconnect'))
+    await handle.ready
+    await handle.dispose()
+
+    await handle.reconnect()
+    expect(mockConnect).toHaveBeenCalledTimes(1)
+    expect(instances).toHaveLength(1)
+    expect(handle.report()).toBeUndefined()
   })
 })
 

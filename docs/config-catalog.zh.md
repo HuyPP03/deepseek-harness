@@ -1305,6 +1305,22 @@ export interface ReconnectConfig {
 
 来源：[`packages/mcp/mcp-client/src/index.ts:99`](../packages/mcp/mcp-client/src/index.ts)
 
+<a id="deepseek-aidsh-mcp-manager"></a>
+
+## `@deepseek-ai/dsh-mcp-manager`
+
+需要：`mcpRegistry`
+
+```ts config-catalog
+/** McpManager config; the Loader validates before the constructor runs. */
+export interface Config {
+  /** Directory holding one cordis.yml per user MCP server; defaults to `.mcp` under the harness home. */
+  readonly mcpDir?: string
+}
+```
+
+来源：[`packages/mcp/mcp-manager/src/index.ts:41`](../packages/mcp/mcp-manager/src/index.ts)
+
 <a id="deepseek-aidsh-message-feedback"></a>
 
 ## `@deepseek-ai/dsh-message-feedback`
@@ -3102,6 +3118,7 @@ export interface Config {
 - `@deepseek-ai/dsh-client-ui-input-trigger`（[`packages/client/ui-input-trigger/src/index.ts`](../packages/client/ui-input-trigger/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-jobs`（[`packages/client/ui-jobs/src/index.ts`](../packages/client/ui-jobs/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-layout`（[`packages/client/ui-layout/src/index.ts`](../packages/client/ui-layout/src/index.ts)）
+- `@deepseek-ai/dsh-client-ui-mcp`（[`packages/client/ui-mcp/src/index.ts`](../packages/client/ui-mcp/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-message-feedback`（[`packages/client/ui-message-feedback/src/index.ts`](../packages/client/ui-message-feedback/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-model-selection`（[`packages/client/ui-model-selection/src/index.ts`](../packages/client/ui-model-selection/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-permission-presets`（[`packages/client/ui-permission-presets/src/index.ts`](../packages/client/ui-permission-presets/src/index.ts)）

@@ -3,6 +3,7 @@ import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import { apply, inject } from '../src/client/index.ts'
+import type { SettingsPanelController } from '../src/client/panel-service.ts'
 import type { SettingsRootInjected } from '../src/client/shell-contract.ts'
 import { SettingsRoot } from '../src/client/SettingsRoot.tsx'
 
@@ -121,6 +122,23 @@ describe('ui-settings apply', () => {
     await Promise.resolve()
     expect(listener).toHaveBeenCalledOnce()
     off()
+  })
+
+  it('exposes the panel controller store and the deep-link actions on the injected face', async () => {
+    const b = await bench()
+    declare(b.slots)
+    await b.ctx.plugin({ inject: [...inject], apply }).await()
+    const injected = injectedOf(b.slots)
+    const panel = b.ctx.get('settingsPanel') as SettingsPanelController
+    // The hooks-compartment source is the controller's store itself.
+    expect(injected.hooks.settingsPanel).toBe(panel.store)
+    expect(injected.hooks.settingsPanel.getSnapshot()).toEqual({ open: false, activeId: undefined })
+    injected.openSection('models')
+    expect(panel.store.getSnapshot()).toEqual({ open: true, activeId: 'models' })
+    injected.setActiveId('mcp')
+    expect(panel.store.getSnapshot()).toEqual({ open: true, activeId: 'mcp' })
+    injected.closePanel()
+    expect(panel.store.getSnapshot()).toEqual({ open: false, activeId: undefined })
   })
 
   it('re-registers after an HMR collapse re-declares the slot (stale disposer must not block)', async () => {

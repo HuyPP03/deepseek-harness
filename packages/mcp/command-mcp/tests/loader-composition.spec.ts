@@ -47,11 +47,11 @@ describe('command-mcp real Loader composition', () => {
         name: 'stub-mcp-reporter',
         inject: ['mcpRegistry'],
         apply(ctx: Context): void {
-          ctx.effect(() => ctx.mcpRegistry.report('stub', () => ({
+          ctx.effect(() => ctx.mcpRegistry.report('stub', { read: () => ({
             serverName: 'stub',
             status: 'connected',
             tools: [{ name: 'mcp__stub__ping', description: 'Ping the server' }],
-          })), 'stub-mcp-reporter lifecycle')
+          }) }), 'stub-mcp-reporter lifecycle')
         },
       }],
     ])

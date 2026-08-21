@@ -304,6 +304,12 @@
     - id: command-mcp
       name: '@deepseek-ai/dsh-command-mcp'
 
+    # User MCP servers: persists one cordis.yml per server under
+    # $DSH_HOME/.mcp and runtime-mounts their mcp-client instances. A
+    # deployment without user servers boots an empty directory.
+    - id: mcp-manager
+      name: '@deepseek-ai/dsh-mcp-manager'
+
     - id: subagent
       name: '@deepseek-ai/dsh-subagent'
 

@@ -20,6 +20,7 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {
   SettingsOnboardingStep, SettingsRootInjected, SettingsSectionRow,
 } from './shell-contract.ts'
+import { SettingsPanelController } from './panel-service.ts'
 import { SettingsRoot } from './SettingsRoot.tsx'
 import { CloseLabel, HeaderContent, TriggerContent } from './chrome.tsx'
 import { GeneralSection } from './GeneralSection.tsx'
@@ -37,6 +38,8 @@ export type {
 export type { SettingsDocumentActionInjected, SettingsDocumentActionProps } from './SettingsDocumentAction.tsx'
 export type { SettingsDocumentState } from './settings-document-store.ts'
 export { SettingsDocumentStore } from './settings-document-store.ts'
+export { SettingsPanelController } from './panel-service.ts'
+export type { SettingsPanelState } from './panel-service.ts'
 export type { SettingsKey } from './locales.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
@@ -62,6 +65,9 @@ export const inject = ['slots', 'locale', 'connection']
  * @param ctx - client root context.
  */
 export function apply(ctx: ClientContext): void {
+  // The panel controller owns the open state and section selection so a
+  // plugin outside the panel can deep link into one of its sections.
+  ctx.plugin(SettingsPanelController)
   ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-settings-general: dictionaries')
 
   // Copy freshness is framework-owned: components read the standard `t`
@@ -91,66 +97,73 @@ export function apply(ctx: ClientContext): void {
   let rows: readonly SettingsSectionRow[] = []
   let onboardingVersion = -1
   let onboardingSteps: readonly SettingsOnboardingStep[] = []
-  const shellInjected = (): SettingsRootInjected => ({
-    hooks: {
-      sections: {
-        getSnapshot: () => {
-          const version = ctx.slots.getVersion('settings.section')
-          const revision = ctx.locale.getSnapshot().revision
-          if (version !== rowsVersion || revision !== rowsRevision) {
-            rowsVersion = version
-            rowsRevision = revision
-            rows = ctx.slots.entries('settings.section')
-              .map(e => ({
-                /* v8 ignore next -- list-slot registration requires id (SlotCore rejects an entry without one) */
-                id: e.options.id ?? '',
-                order: e.options.order ?? 0,
-                label: resolveSlotLabel(e.options.label) ?? '',
-              }))
-              .sort((a, b) => a.order - b.order)
-          }
-          return rows
+  ctx.inject(['settingsPanel'], (scope) => {
+    const panel = scope.settingsPanel
+    const shellInjected = (): SettingsRootInjected => ({
+      hooks: {
+        settingsPanel: panel.store,
+        sections: {
+          getSnapshot: () => {
+            const version = ctx.slots.getVersion('settings.section')
+            const revision = ctx.locale.getSnapshot().revision
+            if (version !== rowsVersion || revision !== rowsRevision) {
+              rowsVersion = version
+              rowsRevision = revision
+              rows = ctx.slots.entries('settings.section')
+                .map(e => ({
+                  /* v8 ignore next -- list-slot registration requires id (SlotCore rejects an entry without one) */
+                  id: e.options.id ?? '',
+                  order: e.options.order ?? 0,
+                  label: resolveSlotLabel(e.options.label) ?? '',
+                }))
+                .sort((a, b) => a.order - b.order)
+            }
+            return rows
+          },
+          subscribe: (listener) => {
+            const offLedger = ctx.slots.subscribe('settings.section', listener)
+            const offLocale = ctx.locale.subscribe(listener)
+            return () => {
+              offLedger()
+              offLocale()
+            }
+          },
         },
-        subscribe: (listener) => {
-          const offLedger = ctx.slots.subscribe('settings.section', listener)
-          const offLocale = ctx.locale.subscribe(listener)
-          return () => {
-            offLedger()
-            offLocale()
-          }
+        onboardingSteps: {
+          getSnapshot: () => {
+            const version = ctx.slots.getVersion('settings.onboarding')
+            if (version !== onboardingVersion) {
+              onboardingVersion = version
+              onboardingSteps = ctx.slots.entries('settings.onboarding')
+                .map(e => ({
+                  /* v8 ignore next -- list-slot registration requires id */
+                  id: e.options.id ?? '',
+                  order: e.options.order ?? 0,
+                }))
+                .sort((a, b) => a.order - b.order)
+            }
+            return onboardingSteps
+          },
+          subscribe: listener => ctx.slots.subscribe('settings.onboarding', listener),
         },
       },
-      onboardingSteps: {
-        getSnapshot: () => {
-          const version = ctx.slots.getVersion('settings.onboarding')
-          if (version !== onboardingVersion) {
-            onboardingVersion = version
-            onboardingSteps = ctx.slots.entries('settings.onboarding')
-              .map(e => ({
-                /* v8 ignore next -- list-slot registration requires id */
-                id: e.options.id ?? '',
-                order: e.options.order ?? 0,
-              }))
-              .sort((a, b) => a.order - b.order)
-          }
-          return onboardingSteps
-        },
-        subscribe: listener => ctx.slots.subscribe('settings.onboarding', listener),
+      openSection: (id?: string) => { panel.openSection(id) },
+      closePanel: () => { panel.close() },
+      setActiveId: (id: string) => { panel.setActiveId(id) },
+    })
+    ctx.slots.inject('sidebar.settings', () => ctx.slots.register({
+      name: 'sidebar.settings',
+      children: {
+        'settings.trigger': { kind: 'single', scope: 'root' },
+        'settings.header': { kind: 'single', scope: 'root' },
+        'settings.action': { kind: 'list', scope: 'root' },
+        'settings.close': { kind: 'single', scope: 'root' },
+        'settings.section': { kind: 'list', scope: 'root' },
+        'settings.onboarding': { kind: 'list', scope: 'root' },
       },
-    },
+      inject: shellInjected,
+    }, SettingsRoot))
   })
-  ctx.slots.inject('sidebar.settings', () => ctx.slots.register({
-    name: 'sidebar.settings',
-    children: {
-      'settings.trigger': { kind: 'single', scope: 'root' },
-      'settings.header': { kind: 'single', scope: 'root' },
-      'settings.action': { kind: 'list', scope: 'root' },
-      'settings.close': { kind: 'single', scope: 'root' },
-      'settings.section': { kind: 'list', scope: 'root' },
-      'settings.onboarding': { kind: 'list', scope: 'root' },
-    },
-    inject: shellInjected,
-  }, SettingsRoot))
 
   ctx.slots.inject('settings.trigger', () =>
     ctx.slots.register({ name: 'settings.trigger', locale: NS }, TriggerContent))

@@ -116,6 +116,14 @@ const PRIVILEGED_METHODS = new Set([
   'credentials.set',
   'credentials.unset',
   'llm.discoverModels',
+  // An MCP add/remove writes or deletes a server definition (which may carry
+  // env or header secrets) and starts or tears down an external process or
+  // endpoint; reconnect drives the live connections. `mcp.list` stays
+  // unprivileged: its rows are secret-free (names, states, tool names), and
+  // the MCP surface in the browser needs them.
+  'mcp.add',
+  'mcp.remove',
+  'mcp.reconnect',
 ])
 
 /**

@@ -28,5 +28,5 @@ The base bundle mounts the registry and the command, so `/mcp` exists in every p
 
 - `mcp-client` gains an optional `mcp-registry` peer; its `SyncGeneration` return type is public surface for the reporter, not an accident.
 - The registry is realm-isolated like every Cordis service: an mcp-client mounted in a preset reports into that preset's registry, so `/mcp` inside the preset sees only that preset's servers.
-- `/mcp` is host-only (no client surface): the command text is the presentation, and no Web/CLI-specific handling is needed.
+- The Web now has a client surface over the same read face: the MCP settings section and the `/mcp` popupSelect decoration in `@deepseek-ai/dsh-client-ui-mcp`, which pull from `mcp.list` exactly as the command does (see [the `/mcp` Web surface note](2026-08-21-mcp-client-surface-and-settings-panel-deep-link.md)).
 - The snapshot is point-in-time per server; a flapping server reports whatever its reader computes when its turn in the sorted read comes.

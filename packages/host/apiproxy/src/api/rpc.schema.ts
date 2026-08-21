@@ -77,6 +77,10 @@ export const rpcErrorSchema: z.ZodType<RpcError> = z.discriminatedUnion('code', 
   z.object({ code: z.literal('subagent-not-resumable'), message: z.string(), details: z.object({ childSessionId: z.string() }) }),
   z.object({ code: z.literal('subagent-unauthorized'), message: z.string(), details: z.object({ childSessionId: z.string() }) }),
   z.object({ code: z.literal('subagent-delivery-unavailable'), message: z.string(), details: z.object({ childSessionId: z.string() }) }),
+  z.object({ code: z.literal('mcp-server-not-found'), message: z.string(), details: z.object({ serverName: z.string() }) }),
+  z.object({ code: z.literal('mcp-server-not-managed'), message: z.string(), details: z.object({ serverName: z.string() }) }),
+  z.object({ code: z.literal('mcp-server-exists'), message: z.string(), details: z.object({ serverName: z.string() }) }),
+  z.object({ code: z.literal('mcp-manager-unavailable'), message: z.string(), details: z.object({}) }),
   z.object({ code: z.literal('internal'), message: z.string(), details: z.object({}) }),
 ]) as unknown as z.ZodType<RpcError>
 

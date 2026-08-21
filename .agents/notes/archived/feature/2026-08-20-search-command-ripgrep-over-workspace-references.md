@@ -1,6 +1,7 @@
 # Agent Note: `/search` — literal ripgrep over the session workspace and its reference projects
 
 Status: implemented
+Archived: 2026-08-21
 
 English | [中文](2026-08-20-search-command-ripgrep-over-workspace-references.zh.md)
 

@@ -888,14 +888,51 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'mcpManager',
+    summary: 'Live user MCP servers plus the runtime operations over them.',
+    description: 'Live user MCP servers plus the runtime operations over them.',
+    methods: [
+      {
+        signature: 'servers(): readonly McpServerView[]',
+        description: 'Snapshot of every reported MCP server — profile-declared and user-managed alike — sorted by serverName.',
+        parameters: [],
+        returns: 'the live registry views.',
+      },
+      {
+        signature: 'userServers(): readonly string[]',
+        description: 'The serverNames this manager currently mounts from its own directory.',
+        parameters: [],
+        returns: 'the sorted managed names.',
+      },
+      {
+        signature: 'async add(spec: McpServerSpec): Promise<void>',
+        description: 'Persist one server under the manager\'s directory and mount it.',
+        parameters: [{ name: 'spec', description: 'the server definition to add.' }],
+        throws: ['when the serverName is already managed or already reported by another mcp-client instance, or when the mount fails — in that case the file written for this call is deleted again.'],
+      },
+      {
+        signature: 'async remove(serverName: string): Promise<void>',
+        description: 'Unmount one user server and delete its file.',
+        parameters: [{ name: 'serverName', description: 'the managed server to remove.' }],
+        throws: ['when the server is not one of the manager\'s own.'],
+      },
+      {
+        signature: 'async reconnect(serverName: string): Promise<void>',
+        description: 'Ask one reported server to start a manual reconnect — profile-declared and user-managed alike.',
+        parameters: [{ name: 'serverName', description: 'the server to reconnect.' }],
+        throws: ['when no mcp-client reports that server.'],
+      },
+    ],
+  },
+  {
     key: 'mcpRegistry',
     summary: 'Live MCP server registry over one app root.',
     description: 'Live MCP server registry over one app root.',
     methods: [
       {
-        signature: 'report(serverName: string, read: McpServerReader): () => void',
+        signature: 'report(serverName: string, reporter: McpServerReporter): () => void',
         description: 'Report one MCP server. The reader is pulled on every servers read; a `null`/`undefined` result removes the server from the snapshot.',
-        parameters: [{ name: 'serverName', description: 'stable local server namespace, unique across live reporters.' }, { name: 'read', description: 'closure computing the server\'s current snapshot.' }],
+        parameters: [{ name: 'serverName', description: 'stable local server namespace, unique across live reporters.' }, { name: 'reporter', description: 'snapshot reader plus optional operations (reconnect).' }],
         returns: 'the exact disposer that removes this reporter.',
       },
       {
@@ -903,6 +940,13 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         description: 'Snapshot of every reported MCP server, sorted by serverName.',
         parameters: [],
         returns: 'the current views; reporters that yield nothing are omitted.',
+      },
+      {
+        signature: 'async reconnect(serverName: string): Promise<void>',
+        description: 'Ask one reported server to start a manual reconnect.',
+        parameters: [{ name: 'serverName', description: 'stable local server namespace.' }],
+        returns: 'once the reporter\'s reconnect hook has settled. A reporter without a hook resolves as a no-op: its snapshot has nothing behind it to reconnect.',
+        throws: ['{McpServerNotReportedError} when the server is not currently reported.'],
       },
     ],
   },
@@ -3408,8 +3452,8 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type McpServerReader = () => McpServerView | undefined;',
   },
   {
-    name: 'McpServerStatus',
-    declaration: 'export type McpServerStatus = \'connecting\' | \'connected\' | \'reconnecting\' | \'down\';',
+    name: 'McpServerReporter',
+    declaration: 'export interface McpServerReporter {\n    readonly read: McpServerReader;\n    readonly reconnect?: () => Promise<void>;\n}',
   },
   {
     name: 'McpServerView',

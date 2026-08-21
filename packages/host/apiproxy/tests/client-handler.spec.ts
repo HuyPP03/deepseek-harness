@@ -29,6 +29,7 @@ function scriptedApi(overrides: {
   settings?: Partial<ApiProxy['settings']>
   credentials?: Partial<ApiProxy['credentials']>
   llm?: Partial<ApiProxy['llm']>
+  mcp?: Partial<ApiProxy['mcp']>
   respond?: ApiProxy['respond']
 } = {}): ApiProxy {
   async function *empty<F>(): AsyncGenerator<RpcRequest<F>> { /* no frames */ }
@@ -130,6 +131,13 @@ function scriptedApi(overrides: {
       models: r => ok(r, { groups: [], failures: [] }),
       discoverModels: err,
       ...overrides.llm,
+    },
+    mcp: {
+      list: r => ok(r, { servers: [] }),
+      add: err,
+      remove: err,
+      reconnect: err,
+      ...overrides.mcp,
     },
     events: { mux: () => empty<MuxFrame>(), host: () => empty<HostFrame>(), ...overrides.events },
     respond: overrides.respond ?? (() => Promise.resolve({ accepted: false as const, reason: 'not-pending' as const })),
@@ -757,6 +765,12 @@ describe('config unary surface', () => {
         models: record('llm.models', r => ok(r, { groups: [group], failures: [] })),
         discoverModels: record('llm.discoverModels', r => ok(r, { models: [{ id: 'acme-large', contextWindow: 65536 }] })),
       },
+      mcp: {
+        list: record('mcp.list', r => ok(r, { servers: [row] })),
+        add: record('mcp.add', r => ok(r, { serverName: (r.payload as { spec: { serverName: string } }).spec.serverName })),
+        remove: record('mcp.remove', r => ok(r, {})),
+        reconnect: record('mcp.reconnect', r => ok(r, {})),
+      },
     })
     const c = client(api)
 
@@ -788,11 +802,24 @@ describe('config unary surface', () => {
       apiKey: 'probe-key',
     })
     expect(discovered.result).toEqual({ ok: true, value: { models: [{ id: 'acme-large', contextWindow: 65536 }] } })
+    const row = {
+      serverName: 'acme', status: 'connected' as const, managed: false,
+      tools: [{ name: 'mcp__acme__ping', description: '' }],
+    }
+    const listed = await c.mcp.list({})
+    expect(listed.result).toEqual({ ok: true, value: { servers: [row] } })
+    const added = await c.mcp.add({
+      spec: { serverName: 'mine', transport: 'stdio', command: 'node', args: ['mcp.js'] },
+    })
+    expect(added.result).toEqual({ ok: true, value: { serverName: 'mine' } })
+    expect((await c.mcp.remove({ serverName: 'mine' })).result).toEqual({ ok: true, value: {} })
+    expect((await c.mcp.reconnect({ serverName: 'acme' })).result).toEqual({ ok: true, value: {} })
 
     expect(seen.map(call => call.method)).toEqual([
       'settings.describe', 'settings.openDocument', 'settings.update', 'settings.replace', 'settings.mutate',
       'credentials.describe', 'credentials.set', 'credentials.unset',
       'llm.providers', 'llm.models', 'llm.discoverModels',
+      'mcp.list', 'mcp.add', 'mcp.remove', 'mcp.reconnect',
     ])
     expect(seen[2]?.payload).toEqual({ ns: 'llm-deepseek', patch: { baseURL: 'https://next' } })
     expect(seen[4]?.payload)
