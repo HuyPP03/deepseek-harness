@@ -13,6 +13,7 @@ import { DiffBlock, MarkdownText } from '@deepseek-ai/dsh-client-ui-primitives'
 import { FileBytesError } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
 import { latestFileDiffs, langForPath, previewKindForPath, type PreviewKind } from './changes.ts'
+import { docxToHtml, sheetToGrid, type SheetRow } from './preview.ts'
 import { VirtualLines } from './VirtualLines.tsx'
 import css from './FileInspector.module.css'
 
@@ -108,7 +109,7 @@ export function FileInspector({ path, cwd, readFile, fileUrl, useSession, t }: F
       )}
       <div className={css.seat}>
         {active === 'preview' && previewKind !== null
-          ? <PreviewSeat kind={previewKind} path={path} fileUrl={fileUrl} code={code} t={t} />
+          ? <PreviewSeat kind={previewKind} path={path} fileUrl={fileUrl} readFile={readFile} code={code} t={t} />
           : active === 'changes' && changes !== null
             ? <DiffBlock diffs={changes} />
             : codeSeat}
@@ -118,20 +119,26 @@ export function FileInspector({ path, cwd, readFile, fileUrl, useSession, t }: F
 }
 
 /**
- * The preview seat: the read text through the shared Markdown renderer, or
- * the raw channel's own URL on an image / SVG / sandboxed frame (the browser
- * decodes the bytes without a JS copy).
+ * The preview seat: the read text through the shared Markdown renderer, the
+ * raw channel's own URL on an image / SVG / sandboxed frame (the browser
+ * decodes the bytes without a JS copy), or the office parsers (docx, xlsx,
+ * csv) over the read bytes.
  * @param props - the preview kind, the file's path, the raw URL callback, the
- *   shared code state (Markdown reuses the text read), and the locale.
+ *   byte read (office seats parse the bytes), the shared code state (Markdown
+ *   reuses the text read), and the locale.
  * @returns the preview surface.
  */
-function PreviewSeat({ kind, path, fileUrl, code, t }: {
+function PreviewSeat({ kind, path, fileUrl, readFile, code, t }: {
   kind: PreviewKind
   path: string
   fileUrl: (path: string) => string
+  readFile: FileInspectorProps['readFile']
   code: CodeState
   t: FileInspectorProps['t']
 }) {
+  if (kind === 'docx' || kind === 'xlsx' || kind === 'csv') {
+    return <OfficeSeat kind={kind} path={path} readFile={readFile} t={t} />
+  }
   if (kind === 'markdown') {
     if (code.kind !== 'ok' || code.binary) {
       return <div className={css.state}>{
@@ -155,4 +162,67 @@ function PreviewSeat({ kind, path, fileUrl, code, t }: {
     />
   }
   return <img src={fileUrl(path)} alt={path} className={css.img} />
+}
+
+/** The office seats' settled states: parsing, a parse/read failure, and the two parses. */
+type OfficeState =
+  | { kind: 'loading' }
+  | { kind: 'failed' }
+  | { kind: 'docx'; html: string }
+  | { kind: 'grid'; rows: SheetRow[] }
+
+/**
+ * The docx / xlsx / csv seat: the read bytes through the lazy-loaded parser
+ * (mammoth or SheetJS); the byte read is cached, so this is not a second
+ * download. Docx lands in a sandboxed frame (srcDoc), sheets in a table.
+ * @param props - the kind, the file's path, the byte read, and the locale.
+ * @returns the loading / failed / parsed surface.
+ */
+function OfficeSeat({ kind, path, readFile, t }: {
+  kind: 'docx' | 'xlsx' | 'csv'
+  path: string
+  readFile: FileInspectorProps['readFile']
+  t: FileInspectorProps['t']
+}) {
+  const [state, setState] = useState<OfficeState>({ kind: 'loading' })
+
+  useEffect(() => {
+    const controller = new AbortController()
+    setState({ kind: 'loading' })
+    void readFile(path, controller.signal).then(
+      (view) => {
+        const parse = kind === 'docx'
+          ? docxToHtml(view.bytes).then(html => ({ kind: 'docx' as const, html }))
+          : sheetToGrid(view.bytes).then(rows => ({ kind: 'grid' as const, rows }))
+        void parse.then((next) => { if (!controller.signal.aborted) setState(next) })
+      },
+      () => { if (!controller.signal.aborted) setState({ kind: 'failed' }) },
+    )
+    return () => { controller.abort() }
+  }, [kind, path, readFile])
+
+  if (state.kind === 'loading') return <div className={css.state}>{t('code.loading')}</div>
+  if (state.kind === 'failed') return <div className={css.state}>{t('preview.failed')}</div>
+  if (state.kind === 'docx') {
+    return <iframe
+      srcDoc={state.html}
+      title={path}
+      // No allow-list at all: a file preview must not run its own scripts.
+      sandbox=""
+      className={css.frame}
+    />
+  }
+  return (
+    <div className={css.gridScroll}>
+      <table className={css.gridTable}>
+        <tbody>
+          {state.rows.map((row, r) => (
+            <tr key={r}>
+              {row.map((cell, c) => <td key={c}>{cell}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
 }

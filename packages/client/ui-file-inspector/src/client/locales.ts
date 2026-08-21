@@ -11,6 +11,7 @@ export type FileInspectorKey =
   | 'code.empty'
   | 'code.unreadable'
   | 'code.tooLarge'
+  | 'preview.failed'
 
 /** The Chinese dictionary (the product's default locale). */
 export const zh: Record<FileInspectorKey, string> = {
@@ -23,6 +24,7 @@ export const zh: Record<FileInspectorKey, string> = {
   'code.empty': '空文件',
   'code.unreadable': '文件不可读（权限或平台错误）',
   'code.tooLarge': '文件超过 25 MiB 边界，无法在检视器中显示',
+  'preview.failed': '预览失败（文件无法解析）',
 }
 
 /** The English dictionary. */
@@ -36,4 +38,5 @@ export const en: Record<FileInspectorKey, string> = {
   'code.empty': 'Empty file',
   'code.unreadable': 'The file is not readable (permission or platform error)',
   'code.tooLarge': 'The file exceeds the 25 MiB bound and cannot be shown in the inspector',
+  'preview.failed': 'The preview failed (the file could not be parsed)',
 }

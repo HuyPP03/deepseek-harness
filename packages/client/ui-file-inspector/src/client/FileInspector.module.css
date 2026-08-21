@@ -114,3 +114,24 @@
   border: none;
   background: var(--dsw-surface-base, #fff);
 }
+
+/* The sheet grid (xlsx/csv): a scrollable table of display strings. */
+
+.gridScroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 12px;
+}
+
+.gridTable {
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.gridTable td {
+  border: 1px solid var(--dsw-border, rgb(34 34 34));
+  padding: 2px 8px;
+  white-space: pre;
+  font-family: var(--dsw-font-mono, ui-monospace, monospace);
+}

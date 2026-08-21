@@ -6,6 +6,7 @@
 
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import XLSX from 'xlsx'
 import type { ConversationNode, ConversationSnapshot, SessionId, ToolResultNode } from '@deepseek-ai/dsh-client-runtime/client'
 import { FileBytesError } from '@deepseek-ai/dsh-client-runtime/client'
 import { FileInspector } from '../src/client/FileInspector.tsx'
@@ -185,5 +186,41 @@ describe('preview seat', () => {
     renderInspector([], () => Promise.resolve(okBytes('<svg></svg>')), '/tmp/proj/icon.svg')
     const img = await screen.findByRole('img', { name: '/tmp/proj/icon.svg' })
     expect(img.getAttribute('src')).toBe(`/api/file/s1/${encodeURIComponent('/tmp/proj/icon.svg')}`)
+  })
+})
+
+describe('preview seat: office documents', () => {
+  const DOCX_FIXTURE = '/tmp/proj/report.docx'
+  // The committed minimal docx fixture (tests/fixtures/hello.docx), inlined so
+  // the spec needs no filesystem under the jsdom environment.
+  const docxBytes = Uint8Array.from(atob('UEsDBBQAAAAIAG4CFl3JTxqw6wAAAK4BAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbH1QvU7DMBDeeQrLK4odGBBCSTrwMwJDeYCTfUks7LPlc0v79jht6YAK4933q69b7YIXW8zsIvXyRrVSIJloHU29/Fi/NPdScAGy4CNhL/fIcjVcdet9QhZVTNzLuZT0oDWbGQOwigmpImPMAUo986QTmE+YUN+27Z02kQpSacriIYfuCUfY+CKed/V9LJLRsxSPR+KS1UtIyTsDpeJ6S/ZXSnNKUFV54PDsEl9XgtQXExbk74CT7q0uk51F8Q65vEKoLP0Vs9U2mk2oSvW/zYWecRydwbN+cUs5GmSukwevzkgARz/99WHu4RtQSwMEFAAAAAgAbgIWXbmBRHGwAAAAKgEAAAsAAABfcmVscy8ucmVsc43POw7CMAwG4J1TRN5pWgaEUJMuCKkrKgeIEjeNaB5KwqO3JwMDIAZG278/y233sDO5YUzGOwZNVQNBJ70yTjM4D8f1DkjKwikxe4cMFkzQ8VV7wlnkspMmExIpiEsMppzDntIkJ7QiVT6gK5PRRytyKaOmQciL0Eg3db2l8d0A/mGSXjGIvWqADEvAf2w/jkbiwcurRZd/nPhKFFlEjZnB3UdF1atdFRYob+nHi/wJUEsDBBQAAAAIAG4CFl1eXKfHqAAAANwAAAARAAAAd29yZC9kb2N1bWVudC54bWxFjr0OwjAMhHeeIspOUxgQqvqzIMTIAA8QEtNWSuwoCf15e5IysHzWneXz1d1iDZvAh5Gw4Yei5AxQkR6xb/jzcd2fOQtRopaGEBq+QuBdu6vnSpP6WMDIUgKGam74EKOrhAhqACtDQQ4w7d7krYxJ+l7M5LXzpCCE9MAacSzLk7ByRN6myBfpNU+X4TNiewNjiF1ILezuYRphrkX2M/1Gt/F3K/692i9QSwECFAMUAAAACABuAhZdyU8asOsAAACuAQAAEwAAAAAAAAAAAAAAgAEAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUAxQAAAAIAG4CFl25gURxsAAAACoBAAALAAAAAAAAAAAAAACAARwBAABfcmVscy8ucmVsc1BLAQIUAxQAAAAIAG4CFl1eXKfHqAAAANwAAAARAAAAAAAAAAAAAACAAfUBAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAAAwADALkAAADMAgAAAAA='), c => c.charCodeAt(0))
+
+  it('renders a docx through mammoth into a sandboxed frame', async () => {
+    renderInspector([], () => Promise.resolve({ bytes: docxBytes, contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: docxBytes.byteLength }), DOCX_FIXTURE)
+    const frame = await screen.findByTitle(DOCX_FIXTURE)
+    expect(frame.tagName).toBe('IFRAME')
+    expect(frame.getAttribute('sandbox')).toBe('')
+    expect(frame.getAttribute('srcdoc')).toContain('Hello Docx Preview')
+  })
+
+  it('renders an xlsx workbook as a table of cells', async () => {
+    const book = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['name', 'age'], ['Ada', 36]]), 'S')
+    const bytes = new Uint8Array(XLSX.write(book, { type: 'buffer', bookType: 'xlsx' }) as ArrayBuffer)
+    renderInspector([], () => Promise.resolve({ bytes, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: bytes.byteLength }), '/tmp/proj/data.xlsx')
+    expect(await screen.findByRole('cell', { name: 'Ada' })).toBeTruthy()
+    expect(screen.getByRole('cell', { name: 'name' })).toBeTruthy()
+    expect(screen.getByRole('cell', { name: '36' })).toBeTruthy()
+  })
+
+  it('renders a csv file as a table of cells', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('name,age\nAda,36\n')), '/tmp/proj/data.csv')
+    expect(await screen.findByRole('cell', { name: 'Ada' })).toBeTruthy()
+    expect(screen.getByRole('cell', { name: 'age' })).toBeTruthy()
+  })
+
+  it('shows the failed state when the read or parse rejects', async () => {
+    renderInspector([], () => Promise.reject(new FileBytesError(500, 'unreadable')), '/tmp/proj/report.docx')
+    expect(await screen.findByText('预览失败（文件无法解析）')).toBeTruthy()
   })
 })

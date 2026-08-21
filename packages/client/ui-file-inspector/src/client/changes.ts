@@ -127,13 +127,14 @@ export function langForPath(path: string): string | undefined {
 }
 
 /** The preview seat's kinds, by extension. */
-export type PreviewKind = 'markdown' | 'html' | 'image' | 'svg'
+export type PreviewKind = 'markdown' | 'html' | 'image' | 'svg' | 'docx' | 'xlsx' | 'csv'
 
 /**
  * Preview kind for the Preview tab from a file's extension. Images and SVG
  * render through the raw channel's own URL (the browser decodes the bytes),
- * HTML through a sandboxed frame on the same URL, and Markdown through the
- * shared renderer over the read text.
+ * HTML through a sandboxed frame on the same URL, Markdown through the
+ * shared renderer over the read text, docx through mammoth into a sandboxed
+ * frame, and xlsx/csv through SheetJS into a table.
  * @param path - the file's canonical absolute path.
  * @returns the preview kind, or null when no preview surface exists.
  */
@@ -146,6 +147,9 @@ export function previewKindForPath(path: string): PreviewKind | null {
     case 'html': case 'htm': return 'html'
     case 'svg': return 'svg'
     case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp': case 'bmp': case 'ico': return 'image'
+    case 'docx': return 'docx'
+    case 'xlsx': return 'xlsx'
+    case 'csv': return 'csv'
     default: return null
   }
 }

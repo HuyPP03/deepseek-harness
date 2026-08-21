@@ -9,7 +9,7 @@
 // Each scenario owns a scaffold: a seeded Session's sidebar row is labeled by
 // its workspace directory, so two seeds sharing one workspace are not
 // distinguishable by row.
-import { readFile, writeFile } from 'node:fs/promises'
+import { copyFile, readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
 import type { Browser, Page } from 'playwright'
@@ -23,6 +23,7 @@ import { connectFreshWorkspace, newEnglishPage, saveFailureShot } from './suppor
 
 const CODE_FIXTURE = fileURLToPath(new URL('./snapshots/seeded-history/seed.jsonl', import.meta.url))
 const PREVIEW_FIXTURE = fileURLToPath(new URL('./snapshots/file-inspector-preview/seed.jsonl', import.meta.url))
+const DOCX_FIXTURE = fileURLToPath(new URL('../../../packages/client/ui-file-inspector/tests/fixtures/hello.docx', import.meta.url))
 const MODE = webSnapshotMode()
 
 /** A 1x1 transparent PNG: the smallest image the browser will decode. */
@@ -127,6 +128,8 @@ describe.skipIf(MODE === 'record')('web e2e: file inspector preview seat', () =>
       await writeFile(join(cwd, 'page.html'),
         '<html><head><title>Preview Page</title></head><body><p>Hello preview</p></body></html>\n')
       await writeFile(join(cwd, 'pix.png'), PNG_1x1)
+      await copyFile(DOCX_FIXTURE, join(cwd, 'report.docx'))
+      await writeFile(join(cwd, 'data.csv'), 'name,age\nAda,36\n')
     }))
     page.on('request', (request) => {
       if (request.url().includes('/api/file/')) rawRequests.push(request.url())
@@ -180,11 +183,24 @@ describe.skipIf(MODE === 'record')('web e2e: file inspector preview seat', () =>
       { timeout: 15_000 }).toBe(1)
     await expect(page.getByRole('tab', { name: 'Code' }).count()).resolves.toBe(0)
 
+    // Docx: mammoth converts the bytes in the browser and lands the semantic
+    // HTML in a sandboxed frame (srcDoc), with no second download.
+    await page.getByRole('button', { name: 'report.docx', exact: true }).click()
+    const docxFrame = page.locator('iframe').first()
+    await docxFrame.waitFor({ timeout: 15_000 })
+    expect(await docxFrame.getAttribute('sandbox')).toBe('')
+    expect(await docxFrame.getAttribute('srcdoc')).toContain('Hello Docx Preview')
+
+    // Xlsx/csv: SheetJS parses the first sheet into a table of cells.
+    await page.getByRole('button', { name: 'data.csv', exact: true }).click()
+    await expect.poll(async () => await page.getByRole('cell', { name: 'Ada' }).count(), { timeout: 15_000 }).toBe(1)
+    await expect(page.getByRole('cell', { name: 'age' }).count()).resolves.toBe(1)
+
     // The panel closes from its own header, and every preview surface hit the
     // raw channel under the preview seed's session id.
     await page.getByRole('button', { name: 'Close details' }).click()
     await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
-    for (const name of ['note.md', 'page.html', 'pix.png']) {
+    for (const name of ['note.md', 'page.html', 'pix.png', 'report.docx', 'data.csv']) {
       expect(rawRequests).toContain(
         `${scaffold.baseUrl}/api/file/file-inspector-preview-seed/${encodeURIComponent(`${scaffold.workspaceCwd}/${name}`)}`)
     }
