@@ -233,6 +233,11 @@
     - id: ui-tool
       name: '@deepseek-ai/dsh-client-ui-tool'
 
+    # Conversation file inspector: the details-panel seat for a selected file
+    # (latest changes + virtualized code over the raw byte channel).
+    - id: ui-file-inspector
+      name: '@deepseek-ai/dsh-client-ui-file-inspector'
+
     - id: ui-cordis
       name: '@deepseek-ai/dsh-client-ui-cordis'
 

@@ -1,0 +1,95 @@
+/* File inspector: the tab strip and the two seats inside the details panel body. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--dsw-border, rgb(34 34 34));
+  flex: none;
+}
+
+.tab {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--dsw-text-muted, rgb(156 163 175));
+  font: inherit;
+  font-size: 12px;
+  padding: 6px 10px 5px;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--dsw-text, rgb(229 229 229));
+}
+
+.tabActive {
+  color: var(--dsw-text, rgb(229 229 229));
+  border-bottom-color: var(--dsw-accent, rgb(56 139 253));
+}
+
+.seat {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.state {
+  padding: 16px 12px;
+  color: var(--dsw-text-muted, rgb(156 163 175));
+  font-size: 13px;
+}
+
+/* The virtualized code view: the line height is the layout unit (the
+   component's LINE constant must track --insp-line-height). */
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  font-family: var(--dsw-font-mono, ui-monospace, monospace);
+  font-size: 12px;
+}
+
+.spacer {
+  position: relative;
+}
+
+.window {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.line {
+  display: flex;
+  align-items: baseline;
+  height: var(--insp-line-height, 20px);
+  line-height: var(--insp-line-height, 20px);
+  white-space: pre;
+}
+
+.gutter {
+  flex: none;
+  width: 44px;
+  padding-right: 12px;
+  text-align: right;
+  color: var(--dsw-text-faint, rgb(113 118 128));
+  user-select: none;
+}
+
+.code {
+  flex: 1;
+  min-width: 0;
+}
