@@ -80,6 +80,10 @@ reason 为 `max-tokens` 的 `turn/end` 会在该轮位置投影出一个 `turn-m
 
 每个常驻 `Session` 都拥有一个 `modelSelection` 快照，其中包含当前模型选择、按提供方分组的目录、逐提供方失败记录，以及 `idle`／`loading`／`ready`／`selecting`／`error` 状态。历史记录会建立或刷新当前模型选择，打开选择器会刷新目录；选择失败会保留上一次模型选择和可用分组。目录与选择操作共用单调递增的代次，因此较旧响应无法覆盖较新的模型选择。重连重建会恢复 Host 报告的模型选择，同时不替换未变化的选择子结构。
 
+## 文件字节门面
+
+runtime 提供 `fileBytes` 服务（`createFileBytesService`），是对话文件检视器经宿主 raw 通道（`GET /api/file/<sessionId>/<path>`，无 wire 信封的物理路由）的字节来源。`read(sessionId, path)` 解析文件的逐字节原文、content type 与尺寸；同一 key 的并发读取共享一次 fetch，成功视图进入有界 LRU（32 条、16 MiB 字节——协议常量），因此重新打开文件不必第二次下载。单条视图超过字节边界时只服务一次、永不缓存；拒绝（403/404/413/500）以携带状态码的 `FileBytesError` 拒绝，且不缓存。`url(sessionId, path, download?)` 为希望使用浏览器自身解码（`<img>`、`<iframe>`）的预览表面构建 raw 通道 URL；`invalidate(sessionId, path)` 在会话的文件变更落账时丢弃一条缓存视图。该服务由 runtime 插件的 fiber 持有，随 fiber 消亡。
+
 ## 模型体验
 
 无，因为会话对象层会选择后续 Host 请求使用的提供方／模型路由，但不添加任何模型可见内容。
@@ -93,3 +97,4 @@ reason 为 `max-tokens` 的 `turn/end` 会在该轮位置投影出一个 `turn-m
 - **`loader.unload` 是 stub**：它会抛出 not-implemented；客户端没有从 fiber dispose 到注册与样式移除的卸载链。
 - **scope 拆卸由阶段驱动，目前只能有一个占用者**：已 staged 的会话精确跟随 `list.current`（staging 就是打开信号：事件窗口打开 ⟺ 会话位于 stage）；在 staged 状态下被移除的会话，其 scope 会冻结保留，直到 stage 转向其他会话，而非直到真实观察者数量降为零。解析（`binding()`／`scope()`）只是纯寻址，可安全用于渲染；渲染层经 `currentProvideInfo` observable 读取当前 bundle。并发 pane 落地时，staged 状态可以扩展为多 pane 列表。
 - **插件 bundle 从该包导入值时必须使用 `/client` 子路径**：裸包名不在 loader externals 表中，会内联第二个模块实例；其私有 scope-tag Symbol 永远无法匹配。
+- **`fileBytes` 视图不因会话移除而失效**：缓存视图会与其会话同生，直至 LRU 轮换或 fiber 拆卸；检视器在会话自身的文件变更落账时显式失效。

@@ -80,6 +80,10 @@ A `turn/end` whose reason is `max-tokens` projects one `turn-max-tokens` node at
 
 Each resident `Session` owns a `modelSelection` snapshot containing the current `ModelSelection`, provider-grouped directory, provider-local failures, and the `idle`/`loading`/`ready`/`selecting`/`error` state. History establishes or refreshes the current selection, opening a selector refreshes the directory, and selection failures preserve the last selection and usable groups. Directory and selection operations share a monotonically increasing generation so an older response cannot overwrite a newer selection. A reconnect rebuild restores the selection reported by the Host without replacing unchanged selection substructure.
 
+## File byte facade
+
+The runtime provides the `fileBytes` service (`createFileBytesService`), the conversation file inspector's byte source over the host's raw channel (`GET /api/file/<sessionId>/<path>`, the physical route with no wire envelope). `read(sessionId, path)` resolves the file's verbatim bytes, content type, and size; concurrent reads of the same key share one fetch, and successful views land in a bounded LRU (32 entries, 16 MiB of bytes — protocol constants) so a reopened file costs no second download. A single view larger than the byte bound is served once and never cached; refusals (403/404/413/500) reject with a `FileBytesError` carrying the status and are not cached. `url(sessionId, path, download?)` builds the raw channel URL for preview surfaces that want the browser's own decode (`<img>`, `<iframe>`), and `invalidate(sessionId, path)` drops one cached view when a session's file mutation lands. The service is fiber-owned by the runtime plugin and dies with it.
+
 ## Model Experience
 
 None, as the session object layer selects the provider/model route used by a later Host request but adds no model-visible content.
@@ -93,3 +97,4 @@ Changing the model selection can change or invalidate provider-side cache reuse;
 - **`loader.unload` is a stub** — it throws not-implemented; the client has no unload chain from fiber disposal through registration and style removal.
 - **Scope teardown is stage-driven, single-occupant today** — the staged session follows `list.current` exactly (staging is the open signal: the event window opens ⟺ the session is on stage); a removed-while-staged session's scope survives frozen until the stage moves on, not until true observer count reaches zero. Resolution (`binding()`/`scope()`) is pure addressing, render-safe; the render layer reads the current bundle through the `currentProvideInfo` observable. The staged state can widen to a multi-pane list when concurrent panes land.
 - **Value imports of this package from plugin bundles must use the `/client` subpath** — the bare package name is not in the loader externals table and inlines a second module instance, whose private scope-tag Symbol never matches.
+- **`fileBytes` views are not invalidated by session removal** — a cached view outlives its session until LRU rotation or fiber teardown; the inspector invalidates explicitly on a session's own file mutations.

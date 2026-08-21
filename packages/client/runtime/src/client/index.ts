@@ -8,6 +8,7 @@ import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type { TypertContext } from '@deepseek-ai/dsh-typert-protocol'
 import type { MaybeSnapshotSelectorHook, SnapshotSelectorHook } from '@deepseek-ai/dsh-client-ui-slots'
 import { SlotRegistry } from './slots.ts'
+import { createFileBytesService } from './files.ts'
 import { SessionRuntime } from './sessions/service.ts'
 import type { SessionListState } from './sessions/service.ts'
 import { WorkspaceRuntime } from './workspaces/service.ts'
@@ -39,6 +40,13 @@ export type { RootOwnerProps } from './slots.ts'
 export { SessionCreateError, SessionRuntime, scopeOf, workspaceTitleOf } from './sessions/service.ts'
 export { indexSubagentDescendants } from './sessions/subagent-lineage.ts'
 export type { SubagentDescendantSummary } from './sessions/subagent-lineage.ts'
+export {
+  createFileBytesService,
+  FileBytesError,
+  FILE_BYTES_MAX_BYTES,
+  FILE_BYTES_MAX_ENTRIES,
+} from './files.ts'
+export type { FileByteView, FileBytesFace, FileBytesService } from './files.ts'
 // The provide channel is shared with the client test runtime (one
 // materialization/projection implementation; no test-side mirror to drift).
 export { SessionProvideChannel } from './sessions/provide.ts'
@@ -201,6 +209,9 @@ export function apply(ctx: Context): void {
     () => workspaces.startInitialSelection(),
     'runtime: initial Workspace selection',
   )
+  // File byte facade for the conversation file inspector (raw channel +
+  // bounded LRU): fiber-owned, so it dies with the runtime fiber.
+  ctx.reflect.provide('fileBytes', createFileBytesService())
   const loop = connection.start({
     onMuxEnvelope: (envelope) => {
       sessions.handleMuxEnvelope(envelope)
