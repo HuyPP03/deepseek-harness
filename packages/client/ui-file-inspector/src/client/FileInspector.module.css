@@ -93,3 +93,24 @@
   flex: 1;
   min-width: 0;
 }
+
+.previewScroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 12px;
+}
+
+.img {
+  max-width: 100%;
+  display: block;
+  margin: 8px auto;
+}
+
+.frame {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  border: none;
+  background: var(--dsw-surface-base, #fff);
+}

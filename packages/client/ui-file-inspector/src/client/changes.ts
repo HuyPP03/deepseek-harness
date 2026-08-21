@@ -125,3 +125,27 @@ export function langForPath(path: string): string | undefined {
     default: return undefined
   }
 }
+
+/** The preview seat's kinds, by extension. */
+export type PreviewKind = 'markdown' | 'html' | 'image' | 'svg'
+
+/**
+ * Preview kind for the Preview tab from a file's extension. Images and SVG
+ * render through the raw channel's own URL (the browser decodes the bytes),
+ * HTML through a sandboxed frame on the same URL, and Markdown through the
+ * shared renderer over the read text.
+ * @param path - the file's canonical absolute path.
+ * @returns the preview kind, or null when no preview surface exists.
+ */
+export function previewKindForPath(path: string): PreviewKind | null {
+  const dot = path.lastIndexOf('.')
+  if (dot === -1 || dot === path.length - 1) return null
+  const ext = path.slice(dot + 1).toLowerCase()
+  switch (ext) {
+    case 'md': case 'markdown': return 'markdown'
+    case 'html': case 'htm': return 'html'
+    case 'svg': return 'svg'
+    case 'png': case 'jpg': case 'jpeg': case 'gif': case 'webp': case 'bmp': case 'ico': return 'image'
+    default: return null
+  }
+}

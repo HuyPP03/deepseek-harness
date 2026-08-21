@@ -34,13 +34,19 @@ const snapshotOf = (nodes: readonly ConversationNode[]): ConversationSnapshot =>
 
 /** Render the inspector with direct props over a scripted byte read. */
 type ReadResult = { bytes: Uint8Array; contentType: string; size: number }
-function renderInspector(nodes: readonly ConversationNode[], read: (path: string) => Promise<ReadResult>) {
+function renderInspector(
+  nodes: readonly ConversationNode[],
+  read: (path: string) => Promise<ReadResult>,
+  path = PATH,
+) {
   const readFile = vi.fn(read)
   const useSession = <S,>(selector: (s: ConversationSnapshot) => S): S => selector(snapshotOf(nodes))
   const props: FileInspectorProps = {
-    path: PATH,
+    path,
     cwd: '/tmp/proj',
     readFile,
+    fileUrl: (p: string) => `/api/file/${SID}/${encodeURIComponent(p)}`,
+
     useSession,
     sessionId: SID,
     useSessions: () => { throw new Error('unused') },
@@ -139,5 +145,45 @@ describe('code seat states', () => {
   it('maps non-FileBytes rejections to the unreadable state', async () => {
     renderInspector([], () => Promise.reject(new Error('boom')))
     expect(await screen.findByText('文件不可读（权限或平台错误）')).toBeTruthy()
+  })
+})
+
+describe('preview seat', () => {
+  it('defaults to the rendered markdown preview for an md file', async () => {
+    const { view } = renderInspector([], () => Promise.resolve(okBytes('# Alpha\n\nbody\n')), '/tmp/proj/note.md')
+    // Preview is the active seat on mount: the heading is rendered.
+    expect(screen.getByText('预览')).toBeTruthy()
+    expect(await screen.findByRole('heading', { name: 'Alpha' })).toBeTruthy()
+    expect(screen.getByText('body')).toBeTruthy()
+    // The code seat stays reachable under its own tab.
+    fireEvent.click(screen.getByText('代码'))
+    expect(await screen.findByText(lineText('# Alpha'))).toBeTruthy()
+    expect(view.queryByRole('heading')).toBeNull()
+  })
+
+  it('serves an image through the raw channel URL with no code seat', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('bytes')), '/tmp/proj/pix.png')
+    const img = await screen.findByRole('img', { name: '/tmp/proj/pix.png' })
+    expect(img.getAttribute('src')).toBe(`/api/file/s1/${encodeURIComponent('/tmp/proj/pix.png')}`)
+    // A pure image earns no Code tab and no tab strip at all.
+    expect(screen.queryByText('代码')).toBeNull()
+    expect(screen.queryByRole('tablist')).toBeNull()
+  })
+
+  it('serves HTML through a sandboxed frame on the raw channel URL', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('<p>x</p>')), '/tmp/proj/page.html')
+    const frame = await screen.findByTitle('/tmp/proj/page.html')
+    expect(frame.tagName).toBe('IFRAME')
+    expect(frame.getAttribute('src')).toBe(`/api/file/s1/${encodeURIComponent('/tmp/proj/page.html')}`)
+    expect(frame.getAttribute('sandbox')).toBe('')
+    // The source stays available under the Code tab.
+    fireEvent.click(screen.getByText('代码'))
+    expect(await screen.findByText(lineText('<p>x</p>'))).toBeTruthy()
+  })
+
+  it('serves an SVG through the raw channel URL as an image', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('<svg></svg>')), '/tmp/proj/icon.svg')
+    const img = await screen.findByRole('img', { name: '/tmp/proj/icon.svg' })
+    expect(img.getAttribute('src')).toBe(`/api/file/s1/${encodeURIComponent('/tmp/proj/icon.svg')}`)
   })
 })

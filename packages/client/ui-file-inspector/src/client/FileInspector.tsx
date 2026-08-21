@@ -1,16 +1,18 @@
-// FileInspector: the conversation.details.file occupant. Two seats for one
-// selected file — Changes (the latest diff card touching it in the window,
-// drawn through the shared DiffBlock) and Code (the whole file's bytes over
-// the raw channel, virtualized with line numbers and shared shiki
-// highlighting). The tab state is component-local: the details panel keys
-// the seat by the selected path, so a new file mounts a fresh component.
+// FileInspector: the conversation.details.file occupant. Up to three seats
+// for one selected file — Preview (Markdown rendered, or the raw channel's
+// own URL on an image/SVG/HTML element), Changes (the latest diff card
+// touching it in the window, drawn through the shared DiffBlock), and Code
+// (the whole file's bytes over the raw channel, virtualized with line
+// numbers and shared shiki highlighting). The tab state is component-local:
+// the details panel keys the seat by the selected path, so a new file mounts
+// a fresh component.
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { clsx } from 'clsx'
-import { DiffBlock } from '@deepseek-ai/dsh-client-ui-primitives'
+import { DiffBlock, MarkdownText } from '@deepseek-ai/dsh-client-ui-primitives'
 import { FileBytesError } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
-import { latestFileDiffs, langForPath } from './changes.ts'
+import { latestFileDiffs, langForPath, previewKindForPath, type PreviewKind } from './changes.ts'
 import { VirtualLines } from './VirtualLines.tsx'
 import css from './FileInspector.module.css'
 
@@ -32,12 +34,14 @@ const BINARY_SNIFF_BYTES = 8 * 1024
  *   byte read, and the locale.
  * @returns the tab strip plus the active seat.
  */
-export function FileInspector({ path, cwd, readFile, useSession, t }: FileInspectorProps) {
+export function FileInspector({ path, cwd, readFile, fileUrl, useSession, t }: FileInspectorProps) {
   // The nodes list is a structurally shared reference: it changes only when
   // the window actually moves, so the memo recomputes on real changes.
   const nodes = useSession((s: ConversationSnapshot) => s.nodes)
   const changes = useMemo(() => latestFileDiffs(nodes, path, cwd), [nodes, path, cwd])
-  const [tab, setTab] = useState<'changes' | 'code'>(changes !== null ? 'changes' : 'code')
+  const previewKind = useMemo(() => previewKindForPath(path), [path])
+  const [tab, setTab] = useState<'preview' | 'changes' | 'code'>(
+    previewKind !== null ? 'preview' : changes !== null ? 'changes' : 'code')
   const [code, setCode] = useState<CodeState>({ kind: 'loading' })
 
   const loadCode = useCallback(() => {
@@ -63,11 +67,26 @@ export function FileInspector({ path, cwd, readFile, useSession, t }: FileInspec
 
   useEffect(() => loadCode(), [loadCode])
 
-  const tabs: { id: 'changes' | 'code'; label: string }[] = [
+  // A pure image earns no Code tab: its bytes are not a text view.
+  const tabs: { id: 'preview' | 'changes' | 'code'; label: string }[] = [
+    ...(previewKind !== null ? [{ id: 'preview' as const, label: t('tab.preview') }] : []),
     ...(changes !== null ? [{ id: 'changes' as const, label: t('tab.changes') }] : []),
-    { id: 'code' as const, label: t('tab.code') },
+    ...(previewKind !== 'image' ? [{ id: 'code' as const, label: t('tab.code') }] : []),
   ]
-  const active: 'changes' | 'code' = tab === 'changes' && changes !== null ? 'changes' : 'code'
+  const active: 'preview' | 'changes' | 'code' =
+    tabs.some(entry => entry.id === tab) ? tab : tabs[0]?.id ?? 'code'
+
+  // The Code seat's four states: streaming, a raw-channel refusal, a binary
+  // sniff, and an empty file.
+  const codeSeat = code.kind === 'loading'
+    ? <div className={css.state}>{t('code.loading')}</div>
+    : code.kind === 'error'
+      ? <div className={css.state}>{code.status === 413 ? t('code.tooLarge') : t('code.unreadable')}</div>
+      : code.binary
+        ? <div className={css.state}>{t('code.binary')}</div>
+        : code.text === ''
+          ? <div className={css.state}>{t('code.empty')}</div>
+          : <VirtualLines code={code.text} lang={langForPath(path)} />
 
   return (
     <div className={css.root}>
@@ -88,18 +107,52 @@ export function FileInspector({ path, cwd, readFile, useSession, t }: FileInspec
         </div>
       )}
       <div className={css.seat}>
-        {active === 'changes' && changes !== null
-          ? <DiffBlock diffs={changes} />
-          : code.kind === 'loading'
-            ? <div className={css.state}>{t('code.loading')}</div>
-            : code.kind === 'error'
-              ? <div className={css.state}>{code.status === 413 ? t('code.tooLarge') : t('code.unreadable')}</div>
-              : code.binary
-                ? <div className={css.state}>{t('code.binary')}</div>
-                : code.text === ''
-                  ? <div className={css.state}>{t('code.empty')}</div>
-                  : <VirtualLines code={code.text} lang={langForPath(path)} />}
+        {active === 'preview' && previewKind !== null
+          ? <PreviewSeat kind={previewKind} path={path} fileUrl={fileUrl} code={code} t={t} />
+          : active === 'changes' && changes !== null
+            ? <DiffBlock diffs={changes} />
+            : codeSeat}
       </div>
     </div>
   )
+}
+
+/**
+ * The preview seat: the read text through the shared Markdown renderer, or
+ * the raw channel's own URL on an image / SVG / sandboxed frame (the browser
+ * decodes the bytes without a JS copy).
+ * @param props - the preview kind, the file's path, the raw URL callback, the
+ *   shared code state (Markdown reuses the text read), and the locale.
+ * @returns the preview surface.
+ */
+function PreviewSeat({ kind, path, fileUrl, code, t }: {
+  kind: PreviewKind
+  path: string
+  fileUrl: (path: string) => string
+  code: CodeState
+  t: FileInspectorProps['t']
+}) {
+  if (kind === 'markdown') {
+    if (code.kind !== 'ok' || code.binary) {
+      return <div className={css.state}>{
+        code.kind === 'loading'
+          ? t('code.loading')
+          : code.kind === 'error'
+            ? (code.status === 413 ? t('code.tooLarge') : t('code.unreadable'))
+            : t('code.binary')
+      }</div>
+    }
+    if (code.text === '') return <div className={css.state}>{t('code.empty')}</div>
+    return <div className={css.previewScroll}><MarkdownText text={code.text} /></div>
+  }
+  if (kind === 'html') {
+    return <iframe
+      src={fileUrl(path)}
+      title={path}
+      // No allow-list at all: a file preview must not run its own scripts.
+      sandbox=""
+      className={css.frame}
+    />
+  }
+  return <img src={fileUrl(path)} alt={path} className={css.img} />
 }

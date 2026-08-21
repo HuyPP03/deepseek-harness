@@ -28,4 +28,12 @@ export interface FileInspectorInjected {
    * @returns the bytes, content type, and size, or a FileBytesError on refusal.
    */
   readFile: (path: string, signal?: AbortSignal) => Promise<{ bytes: Uint8Array; contentType: string; size: number }>
+  /**
+   * Same-origin raw channel URL of one file. Preview surfaces (image, SVG,
+   * HTML frame) point the element's src here directly: the browser decodes
+   * the bytes without a JS copy.
+   * @param path - the file's canonical absolute path.
+   * @returns the raw channel URL string.
+   */
+  fileUrl: (path: string) => string
 }

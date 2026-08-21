@@ -4,7 +4,7 @@
 
 import { describe, expect, it } from 'vitest'
 import type { ConversationNode, ToolResultNode } from '@deepseek-ai/dsh-client-runtime/client'
-import { langForPath, latestFileDiffs, resolveDiffPath } from '../src/client/changes.ts'
+import { langForPath, latestFileDiffs, previewKindForPath, resolveDiffPath } from '../src/client/changes.ts'
 
 // The view seats take untyped material: the malformed-payload tests pass wire
 // shapes the host would not produce, and both seats share the diff-card shape.
@@ -117,5 +117,24 @@ describe('langForPath', () => {
     expect(langForPath('/p/Makefile')).toBeUndefined()
     expect(langForPath('/p/trailing.')).toBeUndefined()
     expect(langForPath('/p/unknown.xyz')).toBeUndefined()
+  })
+})
+
+describe('previewKindForPath', () => {
+  it('maps previewable extensions to their seat kinds', () => {
+    expect(previewKindForPath('/p/notes.md')).toBe('markdown')
+    expect(previewKindForPath('/p/notes.MARKDOWN')).toBe('markdown')
+    expect(previewKindForPath('/p/page.html')).toBe('html')
+    expect(previewKindForPath('/p/page.HTM')).toBe('html')
+    expect(previewKindForPath('/p/icon.svg')).toBe('svg')
+    expect(previewKindForPath('/p/pix.png')).toBe('image')
+    expect(previewKindForPath('/p/pix.jpg')).toBe('image')
+    expect(previewKindForPath('/p/pix.webp')).toBe('image')
+  })
+  it('returns null for non-preview extensions', () => {
+    expect(previewKindForPath('/p/main.ts')).toBeNull()
+    expect(previewKindForPath('/p/text.txt')).toBeNull()
+    expect(previewKindForPath('/p/Makefile')).toBeNull()
+    expect(previewKindForPath('/p/trailing.')).toBeNull()
   })
 })

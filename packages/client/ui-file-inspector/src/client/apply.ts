@@ -50,6 +50,7 @@ export function apply(ctx: ClientContext): void {
     locale: NS,
     inject: (sessionId: SessionId) => ({
       readFile: (path: string, signal?: AbortSignal) => fileBytes.read(sessionId, path, signal),
+      fileUrl: (path: string) => fileBytes.url(sessionId, path),
     }),
   }, FileInspector))
 }
