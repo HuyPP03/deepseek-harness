@@ -226,6 +226,11 @@ body {
   --dsw-alias-state-success-primary: var(--dsw-static-green-500);
   --dsw-alias-state-success-secondary: var(--dsw-static-green-400);
   --dsw-alias-state-success-tertiary: var(--dsw-static-green-100);
+  /* Diff card / inspector: whole-line wash + stronger intra-line mark. */
+  --dsw-alias-diff-add-bg: var(--dsw-static-green-100);
+  --dsw-alias-diff-del-bg: var(--dsw-static-red-50);
+  --dsw-alias-diff-add-strong: var(--dsw-static-green-400);
+  --dsw-alias-diff-del-strong: var(--dsw-static-red-400);
   --dsw-alias-state-warn-label: var(--dsw-static-amber-600);
   --dsw-alias-state-warn-primary: var(--dsw-static-amber-500);
   --dsw-alias-state-warn-secondary: var(--dsw-static-amber-400);
@@ -318,6 +323,11 @@ body[data-ds-dark-theme] {
   --dsw-alias-state-success-primary: var(--dsw-static-green-500);
   --dsw-alias-state-success-secondary: var(--dsw-static-green-400);
   --dsw-alias-state-success-tertiary: var(--dsw-static-green-900);
+  /* Diff card / inspector: whole-line wash + stronger intra-line mark. */
+  --dsw-alias-diff-add-bg: var(--dsw-static-green-900);
+  --dsw-alias-diff-del-bg: var(--dsw-static-red-900);
+  --dsw-alias-diff-add-strong: var(--dsw-static-green-400);
+  --dsw-alias-diff-del-strong: var(--dsw-static-red-400);
   --dsw-alias-state-warn-label: var(--dsw-static-amber-600);
   --dsw-alias-state-warn-primary: var(--dsw-static-amber-500);
   --dsw-alias-state-warn-secondary: var(--dsw-static-amber-400);

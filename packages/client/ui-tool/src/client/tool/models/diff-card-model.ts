@@ -50,11 +50,24 @@ function narrowDiffs(diffs: unknown): DiffHunk[] | null {
   const out: DiffHunk[] = []
   for (const hunk of diffs) {
     if (typeof hunk !== 'object' || hunk === null) return null
-    const { path, oldText, newText } = hunk as Record<string, unknown>
+    const { path, oldText, newText, oldStart, newStart, lang } = hunk as Record<string, unknown>
     if (typeof path !== 'string') return null
     if (oldText !== null && typeof oldText !== 'string') return null
     if (typeof newText !== 'string') return null
-    out.push({ path, oldText, newText })
+    // Optional position / language fields: accept when well-typed, reject the
+    // whole payload when present but malformed (same stance as tool-fs's
+    // diffsFromMeta — a string in a line-number seat must not reach DiffBlock).
+    if (oldStart !== undefined && typeof oldStart !== 'number') return null
+    if (newStart !== undefined && typeof newStart !== 'number') return null
+    if (lang !== undefined && typeof lang !== 'string') return null
+    out.push({
+      path,
+      oldText,
+      newText,
+      ...(oldStart === undefined ? {} : { oldStart }),
+      ...(newStart === undefined ? {} : { newStart }),
+      ...(lang === undefined ? {} : { lang }),
+    })
   }
   return out
 }

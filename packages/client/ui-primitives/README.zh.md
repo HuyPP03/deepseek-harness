@@ -26,7 +26,7 @@
 
 ## Diff 渲染
 
-`DiffBlock` 将一次文件改动渲染为内联 diff 表层：每个文件一个粗体路径头、删除行（`- `，error token）在新增行（`+ `，success token）之上、同文件第二个 hunk 前一个 `⋯` gap，以及暗色 `└ +A -R · N file(s)` 页脚。各行使用 `white-space: pre` 并横向滚动，因此源码行保留其缩进而不软换行；超过 `maxLines`（默认 16，与 `TerminalBlock` 相同的切分算法）时折叠为头部切片加尾部切片，由展开按钮控制。新建（`oldText: null`）没有删除侧。复制控件写入带前缀的 diff 文本（路径头、`- `/`+ ` 行、gap），使多文件复制保持可归属，并浮在右上角而非占据自己的 banner 行。几何结构与 `CodeBlock`/`TerminalBlock` 一致。原理：[Web diff 卡片笔记](../../../.agents/notes/implemented/feature/2026-07-30-web-diff-card.md)。
+`DiffBlock` 将一次文件改动渲染为内联 diff 表层：每个文件一个粗体路径头、按行对齐的统一正文——中性 context 行、删除侧洗色上的删除行（error-token 符号）、新增侧洗色上的新增行（success-token 符号）——同文件第二个 hunk 前一个 `⋯` gap，以及只统计变更行的暗色 `└ +A -R · N file(s)` 页脚。当 hunk 带有 1-based 起始行（`oldStart`/`newStart`）时，正文带行号 gutter；只标注一侧的 hunk 让另一侧的行保持无编号的占位列，没有任何 hunk 标注行号时不绘制 gutter 列。每个 hunk 的两侧通过共享 shiki 路径按 `lang` 提示高亮——context 属于两侧，因此每侧各自一次性 tokenize 自己的行，跨行字符串或注释保留其语法上下文；没有提示的 hunk 渲染为纯文本。等长的删/增相邻块是一对修改行，其中精确变更的词段（`diffWordsWithSpace`，超过 `INTRA_LINE_MAX` 字符时跳过）获得更强的标记，该标记切分 token span，使标记保留其周围的 token 颜色。不等长的相邻块退化为独立的删除块和新增块。各行使用 `white-space: pre` 并横向滚动，因此源码行保留其缩进而不软换行；超过 `maxLines`（默认 16，与 `TerminalBlock` 相同的切分算法）时折叠为头部切片加尾部切片，由展开按钮控制。新建（`oldText: null`）没有删除侧。复制控件写入带前缀的 diff 文本（路径头、`- `/`+ ` 行、两空格 context、gap），使多文件复制保持可归属，并浮在右上角而非占据自己的 banner 行。几何结构与 `CodeBlock`/`TerminalBlock` 一致。原理：[Web diff 卡片笔记](../../../.agents/notes/implemented/feature/2026-07-30-web-diff-card.md)。
 
 ## 搜索结果
 

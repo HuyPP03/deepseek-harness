@@ -632,12 +632,14 @@ function presentCall(name: string, argsRaw: string): ToolCallView | undefined {
     case 'edit':
       // The multi-hunk sample (turn 64) is keyed on its file_path, so the two
       // scattered hunks share one path header and the card draws the `⋯` gap.
+      // The host's `langFromPath` maps the `.ts` extension to `ts`, so the
+      // mirror carries the hint and the card highlights both sides.
       if (str(args.file_path) === 'src/config.ts') {
         return {
           card: 'diff', title: `Edit ${str(args.file_path)}`,
           diffs: [
-            { path: str(args.file_path), oldText: 'const timeout = 30', newText: 'const timeout = 60' },
-            { path: str(args.file_path), oldText: 'retries: 1', newText: 'retries: 3' },
+            { path: str(args.file_path), oldText: 'const timeout = 30', newText: 'const timeout = 60', lang: 'ts' },
+            { path: str(args.file_path), oldText: 'retries: 1', newText: 'retries: 3', lang: 'ts' },
           ],
         }
       }

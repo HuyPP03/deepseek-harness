@@ -22,7 +22,7 @@ Replace the optional-field bag with a **`card`-tagged discriminated union**. A t
 
 ```ts ignore-check
 type FileLocation = { path: string; line?: number }
-type FileDiff = { path: string; oldText: string | null; newText: string } // oldText null ⇒ new file
+type FileDiff = { path: string; oldText: string | null; newText: string; oldStart?: number; newStart?: number; lang?: string } // oldText null ⇒ new file; positions 1-based hunk starts, lang a grammar hint — omitted when the presenter lacks a before-image
 
 // presentCall → ToolCallView
 type ToolCallView = GenericCallView | TerminalCallView | DiffCallView

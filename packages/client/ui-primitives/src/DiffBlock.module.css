@@ -7,6 +7,8 @@
 .block {
   --dsl-diff-radius: 12px;
   --dsl-diff-line-height: 22px;
+  --dsl-diff-gutter: 48px;
+  --dsl-diff-sign: 18px;
 
   position: relative;
   margin: 16px 0;
@@ -34,16 +36,42 @@
 }
 
 .body {
-  padding: 12px 14px;
+  padding: 12px 0;
   font: var(--dsw-font-markdown-code-block);
   overflow-x: auto;
   overflow-y: hidden;
 }
 
-/* No wrapping, no word-break: a diff is read by its indentation. */
+/* One body row: optional gutter, a sign column, then the content. No wrapping —
+   a source line's leading whitespace is meaningful and scrolls sideways. */
 .line {
+  display: flex;
   min-height: var(--dsl-diff-line-height);
+  line-height: var(--dsl-diff-line-height);
   white-space: pre;
+}
+
+.gutter {
+  flex: none;
+  width: var(--dsl-diff-gutter);
+  padding-right: 8px;
+  text-align: right;
+  color: var(--dsw-alias-label-tertiary);
+  user-select: none;
+}
+
+.sign {
+  flex: none;
+  width: var(--dsl-diff-sign);
+  text-align: center;
+  user-select: none;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding-right: 14px;
+  color: var(--dsw-alias-label-primary);
 }
 
 /* A file header: the path in the primary tone, set apart by weight. The copy
@@ -53,39 +81,51 @@
 .path {
   color: var(--dsw-alias-label-primary);
   font-weight: 600;
+  padding: 0 14px;
   padding-right: 56px;
 }
 
 /* A same-file second hunk's separator (a scattered edit), in the dim tone. */
 .gap {
   color: var(--dsw-alias-label-tertiary);
+  padding: 0 14px;
 }
 
-/* The diff's own meaning-carrying colors: removed on the error token, added on
-   the success token. A `- `/`+ ` prefix is drawn here so a copied line and the
-   shown line agree, and so the sign reads without relying on color alone. */
-.del::before {
-  content: '- ';
+/* Whole-line wash + sign color for the removed / added sides. The sign lives in
+   its own column (not a ::before) so a gutter can sit beside it; the meaning-
+   carrying colors still resolve through the shared state tokens. */
+.del .sign {
   color: var(--dsw-alias-state-error-primary);
 }
 
 .del {
-  color: var(--dsw-alias-state-error-primary);
+  background: var(--dsw-alias-diff-del-bg);
 }
 
-.add::before {
-  content: '+ ';
+.add .sign {
   color: var(--dsw-alias-state-success-primary);
 }
 
 .add {
-  color: var(--dsw-alias-state-success-primary);
+  background: var(--dsw-alias-diff-add-bg);
+}
+
+/* Intra-line mark: the exact changed run inside a modified line, stronger than
+   the whole-line wash so a reader sees which tokens moved. */
+.strongDel {
+  background: var(--dsw-alias-diff-del-strong);
+  border-radius: 2px;
+}
+
+.strongAdd {
+  background: var(--dsw-alias-diff-add-strong);
+  border-radius: 2px;
 }
 
 .expand {
   display: block;
   width: 100%;
-  padding: 0;
+  padding: 0 14px;
   border: none;
   background-color: transparent;
   color: var(--dsw-alias-label-tertiary);
