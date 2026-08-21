@@ -692,22 +692,36 @@ export function fixtureUserPrompts(fixtureText: string): string[] {
 /**
  * Realize a recorded seed fixture against one scaffold: substitute the
  * `{{sessionId}}`/`{{cwd}}` placeholders and rewrite the recorded cwd to the
- * scaffold's workspace. Idempotent, so a caller may realize early (e.g. to
- * price content exactly as the host will fold it) and still pass the result
- * through {@link seedSession}.
+ * scaffold's workspace. With `chatCwd` the `{{chatCwd}}` placeholder takes the
+ * session's chat sandbox instead (no recorded-cwd rewrite: the seed is
+ * authored for that directory). Idempotent, so a caller may realize early
+ * (e.g. to price content exactly as the host will fold it) and still pass the
+ * result through {@link seedSession}.
  * @param scaffold - the booted scaffold whose workspace the seed targets.
  * @param fixtureText - the committed seed fixture text.
  * @param id - the session id the seed is realized for.
+ * @param options - `chatCwd`: resolve `{{chatCwd}}` to the session's chat sandbox directory.
  * @returns the realized fixture text.
  */
-export function realizeSeedFixture(scaffold: WebScaffold, fixtureText: string, id: string): string {
+export function realizeSeedFixture(
+  scaffold: WebScaffold,
+  fixtureText: string,
+  id: string,
+  options: { chatCwd?: boolean } = {},
+): string {
   const realized = fixtureText
     .split('{{sessionId}}').join(id)
     .split('{{cwd}}').join(scaffold.workspaceCwd)
+    .split('{{chatCwd}}').join(chatCwdFor(scaffold, id))
   const fixtureCwd = (JSON.parse(realized.split('\n', 1)[0]!) as { cwd?: string }).cwd
-  return fixtureCwd === undefined
+  return options.chatCwd === true || fixtureCwd === undefined
     ? realized
     : realized.split(fixtureCwd).join(scaffold.workspaceCwd)
+}
+
+/** The chat sandbox directory a workspace-less session runs in. */
+export function chatCwdFor(scaffold: WebScaffold, id: string): string {
+  return join(scaffold.harnessHome, 'chat', id)
 }
 
 export async function seedSession(
@@ -715,8 +729,9 @@ export async function seedSession(
   fixtureText: string,
   id: string,
   agentPreset?: string,
+  options: { chatCwd?: boolean; cwd?: string } = {},
 ): Promise<SessionId> {
-  const events = parseSessionLog(realizeSeedFixture(scaffold, fixtureText, id))
+  const events = parseSessionLog(realizeSeedFixture(scaffold, fixtureText, id, { chatCwd: options.chatCwd ?? false }))
   if (events.length === 0) throw new Error('seed fixture has no events')
   const last = events[events.length - 1]!
   // An open final turn would be mutated by resume's crash repair on first
@@ -726,7 +741,7 @@ export async function seedSession(
     version: SESSION_FORMAT_VERSION,
     id: SessionId(id),
     createdAt: Date.now() - 60_000,
-    cwd: scaffold.workspaceCwd,
+    cwd: options.cwd ?? scaffold.workspaceCwd,
     delegationDepth: 0,
     ...agentPreset === undefined ? {} : { agentPreset },
   }

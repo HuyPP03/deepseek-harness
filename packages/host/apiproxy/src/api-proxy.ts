@@ -734,6 +734,13 @@ export interface ApiProxyDefaults {
   saveDefaultModelSelection?: (selection: ModelSelection) => Promise<void>
   /** Default project directory for new sessions whose create request carries no cwd. */
   cwd: string
+  /**
+   * Per-session default project directory for a new chat session — a create
+   * request carrying neither a workspace nor a cwd. The gateway maps a chat
+   * to its own sandbox under the harness home; absent, the flat `cwd` default
+   * answers.
+   */
+  chatCwdFor?: (sessionId: SessionId) => string
   /** Native open-with-default-application; injectable for carrier tests. */
   openPath?: (path: string, signal: AbortSignal) => Promise<void>
   /** Native text-editor handoff; injectable for settings-document tests. */
@@ -2325,7 +2332,8 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             })
           }
         }
-        const cwd = workspace?.path ?? request.payload.cwd ?? defaults.cwd
+        const cwd = workspace?.path ?? request.payload.cwd
+          ?? (defaults.chatCwdFor === undefined ? defaults.cwd : defaults.chatCwdFor(sessionId))
         const requestedPreset = request.payload.agentPreset
         // Reference projects are validated before the create commits: an
         // unknown id, a self-reference, or a set over the cap must not leave

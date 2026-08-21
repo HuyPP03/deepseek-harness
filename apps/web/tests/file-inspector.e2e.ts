@@ -9,20 +9,22 @@
 // Each scenario owns a scaffold: a seeded Session's sidebar row is labeled by
 // its workspace directory, so two seeds sharing one workspace are not
 // distinguishable by row.
-import { copyFile, readFile, writeFile } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
 import type { Browser, Page } from 'playwright'
 import { chromium } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it, onTestFailed } from 'vitest'
 import {
-  launchWebScaffold, seedSession, watchConsole, webSnapshotMode,
+  chatCwdFor, launchWebScaffold, seedSession, watchConsole, webSnapshotMode,
   type WebScaffold,
 } from './scaffold.ts'
 import { connectFreshWorkspace, newEnglishPage, saveFailureShot } from './support.ts'
 
 const CODE_FIXTURE = fileURLToPath(new URL('./snapshots/seeded-history/seed.jsonl', import.meta.url))
 const PREVIEW_FIXTURE = fileURLToPath(new URL('./snapshots/file-inspector-preview/seed.jsonl', import.meta.url))
+const CHAT_FIXTURE = fileURLToPath(new URL('./snapshots/chat-artifacts/seed.jsonl', import.meta.url))
+const CHAT_SEED_ID = 'chat-artifacts-seed'
 const DOCX_FIXTURE = fileURLToPath(new URL('../../../packages/client/ui-file-inspector/tests/fixtures/hello.docx', import.meta.url))
 const MODE = webSnapshotMode()
 
@@ -204,6 +206,65 @@ describe.skipIf(MODE === 'record')('web e2e: file inspector preview seat', () =>
       expect(rawRequests).toContain(
         `${scaffold.baseUrl}/api/file/file-inspector-preview-seed/${encodeURIComponent(`${scaffold.workspaceCwd}/${name}`)}`)
     }
+    expect(tripwire.pageErrors).toEqual([])
+    expect(tripwire.warnings).toEqual([])
+  }, 90_000)
+})
+
+describe.skipIf(MODE === 'record')('web e2e: chat session artifacts', () => {
+  let scaffold: WebScaffold
+  let browser: Browser
+  let page: Page
+  let tripwire: ReturnType<typeof watchConsole>
+  let chatDir: string
+
+  beforeAll(async () => {
+    const booted = await launchWebScaffold({})
+    scaffold = booted
+    chatDir = chatCwdFor(scaffold, CHAT_SEED_ID)
+    // The write row claims report.md was created in the session cwd: the
+    // chat sandbox — materialize it for the inspector to read.
+    await mkdir(chatDir, { recursive: true })
+    await writeFile(join(chatDir, 'report.md'), '# Report\n\nQuarter notes.\n')
+    await seedSession(scaffold, await readFile(CHAT_FIXTURE, 'utf8'), CHAT_SEED_ID, undefined,
+      { chatCwd: true, cwd: chatDir })
+    browser = await chromium.launch()
+    page = await newEnglishPage(browser)
+    tripwire = watchConsole(page)
+    await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
+    await appFrame(page).waitFor({ timeout: 30_000 })
+    await connectFreshWorkspace(page, scaffold.workspaceCwd)
+  }, 120_000)
+
+  afterAll(async () => {
+    await browser?.close()
+    await scaffold?.close()
+  })
+
+  it('previews a file created in a workspace-less chat and sandboxes fresh chats', async () => {
+    onTestFailed(() => saveFailureShot(page, 'web-e2e-chat-artifacts'))
+    await openSeeded(page)
+    await page.getByText('DONE', { exact: true }).waitFor({ timeout: 15_000 })
+
+    // The write row's summary is a path link resolving against the chat
+    // sandbox cwd: clicking it opens the inspector on the created file.
+    await page.getByRole('button', { name: 'report.md', exact: true }).click()
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(480)
+    await expect.poll(async () => await page.getByRole('tab', { name: 'Preview' }).count(), { timeout: 5_000 }).toBe(1)
+    await expect.poll(async () => await page.getByRole('heading', { name: 'Report' }).count(), { timeout: 5_000 }).toBe(1)
+    await page.getByRole('button', { name: 'Close details' }).click()
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
+
+    // A fresh chat mints through the host's own fallback: the new session's
+    // cwd is its own sandbox under the harness home.
+    const before = new Set(scaffold.ctx.sessions.list().map(session => String(session.header.id)))
+    const addedChats = () =>
+      scaffold.ctx.sessions.list().filter(session => !before.has(String(session.header.id)))
+    await page.getByRole('button', { name: 'New chat' }).first().click()
+    await expect.poll(async () => addedChats().length, { timeout: 15_000 }).toBe(1)
+    const added = addedChats().at(0)
+    expect(added?.header.cwd).toBe(chatCwdFor(scaffold, String(added?.header.id ?? '')))
+
     expect(tripwire.pageErrors).toEqual([])
     expect(tripwire.warnings).toEqual([])
   }, 90_000)
