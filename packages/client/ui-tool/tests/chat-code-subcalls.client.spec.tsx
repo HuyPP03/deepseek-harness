@@ -5,7 +5,7 @@
 // always-visible nested rows through the SAME keyed toolview hole — the bash
 // sub-call lands in the bash sample plugin's registration exactly like a
 // top-level bash row, unregistered sub-tools fall back to GenericToolCard —
-// and a file sub-row click opens the host path. Running parents
+// and a file sub-row click opens the file inspector. Running parents
 // (runningCalls) nest their so-far dispatches the same way.
 
 import { Context } from '@deepseek-ai/cordis'
@@ -262,7 +262,7 @@ describe('run_code sub-calls through the real chat machinery', () => {
     expect(nested).not.toBeNull()
   })
 
-  it('a file sub-row click opens the host path; bash sub-rows do not open details', async () => {
+  it('a file sub-row click opens the file inspector; bash sub-rows do not', async () => {
     const parent = 'call-64'
     const subCalls = [
       subCall(11, parent, 1, 'read', { path: 'notes/demo.txt' }, 'ok'),
@@ -271,12 +271,10 @@ describe('run_code sub-calls through the real chat machinery', () => {
     const b = await bench(snapshotWith([codeResult(10, parent)], subCalls))
     const view = mountApp(b.slots)
     view.getByText('notes/demo.txt').click()
-    expect(b.layout.openDetails).not.toHaveBeenCalled()
-    await vi.waitFor(() => {
-      expect(b.workspaces.openPath).toHaveBeenCalledWith('notes/demo.txt')
-    })
+    expect(b.layout.openDetails).toHaveBeenCalledTimes(1)
+    expect(b.workspaces.openPath).not.toHaveBeenCalled()
     view.getByText('List notes').click()
-    expect(b.layout.openDetails).not.toHaveBeenCalled()
+    expect(b.layout.openDetails).toHaveBeenCalledTimes(1)
   })
 
   it('a RUNNING run_code call nests its so-far dispatches under the spinner row', async () => {

@@ -48,6 +48,13 @@
   cursor: pointer;
 }
 
+.chipIcon {
+  display: inline-block;
+  vertical-align: -2px;
+  margin-right: 4px;
+  color: var(--dsw-alias-label-secondary);
+}
+
 .file:hover {
   color: var(--dsw-alias-label-primary);
   text-decoration: underline;

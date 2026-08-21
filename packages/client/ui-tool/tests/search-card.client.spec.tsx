@@ -186,7 +186,7 @@ describe('searchCardModel', () => {
 
 describe('chat row search body (GenericToolCard fallback)', () => {
   const ownerProps = (block: RunningToolCall | ToolResultNode, toolName: string): GenericToolCardProps => ({
-    callId: 'c1', toolName, block, openFile: vi.fn(), t,
+    callId: 'c1', toolName, block, openFile: vi.fn(), openDetails: vi.fn(), t,
   })
   /** The whole summary row is the expand toggle (ToolRow's unified interaction). */
   const toggleRow = (view: { container: HTMLElement }) => {
@@ -236,7 +236,7 @@ describe('chat row search body (GenericToolCard fallback)', () => {
 
 describe('SearchRow keyed card', () => {
   const rowProps = (block: RunningToolCall | ToolResultNode, toolName: string): SearchRowProps => ({
-    callId: 'c1', toolName, block, openFile: vi.fn(), sessionId: SID, t,
+    callId: 'c1', toolName, block, openFile: vi.fn(), openDetails: vi.fn(), sessionId: SID, t,
   } as unknown as SearchRowProps)
 
   /** The whole summary row is the expand toggle (ToolRow's unified interaction). */

@@ -337,6 +337,8 @@ export interface TurnTailOwnerProps {
    * view resolves relative paths against the session cwd).
    */
   openFile: (path: string) => void
+  /** Open the details panel on a file selection (the inspector seat). */
+  openDetails: (target: SelectionTarget) => void
 }
 
 /**
@@ -368,6 +370,8 @@ export interface ChatNodeOwnerProps {
   /** Session workspace root; Tool summaries display paths relative to it. */
   cwd?: string | undefined
   openFile: (path: string) => void
+  /** Open the details panel on a file selection (the inspector seat). */
+  openDetails: (target: SelectionTarget) => void
   inspectCall: (callId: CallId) => void
   forkAt: (seq: number) => void
   /** Resolve a session-authorized historical image for inline display. */

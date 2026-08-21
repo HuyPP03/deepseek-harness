@@ -1,11 +1,12 @@
 // ProducedFiles: the produced-file row a finished turn ends with. The paths
 // come pre-matched by the turn-tail chain from the mutation tools'
-// follow-along locations, never from the closing prose. Clicking one goes
-// through the same openFile the tool rows use — the Host's own opener, on the
-// Host machine.
+// follow-along locations, never from the closing prose. Clicking a chip
+// opens the file in the details panel's inspector seat (the same gesture the
+// diff and read rows use); the folder reveal keeps the Host opener.
 
 import { useLayoutEffect, useRef, useState } from 'react'
 import type { HostDescriptionSource } from '@deepseek-ai/dsh-client-connection/client'
+import { IconBrowseOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { InjectFace, PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import type { TurnTailOwnerProps } from '@deepseek-ai/dsh-client-ui-conversation/client'
 import { basename } from './turn-deliverables.ts'
@@ -56,8 +57,8 @@ export interface ProducedFilesInjected {
   }
 }
 
-/** Matched paths plus the opener, locale, and injected Host capability. */
-export type ProducedFilesProps = Pick<TurnTailOwnerProps, 'openFile'> & {
+/** Matched paths plus the openers, locale, and injected Host capability. */
+export type ProducedFilesProps = Pick<TurnTailOwnerProps, 'openFile' | 'openDetails' | 'seq'> & {
   matched: readonly string[]
 } & PropsLocale<typeof NS> & InjectFace<ProducedFilesInjected>
 
@@ -71,7 +72,7 @@ function moreLabel(t: ProducedFilesProps['t'], count: number): string {
  * @returns The produced-files row.
  */
 export function ProducedFiles({
-  matched: paths, openFile, isLoopback, useHostDescription, t,
+  matched: paths, seq, openFile, openDetails, isLoopback, useHostDescription, t,
 }: ProducedFilesProps) {
   const hostCanOpenPath = useHostDescription(description => description?.canOpenPath === true)
   const canOpenPath = isLoopback && hostCanOpenPath
@@ -125,8 +126,9 @@ export function ProducedFiles({
             // that share a basename; the chip itself stays short.
             title={path}
             aria-label={t('produced.open', { name: path })}
-            onClick={() => { openFile(path) }}
+            onClick={() => { openDetails({ turnSeq: seq, filePath: path }) }}
           >
+            <IconBrowseOutline16 size={12} className={css.chipIcon} aria-hidden="true" />
             {basename(path)}
           </button>
         ))}

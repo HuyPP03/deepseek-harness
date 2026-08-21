@@ -1,6 +1,7 @@
 /** Tool UI slot declarations and their composed component props. */
 import type { PropsLocale, PropsRenderSlots, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ToolCallBlock } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SelectionTarget } from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 
@@ -36,6 +37,8 @@ export interface ToolCallOwnerProps {
   cwd?: string | undefined
   /** Open a Tool argument path through the Host. */
   openFile: (path: string) => void
+  /** Open the details panel on a file selection (the inspector seat). */
+  openDetails: (target: SelectionTarget) => void
   /** Inspect this call in the trajectory view when available. */
   inspect?: (() => void) | undefined
 }

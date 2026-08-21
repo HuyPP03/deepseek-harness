@@ -129,7 +129,7 @@ describe('readCardModel', () => {
 
 describe('GenericToolCard read body', () => {
   const ownerProps = (block: RunningToolCall | ToolResultNode): GenericToolCardProps => ({
-    callId: 'c1', toolName: 'web_fetch', block, openFile: vi.fn(), t,
+    callId: 'c1', toolName: 'web_fetch', block, openFile: vi.fn(), openDetails: vi.fn(), t,
   })
 
   /** The whole summary row is the expand toggle (ToolRow's unified interaction). */
@@ -155,7 +155,7 @@ describe('GenericToolCard read body', () => {
     const view = render(<GenericToolCard {...({
       callId: 'c1', toolName: 'echo', block: settled({
         call: { name: 'echo', argsRaw: '{"text":"x"}' }, callView: null, resultView: null,
-      }), openFile: vi.fn(), t,
+      }), openFile: vi.fn(), openDetails: vi.fn(), t,
     })} />)
     toggleRow(view)
     expect(view.container.querySelector('[data-read]')).toBeNull()
@@ -178,7 +178,7 @@ describe('ReadRow keyed toolview', () => {
   })
 
   const rowProps = (block: RunningToolCall | ToolResultNode): Parameters<typeof ReadRow>[0] => ({
-    callId: 'c1', toolName: 'read', block, openFile: vi.fn(),
+    callId: 'c1', toolName: 'read', block, openFile: vi.fn(), openDetails: vi.fn(),
     sessionId: SID, useSessions: bindSnapshotSelector(list()),
     t,
   } as unknown as Parameters<typeof ReadRow>[0])
@@ -207,13 +207,13 @@ describe('ReadRow keyed toolview', () => {
     expect(view.getAllByText('src/a.ts').length).toBe(1)
   })
 
-  it('the path summary opens the file through the host', () => {
-    const openFile = vi.fn()
-    const view = render(<ReadRow {...{ ...rowProps(settled()), openFile }} />)
+  it('the path summary opens the file inspector', () => {
+    const openDetails = vi.fn()
+    const view = render(<ReadRow {...{ ...rowProps(settled()), openDetails }} />)
     fireEvent.click(view.getByRole('button', { name: 'src/a.ts' }))
-    // The row derives the file path from args; the chat view resolves it against
-    // the cwd before this callback opens it, so the arg path is what arrives.
-    expect(openFile).toHaveBeenCalledWith('src/a.ts')
+    // No cwd on this seat: the relative path fails closed (unresolved) and
+    // the call's seq labels the selection.
+    expect(openDetails).toHaveBeenCalledWith({ turnSeq: 10, filePath: 'src/a.ts' })
   })
 
   it('a running read renders the summary row alone, and its state', () => {

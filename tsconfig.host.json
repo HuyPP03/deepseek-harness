@@ -62,6 +62,7 @@
     "apps/web/tests/schedule-after.e2e.ts",
     "apps/web/tests/feedback-command.e2e.ts",
     "apps/web/tests/file-mention-menu.e2e.ts",
+    "apps/web/tests/file-inspector.e2e.ts",
     "apps/web/tests/goal-command-presentation.e2e.ts",
     "apps/web/tests/startup-auto-selection.e2e.ts",
     "apps/web/tests/produced-files.e2e.ts",

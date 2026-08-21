@@ -128,14 +128,18 @@ describe('keyed toolview hole through the real machinery', () => {
     await b.runtime.dispose()
   })
 
-  it('file-path clicks travel owner openFile → chat inject → workspaces.openPath', async () => {
+  it('file-path clicks travel owner openDetails → the inspector selection', async () => {
     const b = await bench([toolResult(3, 'c1', 'read', '{"path":"src/a.ts"}')])
     const view = b.runtime.renderRoot()
     view.getByText('src/a.ts').click()
-    expect(b.layout.openDetails).not.toHaveBeenCalled()
-    await vi.waitFor(() => {
-      expect(b.runtime.workspaces.calls).toContainEqual({ method: 'openPath', args: ['src/a.ts'] })
-    })
+    expect(b.layout.openDetails).toHaveBeenCalledTimes(1)
+    // The inspector selection lands on the shared chat store; the host
+    // opener is not part of this gesture.
+    const details = b.runtime.storeOf('details', SID) as unknown as {
+      getSnapshot: () => { selection: { turnSeq: number; filePath: string } | null }
+    }
+    expect(details.getSnapshot().selection).toEqual({ turnSeq: 3, filePath: 'src/a.ts' })
+    expect(b.runtime.workspaces.calls.some(c => c.method === 'openPath')).toBe(false)
     await b.runtime.dispose()
   })
 
