@@ -123,6 +123,15 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'conversation.details.tool': { kind: 'single'; scope: 'session'; owner: DetailsToolOwnerProps }
     /**
+     * The body of the details panel for the file the user selected — one
+     * occupant that renders every file kind (preview, code, and the refusal
+     * states) for the session-scoped working set behind `path`. The owner
+     * passes the canonical absolute path and the display-only workspace
+     * root; the occupant reads the bytes itself (the runtime's file-bytes
+     * service) and owns its own loading, preview, and error presentation.
+     */
+    'conversation.details.file': { kind: 'single'; scope: 'session'; owner: DetailsFileOwnerProps }
+    /**
      * The composer takeover chain: entries are selector-routed replacements
      * of the default InputBar. Declared by this package's 'conversation'
      * entry; the owner dispatches the {@link ComposerChainProps} currency and
@@ -375,6 +384,14 @@ export interface DetailsToolOwnerProps {
   /** Frozen selected call slice. */
   block: ToolCallBlock
   /** Session workspace root for card cwd and relative-path display. */
+  cwd?: string | undefined
+}
+
+/** Owner currency of the details panel's file inspector seat. */
+export interface DetailsFileOwnerProps {
+  /** Canonical absolute path of the selected file (host spelling). */
+  path: string
+  /** Session workspace root for relative-path display (display-only). */
   cwd?: string | undefined
 }
 
@@ -724,7 +741,7 @@ export interface DetailsInjected {
 }
 
 /** Full details-slot props: selection store, Tool output seat, injected close callback, and locale. */
-export type DetailsSlotProps = PropsRuntime<'details'> & PropsRenderSlots<'conversation.details.tool'>
+export type DetailsSlotProps = PropsRuntime<'details'> & PropsRenderSlots<'conversation.details.tool' | 'conversation.details.file'>
   & PropsStore<ChatStore> & DetailsInjected & PropsLocale<'conversation'>
 
 /** The confirmed selection of the hero / New-Session Workspace picker. */

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ReactNode } from 'react'
 import { cleanup, render } from '@testing-library/react'
 import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
 import {
@@ -206,5 +207,91 @@ describe('render branch tails', () => {
       call: { name: 'read', argsRaw: '{"path":"notes/demo.txt"}' },
       content: [{ type: 'text', text: longText }],
     })
+  })
+
+  it('DetailsPanel routes a file selection to the file inspector seat with the path title', () => {
+    localStorage.clear()
+    const snap = snapshotBase()
+    const chat = createChatStore().create()
+    chat.actions.select({ turnSeq: 1, filePath: '/tmp/proj/src/main.ts' } satisfies SelectionTarget)
+    const list = createSnapshotStore<SessionListState>(
+      { ids: [SID], byId: { [SID]: { id: SID, blank: false, cwd: '/tmp/proj', displayTitle: 'proj', running: false, updatedAt: 0 } }, current: SID, phase: 'ready', subagentsByParent: {}, jobsBySession: {}, currentAddress: undefined })
+    const emptyWorkspaces = createSnapshotStore<WorkspaceListState>({
+      items: [], archivedSessionIds: [], state: 'idle', phase: 'ready', error: null,
+      baselinesReady: true, recentWorkspaceId: undefined,
+    })
+    const seats: { key: string; owner: unknown }[] = []
+    const renderSlot = (key: string, owner: unknown) => {
+      seats.push({ key, owner })
+      return <div data-testid="file-details-seat" />
+    }
+    const view = render(
+      <DetailsPanel
+        SessionProvider={SessionProviderStub}
+        renderSlot={renderSlot as unknown as DetailsSlotProps['renderSlot']}
+        sessionId={SID}
+        useSession={bindSnapshotSelector({ getSnapshot: () => snap, subscribe: () => () => {} })}
+        useSessions={bindSnapshotSelector(list)}
+        useWorkspaces={bindSnapshotSelector(emptyWorkspaces)}
+        useProjection={(() => undefined)}
+        useInput={(() => { throw new Error('unused') })}
+        inputActions={{
+          setDraft: () => {},
+          addImages: () => true,
+          removeImage: () => {},
+          pruneImages: () => {},
+          submit: () => {},
+        }}
+        useStore={bindSnapshotSelector(chat)}
+        actions={chat.actions}
+        closeDetails={vi.fn()}
+        t={t}
+      />,
+    )
+    // The path basename titles the panel and the seat receives the canonical
+    // path with the display-only workspace root.
+    expect(view.getByText('main.ts')).toBeTruthy()
+    expect(view.getByTestId('file-details-seat')).toBeTruthy()
+    expect(seats).toEqual([{ key: 'conversation.details.file', owner: { path: '/tmp/proj/src/main.ts', cwd: '/tmp/proj' } }])
+  })
+
+  it('DetailsPanel falls back when the file inspector seat is unregistered', () => {
+    localStorage.clear()
+    const snap = snapshotBase()
+    const chat = createChatStore().create()
+    chat.actions.select({ turnSeq: 1, filePath: '/tmp/notes.md' } satisfies SelectionTarget)
+    const emptyList = createSnapshotStore<SessionListState>(
+      { ids: [], byId: {}, current: undefined, phase: 'ready', subagentsByParent: {}, jobsBySession: {}, currentAddress: undefined })
+    const emptyWorkspaces = createSnapshotStore<WorkspaceListState>({
+      items: [], archivedSessionIds: [], state: 'idle', phase: 'ready', error: null,
+      baselinesReady: true, recentWorkspaceId: undefined,
+    })
+    // No occupant: the renderer hands back the seat's fallback.
+    const renderSlot = (_key: string, _owner: unknown, opts: { fallback: ReactNode }) => opts.fallback
+    const view = render(
+      <DetailsPanel
+        SessionProvider={SessionProviderStub}
+        renderSlot={renderSlot as unknown as DetailsSlotProps['renderSlot']}
+        sessionId={SID}
+        useSession={bindSnapshotSelector({ getSnapshot: () => snap, subscribe: () => () => {} })}
+        useSessions={bindSnapshotSelector(emptyList)}
+        useWorkspaces={bindSnapshotSelector(emptyWorkspaces)}
+        useProjection={(() => undefined)}
+        useInput={(() => { throw new Error('unused') })}
+        inputActions={{
+          setDraft: () => {},
+          addImages: () => true,
+          removeImage: () => {},
+          pruneImages: () => {},
+          submit: () => {},
+        }}
+        useStore={bindSnapshotSelector(chat)}
+        actions={chat.actions}
+        closeDetails={vi.fn()}
+        t={t}
+      />,
+    )
+    expect(view.getByText('notes.md')).toBeTruthy()
+    expect(view.getByText('文件检视器不可用')).toBeTruthy()
   })
 })

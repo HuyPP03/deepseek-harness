@@ -68,18 +68,25 @@ export function DetailsPanel({ useSession, useSessions, sessionId, useStore, ren
   // Session workspace root: an omitted or relative terminal cwd resolves
   // against it, which the pure presenter cannot see.
   const sessionCwd = useSessions(list => list.byId[sessionId]?.cwd)
-  const callId = selection?.callId
+  const filePath = selection?.filePath
+  const isFileSelection = filePath !== undefined
+  const callId = isFileSelection ? undefined : selection?.callId
   // materialFor builds a fresh wrapper; shallowEqual short-circuits on its
   // stable members (result node reference rides the snapshot's structural sharing).
   const material = useSession(
     s => (callId === undefined ? null : materialFor(s, callId)),
     (a, b) => shallowEqual(a, b))
+  const title = selection === null
+    ? t('details.title')
+    : isFileSelection
+      ? basenameOf(filePath)
+      : material?.name ?? selection.toolName ?? t('details.title')
 
   return (
     <div className={css.root}>
       <div className={css.header}>
         <div className={css.title}>
-          {selection === null ? t('details.title') : material?.name ?? selection.toolName ?? t('details.title')}
+          {title}
         </div>
         <button
           type="button" className={css.close} aria-label={t('details.close')}
@@ -91,39 +98,59 @@ export function DetailsPanel({ useSession, useSessions, sessionId, useStore, ren
         </button>
       </div>
       <div className={css.body}>
-        {selection === null || callId === undefined
+        {selection === null
           ? <div className={css.empty}>{t('details.empty')}</div>
-          : material === null
-            ? <div className={css.empty}>{t('details.notInWindow')}</div>
-            : (
-              <>
-                {material.argsRaw !== null && (
-                  <section className={css.section}>
-                    <div className={css.sectionLabel}>{t('details.input')}</div>
-                    <CodeBlock code={pretty(material.argsRaw)} lang="json" copyLabel={t('copy')} copiedLabel={t('copied')} />
-                  </section>
+          : isFileSelection
+            ? (
+              // Keyed by the selected path: the inspector seat owns per-file
+              // view state (tabs, scroll, preview document), which React would
+              // otherwise carry into the next selection because the panel does
+              // not unmount between files.
+              <Fragment key={filePath}>
+                {renderSlot('conversation.details.file', { path: filePath, cwd: sessionCwd }, {
+                  fallback: <div className={css.empty}>{t('details.fileUnavailable')}</div>,
+                })}
+              </Fragment>
+            )
+            : callId === undefined
+              ? <div className={css.empty}>{t('details.empty')}</div>
+              : material === null
+                ? <div className={css.empty}>{t('details.notInWindow')}</div>
+                : (
+                  <>
+                    {material.argsRaw !== null && (
+                      <section className={css.section}>
+                        <div className={css.sectionLabel}>{t('details.input')}</div>
+                        <CodeBlock code={pretty(material.argsRaw)} lang="json" copyLabel={t('copy')} copiedLabel={t('copied')} />
+                      </section>
+                    )}
+                    <section className={css.section}>
+                      <div className={css.sectionLabel}>{t('details.output')}</div>
+                      {/* Keyed by the selected call: the body owns per-call view
+                          state (the terminal card's expand and copy), which React
+                          would otherwise carry into the next selection because the
+                          panel does not unmount between calls. */}
+                      <Fragment key={callId}>
+                        {renderSlot('conversation.details.tool', { block: material.block, cwd: sessionCwd }, {
+                          fallback: 'kind' in material.block
+                            ? (
+                              <pre className={css.code} data-error={material.block.isError || undefined}>
+                                {rawResultText(material.block)}
+                              </pre>
+                            )
+                            : <div className={css.empty}>{t('details.running')}</div>,
+                        })}
+                      </Fragment>
+                    </section>
+                  </>
                 )}
-                <section className={css.section}>
-                  <div className={css.sectionLabel}>{t('details.output')}</div>
-                  {/* Keyed by the selected call: the body owns per-call view
-                      state (the terminal card's expand and copy), which React
-                      would otherwise carry into the next selection because the
-                      panel does not unmount between calls. */}
-                  <Fragment key={callId}>
-                    {renderSlot('conversation.details.tool', { block: material.block, cwd: sessionCwd }, {
-                      fallback: 'kind' in material.block
-                        ? (
-                          <pre className={css.code} data-error={material.block.isError || undefined}>
-                            {rawResultText(material.block)}
-                          </pre>
-                        )
-                        : <div className={css.empty}>{t('details.running')}</div>,
-                    })}
-                  </Fragment>
-                </section>
-              </>
-            )}
       </div>
     </div>
   )
+}
+
+/** Last path segment for the panel title (either platform separator). */
+function basenameOf(path: string): string {
+  const index = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\'))
+  return index === -1 ? path : path.slice(index + 1)
 }
