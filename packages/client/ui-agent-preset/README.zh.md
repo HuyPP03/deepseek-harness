@@ -52,6 +52,12 @@ preset 自行发布描述，长度不限，而网格让每一行卡片等高—�
 
 `agentPreset.read`、`copy`、`openDocument` 与 `remove` 被固定在环回地址（见 [`dsh-client-connection`](../connection/README.md)）：组装指明了一个会话所运行的插件，因此读取它是侦察，其余几个则管理名单并驱动宿主桌面。`agentPreset.list` 不在其中——它携带 id、信任级别与两个不含路径的能力标志，而局域网客户端的选择器需要它。
 
+## /mode 装饰
+
+第五个表层，也是唯一一个作用于运行中会话的表层：裸的 `/mode`（不带 preset 参数）打开一个名单弹窗，而不是宿主的文本回复。装饰放在这里、而不是放在承载其他客户端自有条目的 slash-tools 包中，是因为本包拥有名单的展示文案：弹窗行通过其他每个表层都使用的同一个 `presetDisplayText` 解析器渲染，所以一行永远不会以 preset 文件的语言显示、而 GUI 其余部分却以当前 Web 语言显示。
+
+行遵循选择器的规则（省略损坏的 preset——它们无法重新组装会话）、标记会话当前使用的 preset，并在 chat 会话上收起（宿主双向拒绝切换）。选中提交的是通过 commands Remote 完成的 `/mode <preset>` 行，而不是 `agentPreset.select` RPC（后者仅限空白会话，是 composer 席位流程）：宿主命令保留其目录行、参数声明与生命周期日志，拥有空闲守卫与 `agent-preset/selected` 记录，其准入路径让 `command/executed` 观察者始终指向同一提交通道。
+
 ## 何时不显示这些表层
 
 未组装任何 preset 的部署返回空名单，本行、chip、标签与分区都不渲染任何内容——此时每个会话共用宿主组装，也就无从选择或管理。未配置可写根目录的部署返回 `authorable: false`，分区随之退化为只读浏览：随附组装仍可在查看器中打开，但每个复制操作都被禁用并以原因作提示，而不是给出一个创建必然失败的对话框。

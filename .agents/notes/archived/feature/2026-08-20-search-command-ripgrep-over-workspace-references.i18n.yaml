@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-20-search-command-ripgrep-over-workspace-references.md
-2026-08-20-search-command-ripgrep-over-workspace-references.md: 6fd20a7d46e71c2efc083cad0f01b60bda34a105
-2026-08-20-search-command-ripgrep-over-workspace-references.zh.md: d063d1fc0d304f4401124b2ab1a8755a86494cf5
+2026-08-20-search-command-ripgrep-over-workspace-references.md: 77c7d5ca93551b85d297be41e1e599e933865fcc
+2026-08-20-search-command-ripgrep-over-workspace-references.zh.md: 3bca7504b17785f8ab9bdee1c78873370c95a103

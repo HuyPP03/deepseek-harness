@@ -1,9 +1,16 @@
 - listbox "Trigger suggestions":
   - text: Commands
-  - option "compact Compact older conversation history" [selected]
+  - option "code-review Review the code changed in this session with four parallel reviewers (report only)" [selected]
+  - option "compact Compact older conversation history"
+  - option "effort Report or switch this session model reasoning effort"
   - option "export Download this Session log as a ZIP archive"
   - option "feedback record feedback about this session"
   - option "goal set or view the goal for a long-running task"
+  - option "mcp List the connected MCP servers and their tools"
+  - option "mode Switch this session agent preset (mode)"
   - option "permission Switch the permission preset (sandbox mode + approval policy)"
   - option "plan Enter or leave plan mode"
+  - option "search Ask the agent to search this session workspace and list the matching files"
+  - option "simplify Ask the agent to simplify the code touched in this session"
+  - option "help List the slash commands available in this session"
   - option "model Select the model for this conversation"

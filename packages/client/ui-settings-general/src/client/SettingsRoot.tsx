@@ -102,18 +102,16 @@ function SettingsPanel({ rows, renderSlot, activeId, onSelect, onClose }: PanelP
  * @returns the settings shell element tree.
  */
 export function SettingsRoot(props: SettingsRootComponentProps) {
-  const { wide, useSections, useOnboardingSteps, useSessions, renderSlot } = props
-  const [open, setOpen] = useState(false)
-  const [activeId, setActiveId] = useState<string | undefined>(undefined)
+  const { wide, useSections, useOnboardingSteps, useSessions, useSettingsPanel, renderSlot, openSection, closePanel, setActiveId } = props
+  // The panel's open state and section selection live in the controller's
+  // store so a registrant outside the panel can deep link into a section.
+  const panel = useSettingsPanel(s => s)
+  const open = panel.open
+  const activeId = panel.activeId
   const [completedOnboarding, setCompletedOnboarding] = useState<ReadonlySet<string>>(() => new Set())
   const close = useCallback(() => {
-    setOpen(false)
-    setActiveId(undefined)
-  }, [])
-  const openSection = useCallback((id: string) => {
-    setActiveId(id)
-    setOpen(true)
-  }, [])
+    closePanel()
+  }, [closePanel])
 
   // The ledger tick keeps the nav rows fresh: registrants re-register with
   // freshly localized text on locale change, and the trigger/header/close
@@ -146,7 +144,7 @@ export function SettingsRoot(props: SettingsRootComponentProps) {
         className={clsx(css.trigger, !wide && css.rail)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        onClick={() => { setOpen(true) }}
+        onClick={() => { openSection() }}
       >
         {renderSlot('settings.trigger', { wide })}
       </button>

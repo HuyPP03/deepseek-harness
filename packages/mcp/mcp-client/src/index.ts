@@ -32,7 +32,7 @@ export const name = 'mcp-client'
 export const inject = ['tools']
 
 /** Default timeout for individual MCP tool calls (ms). */
-const DEFAULT_TOOL_CALL_TIMEOUT_MS = 60_000
+export const DEFAULT_TOOL_CALL_TIMEOUT_MS = 60_000
 
 /** Valid `serverName`, kept below the public tool-name budget. */
 const SERVER_NAME_PATTERN = /^[A-Za-z0-9_-]{1,32}$/
@@ -176,7 +176,10 @@ export async function apply(ctx: Context, config: Config): Promise<void> {
   // snapshot; the disposer drops the entry when this instance tears down.
   const registry: McpRegistry | undefined = ctx.get('mcpRegistry')
   if (registry !== undefined) {
-    ctx.effect(() => registry.report(config.serverName, () => connection.report()), 'mcp-client.report')
+    ctx.effect(() => registry.report(config.serverName, {
+      read: () => connection.report(),
+      reconnect: () => connection.reconnect(),
+    }), 'mcp-client.report')
   }
 
   // Block plugin activation on the initial connection + tool discovery so

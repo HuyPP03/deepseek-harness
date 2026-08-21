@@ -70,11 +70,10 @@
 
 # ── search ──────────────────────────────────────────────────────────────────
 
-# Human-facing `/search`: a literal ripgrep run over the session's project
-# directory and its attached reference projects. The command REGISTRY and the
-# subprocess SERVICE stay on the host plane (this row consumes both), so it
-# needs no realm; a chat session has no project directory to search, so the
-# chat preset does not mount it.
+# Human-facing `/search`: steer the agent to search the session's project
+# directory and report a concrete file list. The command REGISTRY stays on
+# the host plane (this row consumes it), so it needs no realm; a chat session
+# has no project directory to search, so the chat preset does not mount it.
 - id: command-search
   name: '@deepseek-ai/dsh-command-search'
 

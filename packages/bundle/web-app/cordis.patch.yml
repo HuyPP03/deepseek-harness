@@ -295,6 +295,11 @@
     - id: ui-agent-preset
       name: '@deepseek-ai/dsh-client-ui-agent-preset'
 
+    # The MCP surface: the settings section (roster, reconnect, remove, add)
+    # and the /mcp popupSelect decoration over the host command.
+    - id: ui-mcp
+      name: '@deepseek-ai/dsh-client-ui-mcp'
+
     # Plugin configuration: the host-plane sections a user owns, as expandable
     # cards. A namespace this deployment does not expose renders nothing.
     - id: ui-settings-plugins

@@ -2,41 +2,31 @@
 
 English | [中文](README.zh.md)
 
-Human-facing `/search` control over the session's project directory and its attached reference projects. The plugin registers one command through [`ctx.commands`](../../interaction/commands/README.md) and runs the packaged ripgrep binary (`@vscode/ripgrep`) once through [`ctx.subprocess`](../../subprocess/subprocess/README.md), so a human can search the workspace the session was created in — plus every reference project attached to the session — without a model turn. The search roots come from session state alone: the header's `cwd` first, then the reference set [`referencesOf`](../../workspace/workspace-references/README.md) replays from the session log.
+Human-facing `/search` control over the session's own workspace. The plugin registers one command through [`ctx.commands`](../../interaction/commands/README.md) and composes the user's query into a search directive, then **steers** the receiving agent with it. The searching is the agent's own turn — it runs its file-search tools and answers with a concrete list of the matching files, each path with a one-line note on why it matches, instead of a raw dump of match lines. The command result only confirms that the search is queued; the file list arrives as the agent's reply.
 
 ## Command contract
 
 | Input | Result |
 |---|---|
-| `/search <literal text>` | A bounded list of `path:line: text` matches over the session workspace and its reference projects, in ripgrep's output order. Paths inside the project directory display relative to it; paths elsewhere display as printed. |
-| `/search` (no pattern) | `Usage: /search <literal text> — searches this session workspace and its reference projects` |
-| Session with no `cwd` and no references | `This session has no project directory and no reference projects to search.` |
-| Zero matches | `No matches for "<pattern>".` — a success, not an error. |
+| `/search <query>` | `Search queued for this session.` — the agent is steered with the search directive, and the file list arrives as the agent's reply. |
+| `/search` (no query) | `Usage: /search <query> — asks the agent to search this session workspace and list the matching files` |
 
-The pattern is searched **literally** (`--fixed-strings`): special characters need no escaping, and a pattern can never be interpreted as a ripgrep regular expression or a flag (it is always placed after `--`). The run is bounded three ways:
+The query is free text, not a literal pattern: the agent interprets it (a phrase, a concept, a path fragment) and chooses how to search — content with its `grep` tool, paths with `glob`, confirmation with `read`. The directive instructs it to de-duplicate paths, order the list by relevance, and say so in a single line when nothing matches.
 
-- **Matches** — at most 200 matches are folded into the result (mirrored by ripgrep's per-file `--max-count`);
-- **Size** — the folded text holds to a 16 KiB UTF-8 byte budget; one over-long line is cut to the budget with a `… (line truncated)` marker, and when several lines do not fit the list is re-folded from the tail with a `… truncated to fit the result budget (showing N of M matches)` note;
-- **Time** — a 30 s deadline fuses the dispatching UI's cancellation into the ripgrep process tree (SIGTERM → 3 s grace → SIGKILL) and reports `Search timed out after 30s.` when it wins.
-
-ripgrep exit 1 (no matches) is a success; any other exit is a direct error carrying a trimmed stderr tail. A run whose raw stdout exceeds the 256 KiB retention cap fails with a "narrow the pattern or the roots" error instead of parsing a partial stream. Cancellation is owned by the command executor: an aborted request settles the `command/done` pair as the abort and kills the process tree through the fused signal.
-
-The search is `--no-config` and honors each root's own ignore files, like the model-facing `grep` tool. Git-ignored and binary files are skipped by default; matched lines are shown as text with no per-file grouping.
+The steer is a user message the agent receives with source `{ kind: 'plugin', plugin: 'command-search' }`. Its turn on that message is the search: the tool calls and the final list are recorded in the session log like any other work. An idle agent starts the turn immediately; a running agent consumes the steer at its next step boundary.
 
 ## Composition
 
-The command injects `commands` and `subprocess`. Mount the command registry, a subprocess provider, and this plugin:
+The command injects `commands`. Mount the command registry and this plugin:
 
 ```yaml
 - id: commands
   name: '@deepseek-ai/dsh-commands'
-- id: subprocess
-  name: '@deepseek-ai/dsh-subprocess-local'
 - id: command-search
   name: '@deepseek-ai/dsh-command-search'
 ```
 
-The shipped `dsh` presets mount it in the `standard` and `code` agent presets; the `chat` preset does not, because a chat session has no project directory to search. Plugin disposal first unregisters `/search`, then drains every handler that already started, so root teardown cannot outlive a search that is still running.
+The shipped `dsh` presets mount it in the `standard` and `code` agent presets; the `chat` preset does not, because a chat session has no project directory to search. Plugin disposal first unregisters `/search`, then drains every handler that already started, so root teardown cannot outlive a handler that is still running.
 
 ## Model Experience
 
@@ -44,18 +34,17 @@ The shipped `dsh` presets mount it in the `standard` and `code` agent presets; t
 
 #### What the model sees
 
-The slash input, the ripgrep run, and the result text never enter a model request. The command settles through the log-only `command/run` / `command/done` pair like every other human command; nothing joins the session surface or derived messages.
+A user message carrying the search directive — the query verbatim plus the fixed instruction copy — with the `command-search` plugin source tag. The model answers it like any other user message: it runs its search tools and returns the file list. The directive, the tool calls, and the list all sit in the session log.
 
 #### Token effect
 
-The command adds no model tokens, matched or not.
+The directive adds one user message (the query plus ~300 tokens of fixed instruction). The search turn then costs the search work itself: the tool calls and the file list.
 
 #### KV Cache effect
 
-The command does not touch the model-facing prefix, so cache reuse is unaffected.
+The directive message extends the conversation prefix; the agent's search turn establishes its working state from there.
 
 ## Known Limitations and Deferred Work
 
-- **Literal search only** — `/search` takes one literal pattern and no flags (no regex, include/exclude globs, or file-type filters); the model-facing `grep` tool keeps the full ripgrep surface for those cases.
-- **Fixed bounds** — the 200-match / 16 KiB / 30 s bounds are protocol constants, not deployment config; a broader sweep is a narrower pattern, a narrower set of reference projects, or the model's `grep`/`bash` tools.
-- **No path scoping** — the roots are always the session workspace plus every attached reference project; a per-invocation path or root filter is deferred until a human search needs it.
+- **Session workspace only** — the steered agent's file tools are sandboxed to the session's project directory; reference projects are not granted to them in the default sandbox mode, so `/search` does not reach them.
+- **One query per invocation** — there are no flags or root filters; a narrower or broader sweep is a different query.

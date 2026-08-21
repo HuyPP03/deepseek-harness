@@ -3009,6 +3009,32 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         models: fixtureModelGroups().flatMap(group => group.models.map(model => ({ id: model.id, name: model.name }))),
       }),
     },
+    mcp: {
+      list: request => ok(request, {
+        servers: [
+          {
+            serverName: 'websift',
+            status: 'connected',
+            managed: false,
+            tools: [
+              { name: 'mcp__websift__web_search', description: 'Search the web using DuckDuckGo' },
+              { name: 'mcp__websift__web_fetch', description: 'Fetch a web page and return its readable text' },
+            ],
+          },
+          {
+            serverName: 'github',
+            status: 'reconnecting',
+            managed: true,
+            tools: [
+              { name: 'mcp__github__create_issue', description: 'Create a GitHub issue' },
+            ],
+          },
+        ],
+      }),
+      add: request => ok(request, { serverName: request.payload.spec.serverName }),
+      remove: request => ok(request, {}),
+      reconnect: request => ok(request, {}),
+    },
     respond(message: ClientResponse): Promise<RpcReceipt> {
       // Same routing discipline as the host: rpcId first, then the payload's
       // audit correlation; a settled or unknown id is not-pending.
@@ -3178,6 +3204,10 @@ export class FixtureApiClient extends AbstractApiClient {
       case 'llm.providers': return this.api.llm.providers(request)
       case 'llm.models': return this.api.llm.models(request)
       case 'llm.discoverModels': return this.api.llm.discoverModels(request, signal)
+      case 'mcp.list': return this.api.mcp.list(request)
+      case 'mcp.add': return this.api.mcp.add(request)
+      case 'mcp.remove': return this.api.mcp.remove(request)
+      case 'mcp.reconnect': return this.api.mcp.reconnect(request)
     }
   }
 

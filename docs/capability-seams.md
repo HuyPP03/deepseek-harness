@@ -90,6 +90,9 @@ flowchart LR
   svc_mcpRegistry["ctx.mcpRegistry<br/>Live MCP server registry"]
   pkg_mcp_client["mcp-client"]
   pkg_command_mcp["command-mcp"]
+  pkg_mcp_manager["mcp-manager"]
+  svc_mcpManager["ctx.mcpManager<br/>User MCP server manager"]
+  pkg_host_apiproxy["host-apiproxy"]
   pkg_user_questions["user-questions"]
   svc_userQuestions["ctx.userQuestions<br/>Human question/answer seam"]
   pkg_plan_mode["plan-mode"]
@@ -100,7 +103,6 @@ flowchart LR
   svc_commands["ctx.commands<br/>Human command registry"]
   pkg_session_projection["session-projection"]
   svc_sessionProjections["ctx.sessionProjections<br/>Session projection units"]
-  pkg_host_apiproxy["host-apiproxy"]
   pkg_session_projection_cache["session-projection-cache"]
   svc_sessionProjectionCache["ctx.sessionProjectionCache<br/>Persisted projection cache"]
   pkg_skill["skill"]
@@ -239,6 +241,7 @@ flowchart LR
   pkg_llm_replay --> svc_llm
   pkg_lsp --> svc_lsp
   pkg_lsp_local --> svc_lsp
+  pkg_mcp_manager --> svc_mcpManager
   pkg_mcp_registry --> svc_mcpRegistry
   pkg_message_feedback --> svc_messageFeedback
   pkg_modules --> svc_clientModules
@@ -336,6 +339,7 @@ flowchart LR
   svc_llm --> pkg_agent_loop
   svc_llm --> pkg_compaction_basic
   svc_lsp --> pkg_tool_lsp
+  svc_mcpManager --> pkg_host_apiproxy
   svc_mcpRegistry --> pkg_command_mcp
   svc_mcpRegistry --> pkg_mcp_client
   svc_sandbox --> pkg_bash_sandbox
@@ -446,6 +450,7 @@ flowchart LR
 | `ctx.systemPrompt` | `core` | [`system-prompt`](../packages/core/system-prompt) | - | [`agent-loop`](../packages/core/agent-loop), [`tools`](../packages/core/tools), [`tool-fs`](../packages/fs/tool-fs), [`tool-terminal`](../packages/terminal/tool-terminal), [`tool-web`](../packages/web/tool-web) | - | Collects prompt sections and model-facing tool schemas for each step. |
 | `ctx.tools` | `core` | [`tools`](../packages/core/tools) | - | [`agent-loop`](../packages/core/agent-loop), [`tool-ask-user`](../packages/interaction/tool-ask-user), [`tool-bash`](../packages/shell/tool-bash), [`tool-cordis`](../packages/extensions/tool-cordis), [`tool-fs`](../packages/fs/tool-fs), [`tool-terminal`](../packages/terminal/tool-terminal), [`tool-skill`](../packages/skill/tool-skill), [`tool-subagent`](../packages/subagent/tool-subagent), [`tool-todo`](../packages/todo/tool-todo), [`tool-web`](../packages/web/tool-web) | - | Registers capabilities, owns Code Mode transport, and routes calls through pre-policy, monotonic guards, around dispatch, post-policy, and final-result observation. |
 | `ctx.mcpRegistry` | `core` | [`mcp-registry`](../packages/mcp/mcp-registry) | - | [`mcp-client`](../packages/mcp/mcp-client), [`command-mcp`](../packages/mcp/command-mcp) | - | MCP client instances report their server snapshots; the /mcp command reads them. |
+| `ctx.mcpManager` | `core` | [`mcp-manager`](../packages/mcp/mcp-manager) | - | [`host-apiproxy`](../packages/host/apiproxy) | - | Persists user-added MCP servers under the harness home and mounts them as mcp-client instances; the host mcp RPC verbs wrap it. |
 | `ctx.userQuestions` | `seam` | [`user-questions`](../packages/interaction/user-questions) | - | [`tool-ask-user`](../packages/interaction/tool-ask-user) | - | UI front ends provide the active human-answer provider; tool-ask-user pauses a tool call on the provider-neutral ask() promise. |
 | `ctx.planMode` | `core` | [`plan-mode`](../packages/plan/plan-mode) | - | - | - | Folds logged plan/mode state, flushes user selections at turn boundaries, renders deployment-owned guidance, registers /plan, and keeps the plan-exit schema stable across transitions. |
 | `ctx.agentPresets` | `core` | [`agent-presets`](../packages/preset/agent-presets) | - | - | - | Discovers preset directories over trusted and user-authored roots and mounts one preset cordis.yml under an agent scope during creation, rejecting a row that never activates or that publishes into the root service realm. |

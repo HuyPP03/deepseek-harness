@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-The agent-preset surfaces: a General-settings row choosing which [preset](../../preset/agent-presets/README.md) new sessions are composed from, a chip on the new-session screen choosing the next session's, a read-only label in the session header, and a settings section that manages the roster — copy, delete, default, and the way into a preset's own files.
+The agent-preset surfaces: a General-settings row choosing which [preset](../../preset/agent-presets/README.md) new sessions are composed from, a chip on the new-session screen choosing the next session's, a read-only label in the session header, a settings section that manages the roster — copy, delete, default, and the way into a preset's own files — and the `/mode` decoration that turns the host command's bare invocation into a roster popup.
 
 ## Why it is a new-session preference
 
@@ -51,6 +51,12 @@ A roster row carrying `broken` (the host's shape check found the composition mis
 Setting the default writes the `agent-presets` settings namespace, which the host exposes to configuration clients ([`dsh-apiproxy`](../../host/apiproxy/README.md) keeps an explicit allowlist — a namespace outside it makes a picker move and then silently forget).
 
 `agentPreset.read`, `copy`, `openDocument`, and `remove` are loopback-pinned ([`dsh-client-connection`](../connection/README.md)): a composition names the plugins a session runs, so reading one is reconnaissance, and the rest manage the roster and drive the host desktop. `agentPreset.list` is not — it carries ids, trust, and the two path-free capability flags, and a LAN client's picker needs it.
+
+## The /mode decoration
+
+A fifth surface, and the one that acts on a running session: a bare `/mode` (no preset argument) opens a roster popup instead of the host's text reply. The decoration lives here rather than in the slash-tools package that hosts the other client-owned entries because this package owns the roster's display copy: the popup rows render through the same `presetDisplayText` resolver every other surface uses, so a row can never read in the preset's file language while the rest of the GUI reads in the active Web locale.
+
+The rows follow the pickers' rule (broken presets omitted — they cannot recompose a session), mark the session's current preset, and are withheld on a chat session (the host refuses the switch in both directions). A pick submits the completed `/mode <preset>` line through the commands Remote rather than the `agentPreset.select` RPC, which is blank-only (the composer seat's flow): the host command keeps its catalog row, argument claim, and lifecycle logging, owns the idle guard and the `agent-preset/selected` record, and its admission path keeps the `command/executed` observers pointed at one submit channel.
 
 ## When the surfaces are absent
 

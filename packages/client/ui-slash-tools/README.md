@@ -2,13 +2,11 @@
 
 English | [中文](README.zh.md)
 
-Web slash-tool feature owner: contributes three surfaces to `ctx.commandUi` — the client-owned `/clear` ACTION, the client-owned `/help` popupSelect, and a `/mode` DECORATION on the host preset-switch command.
+Web slash-tool feature owner: contributes two client-owned surfaces to `ctx.commandUi` — the `/clear` ACTION and the `/help` popupSelect. The `/mode` preset-switch popup lives in [`@deepseek-ai/dsh-client-ui-agent-preset`](../ui-agent-preset/README.md), which owns the roster's display copy.
 
 `/clear`: a menu pick or a bare enter mints a fresh blank session in the current session's Workspace (account membership, never cwd) and its agent preset (when the deployment composes one), then opens it; the current session stays in the list untouched. The action is offered only on a session with something to clear — a blank current session has no conversation to discard — and re-checks that at run time. A chat session (no Workspace membership, no preset) mints a bare session. The new session does not carry the current one's reference Workspaces: the list summary carries no reference axis, so the action cannot see them. The action kind has no result channel: a refused create is logged by the command service, never announced.
 
 `/help`: an informational listing of the session's available slash commands — the merged menu face (`CommandUiContract.menuRows`: host catalog + available client contributions, menu order) rendered as `/name` rows with the row descriptions. Picking a row closes the popup; it runs nothing.
-
-`/mode`: a decoration that replaces the host `/mode` command's BARE invocation with a preset-roster popup. The roster comes from the `agentPreset.list` wire read with broken presets omitted (the picker rule: a broken preset cannot recompose a session), the session's current preset marked active, and chat sessions excluded (the host refuses the switch in both directions). A pick submits the completed `/mode <preset>` line through the commands Remote — the host command keeps its catalog row, argument claim, and lifecycle logging, and owns the idle guard, the chat guard, and the `agent-preset/selected` record.
 
 ## Model Experience
 
@@ -16,7 +14,7 @@ Web slash-tool feature owner: contributes three surfaces to `ctx.commandUi` — 
 
 #### What the model sees
 
-Nothing in this package is model-visible. The effect is indirect: the fresh session's first prompt carries no conversation history — only the deployment system prompt, the Workspace files it resolves, and the user's next message.
+Nothing in this package is model-visible. The effect is indirect: the fresh session's first prompt carries no conversation history — only the deployment system prompt, the Workspace files it resolves, and the user's next message — because `sessions.create` starts the log with the deployment baseline rather than the cleared conversation.
 
 #### Token effect
 

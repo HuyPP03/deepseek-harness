@@ -24,6 +24,12 @@ import { SessionQueryError, type SessionSearchCursor } from '@deepseek-ai/dsh-se
 import { SubagentError } from '@deepseek-ai/dsh-subagent'
 import type { SubagentListEntry as CatalogSubagentListEntry } from '@deepseek-ai/dsh-subagent'
 import { isUserInvocable } from '@deepseek-ai/dsh-skill'
+// The mcp domain: the value edges carry the Context merges (resolving
+// `ctx.get('mcpRegistry')` / `ctx.get('mcpManager')`) and the typed
+// rejections narrowed to stable codes at this wire boundary. The services
+// are optional — a deployment without either still serves every other domain.
+import { McpServerNotReportedError } from '@deepseek-ai/dsh-mcp-registry'
+import { McpServerExistsError, McpServerNotManagedError } from '@deepseek-ai/dsh-mcp-manager'
 import type { Workspace, WorkspaceRecord } from '@deepseek-ai/dsh-workspace'
 import {
   workspaceDomainState, workspaceRecord, WorkspaceId as brandWorkspaceId,
@@ -3642,6 +3648,112 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             code: 'model-discovery-failed',
             message: error instanceof Error ? error.message : String(error),
             details: { settingsNs, ...baseURL === undefined ? {} : { baseURL } },
+          })
+        }
+      },
+    },
+
+    mcp: {
+      // A deployment with no registry answers with an empty list: composing no
+      // MCP server is a valid deployment, and the surface simply shows none.
+      list(request) {
+        const registry = ctx.get('mcpRegistry')
+        if (registry === undefined) return Promise.resolve(ok(request, { servers: [] }))
+        const manager = ctx.get('mcpManager')
+        const managed = new Set(manager?.userServers() ?? [])
+        return Promise.resolve(ok(request, {
+          servers: registry.servers().map(view => ({
+            serverName: view.serverName,
+            status: view.status,
+            managed: managed.has(view.serverName),
+            tools: view.tools.map(tool => ({ name: tool.name, description: tool.description })),
+          })),
+        }))
+      },
+
+      async add(request) {
+        const manager = ctx.get('mcpManager')
+        if (manager === undefined) {
+          return err(request, {
+            code: 'mcp-manager-unavailable',
+            message: 'this deployment composes no user MCP server store',
+            details: {},
+          })
+        }
+        const { spec } = request.payload
+        try {
+          await manager.add(spec)
+          return ok(request, { serverName: spec.serverName })
+        } catch (error: unknown) {
+          if (error instanceof McpServerExistsError) {
+            return err(request, {
+              code: 'mcp-server-exists',
+              message: error.message,
+              details: { serverName: spec.serverName },
+            })
+          }
+          return err(request, {
+            code: 'internal',
+            message: error instanceof Error ? error.message : String(error),
+            details: {},
+          })
+        }
+      },
+
+      async remove(request) {
+        const manager = ctx.get('mcpManager')
+        if (manager === undefined) {
+          return err(request, {
+            code: 'mcp-manager-unavailable',
+            message: 'this deployment composes no user MCP server store',
+            details: {},
+          })
+        }
+        const { serverName } = request.payload
+        try {
+          await manager.remove(serverName)
+          return ok(request, {})
+        } catch (error: unknown) {
+          if (error instanceof McpServerNotManagedError) {
+            return err(request, {
+              code: 'mcp-server-not-managed',
+              message: error.message,
+              details: { serverName },
+            })
+          }
+          return err(request, {
+            code: 'internal',
+            message: error instanceof Error ? error.message : String(error),
+            details: {},
+          })
+        }
+      },
+
+      async reconnect(request) {
+        const manager = ctx.get('mcpManager')
+        if (manager === undefined) {
+          return err(request, {
+            code: 'mcp-manager-unavailable',
+            message: 'this deployment composes no user MCP server store',
+            details: {},
+          })
+        }
+        const { serverName } = request.payload
+        try {
+          await manager.reconnect(serverName)
+          return ok(request, {})
+        } catch (error: unknown) {
+          if (error instanceof McpServerNotReportedError) {
+            return err(request, {
+              code: 'mcp-server-not-found',
+              message: error.message,
+              details: { serverName },
+            })
+          }
+          return err(request, {
+            code: 'internal',
+            message: error instanceof Error ? error.message : String(error),
+            details: {},
           })
         }
       },

@@ -96,6 +96,14 @@ export interface RpcErrorDetailsMap {
   'subagent-not-resumable': { childSessionId: SessionId }
   'subagent-unauthorized': { childSessionId: SessionId }
   'subagent-delivery-unavailable': { childSessionId: SessionId }
+  /** No MCP server currently reports this name (a reconnect attempt on an absent server). */
+  'mcp-server-not-found': { serverName: string }
+  /** The MCP server is not user-managed, so it cannot be removed; its entry lives in the profile. */
+  'mcp-server-not-managed': { serverName: string }
+  /** An MCP server with this name is already live (profile-declared or user-managed). */
+  'mcp-server-exists': { serverName: string }
+  /** The deployment composes no mcp-manager, so the user-server lifecycle is unavailable. */
+  'mcp-manager-unavailable': {}
   'internal': {}
 }
 

@@ -64,6 +64,9 @@ import {
 } from '../api/credentials.schema.ts'
 import { llmDiscoverModelsValueSchema, llmModelsValueSchema, llmProvidersValueSchema } from '../api/llm.schema.ts'
 import {
+  mcpAddValueSchema, mcpListValueSchema, mcpReconnectValueSchema, mcpRemoveValueSchema,
+} from '../api/mcp.schema.ts'
+import {
   subagentHistoryValueSchema,
   subagentInterruptValueSchema,
   subagentListValueSchema,
@@ -167,6 +170,12 @@ export interface IApiClient {
     models(payload: RequestPayload<'llm.models'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'llm.models'>>>
     discoverModels(payload: RequestPayload<'llm.discoverModels'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'llm.discoverModels'>>>
   }
+  mcp: {
+    list(payload: RequestPayload<'mcp.list'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'mcp.list'>>>
+    add(payload: RequestPayload<'mcp.add'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'mcp.add'>>>
+    remove(payload: RequestPayload<'mcp.remove'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'mcp.remove'>>>
+    reconnect(payload: RequestPayload<'mcp.reconnect'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'mcp.reconnect'>>>
+  }
   /** client-response passthrough (rpcId is a backfill of the server-request's id — never minted here). */
   respond(message: ClientResponse, signal?: AbortSignal): Promise<RpcReceipt>
 }
@@ -230,6 +239,10 @@ const UNARY_VALUE_SCHEMAS: { [K in keyof RpcMethodMap]: z.ZodType<Wire<ResponseV
   'llm.providers': llmProvidersValueSchema,
   'llm.models': llmModelsValueSchema,
   'llm.discoverModels': llmDiscoverModelsValueSchema,
+  'mcp.list': mcpListValueSchema,
+  'mcp.add': mcpAddValueSchema,
+  'mcp.remove': mcpRemoveValueSchema,
+  'mcp.reconnect': mcpReconnectValueSchema,
 }
 
 /** Default timeout for bounded unary calls (rpc-compare 2026-07-19: a hung host must not leave callers pending forever). */
@@ -511,6 +524,13 @@ export abstract class AbstractApiClient implements IApiClient {
     providers: (payload, signal) => this.callUnary('llm.providers', payload, signal),
     models: (payload, signal) => this.callUnary('llm.models', payload, signal),
     discoverModels: (payload, signal) => this.callUnary('llm.discoverModels', payload, signal),
+  }
+
+  readonly mcp: IApiClient['mcp'] = {
+    list: (payload, signal) => this.callUnary('mcp.list', payload, signal),
+    add: (payload, signal) => this.callUnary('mcp.add', payload, signal),
+    remove: (payload, signal) => this.callUnary('mcp.remove', payload, signal),
+    reconnect: (payload, signal) => this.callUnary('mcp.reconnect', payload, signal),
   }
 
   readonly events: IApiClient['events'] = {

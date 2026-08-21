@@ -475,6 +475,54 @@ type ObjectJsonSchema = JsonSchemaNode & { type: 'object' }
 
 Generated from source by `scripts/gen-cordis-catalog.ts` (verified fresh by `pnpm run verify-cordis-catalog` in doc-sync; regenerate with `pnpm run gen-cordis-catalog`) — this section is byte-identical in both language sides of the page. Signature blocks use a `ts cordis-catalog` fence and keep the original source JSDoc; dispatch modes are defined in the [primer](../cordis-primer.md#dispatch-modes), and the framework-inherited `ctx` API lives in [cordis-api/inherited.md](../cordis-api/inherited.md).
 
+<a id="ctxmcpmanager--mcpmanager"></a>
+
+### `ctx.mcpManager` — `McpManager`
+
+Live user MCP servers plus the runtime operations over them.
+
+```ts cordis-catalog
+/**
+ * Snapshot of every reported MCP server — profile-declared and user-managed
+ * alike — sorted by serverName.
+ * @returns the live registry views.
+ */
+servers(): readonly McpServerView[]
+
+/**
+ * The serverNames this manager currently mounts from its own directory.
+ * @returns the sorted managed names.
+ */
+userServers(): readonly string[]
+
+/**
+ * Persist one server under the manager's directory and mount it.
+ *
+ * @param spec - the server definition to add.
+ * @throws when the serverName is already managed or already reported by
+ *   another mcp-client instance, or when the mount fails — in that case the
+ *   file written for this call is deleted again.
+ */
+async add(spec: McpServerSpec): Promise<void>
+
+/**
+ * Unmount one user server and delete its file.
+ * @param serverName - the managed server to remove.
+ * @throws when the server is not one of the manager's own.
+ */
+async remove(serverName: string): Promise<void>
+
+/**
+ * Ask one reported server to start a manual reconnect — profile-declared
+ * and user-managed alike.
+ * @param serverName - the server to reconnect.
+ * @throws when no mcp-client reports that server.
+ */
+async reconnect(serverName: string): Promise<void>
+```
+
+Source: [`packages/mcp/mcp-manager/src/index.ts:125`](../../packages/mcp/mcp-manager/src/index.ts)
+
 <a id="ctxmcpregistry--mcpregistry"></a>
 
 ### `ctx.mcpRegistry` — `McpRegistry`
@@ -486,19 +534,30 @@ Live MCP server registry over one app root.
  * Report one MCP server. The reader is pulled on every {@link servers} read;
  * a `null`/`undefined` result removes the server from the snapshot.
  * @param serverName - stable local server namespace, unique across live reporters.
- * @param read - closure computing the server's current snapshot.
+ * @param reporter - snapshot reader plus optional operations (reconnect).
  * @returns the exact disposer that removes this reporter.
  */
-report(serverName: string, read: McpServerReader): () => void
+report(serverName: string, reporter: McpServerReporter): () => void
 
 /**
  * Snapshot of every reported MCP server, sorted by serverName.
  * @returns the current views; reporters that yield nothing are omitted.
  */
 servers(): readonly McpServerView[]
+
+/**
+ * Ask one reported server to start a manual reconnect.
+ *
+ * @param serverName - stable local server namespace.
+ * @throws {McpServerNotReportedError} when the server is not currently reported.
+ * @returns once the reporter's reconnect hook has settled. A reporter
+ *   without a hook resolves as a no-op: its snapshot has nothing behind it
+ *   to reconnect.
+ */
+async reconnect(serverName: string): Promise<void>
 ```
 
-Source: [`packages/mcp/mcp-registry/src/index.ts:35`](../../packages/mcp/mcp-registry/src/index.ts)
+Source: [`packages/mcp/mcp-registry/src/index.ts:58`](../../packages/mcp/mcp-registry/src/index.ts)
 
 <a id="ctxtools--toolruntime"></a>
 
