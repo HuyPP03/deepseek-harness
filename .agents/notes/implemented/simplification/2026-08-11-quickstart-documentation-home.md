@@ -10,9 +10,9 @@ A separate documentation landing page duplicates product positioning and feature
 
 ## Decision
 
-Each locale root is a redirect page. `/` sends readers to `./guide/quickstart`, and `/en/` resolves the same relative target to `/en/guide/quickstart`. The relative target preserves the configured `DOCS_BASE` when the site is hosted below an origin path.
+Each locale root is a redirect page. `/` resolves `./guide/quickstart`, and the `/zh/` and `/vi/` locale roots resolve the same relative target under their own prefixes. The relative target preserves the configured `DOCS_BASE` when the site is hosted below an origin path.
 
-`docs/user/index.md` and `docs/user/index.zh.md` own the redirect as VitePress frontmatter. The [documentation-site projector](../process/2026-07-13-documentation-site-projection.md) publishes only that frontmatter for locale homes, so the canonical Markdown retains its bilingual switcher without rendering a second landing page. The projector test verifies that both locale roots use the same locale-relative quick-start target.
+`docs/user/index.md` and `docs/user/index.zh.md` own the redirect as VitePress frontmatter. The [documentation-site projector](../process/2026-07-13-documentation-site-projection.md) publishes only that frontmatter for locale homes, so the canonical Markdown retains its bilingual switcher without rendering a second landing page. The projector test verifies that all three locale roots use the same locale-relative quick-start target.
 
 Product positioning and feature summaries stay outside the documentation site. Guide, development, reference, search, and locale navigation remain available from the quick-start page.
 

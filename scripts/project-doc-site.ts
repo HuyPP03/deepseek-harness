@@ -245,8 +245,11 @@ export function rewriteMarkdown(source: string, options: RewriteMarkdownOptions)
     const { absPath, line } = resolveRepositoryTarget(sourceAbs, path, options.repoRoot)
     const targetPath = repoPath(absPath, options.repoRoot)
     const isLanguageSwitcher = targetPath === counterpartSource(options.sourcePath)
+    // The switcher always links the sibling file, so the target locale follows
+    // the linked file rather than the current page: Chinese content serves
+    // under `/zh/`, English content at the root.
     const targetLocale: DocsLocale = isLanguageSwitcher
-      ? options.locale === 'root' ? 'en' : 'root'
+      ? targetPath.endsWith('.zh.md') ? 'zh' : 'root'
       : options.locale
     const page = published.get(targetPath)?.get(targetLocale)
     const nextUrl = page !== undefined
@@ -454,8 +457,8 @@ export function projectDocs(): void {
           )
         }
         // Beside the page that references it, under its own basename: each
-        // locale's route tree gets its own copy, so one relative URL is correct
-        // from both.
+        // locale's route tree gets its own copy, so one relative URL is
+        // correct from every locale.
         const name = basename(real)
         const target = resolve(dirname(output), name)
         claim(target, real)

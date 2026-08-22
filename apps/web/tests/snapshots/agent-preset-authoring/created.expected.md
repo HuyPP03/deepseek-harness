@@ -78,7 +78,7 @@
   - list:
     - listitem:
       - 'button "设为默认: 我的模式"':
-        - text: 我的模式 自定义 仅提供持久 bash 与 str_replace_editor 的双工具编码 Agent。
+        - text: 我的模式 自定义 Two-tool coding agent with persistent bash and str_replace_editor.
         - code: my-agent
       - 'button "查看路径: 我的模式"':
         - img
