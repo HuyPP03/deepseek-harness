@@ -569,6 +569,15 @@
         "tests/**/*.ts"
       ]
     },
+    "packages/web/web-fetch-websift": {
+      "entry": [
+        "tests/**/*.spec.ts"
+      ],
+      "project": [
+        "src/**/*.ts",
+        "tests/**/*.ts"
+      ]
+    },
     "packages/examples/acp-demo": {
       "entry": [
         "tests/**/*.spec.ts",

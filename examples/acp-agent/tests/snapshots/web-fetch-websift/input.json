@@ -1,0 +1,14 @@
+{
+  "steps": [
+    {
+      "op": "initialize"
+    },
+    {
+      "op": "newSession"
+    },
+    {
+      "op": "prompt",
+      "text": "Use the web_fetch tool exactly twice: first fetch https://127.0.0.1:8443/secret, then fetch http://127.0.0.1:8080/secret. Then reply exactly FETCH_BLOCKED. Do not describe the results."
+    }
+  ]
+}

@@ -158,6 +158,8 @@ flowchart LR
   cfg --> plugin_dsh_base_web
   plugin_dsh_base_web_search_websift["web-search-websift<br/>@deepseek-ai/dsh-web-search-websift"]
   cfg --> plugin_dsh_base_web_search_websift
+  plugin_dsh_base_web_fetch_websift["web-fetch-websift<br/>@deepseek-ai/dsh-web-fetch-websift"]
+  cfg --> plugin_dsh_base_web_fetch_websift
   plugin_dsh_base_web_search_deepseek["web-search-deepseek<br/>@deepseek-ai/dsh-web-search-deepseek"]
   cfg --> plugin_dsh_base_web_search_deepseek
   plugin_dsh_base_tool_web["tool-web<br/>@deepseek-ai/dsh-tool-web"]
@@ -251,6 +253,7 @@ flowchart LR
 | `repeat-tool-reminder` | `@deepseek-ai/dsh-repeat-tool-reminder` |
 | `web` | `@deepseek-ai/dsh-web` |
 | `web-search-websift` | `@deepseek-ai/dsh-web-search-websift` |
+| `web-fetch-websift` | `@deepseek-ai/dsh-web-fetch-websift` |
 | `web-search-deepseek` | `@deepseek-ai/dsh-web-search-deepseek` |
 | `tool-web` | `@deepseek-ai/dsh-tool-web` |
 | `tools` | `@deepseek-ai/dsh-tools` |

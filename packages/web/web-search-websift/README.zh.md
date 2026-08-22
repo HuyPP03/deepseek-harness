@@ -46,4 +46,4 @@ websift 不返回模型生成的答案，因此 `content` 被省略。`sources[]
 - **无 `publishedAt`** — websift 的无需密钥后端不返回发布日期，因此工具渲染的源不带日期后缀。
 - **带密钥的后端被推迟** — websift 的 `brave`／`exa`／`serper`／`tavily` 提供方携带 API 密钥，但其 `ProviderHttpClient` 会跟随重定向（`redirect: "follow"`），违反本包组对携带凭据的提供方请求的"拒绝重定向"规则。带密钥的后端将在上游客户端能在触碰 `Location` 目标之前拒绝重定向时落地。
 - **`ddgs` 是 DuckDuckGo HTML 抓取** — 无需密钥但受速率限制且可能被地区封锁；自托管 SearXNG 端点是稳定替代，SearXNG 后端在端点不可达时会在搜索时响亮失败。
-- **仅搜索** — websift 的 `fetch` 能力未被暴露；`ctx.web.fetch` 仍由 fetch 提供方服务。
+- **仅搜索；fetch 位于姊妹包** — 本包不暴露 fetch 路线。该库的页面抓取（SSRF 安全、HTML→markdown、PDF→文本）以 [`@deepseek-ai/dsh-web-fetch-websift`](../web-fetch-websift/README.md) 交付，base 挂载它、把 `web.fetchProvider` 指向它，并启用 `web_fetch`。

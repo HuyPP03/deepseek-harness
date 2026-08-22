@@ -2972,6 +2972,26 @@ export interface Config {
 
 Source: [`packages/web/web-fetch-http/src/index.ts:34`](../packages/web/web-fetch-http/src/index.ts)
 
+<a id="deepseek-aidsh-web-fetch-websift"></a>
+
+## `@deepseek-ai/dsh-web-fetch-websift`
+
+Requires: `web`
+
+```ts config-catalog
+/** Plugin config (all optional — the defaults are the shipped keyless policy). */
+export interface Config {
+  /** Allow `http://` (non-TLS) fetch targets. Defaults to false. */
+  allowHttp?: boolean
+  /** Provider-side fetch timeout in milliseconds. */
+  timeoutMs?: number
+  /** Maximum rendered page length in characters. */
+  maxPageChars?: number
+}
+```
+
+Source: [`packages/web/web-fetch-websift/src/index.ts:29`](../packages/web/web-fetch-websift/src/index.ts)
+
 <a id="deepseek-aidsh-web-search-deepseek"></a>
 
 ## `@deepseek-ai/dsh-web-search-deepseek`

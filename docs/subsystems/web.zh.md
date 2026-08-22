@@ -2,7 +2,7 @@
 
 [English](web.md) | 中文
 
-Web 访问 seam 是一个[能力 seam](../../.agents/notes/implemented/architecture/2026-06-24-web-capability-seam.md)，在同一个 `ctx.web` 服务上横跨**两项操作**（search 与 fetch），并拆分到多个包：Service Definition（[dsh-web](../../packages/web/web)，`ctx.web` + 提供方注册表）、Service Provider（[dsh-web-search-exa](../../packages/web/web-search-exa)、[dsh-web-search-perplexity](../../packages/web/web-search-perplexity)、[dsh-web-search-deepseek](../../packages/web/web-search-deepseek)、[dsh-web-search-websift](../../packages/web/web-search-websift)、[dsh-web-fetch-http](../../packages/web/web-fetch-http)）与 Consumer（[dsh-tool-web](../../packages/web/tool-web)，即 `web_search`/`web_fetch` 工具 schema）。Web 是**一项可选能力**，不属于 agent loop（智能体循环）主干，因此其词汇定义在此而非 [core.md](core.md) 中。更换 search 提供方不会改变模型提交查询的方式，更换 fetch 提供方也不会改变模型请求 URL 的方式。
+Web 访问 seam 是一个[能力 seam](../../.agents/notes/implemented/architecture/2026-06-24-web-capability-seam.md)，在同一个 `ctx.web` 服务上横跨**两项操作**（search 与 fetch），并拆分到多个包：Service Definition（[dsh-web](../../packages/web/web)，`ctx.web` + 提供方注册表）、Service Provider（[dsh-web-search-exa](../../packages/web/web-search-exa)、[dsh-web-search-perplexity](../../packages/web/web-search-perplexity)、[dsh-web-search-deepseek](../../packages/web/web-search-deepseek)、[dsh-web-search-websift](../../packages/web/web-search-websift)、[dsh-web-fetch-http](../../packages/web/web-fetch-http)、[dsh-web-fetch-websift](../../packages/web/web-fetch-websift)）与 Consumer（[dsh-tool-web](../../packages/web/tool-web)，即 `web_search`/`web_fetch` 工具 schema）。Web 是**一项可选能力**，不属于 agent loop（智能体循环）主干，因此其词汇定义在此而非 [core.md](core.md) 中。更换 search 提供方不会改变模型提交查询的方式，更换 fetch 提供方也不会改变模型请求 URL 的方式。
 
 源码：[`packages/web/web/src/types.ts`](../../packages/web/web/src/types.ts)
 
@@ -125,11 +125,11 @@ type WebFetchBody =
 
 ## 错误
 
-`WebError extends HarnessError`（[core.md](core.md) 错误分类体系），带有 `code: string`（开放式，与其他 seam 的错误一致——`LlmError`、`SubagentError`），而非封闭联合类型：提供方可以在不修改 `dsh-web` 的情况下抛出自己的错误代码，消费方必须容忍未知错误代码。错误代码按所有者划分。共享的 `WebRuntime` 约定会抛出与 seam 无关的错误代码：`WEB_PROVIDER_UNAVAILABLE`、`WEB_PROVIDER_CONFIGURED_MISSING`、`WEB_PROVIDER_CONFIGURED_UNAVAILABLE`、`WEB_PROVIDER_AMBIGUOUS`、`WEB_DUPLICATE_PROVIDER`（注册时的编程错误，类似 `LlmRuntime` 的 `DUPLICATE_ADAPTER`）、`WEB_ABORTED`，以及 `WEB_PROVIDER_ERROR`（提供方自身故障经 seam 暴露时使用的兜底代码，包括 DNS、连接被拒绝、TLS 等网络或传输故障）。抓取传输层错误代码由 `dsh-web-fetch-http` 实现拥有，不同的抓取后端无需抛出它们：`WEB_INVALID_URL`、`WEB_BLOCKED_URL`、`WEB_REDIRECT_BLOCKED`、`WEB_FETCH_TOO_LARGE`、`WEB_FETCH_TIMEOUT`、`WEB_UNSUPPORTED_CONTENT_TYPE`。
+`WebError extends HarnessError`（[core.md](core.md) 错误分类体系），带有 `code: string`（开放式，与其他 seam 的错误一致——`LlmError`、`SubagentError`），而非封闭联合类型：提供方可以在不修改 `dsh-web` 的情况下抛出自己的错误代码，消费方必须容忍未知错误代码。错误代码按所有者划分。共享的 `WebRuntime` 约定会抛出与 seam 无关的错误代码：`WEB_PROVIDER_UNAVAILABLE`、`WEB_PROVIDER_CONFIGURED_MISSING`、`WEB_PROVIDER_CONFIGURED_UNAVAILABLE`、`WEB_PROVIDER_AMBIGUOUS`、`WEB_DUPLICATE_PROVIDER`（注册时的编程错误，类似 `LlmRuntime` 的 `DUPLICATE_ADAPTER`）、`WEB_ABORTED`，以及 `WEB_PROVIDER_ERROR`（提供方自身故障经 seam 暴露时使用的兜底代码，包括 DNS、连接被拒绝、TLS 等网络或传输故障）。抓取传输层错误代码由抓取后端拥有（`dsh-web-fetch-http`，以及 `dsh-web-fetch-websift`，其 SSRF 拒绝抛出 `WEB_BLOCKED_URL`）；一个抓取后端无需抛出其中全部代码：`WEB_INVALID_URL`、`WEB_BLOCKED_URL`、`WEB_REDIRECT_BLOCKED`、`WEB_FETCH_TOO_LARGE`、`WEB_FETCH_TIMEOUT`、`WEB_UNSUPPORTED_CONTENT_TYPE`。
 
 ## 服务
 
-`WebRuntime` 注册搜索与抓取提供方，以 `WEB_DUPLICATE_PROVIDER` 拒绝重复 id，并在执行时以结构化的选择错误解析提供方。本地抓取后端仅接受 HTTP(S)、拒绝凭证、限制重定向次数、字节数、字符数和时间、对每一次同源重定向跳转重新进行安全校验，并解码正文；展示由工具负责。本地后端不会拦截私有网络目标；在能够触及敏感内部目标的环境中，禁止启用 `web_fetch`。
+`WebRuntime` 注册搜索与抓取提供方，以 `WEB_DUPLICATE_PROVIDER` 拒绝重复 id，并在执行时以结构化的选择错误解析提供方。两个抓取后端划分安全模型：本地后端（`dsh-web-fetch-http`）仅接受 HTTP(S)、拒绝凭证、限制重定向次数、字节数、字符数和时间、对每一次同源重定向跳转重新进行安全校验后再解码正文，但它不会拦截私有网络目标——在能够触及敏感内部目标的环境中，禁止经由它启用 `web_fetch`。websift 后端（`dsh-web-fetch-websift`）在任何请求离开进程之前拒绝环回、私有与链路本地目标，并把页面转换为 markdown 或 PDF 文本；base bundle 经由该路线启用 `web_fetch`。展示由工具负责。
 
 <!-- BEGIN GENERATED cordis-surface (gen-cordis-catalog.ts) — do not edit between markers -->
 
