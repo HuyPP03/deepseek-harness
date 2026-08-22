@@ -166,11 +166,13 @@ describe('web e2e: multi-workspace session', () => {
     await composer.fill('MULTI_WS_PLAIN_PROMPT start')
     await composer.press('Enter')
     await settled
-    // The plain session's cwd is the app project directory, so it is
-    // accounted under no workspace: the reference session stays the only
-    // reference, and its project's accounts hold no foreign session.
+    // The plain chat's cwd is its own sandbox under the harness home
+    // (the gateway's chatCwdFor fallback), so it is accounted under no
+    // workspace: the reference session stays the only reference, and its
+    // project's accounts hold no foreign session.
+    const chatRoot = join(scaffold.harnessHome, 'chat')
     const plainSession = scaffold.ctx.sessions.list()
-      .find(session => session.header.cwd === scaffold.workspaceCwd)
+      .find(session => session.header.cwd?.startsWith(`${chatRoot}/`))
     if (plainSession === undefined) throw new Error('multi-workspace e2e: plain session missing')
     const accounted = scaffold.ctx.workspaceRegistry.list()
       .flatMap(workspace => workspace.sessionIds)

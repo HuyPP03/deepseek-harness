@@ -12,11 +12,11 @@ The byte read is the runtime service's `read(sessionId, path)` — one fetch per
 
 ## Model Experience
 
-None — the inspector renders existing session content (diff cards) and existing files (raw channel); it adds no model-visible content and changes no prompt.
+None, as this package renders already logged session content (diff material) and files served by the raw channel for a human; it alters no model request, tool execution, or session event.
 
 #### KV Cache effect
 
-None.
+None. The package is client-only presentation.
 
 ## Known Limitations and Deferred Work
 
