@@ -3,6 +3,9 @@
     - button "Use only Cordis tools. First" [disabled]
   - img
   - text: Standard mode
+  - button "Session files":
+    - img
+    - text: Session files
   - button "Reference projects":
     - img
     - text: Add reference projects

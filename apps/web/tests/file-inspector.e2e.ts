@@ -268,4 +268,32 @@ describe.skipIf(MODE === 'record')('web e2e: chat session artifacts', () => {
     expect(tripwire.pageErrors).toEqual([])
     expect(tripwire.warnings).toEqual([])
   }, 90_000)
+
+  it('browses the session sandbox from the header Files button and opens a listed file', async () => {
+    onTestFailed(() => saveFailureShot(page, 'web-e2e-chat-artifacts-files'))
+    // The previous test left a fresh blank chat current and on top of the
+    // Chats list: reopen the seeded session by its title, not by position.
+    await page.getByRole('tab', { name: 'Chats' }).click()
+    await page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem', { name: 'Create report.md' }).click()
+    await page.getByText('DONE', { exact: true }).waitFor({ timeout: 15_000 })
+
+    // The header Files button browses the session's own cwd: the list seat
+    // shows every file the session can address, including report.md the
+    // write row claimed.
+    await page.getByRole('button', { name: 'Session files' }).click()
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(480)
+    const row = page.getByRole('button', { name: 'report.md', exact: true }).first()
+    await row.waitFor({ timeout: 15_000 })
+    expect(tripwire.pageErrors).toEqual([])
+
+    // A listed row reselects the file: the inspector seat takes over and
+    // renders the markdown preview for the same bytes.
+    await row.click()
+    await expect.poll(async () => await page.getByRole('heading', { name: 'Report' }).count(), { timeout: 15_000 }).toBe(1)
+    await page.getByRole('button', { name: 'Close details' }).click()
+    await expect.poll(() => detailsTrack(page), { timeout: 5_000 }).toBe(0)
+
+    expect(tripwire.pageErrors).toEqual([])
+    expect(tripwire.warnings).toEqual([])
+  }, 90_000)
 })

@@ -91,8 +91,39 @@ describe('latestFileDiffs', () => {
       toolResult(8, null, diffView('diff', [{ path: 1, oldText: 'a', newText: 'b' }])),
       toolResult(9, null, diffView('diff', [])),
       toolResult(10, null, { card: 'diff', diffs: [{ path: SEL, oldText: 'a', newText: 'b', oldStart: 'x' }] }),
+      toolResult(11, null, diffView('diff', [42])),
+      toolResult(12, null, diffView('diff', [{ path: SEL, oldText: 42, newText: 'b' }])),
+      toolResult(13, null, diffView('diff', [{ path: SEL, oldText: 'a', newText: 42 }])),
+      toolResult(14, null, diffView('diff', [{ path: SEL, oldText: 'a', newText: 'b', newStart: 'x' }])),
+      toolResult(15, null, diffView('diff', [{ path: SEL, oldText: 'a', newText: 'b', lang: 42 }])),
     ]
     expect(latestFileDiffs(nodes, SEL, '/tmp/proj')).toBeNull()
+  })
+
+  it('ignores a card whose hunks resolve to no other file', () => {
+    const nodes: ConversationNode[] = [
+      toolResult(3, null, diffView('diff', [{ path: 'src/other.ts', oldText: 'a', newText: 'b' }])),
+    ]
+    expect(latestFileDiffs(nodes, SEL, '/tmp/proj')).toBeNull()
+  })
+
+  it('prefers the newer card even when it appears earlier in the window', () => {
+    const nodes: ConversationNode[] = [
+      toolResult(9, null, diffView('diff', [{ path: SEL, oldText: 'a', newText: 'newer' }])),
+      toolResult(5, null, diffView('diff', [{ path: SEL, oldText: 'a', newText: 'older' }])),
+    ]
+    expect(latestFileDiffs(nodes, SEL, '/tmp/proj')?.[0]?.newText).toBe('newer')
+  })
+
+  it('ignores an in-flight child call that carries no result view', () => {
+    const running: ToolResultNode = {
+      callId: 'c16', name: 'write', argsRaw: '{}', turn: 1, step: 1, time: 16_000,
+      callView: null, subCalls: [],
+    } as unknown as ToolResultNode
+    const nodes: ConversationNode[] = [
+      toolResult(16, null, diffView('diff', [{ path: SEL, oldText: 'a', newText: 'settled' }]), [running]),
+    ]
+    expect(latestFileDiffs(nodes, SEL, '/tmp/proj')?.[0]?.newText).toBe('settled')
   })
 
   it('does not count non-diff cards', () => {
@@ -107,11 +138,40 @@ describe('latestFileDiffs', () => {
 describe('langForPath', () => {
   it('maps known extensions to shiki ids', () => {
     expect(langForPath('/p/main.ts')).toBe('ts')
+    expect(langForPath('/p/main.mts')).toBe('ts')
+    expect(langForPath('/p/main.cts')).toBe('ts')
     expect(langForPath('/p/App.tsx')).toBe('tsx')
     expect(langForPath('/p/Mod.GO')).toBe('go')
     expect(langForPath('/p/notes.md')).toBe('markdown')
     expect(langForPath('/p/a/b.c')).toBe('c')
     expect(langForPath('/p/style.css')).toBe('css')
+    expect(langForPath('/p/app.js')).toBe('js')
+    expect(langForPath('/p/app.mjs')).toBe('js')
+    expect(langForPath('/p/app.cjs')).toBe('js')
+    expect(langForPath('/p/App.jsx')).toBe('jsx')
+    expect(langForPath('/p/main.py')).toBe('py')
+    expect(langForPath('/p/main.rs')).toBe('rust')
+    expect(langForPath('/p/main.rb')).toBe('ruby')
+    expect(langForPath('/p/Main.java')).toBe('java')
+    expect(langForPath('/p/Main.kt')).toBe('kt')
+    expect(langForPath('/p/Main.swift')).toBe('swift')
+    expect(langForPath('/p/main.cpp')).toBe('cpp')
+    expect(langForPath('/p/main.cs')).toBe('cs')
+    expect(langForPath('/p/run.sh')).toBe('sh')
+    expect(langForPath('/p/run.bash')).toBe('sh')
+    expect(langForPath('/p/run.zsh')).toBe('sh')
+    expect(langForPath('/p/data.json')).toBe('json')
+    expect(langForPath('/p/data.jsonc')).toBe('json')
+    expect(langForPath('/p/cfg.yaml')).toBe('yaml')
+    expect(langForPath('/p/cfg.yml')).toBe('yaml')
+    expect(langForPath('/p/cfg.toml')).toBe('toml')
+    expect(langForPath('/p/cfg.ini')).toBe('ini')
+    expect(langForPath('/p/page.mdx')).toBe('mdx')
+    expect(langForPath('/p/theme.scss')).toBe('scss')
+    expect(langForPath('/p/theme.less')).toBe('less')
+    expect(langForPath('/p/query.sql')).toBe('sql')
+    expect(langForPath('/p/page.xml')).toBe('xml')
+    expect(langForPath('/p/init.lua')).toBe('lua')
   })
   it('returns undefined without an extension', () => {
     expect(langForPath('/p/Makefile')).toBeUndefined()

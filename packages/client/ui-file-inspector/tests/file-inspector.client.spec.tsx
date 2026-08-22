@@ -187,6 +187,20 @@ describe('preview seat', () => {
     const img = await screen.findByRole('img', { name: '/tmp/proj/icon.svg' })
     expect(img.getAttribute('src')).toBe(`/api/file/s1/${encodeURIComponent('/tmp/proj/icon.svg')}`)
   })
+
+  it('reuses the code states for an unreadable markdown preview', async () => {
+    renderInspector([], () => Promise.reject(new FileBytesError(413, 'too large')), '/tmp/proj/note.md')
+    expect(await screen.findByText('文件超过 25 MiB 边界，无法在检视器中显示')).toBeTruthy()
+    cleanup()
+    renderInspector([], () => Promise.reject(new FileBytesError(500, 'unreadable')), '/tmp/proj/note.md')
+    expect(await screen.findByText('文件不可读（权限或平台错误）')).toBeTruthy()
+    cleanup()
+    renderInspector([], () => Promise.resolve(okBytes('bin\u0000ary\n')), '/tmp/proj/note.md')
+    expect(await screen.findByText('二进制文件，无代码视图')).toBeTruthy()
+    cleanup()
+    renderInspector([], () => Promise.resolve(okBytes('')), '/tmp/proj/note.md')
+    expect(await screen.findByText('空文件')).toBeTruthy()
+  })
 })
 
 describe('preview seat: office documents', () => {
@@ -222,5 +236,42 @@ describe('preview seat: office documents', () => {
   it('shows the failed state when the read or parse rejects', async () => {
     renderInspector([], () => Promise.reject(new FileBytesError(500, 'unreadable')), '/tmp/proj/report.docx')
     expect(await screen.findByText('预览失败（文件无法解析）')).toBeTruthy()
+  })
+
+  it('discards a parse that settles after the seat unmounts', async () => {
+    // One shared pending read: the code seat and the office seat both fetch
+    // through it, so a single settle moves both of their continuations.
+    let settle!: (value: { bytes: Uint8Array; contentType: string; size: number }) => void
+    const pending = new Promise<{ bytes: Uint8Array; contentType: string; size: number }>(
+      (r) => { settle = r },
+    )
+    const { view } = renderInspector([], () => pending, '/tmp/proj/data.csv')
+    expect(screen.getByText('载入文件…')).toBeTruthy()
+    view.unmount()
+    await act(async () => { settle(okBytes('name,age\nAda,36\n')) })
+  })
+
+  it('discards a read rejection that lands after the seat unmounts', async () => {
+    let reject!: (reason: unknown) => void
+    const pending = new Promise<{ bytes: Uint8Array; contentType: string; size: number }>(
+      (_r, r) => { reject = r },
+    )
+    const { view } = renderInspector([], () => pending, '/tmp/proj/report.docx')
+    expect(screen.getByText('载入文件…')).toBeTruthy()
+    view.unmount()
+    await act(async () => { reject(new FileBytesError(500, 'unreadable')) })
+  })
+})
+
+describe('virtual code view', () => {
+  it('keeps the visible slice on scroll', async () => {
+    const lines = Array.from({ length: 500 }, (_, i) => `line ${i}\n`).join('')
+    renderInspector([], () => Promise.resolve(okBytes(lines)))
+    expect(await screen.findByText(lineText('line 0'))).toBeTruthy()
+    // The scroll container is the only element carrying the line-height marker.
+    const scroll = document.querySelector('[data-line-height]')
+    expect(scroll).toBeTruthy()
+    fireEvent.scroll(scroll!)
+    expect(screen.getAllByText(lineText('line 0')).length).toBeGreaterThan(0)
   })
 })

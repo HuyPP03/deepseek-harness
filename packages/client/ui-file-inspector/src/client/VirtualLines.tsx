@@ -43,10 +43,14 @@ function LineRow({ number, text, spans }: { number: number; text: string; spans:
  * @returns the scrollable view.
  */
 export function VirtualLines({ code, lang }: VirtualLinesProps) {
+  // An empty text never reaches the virtual view (the code seat renders its
+  // own empty state first); the empty-code arms below are defensive.
+  /* v8 ignore next -- empty code is filtered by the code seat's empty state */
   const lines = useMemo(() => (code === '' ? [] : code.split('\n')), [code])
   // Re-render when a lazy grammar finishes loading so a plain fallback picks
   // up highlighting (the snapshot value is opaque; only its change matters).
   const loaded = useSyncExternalStore(subscribeGrammarLoaded, grammarLoadCount, grammarLoadCount)
+  /* v8 ignore next -- lines can only be empty for the filtered empty code */
   const spans = useMemo(
     () => (lines.length === 0 ? [] : (highlightLines(code, lang) ?? null)),
     [code, lines.length, lang, loaded],
@@ -61,6 +65,9 @@ export function VirtualLines({ code, lang }: VirtualLinesProps) {
 
   useEffect(() => {
     const el = scrollRef.current
+    // The ref is set before the effect runs (mounted view); null is only the
+    // disposal-order defensive case.
+    /* v8 ignore next -- ref is set by React before the mount effect */
     if (el === null) return
     const measure = () => { setViewH(el.clientHeight) }
     measure()

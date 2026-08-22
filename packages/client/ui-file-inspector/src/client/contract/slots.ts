@@ -11,6 +11,8 @@
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 // Type-only: pulls the ui-conversation SlotMap merge (the seat's owner params).
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+// Type-only: the files.list RPC row shape the browser lists through.
+import type { FileEntry } from '@deepseek-ai/dsh-api-remotes/client'
 
 /** The seat's full props: the owner share, the standard locale seat, and the injected read face. */
 export type FileInspectorProps = PropsRuntime<'conversation.details.file'> & PropsLocale<'fileInspector'> & FileInspectorInjected
@@ -36,4 +38,30 @@ export interface FileInspectorInjected {
    * @returns the raw channel URL string.
    */
   fileUrl: (path: string) => string
+}
+
+/** The session file list seat's full props. */
+export type FileBrowserProps = PropsRuntime<'conversation.details.files'> & PropsLocale<'fileInspector'> & FileBrowserInjected
+
+/**
+ * The file list seat's inject face: the session's working-set listing (the
+ * same bounded walk the composer's `@` source fetches) and the opener that
+ * turns a row into an inspector file selection.
+ */
+export interface FileBrowserInjected {
+  /**
+   * List the session's working-set files and directories (host bounded
+   * walk: depth 8, 20000 scanned, 100 rows; dot entries and the skip list
+   * are pruned host-side).
+   * @param signal - optional cancellation for the underlying RPC.
+   * @returns the rows (workspace-relative or reference-rooted) and whether
+   * the scan bound cut the walk short.
+   */
+  listFiles: (signal?: AbortSignal) => Promise<{ rows: readonly FileEntry[]; truncated: boolean }>
+  /**
+   * Open one listed file in the inspector (replaces the browse selection
+   * with the file selection and keeps the panel open).
+   * @param path - the row's canonical absolute path.
+   */
+  openFile: (path: string) => void
 }

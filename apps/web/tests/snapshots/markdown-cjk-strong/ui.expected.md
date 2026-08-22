@@ -1,6 +1,9 @@
 - banner:
   - navigation "Session hierarchy":
     - button "CJK strong emphasis" [disabled]
+  - button "Session files":
+    - img
+    - text: Session files
   - button "Session log":
     - text: Session log
     - img

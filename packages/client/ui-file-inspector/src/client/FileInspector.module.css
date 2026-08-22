@@ -135,3 +135,77 @@
   white-space: pre;
   font-family: var(--dsw-font-mono, ui-monospace, monospace);
 }
+
+/* The session file list seat: one filter input over the bounded walk. */
+
+.browserRoot {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.browserFilter {
+  flex: none;
+  margin: 8px 12px 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--dsw-border, rgb(34 34 34));
+  border-radius: 6px;
+  background: none;
+  color: var(--dsw-text, rgb(229 229 229));
+  font: inherit;
+  font-size: 12px;
+}
+
+.browserFilter::placeholder {
+  color: var(--dsw-text-muted, rgb(156 163 175));
+}
+
+.browserNote {
+  flex: none;
+  padding: 0 12px 4px;
+  color: var(--dsw-text-muted, rgb(156 163 175));
+  font-size: 11px;
+}
+
+.browserList {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  margin: 0;
+  padding: 0 4px 8px;
+  list-style: none;
+}
+
+.browserRow {
+  display: block;
+  width: 100%;
+  appearance: none;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  color: var(--dsw-text, rgb(229 229 229));
+  font: inherit;
+  font-size: 12px;
+  font-family: var(--dsw-font-mono, ui-monospace, monospace);
+  text-align: left;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browserRow:hover {
+  background: var(--dsw-alias-fill-tsp-secondary, rgb(34 34 34));
+}
+
+.browserRowDir {
+  padding: 4px 8px;
+  color: var(--dsw-text-muted, rgb(156 163 175));
+  font-size: 12px;
+  font-family: var(--dsw-font-mono, ui-monospace, monospace);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

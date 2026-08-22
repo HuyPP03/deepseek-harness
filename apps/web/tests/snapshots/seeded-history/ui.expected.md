@@ -1,6 +1,9 @@
 - banner:
   - navigation "Session hierarchy":
     - button "Use the read tool twice" [disabled]
+  - button "Session files":
+    - img
+    - text: Session files
   - button "Session log":
     - text: Session log
     - img

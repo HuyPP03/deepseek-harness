@@ -75,7 +75,11 @@ export function FileInspector({ path, cwd, readFile, fileUrl, useSession, t }: F
     ...(previewKind !== 'image' ? [{ id: 'code' as const, label: t('tab.code') }] : []),
   ]
   const active: 'preview' | 'changes' | 'code' =
-    tabs.some(entry => entry.id === tab) ? tab : tabs[0]?.id ?? 'code'
+    // The tab is only ever set from this array (initial pick or a tab click)
+    // and the seat remounts per selection, so the fallback is unreachable.
+    tabs.some(entry => entry.id === tab)
+      ? tab
+      : /* v8 ignore next -- tab can only hold an id from this array */ tabs[0]?.id ?? 'code'
 
   // The Code seat's four states: streaming, a raw-channel refusal, a binary
   // sniff, and an empty file.
