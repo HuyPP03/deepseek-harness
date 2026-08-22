@@ -10,7 +10,9 @@
 | [`web-search-exa/`](web-search-exa/README.md) | 通过 Exa 提供 web 搜索 | 注册到 `ctx.web` |
 | [`web-search-perplexity/`](web-search-perplexity/README.md) | 通过 Perplexity 提供 web 搜索 | 注册到 `ctx.web` |
 | [`web-search-deepseek/`](web-search-deepseek/README.md) | 提供 DeepSeek 原生 web 搜索 | 注册到 `ctx.web` |
+| [`web-search-websift/`](web-search-websift/README.md) | 通过 websift（DuckDuckGo 或自托管 SearXNG）提供无需密钥的 web 搜索 | 注册到 `ctx.web` |
 | [`web-fetch-http/`](web-fetch-http/README.md) | 抓取公共 HTTP 和 HTTPS 资源 | 注册到 `ctx.web` |
+| [`web-fetch-websift/`](web-fetch-websift/README.md) | 通过 websift 的 SSRF 安全获取抓取页面（HTML→markdown、PDF→文本） | 注册到 `ctx.web` |
 | [`tool-web/`](tool-web/README.md) | 向模型公开 web 搜索和抓取 | 注册到 `ctx.tools` |
 
 [web 能力决策](../../.agents/notes/implemented/architecture/2026-06-24-web-capability-seam.md)记录了搜索和抓取共用一项提供方选择服务的原因。

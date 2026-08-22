@@ -87,6 +87,7 @@ External packages that a workspace package resolves at runtime. The tier covers 
 | [`turndown`](https://github.com/mixmark-io/turndown) | MIT |
 | [`typescript`](https://github.com/microsoft/TypeScript) | Apache-2.0 |
 | [`use-sync-external-store`](https://github.com/facebook/react) | MIT |
+| [`websift`](https://github.com/HuyPP03/websift) | MIT |
 | [`ws`](https://github.com/websockets/ws) | MIT |
 | [`xlsx`](https://github.com/SheetJS/sheetjs) | Apache-2.0 |
 | [`yaml`](https://github.com/eemeli/yaml) | ISC |

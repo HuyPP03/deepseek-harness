@@ -2974,6 +2974,26 @@ export interface Config {
 
 来源：[`packages/web/web-fetch-http/src/index.ts:34`](../packages/web/web-fetch-http/src/index.ts)
 
+<a id="deepseek-aidsh-web-fetch-websift"></a>
+
+## `@deepseek-ai/dsh-web-fetch-websift`
+
+需要：`web`
+
+```ts config-catalog
+/** Plugin config (all optional — the defaults are the shipped keyless policy). */
+export interface Config {
+  /** Allow `http://` (non-TLS) fetch targets. Defaults to false. */
+  allowHttp?: boolean
+  /** Provider-side fetch timeout in milliseconds. */
+  timeoutMs?: number
+  /** Maximum rendered page length in characters. */
+  maxPageChars?: number
+}
+```
+
+来源：[`packages/web/web-fetch-websift/src/index.ts:29`](../packages/web/web-fetch-websift/src/index.ts)
+
 <a id="deepseek-aidsh-web-search-deepseek"></a>
 
 ## `@deepseek-ai/dsh-web-search-deepseek`
@@ -3049,6 +3069,26 @@ export interface Config {
 ```
 
 来源：[`packages/web/web-search-perplexity/src/index.ts:32`](../packages/web/web-search-perplexity/src/index.ts)
+
+<a id="deepseek-aidsh-web-search-websift"></a>
+
+## `@deepseek-ai/dsh-web-search-websift`
+
+需要：`web`
+
+```ts config-catalog
+/** Plugin config (all optional — defaults fill the keyless DuckDuckGo route). */
+export interface Config {
+  /** Keyless websift backend. Defaults to `ddgs`; `searxng` requires `baseUrl`. */
+  provider?: string
+  /** SearXNG endpoint base (required when `provider` is `searxng`). */
+  baseUrl?: string
+  /** Allow `http://` provider endpoints for local/self-hosted SearXNG. Defaults to false. */
+  allowHttp?: boolean
+}
+```
+
+来源：[`packages/web/web-search-websift/src/index.ts:34`](../packages/web/web-search-websift/src/index.ts)
 
 <a id="deepseek-aidsh-workflow-worker-thread"></a>
 

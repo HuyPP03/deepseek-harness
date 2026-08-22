@@ -34,18 +34,6 @@ export interface CardFieldSpec {
   parse: (text: string) => FieldWrite | undefined
 }
 
-/**
- * A control whose value is written outside the settings section. A credential
- * literal never rides a response, so its draft has nothing to seed from: it is
- * blank until typed, and a blank draft writes nothing.
- */
-export interface CardSecretSpec {
-  /** Field name addressing this control inside the card's form. */
-  field: string
-  /** Write the staged text; resolves to whether the Host accepted it. */
-  write: (text: string) => Promise<boolean>
-}
-
 /** One field as a card's control renders it. */
 export interface CardFieldState {
   /** Draft text the control renders. */
@@ -146,6 +134,26 @@ export function textField(field: string): CardFieldSpec {
 }
 
 /**
+ * A closed-choice field: the draft must name one of the choices, or stay
+ * empty to clear the field back to the inherited value. Anything else blocks
+ * the save rather than writing a value the section cannot act on.
+ * @param field - field name inside the namespace section.
+ * @param choices - the values this field accepts, compared exactly.
+ * @returns the field's conversion spec.
+ */
+export function choiceField(field: string, choices: readonly string[]): CardFieldSpec {
+  return {
+    field,
+    format: value => typeof value === 'string' ? value : '',
+    parse: (text) => {
+      const trimmed = text.trim()
+      if (trimmed === '') return { kind: 'clear' }
+      return choices.includes(trimmed) ? { kind: 'set', value: trimmed } : undefined
+    },
+  }
+}
+
+/**
  * Stages one card's edits over one settings namespace and writes them on save.
  *
  * The form publishes through a snapshot store because slot components read
@@ -154,7 +162,6 @@ export function textField(field: string): CardFieldSpec {
  */
 export class CardForm<T> {
   private readonly specs: Map<string, CardFieldSpec>
-  private readonly secretSpecs: Map<string, CardSecretSpec>
   private readonly staged = new Map<string, StagedEdit>()
   private readonly listeners = new Set<() => void>()
   private saving = false
@@ -163,15 +170,12 @@ export class CardForm<T> {
   /**
    * @param scope - the bound settings scope for this card's namespace.
    * @param specs - the section fields this card edits.
-   * @param secrets - the card's write-only controls, written outside the section.
    */
   constructor(
     private readonly scope: SettingsScope<T>,
     specs: CardFieldSpec[],
-    secrets: CardSecretSpec[] = [],
   ) {
     this.specs = new Map(specs.map(spec => [spec.field, spec]))
-    this.secretSpecs = new Map(secrets.map(spec => [spec.field, spec]))
     scope.subscribe(() => { this.publish() })
   }
 
@@ -210,9 +214,6 @@ export class CardForm<T> {
    */
   field(field: string): CardFieldState {
     const staged = this.staged.get(field)
-    if (this.secretSpecs.has(field)) {
-      return { text: staged?.text ?? '', overridden: false, invalid: false }
-    }
     const spec = this.spec(field)
     if (staged === undefined) {
       return { text: spec.format(this.sectionValue(field)), overridden: this.stored(field), invalid: false }
@@ -280,12 +281,6 @@ export class CardForm<T> {
   private plan(): PlannedWrite[] {
     const plan: PlannedWrite[] = []
     for (const [field, staged] of this.staged) {
-      const secret = this.secretSpecs.get(field)
-      if (secret !== undefined) {
-        const value = staged.text.trim()
-        if (value !== '') plan.push({ field, run: () => secret.write(value) })
-        continue
-      }
       const spec = this.spec(field)
       if (staged.clear) {
         if (this.stored(field)) plan.push({ field, run: () => this.clear(field) })

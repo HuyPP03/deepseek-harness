@@ -58,6 +58,7 @@ const SUBAGENT_CONTINUABLE_INHERITANCE_CONFIG = fileURLToPath(
 )
 const LSP_CONFIG = fileURLToPath(new URL('./lsp.cordis.yml', import.meta.url))
 const WEB_CONFIG = fileURLToPath(new URL('../web.cordis.yml', import.meta.url))
+const WEB_FETCH_WEBSIFT_CONFIG = fileURLToPath(new URL('../web-fetch-websift.cordis.yml', import.meta.url))
 const FS_SEARCH_CONFIG = fileURLToPath(new URL('./fs-search.cordis.yml', import.meta.url))
 const PARTIAL_LANDLOCK_CONFIG = fileURLToPath(new URL('../partial-landlock.cordis.yml', import.meta.url))
 const PWSH_CONFIG = fileURLToPath(new URL('./pwsh.cordis.yml', import.meta.url))
@@ -334,6 +335,14 @@ const SCENARIOS: Scenario[] = [
   // turndown conversion. The fetched URL (fixed port) is part of the recorded
   // transcript; replay re-executes the real fetch against the same fixture.
   { name: 'web-fetch', hasModelTurn: true, recorded: true, pinsHeader: true, headerClass: 'web', configPath: WEB_CONFIG },
+  // web_fetch's SSRF-safe refusal end to end: the scripted model asks for a
+  // loopback https URL and an http-scheme URL, and the REAL websift fetch
+  // provider's preflight refuses each — loopback as a non-global address,
+  // http as a disallowed scheme — before any request leaves the process, so
+  // the tool results pin the model-visible errors keyless with no external
+  // network. Authored (not recorded): a live model cannot be coaxed into a
+  // stable loopback fetch.
+  { name: 'web-fetch-websift', hasModelTurn: true, recorded: false, headerClass: 'web', configPath: WEB_FETCH_WEBSIFT_CONFIG },
   {
     name: 'workspace-edit',
     hasModelTurn: true,

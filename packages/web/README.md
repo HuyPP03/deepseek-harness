@@ -10,7 +10,9 @@ This family provides provider-neutral web search and fetch operations plus the m
 | [`web-search-exa/`](web-search-exa/README.md) | Provides web search through Exa | registers on `ctx.web` |
 | [`web-search-perplexity/`](web-search-perplexity/README.md) | Provides web search through Perplexity | registers on `ctx.web` |
 | [`web-search-deepseek/`](web-search-deepseek/README.md) | Provides native DeepSeek web search | registers on `ctx.web` |
+| [`web-search-websift/`](web-search-websift/README.md) | Provides keyless web search through websift (DuckDuckGo or a self-hosted SearXNG) | registers on `ctx.web` |
 | [`web-fetch-http/`](web-fetch-http/README.md) | Fetches public HTTP and HTTPS resources | registers on `ctx.web` |
+| [`web-fetch-websift/`](web-fetch-websift/README.md) | Fetches pages through websift's SSRF-safe retrieval (HTML-to-markdown, PDF-to-text) | registers on `ctx.web` |
 | [`tool-web/`](tool-web/README.md) | Exposes web search and fetch to the model | registers on `ctx.tools` |
 
 The [web capability decision](../../.agents/notes/implemented/architecture/2026-06-24-web-capability-seam.md) records why search and fetch share one provider-selection service.

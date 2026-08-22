@@ -353,11 +353,8 @@ describe('WebSearchCard', () => {
   function renderWebSearch(state: Partial<WebSearchCardState> = {}) {
     const store = createSnapshotStore<WebSearchCardState>({
       ...settled,
-      baseURL: field(''),
-      maxUses: field('5'),
-      apiKey: field(''),
-      apiKeyConfigured: false,
-      apiKeyWritable: true,
+      provider: field('ddgs'),
+      baseUrl: field(''),
       ...state,
     })
     const actions = cardActions()
@@ -366,54 +363,39 @@ describe('WebSearchCard', () => {
     return actions
   }
 
-  it('reports whether a key is configured without ever showing one', () => {
-    renderWebSearch({ apiKeyConfigured: true })
-    fireEvent.click(screen.getByText(en.webSearchTitle))
-
-    expect(screen.getByText(en.webSearchApiKeySet)).toBeTruthy()
-    expect(screen.getByLabelText(en.webSearchApiKey)).toHaveProperty('type', 'password')
-  })
-
-  it('keeps the key control usable while the settings document is read-only', () => {
-    const actions = renderWebSearch({ writable: false })
-    fireEvent.click(screen.getByText(en.webSearchTitle))
-
-    const key = screen.getByLabelText(en.webSearchApiKey)
-    expect(key).toHaveProperty('disabled', false)
-    expect(screen.getByLabelText(en.webSearchBaseUrl)).toHaveProperty('disabled', true)
-
-    fireEvent.change(key, { target: { value: 'ds-secret' } })
-
-    expect(actions.edit).toHaveBeenCalledWith('apiKey', 'ds-secret')
-  })
-
-  it('disables the key control when the reference itself is not writable', () => {
-    // A key coming from the process environment: the settings document is
-    // writable, the credential is not.
-    renderWebSearch({ apiKeyConfigured: true, apiKeyWritable: false })
-    fireEvent.click(screen.getByText(en.webSearchTitle))
-
-    expect(screen.getByLabelText(en.webSearchApiKey)).toHaveProperty('disabled', true)
-    expect(screen.getByLabelText(en.webSearchBaseUrl)).toHaveProperty('disabled', false)
-  })
-
-  it('stages the endpoint, the search budget, and their resets', () => {
+  it('stages the backend and the endpoint, and their resets', () => {
     const actions = renderWebSearch({
-      baseURL: field('https://search.test/v1', { overridden: true }),
-      maxUses: field('3', { overridden: true }),
+      provider: field('ddgs', { overridden: true }),
+      baseUrl: field('http://searxng.test', { overridden: true }),
     })
     fireEvent.click(screen.getByText(en.webSearchTitle))
 
-    fireEvent.change(screen.getByLabelText(en.webSearchBaseUrl), { target: { value: 'https://other.test' } })
-    fireEvent.change(screen.getByLabelText(en.webSearchMaxUses), { target: { value: '4' } })
+    fireEvent.change(screen.getByLabelText(en.webSearchProvider), { target: { value: 'searxng' } })
+    fireEvent.change(screen.getByLabelText(en.webSearchBaseUrl), { target: { value: 'http://other.test' } })
     const resets = screen.getAllByRole('button', { name: en.reset })
     expect(resets).toHaveLength(2)
     for (const reset of resets) fireEvent.click(reset)
 
     expect(actions.edit.mock.calls).toEqual([
-      ['baseURL', 'https://other.test'],
-      ['maxUses', '4'],
+      ['provider', 'searxng'],
+      ['baseUrl', 'http://other.test'],
     ])
-    expect(actions.resetField.mock.calls).toEqual([['baseURL'], ['maxUses']])
+    expect(actions.resetField.mock.calls).toEqual([['provider'], ['baseUrl']])
+  })
+
+  it('disables both controls while the settings document is read-only', () => {
+    renderWebSearch({ writable: false })
+    fireEvent.click(screen.getByText(en.webSearchTitle))
+
+    expect(screen.getByLabelText(en.webSearchProvider)).toHaveProperty('disabled', true)
+    expect(screen.getByLabelText(en.webSearchBaseUrl)).toHaveProperty('disabled', true)
+  })
+
+  it('shows the choice hint while the draft names no backend', () => {
+    renderWebSearch({ provider: field('brave', { invalid: true }) })
+    fireEvent.click(screen.getByText(en.webSearchTitle))
+
+    expect(screen.getByText(en.webSearchProviderInvalid)).toBeTruthy()
+    expect(screen.getByLabelText(en.webSearchProvider).getAttribute('aria-invalid')).toBe('true')
   })
 })
