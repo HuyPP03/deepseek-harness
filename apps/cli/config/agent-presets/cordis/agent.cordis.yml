@@ -236,7 +236,6 @@
   name: '@deepseek-ai/dsh-tool-web'
   config:
     fetch: false
-    searchTimeoutMs: 60000
 
 # ── self-modification ───────────────────────────────────────────────────────
 

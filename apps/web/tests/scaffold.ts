@@ -236,15 +236,13 @@ export interface LaunchOptions {
   /** Leave the current welcome notice pending; ordinary scenarios pre-acknowledge it before browser boot. */
   welcomeNoticePending?: boolean
   /**
-   * Patch the shipped DeepSeek search row to a deterministic endpoint and
-   * credential reference. Browser search scenarios keep the real provider and
-   * credentials seam while avoiding external search traffic and ambient keys.
+   * Point the shipped websift search row at a deterministic self-hosted
+   * SearXNG endpoint. Browser search scenarios keep the real provider while
+   * avoiding external search traffic; the route stays keyless.
    */
-  deepSeekSearch?: {
-    /** Anthropic-compatible base URL; the provider appends `/messages`. */
-    baseURL: string
-    /** Credential reference resolved by the shipped search provider. */
-    apiKeyEnv: string
+  websiftSearch?: {
+    /** SearXNG endpoint base; the provider queries `{baseUrl}/search`. */
+    baseUrl: string
   }
   /**
    * Replace the roster the scaffold mounts by default (the shipped directory
@@ -476,13 +474,14 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
         { id: 'tool-cordis', name: '@deepseek-ai/dsh-tool-cordis' },
       ] }]
       : [],
-    ...options.deepSeekSearch === undefined
+    ...options.websiftSearch === undefined
       ? []
       : [{
-        id: 'web-search-deepseek',
+        id: 'web-search-websift',
         config: {
-          apiKeyEnv: options.deepSeekSearch.apiKeyEnv,
-          baseURL: options.deepSeekSearch.baseURL,
+          provider: 'searxng',
+          baseUrl: options.websiftSearch.baseUrl,
+          allowHttp: true,
         },
       }],
     ...mode === 'record' || options.deepSeekMissingCredential === true

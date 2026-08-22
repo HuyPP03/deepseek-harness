@@ -9,8 +9,8 @@ export type PluginsSettingsLocaleKey =
   | 'bashMaxOutputBytes' | 'bashMaxOutputBytesHint'
   | 'agentLoopTitle' | 'agentLoopDescription' | 'agentLoopMaxParallel' | 'agentLoopMaxParallelHint'
   | 'webSearchTitle' | 'webSearchDescription'
-  | 'webSearchApiKey' | 'webSearchApiKeyHint' | 'webSearchApiKeySet' | 'webSearchApiKeyUnset'
-  | 'webSearchBaseUrl' | 'webSearchBaseUrlHint' | 'webSearchMaxUses' | 'webSearchMaxUsesHint'
+  | 'webSearchProvider' | 'webSearchProviderHint' | 'webSearchProviderInvalid'
+  | 'webSearchBaseUrl' | 'webSearchBaseUrlHint'
 
 /** English copy. */
 export const en: Record<PluginsSettingsLocaleKey, string> = {
@@ -42,15 +42,12 @@ export const en: Record<PluginsSettingsLocaleKey, string> = {
   agentLoopMaxParallel: 'Parallel tool calls',
   agentLoopMaxParallelHint: 'Upper bound on parallel-safe calls running at once within one step.',
   webSearchTitle: 'Web search',
-  webSearchDescription: 'The DeepSeek search provider.',
-  webSearchApiKey: 'API key',
-  webSearchApiKeyHint: 'Stored outside the settings file. Leave blank to keep the current key.',
-  webSearchApiKeySet: 'A key is configured.',
-  webSearchApiKeyUnset: 'No key is configured; search is unavailable until one is.',
+  webSearchDescription: 'The keyless websift search provider.',
+  webSearchProvider: 'Backend',
+  webSearchProviderHint: 'ddgs searches DuckDuckGo; searxng uses the endpoint below.',
+  webSearchProviderInvalid: 'Enter ddgs or searxng.',
   webSearchBaseUrl: 'Endpoint',
-  webSearchBaseUrlHint: 'Leave blank to use the provider default.',
-  webSearchMaxUses: 'Max searches per request',
-  webSearchMaxUsesHint: 'How many times one request may search before it must answer.',
+  webSearchBaseUrlHint: 'SearXNG endpoint base, used only by the searxng backend. Leave blank to keep the inherited value.',
 }
 
 /** Vietnamese copy. */
@@ -83,15 +80,12 @@ export const vi: Record<PluginsSettingsLocaleKey, string> = {
   agentLoopMaxParallel: 'Gọi công cụ song song',
   agentLoopMaxParallelHint: 'Giới hạn trên của các lần gọi an toàn song song chạy cùng lúc trong một bước.',
   webSearchTitle: 'Tìm kiếm web',
-  webSearchDescription: 'Nhà cung cấp tìm kiếm DeepSeek.',
-  webSearchApiKey: 'API key',
-  webSearchApiKeyHint: 'Được lưu ngoài file cài đặt. Để trống để giữ API key hiện tại.',
-  webSearchApiKeySet: 'Đã có API key được cấu hình.',
-  webSearchApiKeyUnset: 'Chưa cấu hình API key; tìm kiếm không khả dụng cho tới khi được cấu hình.',
+  webSearchDescription: 'Nhà cung cấp tìm kiếm websift không cần khóa.',
+  webSearchProvider: 'Backend',
+  webSearchProviderHint: 'ddgs tìm trên DuckDuckGo; searxng dùng điểm cuối bên dưới.',
+  webSearchProviderInvalid: 'Nhập ddgs hoặc searxng.',
   webSearchBaseUrl: 'URL',
-  webSearchBaseUrlHint: 'Để trống để dùng giá trị mặc định của nhà cung cấp.',
-  webSearchMaxUses: 'Số lần tìm kiếm tối đa mỗi request',
-  webSearchMaxUsesHint: 'Một request được phép tìm kiếm bao nhiêu lần trước khi phải trả lời.',
+  webSearchBaseUrlHint: 'Điểm cuối SearXNG, chỉ backend searxng dùng. Để trống để giữ giá trị kế thừa.',
 }
 
 /** Simplified Chinese copy. */
@@ -124,13 +118,10 @@ export const zh: Record<PluginsSettingsLocaleKey, string> = {
   agentLoopMaxParallel: '并行工具调用数',
   agentLoopMaxParallelHint: '同一步内最多同时运行多少个可并行的调用。',
   webSearchTitle: '网页搜索',
-  webSearchDescription: 'DeepSeek 搜索提供方。',
-  webSearchApiKey: 'API Key',
-  webSearchApiKeyHint: '不写入设置文件。留空表示保持当前密钥。',
-  webSearchApiKeySet: '已配置密钥。',
-  webSearchApiKeyUnset: '未配置密钥；配置之前搜索不可用。',
+  webSearchDescription: '无需密钥的 websift 搜索提供方。',
+  webSearchProvider: '后端',
+  webSearchProviderHint: 'ddgs 使用 DuckDuckGo 搜索；searxng 使用下方端点。',
+  webSearchProviderInvalid: '请输入 ddgs 或 searxng。',
   webSearchBaseUrl: '接口地址',
-  webSearchBaseUrlHint: '留空则使用提供方默认地址。',
-  webSearchMaxUses: '单次请求最多搜索次数',
-  webSearchMaxUsesHint: '一次请求在必须作答前最多可以搜索多少次。',
+  webSearchBaseUrlHint: 'SearXNG 端点基址，仅 searxng 后端使用。留空则保持继承值。',
 }

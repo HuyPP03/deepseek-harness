@@ -1,11 +1,11 @@
 /**
- * The web-search provider's card: its endpoint, its per-request search budget,
- * and the key — which is written through the credentials domain, never into
- * the settings section, so the literal never rides a response.
+ * The web-search provider's card: the keyless backend and, for the `searxng`
+ * backend, its endpoint. No key control — the route is keyless, and the
+ * shipped DeepSeek key stays managed on the Models page.
  */
 
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
-import { SecretField, ValueField } from './fields.tsx'
+import { ValueField } from './fields.tsx'
 import { PluginCard } from './PluginCard.tsx'
 import type { WebSearchCardFace } from './web-search-card-controller.ts'
 import type {} from './slot-contract.ts'
@@ -34,19 +34,17 @@ export function WebSearchCard(props: WebSearchCardProps) {
       onSave={props.save}
       onDiscard={props.discard}
     >
-      <SecretField
-        id="plugin-config-web-search-key"
-        label={t('webSearchApiKey')}
-        hint={t('webSearchApiKeyHint')}
-        // The credentials domain accepts a key even when the settings document
-        // itself is read-only; they are separate stores with separate refusals.
-        // Its own writability is what disables this control — a key sourced
-        // from the process environment cannot be written from here.
-        disabled={!state.apiKeyWritable}
-        text={state.apiKey.text}
-        configured={state.apiKeyConfigured}
-        stateLabel={state.apiKeyConfigured ? t('webSearchApiKeySet') : t('webSearchApiKeyUnset')}
-        onEdit={(text) => { props.edit('apiKey', text) }}
+      <ValueField
+        id="plugin-config-web-search-provider"
+        label={t('webSearchProvider')}
+        hint={t('webSearchProviderHint')}
+        overriddenLabel={t('overridden')}
+        resetLabel={t('reset')}
+        invalidLabel={t('webSearchProviderInvalid')}
+        disabled={disabled}
+        {...state.provider}
+        onEdit={(text) => { props.edit('provider', text) }}
+        onReset={() => { props.resetField('provider') }}
       />
       <ValueField
         id="plugin-config-web-search-endpoint"
@@ -56,22 +54,9 @@ export function WebSearchCard(props: WebSearchCardProps) {
         resetLabel={t('reset')}
         invalidLabel={t('invalidNumber')}
         disabled={disabled}
-        {...state.baseURL}
-        onEdit={(text) => { props.edit('baseURL', text) }}
-        onReset={() => { props.resetField('baseURL') }}
-      />
-      <ValueField
-        id="plugin-config-web-search-max-uses"
-        label={t('webSearchMaxUses')}
-        hint={t('webSearchMaxUsesHint')}
-        overriddenLabel={t('overridden')}
-        resetLabel={t('reset')}
-        invalidLabel={t('invalidNumber')}
-        numeric
-        disabled={disabled}
-        {...state.maxUses}
-        onEdit={(text) => { props.edit('maxUses', text) }}
-        onReset={() => { props.resetField('maxUses') }}
+        {...state.baseUrl}
+        onEdit={(text) => { props.edit('baseUrl', text) }}
+        onReset={() => { props.resetField('baseUrl') }}
       />
     </PluginCard>
   )

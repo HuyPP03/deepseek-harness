@@ -39,7 +39,7 @@ export type { PluginCardProps } from './PluginCard.tsx'
 export type { SettingsPluginItemOwnerProps } from './slot-contract.ts'
 export type { FieldProps } from './fields.tsx'
 export type {
-  CardActions, CardFieldSpec, CardFieldState, CardSecretSpec, CardShell,
+  CardActions, CardFieldSpec, CardFieldState, CardShell,
 } from './card-form.ts'
 export type { AgentLoopCardFace, AgentLoopCardState } from './agent-loop-card-controller.ts'
 export type { BashCardFace, BashCardState } from './bash-card-controller.ts'
@@ -62,15 +62,7 @@ export function apply(ctx: ClientContext): void {
 
   const bash = new BashCardController(ctx.settingsScope.bind({ namespace: SHELL_NS }))
   const agentLoop = new AgentLoopCardController(ctx.settingsScope.bind({ namespace: AGENT_LOOP_NS }))
-  const webSearch = new WebSearchCardController(ctx.settingsScope.bind({ namespace: WEB_SEARCH_NS }), api)
-
-  // The credential a card reports is not part of any settings section, so its
-  // scope publishes nothing when one is written. This is the only signal that
-  // a key written on another surface reached the Host.
-  ctx.effect(
-    () => ctx.remote.$on('credentials/updated', (ref) => { webSearch.refreshCredential(ref) }),
-    'ui-settings-plugins: credential invalidations',
-  )
+  const webSearch = new WebSearchCardController(ctx.settingsScope.bind({ namespace: WEB_SEARCH_NS }))
 
   // Which namespaces the Host serves is a registration fact the wire does not
   // announce, so the directory re-reads on the two signals that can carry a
