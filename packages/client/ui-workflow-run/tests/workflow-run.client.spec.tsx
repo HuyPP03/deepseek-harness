@@ -291,6 +291,7 @@ function panelProps(data: WorkflowRunChatData, sessions = listState(), openSessi
     selectedCallId: undefined,
     cwd: undefined,
     openFile: () => {},
+    openDetails: () => {},
     inspectCall: () => {},
     forkAt: () => {},
     loadImage: () => Promise.reject(new Error('unused')),

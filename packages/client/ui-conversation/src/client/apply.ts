@@ -10,7 +10,7 @@ import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
 import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
-import type { ViewTab } from './contract/views.ts'
+import type { SelectionTarget, ViewTab } from './contract/views.ts'
 import type {
   ApprovalWait, ChatNodeTurnDataInjected, ChatScrollPosition, ChatViewInjected, ComposerBarInjected,
   ComposerChainProps, ConversationInjected, ConversationSessionHeaderInjected, ConversationSessionInjected,
@@ -441,16 +441,36 @@ export function apply(ctx: Context): void {
   // registration path into the input dock declared above.
   ctx.plugin(queueDockEntry)
 
+  // The details-panel gesture face other packages reach for (the file
+  // inspector's session Files action): the per-session bound actions captured
+  // as each session's details entry injects, plus the layout open/close.
+  // Entries persist for the fiber's lifetime — one bound-actions object per
+  // session ever viewed, the same scale the inject cache itself carries.
+  const detailsActions = new Map<SessionId, BoundActions<typeof chatStore>>()
+
   slots.register({
     name: 'details',
     locale: NS,
     children: {
       'conversation.details.tool': { kind: 'single', scope: 'session' },
+      'conversation.details.file': { kind: 'single', scope: 'session' },
+      'conversation.details.files': { kind: 'single', scope: 'session' },
     },
     store: chatStore,
-    inject: (): DetailsInjected => ({
-      closeDetails: () => { layout.closeDetails() },
-    }),
+    inject: (sessionId: SessionId, actions: BoundActions<typeof chatStore>): DetailsInjected => {
+      detailsActions.set(sessionId, actions)
+      return {
+        closeDetails: () => { layout.closeDetails() },
+      }
+    },
   }, DetailsPanel)
+
+  ctx.provide('detailsPanel', {
+    open: (sessionId: SessionId, target: SelectionTarget) => {
+      detailsActions.get(sessionId)?.select(target)
+      layout.openDetails()
+    },
+    close: () => { layout.closeDetails() },
+  })
 
 }

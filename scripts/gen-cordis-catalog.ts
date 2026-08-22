@@ -145,6 +145,7 @@ export const SERVICE_WALK_EXEMPTIONS: Record<string, string> = {
   conversation: 'client-side interface-typed browser service — packages/client/ui-conversation/README.md owns the API',
   conversationEvents: 'client-side interface-typed registry — packages/client/runtime/README.md owns the API',
   conversationViews: 'client-side interface-typed registry — packages/client/runtime/README.md owns the API',
+  detailsPanel: 'client-side interface-typed browser service (details panel open/close gesture) — packages/client/ui-conversation/README.md owns the API',
   layout: 'client-side interface-typed browser service — packages/client/ui-layout/README.md owns the API',
   locale: 'client-side interface-typed browser service — packages/client/locale/README.md owns the API',
   settingsPanel: 'client-side browser service (settings panel open state and active section) — packages/client/ui-settings-general/README.md owns the API',

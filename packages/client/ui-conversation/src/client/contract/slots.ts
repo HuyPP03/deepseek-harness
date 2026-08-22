@@ -123,6 +123,24 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'conversation.details.tool': { kind: 'single'; scope: 'session'; owner: DetailsToolOwnerProps }
     /**
+     * The body of the details panel for the file the user selected — one
+     * occupant that renders every file kind (preview, code, and the refusal
+     * states) for the session-scoped working set behind `path`. The owner
+     * passes the canonical absolute path and the display-only workspace
+     * root; the occupant reads the bytes itself (the runtime's file-bytes
+     * service) and owns its own loading, preview, and error presentation.
+     */
+    'conversation.details.file': { kind: 'single'; scope: 'session'; owner: DetailsFileOwnerProps }
+    /**
+     * The body of the details panel for a session file browse — one occupant
+     * that renders the session's working-set file list (the bounded walk the
+     * composer's `@` source shares) so any file the session can address —
+     * including one created outside the mutation tools — gets an inspector
+     * entry point. The owner passes the browsed directory (the session cwd)
+     * and the display-only workspace root.
+     */
+    'conversation.details.files': { kind: 'single'; scope: 'session'; owner: DetailsFilesOwnerProps }
+    /**
      * The composer takeover chain: entries are selector-routed replacements
      * of the default InputBar. Declared by this package's 'conversation'
      * entry; the owner dispatches the {@link ComposerChainProps} currency and
@@ -328,6 +346,8 @@ export interface TurnTailOwnerProps {
    * view resolves relative paths against the session cwd).
    */
   openFile: (path: string) => void
+  /** Open the details panel on a file selection (the inspector seat). */
+  openDetails: (target: SelectionTarget) => void
 }
 
 /**
@@ -359,6 +379,8 @@ export interface ChatNodeOwnerProps {
   /** Session workspace root; Tool summaries display paths relative to it. */
   cwd?: string | undefined
   openFile: (path: string) => void
+  /** Open the details panel on a file selection (the inspector seat). */
+  openDetails: (target: SelectionTarget) => void
   inspectCall: (callId: CallId) => void
   forkAt: (seq: number) => void
   /** Resolve a session-authorized historical image for inline display. */
@@ -376,6 +398,41 @@ export interface DetailsToolOwnerProps {
   block: ToolCallBlock
   /** Session workspace root for card cwd and relative-path display. */
   cwd?: string | undefined
+}
+
+/** Owner currency of the details panel's file inspector seat. */
+export interface DetailsFileOwnerProps {
+  /** Canonical absolute path of the selected file (host spelling). */
+  path: string
+  /** Session workspace root for relative-path display (display-only). */
+  cwd?: string | undefined
+}
+
+/** Owner currency of the details panel's session file list seat. */
+export interface DetailsFilesOwnerProps {
+  /** Canonical absolute path of the browsed directory (the session cwd). */
+  dir: string
+  /** Session workspace root for relative-path display (display-only). */
+  cwd?: string | undefined
+}
+
+/**
+ * The outward details-panel gesture face, provided as `detailsPanel` by the
+ * conversation entry: the chat store and the layout panel stay inside
+ * ui-conversation, and other packages' surfaces (the file inspector's
+ * session Files action) open the panel through this callback pair instead of
+ * reaching the store or layout themselves.
+ */
+export interface DetailsPanelService {
+  /**
+   * Open the details panel on one selection for the session that rendered
+   * the calling surface (store write + layout open in one gesture).
+   * @param sessionId - the session whose selection channel is written.
+   * @param target - the selection to install.
+   */
+  open: (sessionId: SessionId, target: SelectionTarget) => void
+  /** Close the details panel (layout geometry). */
+  close: () => void
 }
 
 /**
@@ -724,7 +781,7 @@ export interface DetailsInjected {
 }
 
 /** Full details-slot props: selection store, Tool output seat, injected close callback, and locale. */
-export type DetailsSlotProps = PropsRuntime<'details'> & PropsRenderSlots<'conversation.details.tool'>
+export type DetailsSlotProps = PropsRuntime<'details'> & PropsRenderSlots<'conversation.details.tool' | 'conversation.details.file' | 'conversation.details.files'>
   & PropsStore<ChatStore> & DetailsInjected & PropsLocale<'conversation'>
 
 /** The confirmed selection of the hero / New-Session Workspace picker. */

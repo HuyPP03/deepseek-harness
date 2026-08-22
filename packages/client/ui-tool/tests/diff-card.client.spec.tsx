@@ -34,6 +34,13 @@ const SID = 's1' as SessionId
 
 const t = makeTranslate(zh, commonZh)
 
+/** The added rows' content cells, in row order (intra-line marks split a row's
+ *  text into spans, so the cell's textContent is the reader-visible line). */
+function addedRows(container: HTMLElement): string[] {
+  return [...container.querySelectorAll('[class*="_add_"] [class*="_content_"]')]
+    .map(el => el.textContent ?? '')
+}
+
 const ARGS = '{"file_path":"notes/demo.txt","old_string":"hello","new_string":"hello fixture"}'
 
 /** The edit tool's own call view (a call-time diff derived from the arguments). */
@@ -110,14 +117,30 @@ describe('diffCardModel', () => {
     expect(diffCardModel(settled({ resultView: bad([{ path: 1, oldText: null, newText: 'x' }]) }))).toBeNull()
     expect(diffCardModel(settled({ resultView: bad([{ path: 'a', oldText: 5, newText: 'x' }]) }))).toBeNull()
     expect(diffCardModel(settled({ resultView: bad([{ path: 'a', oldText: null, newText: 9 }]) }))).toBeNull()
+    // A string in a line-number seat or a non-string language hint rejects the
+    // whole hunk list, not just the offending field.
+    expect(diffCardModel(settled({ resultView: bad([{ path: 'a', oldText: null, newText: 'x', oldStart: '4' }]) }))).toBeNull()
+    expect(diffCardModel(settled({ resultView: bad([{ path: 'a', oldText: null, newText: 'x', newStart: true }]) }))).toBeNull()
+    expect(diffCardModel(settled({ resultView: bad([{ path: 'a', oldText: null, newText: 'x', lang: 5 }]) }))).toBeNull()
     // The running side narrows identically.
     expect(diffCardModel(running({ callView: { card: 'diff', diffs: 'nope' } as unknown as ToolCallView }))).toBeNull()
+  })
+
+  it('passes stamped hunk positions and the language hint through to the card', () => {
+    const stamped = [{ path: 'notes/demo.txt', oldText: 'a', newText: 'b', oldStart: 4, newStart: 4, lang: 'ts' }]
+    expect(diffCardModel(settled({ resultView: resultDiff({ diffs: stamped }) }))).toEqual({
+      card: { diffs: stamped },
+    })
+    // A hunk without the optional fields keeps them absent, not defaulted.
+    expect(diffCardModel(settled({ resultView: resultDiff() }))?.card.diffs[0]).toEqual({
+      path: 'notes/demo.txt', oldText: 'hello', newText: 'hello fixture',
+    })
   })
 })
 
 describe('chat row diff body', () => {
   const ownerProps = (block: RunningToolCall | ToolResultNode): GenericToolCardProps => ({
-    callId: 'c1', toolName: 'edit', block, openFile: vi.fn(), t,
+    callId: 'c1', toolName: 'edit', block, openFile: vi.fn(), openDetails: vi.fn(), t,
   })
 
   it('the expanded body is the applied diff, capped tighter than the panel', () => {
@@ -128,7 +151,7 @@ describe('chat row diff body', () => {
     // The path link is not the expand control; the leading toggle is.
     fireEvent.click(view.container.querySelector('[data-expandable]')!)
     expect(view.container.querySelector('[data-diff]')).not.toBeNull()
-    expect(view.getByText('hello fixture')).toBeTruthy()
+    expect(addedRows(view.container)).toContain('hello fixture')
   })
 
   it('a running diff call expands to its intended change', () => {
@@ -141,7 +164,7 @@ describe('chat row diff body', () => {
     // A non-file tool name so the row is not single-file (no path link), and its
     // args body is the fallback the diff card must not have replaced.
     const view = render(<GenericToolCard {...{
-      callId: 'c1', toolName: 'some_tool', openFile: vi.fn(), t,
+      callId: 'c1', toolName: 'some_tool', openFile: vi.fn(), openDetails: vi.fn(), t,
       block: settled({
         call: { name: 'some_tool', argsRaw: '{"foo":"bar"}' },
         callView: null, resultView: null,
@@ -164,7 +187,7 @@ describe('FileMutationRow diff card', () => {
   })
 
   const rowProps = (block: RunningToolCall | ToolResultNode, toolName = 'edit'): FileMutationRowProps => ({
-    callId: 'c1', toolName, block, openFile: vi.fn(), cwd: '/w/app',
+    callId: 'c1', toolName, block, openFile: vi.fn(), openDetails: vi.fn(), cwd: '/w/app',
     sessionId: SID, useSessions: bindSnapshotSelector(list()),
     t,
   } as unknown as FileMutationRowProps)
@@ -181,18 +204,18 @@ describe('FileMutationRow diff card', () => {
     expect(view.queryByText('hello fixture')).toBeNull()
     toggleRow(view)
     expect(view.container.querySelector('[data-diff]')).not.toBeNull()
-    expect(view.getByText('hello fixture')).toBeTruthy()
+    expect(addedRows(view.container)).toContain('hello fixture')
     expect(view.getByText('复制')).toBeTruthy()
   })
 
-  it('the summary is a path link that opens the tool path through the host', () => {
-    const openFile = vi.fn()
-    const view = render(<FileMutationRow {...{ ...rowProps(settled()), openFile }} />)
+  it('the summary is a path link that opens the file inspector', () => {
+    const openDetails = vi.fn()
+    const view = render(<FileMutationRow {...{ ...rowProps(settled()), openDetails }} />)
     // The path link rides the collapsed summary, so it opens without expanding.
     fireEvent.click(view.getByRole('button', { name: 'notes/demo.txt' }))
-    // The row passes the tool's own path; the injected openFile resolves it
-    // against the session cwd (apply.ts), so the row must not resolve twice.
-    expect(openFile).toHaveBeenCalledWith('notes/demo.txt')
+    // The row resolves the model-facing path against the session cwd into the
+    // canonical absolute path the inspector seat owns, with the call's seq.
+    expect(openDetails).toHaveBeenCalledWith({ turnSeq: 10, filePath: '/w/app/notes/demo.txt' })
   })
 
   it('registers under write too, rendering a create as an added-only diff', () => {
@@ -368,7 +391,7 @@ describe('DetailsPanel diff Output section', () => {
     const view = mount(snapshot({ nodes: [settled()] }), target)
     expect(view.getByText(/"file_path"/)).toBeTruthy()
     expect(view.container.querySelector('[data-diff]')).not.toBeNull()
-    expect(view.getByText('hello fixture')).toBeTruthy()
+    expect(addedRows(view.container)).toContain('hello fixture')
   })
 
   it('a running diff call renders its intended change, not the 运行中… placeholder', () => {

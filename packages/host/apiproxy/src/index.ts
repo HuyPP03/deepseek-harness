@@ -13,6 +13,7 @@
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'
+import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
 import z from '@deepseek-ai/schemastery'
 import type {} from '@deepseek-ai/dsh-agent-default-model'
 import type { ApiProxy } from './api/index.ts'
@@ -101,6 +102,11 @@ export class ApiProxyService extends Service implements ApiProxy {
       defaultModelSelection: () => ctx.agentDefaultModel.currentSelection(),
       saveDefaultModelSelection: selection => ctx.agentDefaultModel.saveSelection(selection),
       cwd: process.cwd(),
+      // A chat session (no workspace, no explicit cwd) gets its own sandbox
+      // under the harness home instead of the host's process directory: the
+      // files it produces land in a place the inspector's raw channel serves
+      // from the session cwd, and they never scatter the launcher's directory.
+      chatCwdFor: sessionId => dshHomePath('chat', sessionId),
       ...config.nativeOpen === undefined ? {} : { canOpenPath: () => config.nativeOpen as boolean },
       ...(config.sessionExportCompressionLevel === undefined
         ? {}

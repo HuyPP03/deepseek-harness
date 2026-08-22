@@ -66,9 +66,9 @@ it('boots the built plugin graph and renders a fixture session end to end', asyn
   // fixture's raw text. The card is collapsed by default, so expand each edit/
   // write row first. The write turn's `hello fixture\n` proves the terminator
   // rule end to end: a trailing newline terminates its line, so the footer reads
-  // `+1` (not a phantom `+2`) and one distinct file. The `+ ` prefix is a CSS
-  // ::before, so it is absent from textContent — assert on the line body and the
-  // footer.
+  // `+1` (not a phantom `+2`) and one distinct file. Assert on the line body and
+  // the footer — the sign column is a separate span, and the intra-line marks
+  // split the added text into spans, so neither survives as a single text node.
   const mutationRows = [...document.querySelectorAll('[data-variant="write"],[data-variant="edit"]')]
   expect(mutationRows.length).toBeGreaterThan(0)
   for (const row of mutationRows) {

@@ -1,0 +1,28 @@
+/* Session-header Files button: opens the details panel on the session file list. */
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 140px;
+  height: 22px;
+  padding: 0 8px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 12px;
+  line-height: 22px;
+  color: var(--dsw-text-muted, rgb(156 163 175));
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.action:hover {
+  color: var(--dsw-text, rgb(229 229 229));
+  background: var(--dsw-alias-fill-tsp-secondary, rgb(34 34 34));
+}
+
+.icon {
+  flex: none;
+}

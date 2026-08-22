@@ -32,7 +32,7 @@ export { TerminalBlock, DEFAULT_TERMINAL_MAX_LINES } from './TerminalBlock.tsx'
 export type { TerminalBlockProps, TerminalBlockLabels } from './TerminalBlock.tsx'
 export { ReadBlock, DEFAULT_READ_MAX_LINES } from './ReadBlock.tsx'
 export type { ReadBlockProps, ReadBlockLine } from './ReadBlock.tsx'
-export { DiffBlock, DEFAULT_DIFF_MAX_LINES } from './DiffBlock.tsx'
+export { DiffBlock, DEFAULT_DIFF_MAX_LINES, INTRA_LINE_MAX } from './DiffBlock.tsx'
 export type { DiffBlockProps, DiffHunk } from './DiffBlock.tsx'
 export { SearchBlock, DEFAULT_SEARCH_MAX_LINES } from './SearchBlock.tsx'
 export type {
@@ -42,6 +42,12 @@ export { WebBlock } from './WebBlock.tsx'
 export type { WebBlockProps, WebSearchBlockProps, WebFetchBlockProps, WebSourceView } from './WebBlock.tsx'
 export { CodeBlock } from './markdown/CodeBlock.tsx'
 export type { CodeBlockProps } from './markdown/CodeBlock.tsx'
+export {
+  grammarLoadCount,
+  highlightLines,
+  subscribeGrammarLoaded,
+} from './markdown/highlight.ts'
+export type { HighlightSpan } from './markdown/highlight.ts'
 export { JsonBlock } from './markdown/JsonBlock.tsx'
 export { MarkdownText } from './markdown/MarkdownText.tsx'
 export type { MarkdownCodeLabels, MarkdownFileMentions } from './markdown/MarkdownText.tsx'

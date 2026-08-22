@@ -32,7 +32,8 @@ export type {
   ChatStore, ChatViewInjected, ChatViewSlotProps, CommandRowOwnerProps, CommandRowProps, ComposerBarInjected,
   ComposerAttachment, ComposerChainProps, ConversationInjected,
   ConversationSessionHeaderInjected, ConversationSessionInjected, ConversationSlotProps, ConvViewOwnerProps,
-  ConvViewProps, DetailsInjected, DetailsSlotProps, DetailsToolOwnerProps, EmptyWorkspaceOwnerProps,
+  ConvViewProps, DetailsFileOwnerProps, DetailsFilesOwnerProps, DetailsInjected, DetailsPanelService,
+  DetailsSlotProps, DetailsToolOwnerProps, EmptyWorkspaceOwnerProps,
   NewSessionSelection, TurnTailOwnerProps, UseChatNodeTurnData,
 } from './contract/slots.ts'
 // Export discipline: packages/client/AGENTS.md.
@@ -41,5 +42,7 @@ declare module '@deepseek-ai/cordis' {
   interface Context {
     /** The outward face only; the concrete service stays inside this plugin. */
     conversation: import('./service.ts').IConversation
+    /** The details-panel gesture face (open on a selection / close). */
+    detailsPanel: import('./contract/slots.ts').DetailsPanelService
   }
 }

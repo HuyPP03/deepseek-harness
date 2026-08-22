@@ -4,8 +4,10 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import { mkdir, stat } from 'node:fs/promises'
+import { createReadStream } from 'node:fs'
+import { access, constants, mkdir, stat } from 'node:fs/promises'
 import { basename, dirname } from 'node:path'
+import { Readable } from 'node:stream'
 import type { Context } from '@deepseek-ai/cordis'
 import { installModelSelection } from '@deepseek-ai/dsh-agent'
 import type { Agent, ModelSelection, ModelSelectionRef, AgentOptions, AgentStatus } from '@deepseek-ai/dsh-agent'
@@ -70,6 +72,8 @@ import {
 } from './api/session-search.ts'
 import type { FileWalkRoot } from './files-walk.ts'
 import { walkFiles } from './files-walk.ts'
+import { admitSessionPath, readSessionFile } from './files-read.ts'
+import { FILE_RAW_MAX_BYTES, mimeForPath } from './files-raw.ts'
 // Type-only: resolves `ctx.get('sessionProjections')` to the projection registry.
 import type {} from '@deepseek-ai/dsh-session-projection'
 // Type-only: resolves `ctx.get('tasks')` to the background job registry.
@@ -582,6 +586,11 @@ function sessionProjectCwd(
   return { cwd: session.header.cwd, session }
 }
 
+/** True when a thrown value is an errno-bearing Node error with the given code. */
+function isErrnoCode(error: unknown, code: string): boolean {
+  return typeof error === 'object' && error !== null && 'code' in error && (error as { code?: unknown }).code === code
+}
+
 /** Advance the Session-list hint projection by one committed event. */
 function applySessionListMetadata(state: SessionListMetadata, event: SessionEvent): SessionListMetadata {
   const blank = state.blank && event.type !== 'turn/start'
@@ -725,6 +734,13 @@ export interface ApiProxyDefaults {
   saveDefaultModelSelection?: (selection: ModelSelection) => Promise<void>
   /** Default project directory for new sessions whose create request carries no cwd. */
   cwd: string
+  /**
+   * Per-session default project directory for a new chat session — a create
+   * request carrying neither a workspace nor a cwd. The gateway maps a chat
+   * to its own sandbox under the harness home; absent, the flat `cwd` default
+   * answers.
+   */
+  chatCwdFor?: (sessionId: SessionId) => string
   /** Native open-with-default-application; injectable for carrier tests. */
   openPath?: (path: string, signal: AbortSignal) => Promise<void>
   /** Native text-editor handoff; injectable for settings-document tests. */
@@ -2316,7 +2332,8 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
             })
           }
         }
-        const cwd = workspace?.path ?? request.payload.cwd ?? defaults.cwd
+        const cwd = workspace?.path ?? request.payload.cwd
+          ?? (defaults.chatCwdFor === undefined ? defaults.cwd : defaults.chatCwdFor(sessionId))
         const requestedPreset = request.payload.agentPreset
         // Reference projects are validated before the create commits: an
         // unknown id, a self-reference, or a set over the cap must not leave
@@ -3484,6 +3501,82 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         }
         const { files, truncated } = await walkFiles(roots, signal, query)
         return ok(request, { files, truncated })
+      },
+      // The inspector's bounded read: the same working-set roots as the
+      // listing resolve host-side, and readSessionFile proves the requested
+      // path is contained in one of them (lexically and after symlink
+      // resolution) before any byte is read. The stable admission codes map
+      // one-to-one onto the wire's file-* error codes.
+      async read(request) {
+        const { sessionId, path } = request.payload
+        const project = sessionProjectCwd(ctx, request, sessionId)
+        if ('refused' in project) return project.refused
+        const { cwd, session } = project
+        const roots = [cwd, ...referencesOf(session)]
+        const outcome = await readSessionFile(roots, path)
+        if (outcome.ok) return ok(request, outcome.read)
+        const message = {
+          'file-path-escape': `path "${path}" is outside the session's working set`,
+          'file-not-found': `path "${path}" does not name an existing file`,
+          'file-is-directory': `path "${path}" is a directory`,
+          'file-unreadable': `path "${path}" could not be read`,
+        }[outcome.code]
+        return err(request, { code: outcome.code, message, details: { path } })
+      },
+      // The inspector's raw byte channel (GET /api/file): the carrier's
+      // physical route answers this host-only surface directly. The same
+      // working-set admission as the text read gates the stream, the bound
+      // is the stat size (413 before any byte is produced), and the
+      // extension map keeps an unmapped file inert under nosniff.
+      async raw(request, signal) {
+        const { sessionId, path, download } = request
+        const project = sessionProjectCwd(ctx, { rpcId: RpcId(randomUUID()), payload: {} }, sessionId)
+        if ('refused' in project) {
+          const refused = project.refused
+          if (!refused.result.ok && refused.result.error.code === 'session-not-found') {
+            return new Response('session not found', { status: 404 })
+          }
+          return new Response('session has no project cwd', { status: 500 })
+        }
+        const { cwd, session } = project
+        const admission = await admitSessionPath([cwd, ...referencesOf(session)], path)
+        if (!admission.ok) {
+          const status = {
+            'file-path-escape': 403,
+            'file-not-found': 404,
+            'file-is-directory': 400,
+            'file-unreadable': 500,
+          }[admission.code]
+          return new Response(`file read failed: ${admission.code}`, { status })
+        }
+        if (admission.size > FILE_RAW_MAX_BYTES) {
+          return new Response(`file exceeds the ${String(FILE_RAW_MAX_BYTES)} byte raw bound`, { status: 413 })
+        }
+        signal.throwIfAborted()
+        const headers: Record<string, string> = {
+          'content-type': mimeForPath(admission.target),
+          'content-length': String(admission.size),
+          'x-content-type-options': 'nosniff',
+          'cache-control': 'no-store',
+          ...download === true ? { 'content-disposition': `attachment; filename="${basename(admission.target)}"` } : {},
+        }
+        let stream: Readable
+        try {
+          // The permission pre-check lands the refusal before the headers:
+          // lstat proved existence but not readability, and a stream error
+          // after a 200 would surface as a torn download, not a status.
+          await access(admission.target, constants.R_OK)
+          stream = createReadStream(admission.target)
+        } catch (error: unknown) {
+          if (isErrnoCode(error, 'ENOENT')) return new Response('file vanished before the read', { status: 404 })
+          return new Response('file read failed: file-unreadable', { status: 500 })
+        }
+        // Readable.toWeb is Node's own backpressure-correct pump (response
+        // cancellation destroys the read); @types/node types its result from
+        // a separate declaration space than the DOM lib's BodyInit, so the
+        // single boundary cast documents that mismatch rather than the code.
+        const body = Readable.toWeb(stream) as unknown as ReadableStream<Uint8Array>
+        return new Response(body, { status: 200, headers })
       },
     },
 

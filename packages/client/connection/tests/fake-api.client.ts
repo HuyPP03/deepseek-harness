@@ -200,6 +200,7 @@ export class FakeApiClient implements IApiClient {
 
   readonly files: IApiClient['files'] = {
     list: (payload: unknown) => this.record('files.list', payload, Promise.resolve(ok({ files: [], truncated: false }))),
+    read: (payload: unknown) => this.record('files.read', payload, Promise.resolve(ok({ path: '', content: '', lines: 0, truncated: false, binary: false, size: 0 }))),
   }
 
   readonly goals: IApiClient['goals'] = {

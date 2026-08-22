@@ -81,6 +81,10 @@ export const rpcErrorSchema: z.ZodType<RpcError> = z.discriminatedUnion('code', 
   z.object({ code: z.literal('mcp-server-not-managed'), message: z.string(), details: z.object({ serverName: z.string() }) }),
   z.object({ code: z.literal('mcp-server-exists'), message: z.string(), details: z.object({ serverName: z.string() }) }),
   z.object({ code: z.literal('mcp-manager-unavailable'), message: z.string(), details: z.object({}) }),
+  z.object({ code: z.literal('file-path-escape'), message: z.string(), details: z.object({ path: z.string() }) }),
+  z.object({ code: z.literal('file-not-found'), message: z.string(), details: z.object({ path: z.string() }) }),
+  z.object({ code: z.literal('file-is-directory'), message: z.string(), details: z.object({ path: z.string() }) }),
+  z.object({ code: z.literal('file-unreadable'), message: z.string(), details: z.object({ path: z.string() }) }),
   z.object({ code: z.literal('internal'), message: z.string(), details: z.object({}) }),
 ]) as unknown as z.ZodType<RpcError>
 

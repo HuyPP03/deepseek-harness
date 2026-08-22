@@ -384,19 +384,25 @@ describe('web e2e: seeded history renders through cold resume', () => {
     await expect.poll(() => disclosure.getAttribute('aria-expanded')).toBe('false')
   })
 
-  it.skipIf(MODE === 'record')('file-path tool rows rebuilt from the cold log stay details-inert', async () => {
+  it.skipIf(MODE === 'record')('file-path tool rows rebuilt from the cold log open the inspector', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-seeded-toolrow'))
-    // Interaction over cold-resumed history: read summaries are host-open
-    // file links (not expand-in-place / not details). Runs after the golden
-    // capture; still zero model calls.
+    // Interaction over cold-resumed history: the read summary's path link
+    // selects the file and opens the details column on the inspector seat.
+    // Runs after the golden capture; still zero model calls.
     const fileLink = page.locator('[data-variant="read"] button').first()
     await fileLink.waitFor({ timeout: 10_000 })
     const frame = page.locator('[style*="grid-template-columns"]').first()
     expect(await frame.getAttribute('data-details-collapsed')).toBe('true')
     await fileLink.click()
-    await expect.poll(() => frame.getAttribute('data-details-collapsed'), { timeout: 5_000 }).toBe('true')
+    // The link selects the file and opens the details column (the collapsed
+    // attribute drops while the inspector seat is up).
+    await expect.poll(() => frame.getAttribute('data-details-collapsed'), { timeout: 5_000 }).toBe(null)
     // Path label survives from the recorded args (a.txt).
     await expect.poll(() => page.getByText('a.txt', { exact: false }).count(), { timeout: 5_000 }).toBeGreaterThan(0)
+    // Close the panel again so the next scenario starts from the default
+    // geometry.
+    await page.getByRole('button', { name: 'Close details' }).click()
+    await expect.poll(() => frame.getAttribute('data-details-collapsed'), { timeout: 5_000 }).toBe('true')
   })
 
   it.skipIf(MODE === 'record')('expands the cold-resumed compact summary', async () => {

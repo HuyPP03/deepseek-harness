@@ -183,6 +183,11 @@ function clientConfig(id: string, entry: string): UserConfig {
     // must carry the TS/TSX mapping consumed by browser profiling tools.
     sourcemap: true,
     clean: false,
+    // Browser-ification of node idioms inside inlined dependencies: the xlsx
+    // library probes `typeof require !== 'undefined'` (true in a bundled CJS
+    // factory) and takes its node-only `require('stream')` branch, which the
+    // frozen module table cannot answer. Point the probe at an empty module.
+    alias: { stream: fileURLToPath(new URL('./web/src/stream-stub.ts', import.meta.url)) },
     external: [...CLIENT_EXTERNALS],
     // Browser bundles inline node-idiom deps (zustand/immer read
     // process.env.NODE_ENV; zustand's esm build also probes
@@ -260,6 +265,12 @@ function clientConfig(id: string, entry: string): UserConfig {
       },
     }],
     outputOptions: {
+      // The browser module table answers require() only for its registered
+      // module ids — a code-split sibling chunk (`require("./chunk-*.cjs")`)
+      // misses the table and throws at load. Dynamic imports therefore inline
+      // into the single lib/client.js file (the parser suites pay it as bundle
+      // size, not as a separate fetch).
+      codeSplitting: false,
       entryFileNames: 'client.js',
       // The map is served from /plugins/<scoped-package>/client.js.map. The
       // browser resolves its local sources back into URLs that mirror the

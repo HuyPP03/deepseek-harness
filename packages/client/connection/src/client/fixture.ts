@@ -632,12 +632,14 @@ function presentCall(name: string, argsRaw: string): ToolCallView | undefined {
     case 'edit':
       // The multi-hunk sample (turn 64) is keyed on its file_path, so the two
       // scattered hunks share one path header and the card draws the `⋯` gap.
+      // The host's `langFromPath` maps the `.ts` extension to `ts`, so the
+      // mirror carries the hint and the card highlights both sides.
       if (str(args.file_path) === 'src/config.ts') {
         return {
           card: 'diff', title: `Edit ${str(args.file_path)}`,
           diffs: [
-            { path: str(args.file_path), oldText: 'const timeout = 30', newText: 'const timeout = 60' },
-            { path: str(args.file_path), oldText: 'retries: 1', newText: 'retries: 3' },
+            { path: str(args.file_path), oldText: 'const timeout = 30', newText: 'const timeout = 60', lang: 'ts' },
+            { path: str(args.file_path), oldText: 'retries: 1', newText: 'retries: 3', lang: 'ts' },
           ],
         }
       }
@@ -2835,6 +2837,48 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
             .map(x => x.row)
         return ok(request, { files: matched, truncated: false })
       },
+      read: (request) => {
+        const missing = requireSession(request)
+        if (missing !== undefined) return missing
+        // Browser fixture: static views for the listing's own rows — the same
+        // working set the list serves, so the inspector's code surface has a
+        // deterministic byte source with no filesystem behind it.
+        const views: Record<string, string> = {
+          '/fixture/README.md': '# Fixture\n\nA static working set for the browser fixture.\n',
+          '/fixture/src/main.ts': 'export const main = () => 42\n',
+          '/fixture-ref/lib.ts': 'export const lib = () => 7\n',
+        }
+        const content = views[request.payload.path]
+        if (content === undefined) {
+          const path = request.payload.path
+          return err(request, { code: 'file-not-found', message: `path "${path}" does not name an existing file`, details: { path } })
+        }
+        const lines = content === '' ? 0 : (content.match(/\n/gu)?.length ?? 0) + (content.endsWith('\n') ? 0 : 1)
+        const size = new TextEncoder().encode(content).byteLength
+        return ok(request, { path: request.payload.path, content, lines, truncated: false, binary: false, size })
+      },
+      raw: (request, _signal) => {
+        // Browser fixture: the raw channel mirrors the static views, so a
+        // preview surface built against the fixture gets the same bytes.
+        const views: Record<string, string> = {
+          '/fixture/README.md': '# Fixture\n\nA static working set for the browser fixture.\n',
+          '/fixture/src/main.ts': 'export const main = () => 42\n',
+          '/fixture-ref/lib.ts': 'export const lib = () => 7\n',
+        }
+        const content = views[request.path]
+        if (content === undefined) {
+          return Promise.resolve(new Response(`path "${request.path}" does not name an existing file`, { status: 404 }))
+        }
+        const bytes = new TextEncoder().encode(content)
+        return Promise.resolve(new Response(bytes, {
+          status: 200,
+          headers: {
+            'content-type': request.path.endsWith('.md') ? 'text/markdown; charset=utf-8' : 'text/javascript; charset=utf-8',
+            'content-length': String(bytes.byteLength),
+            'x-content-type-options': 'nosniff',
+          },
+        }))
+      },
     },
     goals: {
       // Compatibility face only: old API Proxy payloads and acknowledgements
@@ -3181,6 +3225,7 @@ export class FixtureApiClient extends AbstractApiClient {
       case 'workspace.archiveSession': return this.api.workspace.archiveSession(request)
       case 'skill.list': return this.api.skills.list(request)
       case 'files.list': return this.api.files.list(request)
+      case 'files.read': return this.api.files.read(request)
       case 'agentPreset.list': return this.api.agentPresets.list(request)
       case 'agentPreset.select': return this.api.agentPresets.select(request)
       case 'agentPreset.read': return this.api.agentPresets.read(request)

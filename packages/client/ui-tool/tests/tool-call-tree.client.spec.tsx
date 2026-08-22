@@ -40,7 +40,7 @@ function props(
       data: { root: block },
     },
     selectedCallId,
-    openFile: vi.fn(),
+    openFile: vi.fn(), openDetails: vi.fn(),
     inspectCall: vi.fn(),
     forkAt: vi.fn(),
     fileMentions: vi.fn(),

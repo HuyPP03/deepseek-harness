@@ -3,8 +3,25 @@
 /** Tool call identity as carried on the wire (branded upstream in connection). */
 export type CallId = string
 
-/** Selection target for the details linkage channel (toolcall is the step special case). */
-export interface SelectionTarget { turnSeq: number; stepSeq?: number; callId?: CallId; toolName?: string }
+/**
+ * Selection target for the details linkage channel (a tool call is the step
+ * special case). `callId`, `filePath`, and `browse` name mutually exclusive
+ * occupants: a call selection renders the tool output seat, a file selection
+ * (a workspace-rooted or attached-reference absolute path) renders the file
+ * inspector seat, and a browse selection (the session cwd's canonical
+ * absolute path) renders the session file list seat. Persisted targets older
+ * than any field rehydrate as a no-op selection for that field.
+ */
+export interface SelectionTarget {
+  turnSeq: number
+  stepSeq?: number
+  callId?: CallId
+  toolName?: string
+  /** The file the inspector seat should open (a `callId`-less target). */
+  filePath?: string
+  /** The directory the file list seat should show (a `callId`-less target). */
+  browse?: string
+}
 
 /**
  * One conversation view tab, projected from a 'conversation.view' slot

@@ -12,6 +12,7 @@ import type { FsWriteOutcome } from '@deepseek-ai/dsh-fs'
 import type {} from '@deepseek-ai/dsh-fs'
 import type {} from '@deepseek-ai/dsh-system-prompt'
 import { computeHunkDiffs, diffsFromMeta } from './diff.ts'
+import { langFromPath } from './read-render.ts'
 import { remediateFsError } from './error.ts'
 import { sessionResolveOptions } from './session-cwd.ts'
 import type { FsSandboxController } from './sandbox.ts'
@@ -92,11 +93,12 @@ export function applyWriteTool(ctx: Context, sandbox: FsSandboxController): void
         },
       },
       render: (_args, value) => [{ type: 'text', text: formatWriteOutput(value.path, value) }],
+      // The hunk diffs pass through un-mapped: computeHunkDiffs already stamps
+      // the positions and language hint a capable UI needs.
       presentationMeta: (args, value) => ({
         diffs: value.before === null
           ? []
-          : computeHunkDiffs(args.file_path, value.before, value.after)
-            .map(({ path, oldText, newText }) => ({ path, oldText, newText })),
+          : computeHunkDiffs(args.file_path, value.before, value.after),
       }),
     },
     async execute(args: WriteToolArgs, exec) {
@@ -130,10 +132,16 @@ export function applyWriteTool(ctx: Context, sandbox: FsSandboxController): void
     // Pure display: a diff card. A call-time presenter has no access to prior
     // file content, so `oldText: null` also represents an overwrite here.
     presentCall(args): DiffCallView {
+      const lang = langFromPath(args.file_path)
       return {
         card: 'diff',
         title: `Write ${args.file_path}`,
-        diffs: [{ path: args.file_path, oldText: null, newText: args.content }],
+        diffs: [{
+          path: args.file_path,
+          ...(lang === undefined ? {} : { lang }),
+          oldText: null,
+          newText: args.content,
+        }],
         locations: [{ path: args.file_path }],
       }
     },
@@ -142,8 +150,13 @@ export function applyWriteTool(ctx: Context, sandbox: FsSandboxController): void
     // overwrites use the replay-safe args fallback.
     presentResult(args, result: ToolResult): DiffResultView | undefined {
       if (result.isError) return undefined
-      const diffs = diffsFromMeta(result.meta)
-        ?? [{ path: args.file_path, oldText: null, newText: args.content }]
+      const lang = langFromPath(args.file_path)
+      const diffs = diffsFromMeta(result.meta) ?? [{
+        path: args.file_path,
+        ...(lang === undefined ? {} : { lang }),
+        oldText: null,
+        newText: args.content,
+      }]
       return { card: 'diff', title: `Write ${args.file_path}`, diffs }
     },
   }))

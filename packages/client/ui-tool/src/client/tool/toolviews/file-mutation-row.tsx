@@ -4,11 +4,12 @@
 // card material, so the change renders through DiffBlock in the collapsed-by-
 // default expanded body — the same unified interaction every other card row
 // has. The summary stays a path link (the file-tool interaction) that opens
-// through the host; an errored mutation (write/edit return no diff on
-// `result.isError`) keeps the model-facing error text on ToolRow's Output
-// section, its first line in the collapsed summary.
+// the file in the details panel's inspector seat; an errored mutation (write/
+// edit return no diff on `result.isError`) keeps the model-facing error text
+// on ToolRow's Output section, its first line in the collapsed summary.
 
 import type { Context } from '@deepseek-ai/cordis'
+import { resolveWorkspacePath } from '@deepseek-ai/dsh-client-runtime/client'
 import { IconEditOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ToolCallViewProps } from '../../contract/slots.ts'
@@ -29,9 +30,15 @@ type FileMutationRowProps = ToolCallViewProps & PropsLocale<'conversation'>
  * model-facing error text through its Output section and its first line in the
  * collapsed summary instead.
  */
-export function FileMutationRow({ toolName, block, cwd, openFile, inspect, t }: FileMutationRowProps) {
+export function FileMutationRow({ toolName, block, cwd, openDetails, inspect, t }: FileMutationRowProps) {
   const model = toolRowModel(toolName, block, cwd)
   const diff = diffCardModel(block)
+  // The path link opens the file inspector (the details panel's file seat):
+  // the model-facing path resolves against the session root into the
+  // canonical absolute path the seat owns.
+  const openInspector = (path: string) => {
+    openDetails({ turnSeq: 'kind' in block ? block.seq : 0, filePath: resolveWorkspacePath(cwd, path) })
+  }
   return (
     <ToolRow
       t={t}
@@ -46,7 +53,7 @@ export function FileMutationRow({ toolName, block, cwd, openFile, inspect, t }: 
       diff={diff}
       state={model.state}
       filePath={model.filePath}
-      onOpenFile={openFile}
+      onOpenFile={openInspector}
       inspect={inspect}
     />
   )

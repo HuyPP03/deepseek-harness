@@ -397,7 +397,7 @@ describe('web e2e: navigation & panes over a rich seeded session', () => {
     await expect.poll(() => page.locator('tr[data-timeline-focus]').count(), { timeout: 10_000 }).toBe(0)
   }, 60_000)
 
-  it.skipIf(MODE === 'record')('bash and file-path rows leave the default details column closed', async () => {
+  it.skipIf(MODE === 'record')('bash rows leave the details column closed; the read-row path link opens the inspector', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-navigation-details'))
     await ensureSeedOpen(page)
     const bashRow = page.locator('[data-sample="bash"]').first()
@@ -412,10 +412,15 @@ describe('web e2e: navigation & panes over a rich seeded session', () => {
     // details either — the expanded terminal card is read in place.
     await page.locator('[data-sample="bash"] ~ div [data-terminal] [class*="_copyButton_"]').first().click()
     await expect.poll(() => frame.getAttribute('data-details-collapsed'), { timeout: 5_000 }).toBe('true')
-    // Read summaries are host-open file links; they also must not open details.
+    // The read summary's path link selects the file and opens the details
+    // column on the inspector seat (the collapsed attribute drops).
     const fileLink = page.locator('[data-variant="read"] button').first()
     await fileLink.waitFor({ timeout: 10_000 })
     await fileLink.click()
+    await expect.poll(() => frame.getAttribute('data-details-collapsed'), { timeout: 5_000 }).toBe(null)
+    // Close the panel again so the next scenario starts from the default
+    // geometry.
+    await page.getByRole('button', { name: 'Close details' }).click()
     await expect.poll(() => frame.getAttribute('data-details-collapsed'), { timeout: 5_000 }).toBe('true')
   }, 60_000)
 

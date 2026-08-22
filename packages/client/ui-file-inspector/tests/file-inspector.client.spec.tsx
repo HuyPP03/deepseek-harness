@@ -1,0 +1,277 @@
+// @vitest-environment jsdom
+// FileInspector's presentation behavior over direct props: the tab strip
+// appears only when the window holds a diff for the file, the Changes seat
+// is the default then, the Code seat walks its loading/ok/error/binary/empty
+// states, and the virtualized lines carry numbers and text.
+
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import XLSX from 'xlsx'
+import type { ConversationNode, ConversationSnapshot, SessionId, ToolResultNode } from '@deepseek-ai/dsh-client-runtime/client'
+import { FileBytesError } from '@deepseek-ai/dsh-client-runtime/client'
+import { FileInspector } from '../src/client/FileInspector.tsx'
+import type { FileInspectorProps } from '../src/client/FileInspector.tsx'
+import { zh } from '../src/client/locales.ts'
+
+const SID = 's1' as SessionId
+const PATH = '/tmp/proj/src/main.ts'
+
+/** A settled diff card for the selected file. */
+const diffCard = (seq: number): ToolResultNode => ({
+  kind: 'tool-result', seq, time: seq * 1_000, callId: `c${seq}`,
+  call: { name: 'write', argsRaw: '{}' }, callTime: seq * 1_000 - 500,
+  content: [], isError: false, callView: null,
+  resultView: {
+    card: 'diff',
+    diffs: [{ path: 'src/main.ts', oldText: 'old line', newText: 'new line', oldStart: 1, newStart: 1, lang: 'ts' }],
+  },
+  subCalls: [],
+})
+
+/** The snapshot the stub useSession serves. */
+const snapshotOf = (nodes: readonly ConversationNode[]): ConversationSnapshot => ({
+  sessionId: SID, views: {}, chat: null as unknown as ConversationSnapshot['chat'], nodes,
+} as unknown as ConversationSnapshot)
+
+/** Render the inspector with direct props over a scripted byte read. */
+type ReadResult = { bytes: Uint8Array; contentType: string; size: number }
+function renderInspector(
+  nodes: readonly ConversationNode[],
+  read: (path: string) => Promise<ReadResult>,
+  path = PATH,
+) {
+  const readFile = vi.fn(read)
+  const useSession = <S,>(selector: (s: ConversationSnapshot) => S): S => selector(snapshotOf(nodes))
+  const props: FileInspectorProps = {
+    path,
+    cwd: '/tmp/proj',
+    readFile,
+    fileUrl: (p: string) => `/api/file/${SID}/${encodeURIComponent(p)}`,
+
+    useSession,
+    sessionId: SID,
+    useSessions: () => { throw new Error('unused') },
+    useWorkspaces: () => { throw new Error('unused') },
+    useProjection: () => undefined,
+    useInput: () => { throw new Error('unused') },
+    inputActions: {
+      setDraft: () => {},
+      addImages: () => true,
+      removeImage: () => {},
+      pruneImages: () => {},
+      submit: () => {},
+    },
+    t: (key: string) => zh[key as keyof typeof zh],
+  }
+  const view = render(<FileInspector {...props} />)
+  return { view, readFile }
+}
+
+const okBytes = (text: string) => ({
+  bytes: new TextEncoder().encode(text),
+  contentType: 'text/plain',
+  size: new TextEncoder().encode(text).byteLength,
+})
+
+/** Match a line whose complete text content is `t` (shiki splits lines into runs). */
+const lineText = (t: string) => (_: string, el: Element | null): boolean =>
+  el !== null && el.tagName === 'SPAN' && el.textContent === t
+
+afterEach(cleanup)
+beforeEach(() => {
+  // jsdom has no ResizeObserver; the virtual view measures through one.
+  vi.stubGlobal('ResizeObserver', class { observe(): void {} unobserve(): void {} disconnect(): void {} })
+})
+
+describe('tab strip', () => {
+  it('shows no strip and the code seat when the window holds no diff', async () => {
+    renderInspector([], p => Promise.resolve(okBytes(`const x = ${p}\n`)))
+    expect(screen.queryByText('变更')).toBeNull()
+    expect(screen.queryByText('代码')).toBeNull()
+    expect(await screen.findByText(lineText('const x = /tmp/proj/src/main.ts'))).toBeTruthy()
+  })
+
+  it('offers both seats with Changes active when the window holds a diff', async () => {
+    renderInspector([diffCard(3)], p => Promise.resolve(okBytes(`unused ${p}\n`)))
+    expect(screen.getByText('变更')).toBeTruthy()
+    expect(screen.getByText('代码')).toBeTruthy()
+    // The default seat draws the diff card's changed line.
+    expect(await screen.findByText(lineText('new line'))).toBeTruthy()
+    expect(screen.queryByText(lineText('unused /tmp/proj/src/main.ts'))).toBeNull()
+  })
+
+  it('switches seats on tab click', async () => {
+    const { view } = renderInspector([diffCard(3)], p => Promise.resolve(okBytes(`code ${p}\n`)))
+    fireEvent.click(screen.getByText('代码'))
+    expect(await screen.findByText(lineText('code /tmp/proj/src/main.ts'))).toBeTruthy()
+    // The changes seat unmounted with its tab.
+    expect(view.queryByText(lineText('new line'))).toBeNull()
+    fireEvent.click(screen.getByText('变更'))
+    expect(await screen.findByText(lineText('new line'))).toBeTruthy()
+  })
+})
+
+describe('code seat states', () => {
+  it('walks loading to the decoded lines with numbers', async () => {
+    let settle!: (value: { bytes: Uint8Array; contentType: string; size: number }) => void
+    const { view } = renderInspector([], () => new Promise((r) => { settle = r }))
+    expect(screen.getByText('载入文件…')).toBeTruthy()
+    await act(async () => { settle(okBytes('line one\nline two\n')) })
+    expect((await screen.findAllByText(lineText('line one'))).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(lineText('line two')).length).toBeGreaterThan(0)
+    expect(screen.getByText('2')).toBeTruthy()
+    expect(view.queryByText('载入文件…')).toBeNull()
+  })
+
+  it('notices binary content instead of decoding', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('abc\u0000def\nrest\n')))
+    expect(await screen.findByText('二进制文件，无代码视图')).toBeTruthy()
+  })
+
+  it('shows the empty-file state', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('')))
+    expect(await screen.findByText('空文件')).toBeTruthy()
+  })
+
+  it('maps the 413 refusal to the over-bound state', async () => {
+    renderInspector([], () => Promise.reject(new FileBytesError(413, 'too large')))
+    expect(await screen.findByText('文件超过 25 MiB 边界，无法在检视器中显示')).toBeTruthy()
+  })
+
+  it('maps other refusals to the unreadable state', async () => {
+    renderInspector([], () => Promise.reject(new FileBytesError(500, 'unreadable')))
+    expect(await screen.findByText('文件不可读（权限或平台错误）')).toBeTruthy()
+  })
+
+  it('maps non-FileBytes rejections to the unreadable state', async () => {
+    renderInspector([], () => Promise.reject(new Error('boom')))
+    expect(await screen.findByText('文件不可读（权限或平台错误）')).toBeTruthy()
+  })
+})
+
+describe('preview seat', () => {
+  it('defaults to the rendered markdown preview for an md file', async () => {
+    const { view } = renderInspector([], () => Promise.resolve(okBytes('# Alpha\n\nbody\n')), '/tmp/proj/note.md')
+    // Preview is the active seat on mount: the heading is rendered.
+    expect(screen.getByText('预览')).toBeTruthy()
+    expect(await screen.findByRole('heading', { name: 'Alpha' })).toBeTruthy()
+    expect(screen.getByText('body')).toBeTruthy()
+    // The code seat stays reachable under its own tab.
+    fireEvent.click(screen.getByText('代码'))
+    expect(await screen.findByText(lineText('# Alpha'))).toBeTruthy()
+    expect(view.queryByRole('heading')).toBeNull()
+  })
+
+  it('serves an image through the raw channel URL with no code seat', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('bytes')), '/tmp/proj/pix.png')
+    const img = await screen.findByRole('img', { name: '/tmp/proj/pix.png' })
+    expect(img.getAttribute('src')).toBe(`/api/file/s1/${encodeURIComponent('/tmp/proj/pix.png')}`)
+    // A pure image earns no Code tab and no tab strip at all.
+    expect(screen.queryByText('代码')).toBeNull()
+    expect(screen.queryByRole('tablist')).toBeNull()
+  })
+
+  it('serves HTML through a sandboxed frame on the raw channel URL', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('<p>x</p>')), '/tmp/proj/page.html')
+    const frame = await screen.findByTitle('/tmp/proj/page.html')
+    expect(frame.tagName).toBe('IFRAME')
+    expect(frame.getAttribute('src')).toBe(`/api/file/s1/${encodeURIComponent('/tmp/proj/page.html')}`)
+    expect(frame.getAttribute('sandbox')).toBe('')
+    // The source stays available under the Code tab.
+    fireEvent.click(screen.getByText('代码'))
+    expect(await screen.findByText(lineText('<p>x</p>'))).toBeTruthy()
+  })
+
+  it('serves an SVG through the raw channel URL as an image', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('<svg></svg>')), '/tmp/proj/icon.svg')
+    const img = await screen.findByRole('img', { name: '/tmp/proj/icon.svg' })
+    expect(img.getAttribute('src')).toBe(`/api/file/s1/${encodeURIComponent('/tmp/proj/icon.svg')}`)
+  })
+
+  it('reuses the code states for an unreadable markdown preview', async () => {
+    renderInspector([], () => Promise.reject(new FileBytesError(413, 'too large')), '/tmp/proj/note.md')
+    expect(await screen.findByText('文件超过 25 MiB 边界，无法在检视器中显示')).toBeTruthy()
+    cleanup()
+    renderInspector([], () => Promise.reject(new FileBytesError(500, 'unreadable')), '/tmp/proj/note.md')
+    expect(await screen.findByText('文件不可读（权限或平台错误）')).toBeTruthy()
+    cleanup()
+    renderInspector([], () => Promise.resolve(okBytes('bin\u0000ary\n')), '/tmp/proj/note.md')
+    expect(await screen.findByText('二进制文件，无代码视图')).toBeTruthy()
+    cleanup()
+    renderInspector([], () => Promise.resolve(okBytes('')), '/tmp/proj/note.md')
+    expect(await screen.findByText('空文件')).toBeTruthy()
+  })
+})
+
+describe('preview seat: office documents', () => {
+  const DOCX_FIXTURE = '/tmp/proj/report.docx'
+  // The committed minimal docx fixture (tests/fixtures/hello.docx), inlined so
+  // the spec needs no filesystem under the jsdom environment.
+  const docxBytes = Uint8Array.from(atob('UEsDBBQAAAAIAG4CFl3JTxqw6wAAAK4BAAATAAAAW0NvbnRlbnRfVHlwZXNdLnhtbH1QvU7DMBDeeQrLK4odGBBCSTrwMwJDeYCTfUks7LPlc0v79jht6YAK4933q69b7YIXW8zsIvXyRrVSIJloHU29/Fi/NPdScAGy4CNhL/fIcjVcdet9QhZVTNzLuZT0oDWbGQOwigmpImPMAUo986QTmE+YUN+27Z02kQpSacriIYfuCUfY+CKed/V9LJLRsxSPR+KS1UtIyTsDpeJ6S/ZXSnNKUFV54PDsEl9XgtQXExbk74CT7q0uk51F8Q65vEKoLP0Vs9U2mk2oSvW/zYWecRydwbN+cUs5GmSukwevzkgARz/99WHu4RtQSwMEFAAAAAgAbgIWXbmBRHGwAAAAKgEAAAsAAABfcmVscy8ucmVsc43POw7CMAwG4J1TRN5pWgaEUJMuCKkrKgeIEjeNaB5KwqO3JwMDIAZG278/y233sDO5YUzGOwZNVQNBJ70yTjM4D8f1DkjKwikxe4cMFkzQ8VV7wlnkspMmExIpiEsMppzDntIkJ7QiVT6gK5PRRytyKaOmQciL0Eg3db2l8d0A/mGSXjGIvWqADEvAf2w/jkbiwcurRZd/nPhKFFlEjZnB3UdF1atdFRYob+nHi/wJUEsDBBQAAAAIAG4CFl1eXKfHqAAAANwAAAARAAAAd29yZC9kb2N1bWVudC54bWxFjr0OwjAMhHeeIspOUxgQqvqzIMTIAA8QEtNWSuwoCf15e5IysHzWneXz1d1iDZvAh5Gw4Yei5AxQkR6xb/jzcd2fOQtRopaGEBq+QuBdu6vnSpP6WMDIUgKGam74EKOrhAhqACtDQQ4w7d7krYxJ+l7M5LXzpCCE9MAacSzLk7ByRN6myBfpNU+X4TNiewNjiF1ILezuYRphrkX2M/1Gt/F3K/692i9QSwECFAMUAAAACABuAhZdyU8asOsAAACuAQAAEwAAAAAAAAAAAAAAgAEAAAAAW0NvbnRlbnRfVHlwZXNdLnhtbFBLAQIUAxQAAAAIAG4CFl25gURxsAAAACoBAAALAAAAAAAAAAAAAACAARwBAABfcmVscy8ucmVsc1BLAQIUAxQAAAAIAG4CFl1eXKfHqAAAANwAAAARAAAAAAAAAAAAAACAAfUBAAB3b3JkL2RvY3VtZW50LnhtbFBLBQYAAAAAAwADALkAAADMAgAAAAA='), c => c.charCodeAt(0))
+
+  it('renders a docx through mammoth into a sandboxed frame', async () => {
+    renderInspector([], () => Promise.resolve({ bytes: docxBytes, contentType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', size: docxBytes.byteLength }), DOCX_FIXTURE)
+    const frame = await screen.findByTitle(DOCX_FIXTURE)
+    expect(frame.tagName).toBe('IFRAME')
+    expect(frame.getAttribute('sandbox')).toBe('')
+    expect(frame.getAttribute('srcdoc')).toContain('Hello Docx Preview')
+  })
+
+  it('renders an xlsx workbook as a table of cells', async () => {
+    const book = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(book, XLSX.utils.aoa_to_sheet([['name', 'age'], ['Ada', 36]]), 'S')
+    const bytes = new Uint8Array(XLSX.write(book, { type: 'buffer', bookType: 'xlsx' }) as ArrayBuffer)
+    renderInspector([], () => Promise.resolve({ bytes, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', size: bytes.byteLength }), '/tmp/proj/data.xlsx')
+    expect(await screen.findByRole('cell', { name: 'Ada' })).toBeTruthy()
+    expect(screen.getByRole('cell', { name: 'name' })).toBeTruthy()
+    expect(screen.getByRole('cell', { name: '36' })).toBeTruthy()
+  })
+
+  it('renders a csv file as a table of cells', async () => {
+    renderInspector([], () => Promise.resolve(okBytes('name,age\nAda,36\n')), '/tmp/proj/data.csv')
+    expect(await screen.findByRole('cell', { name: 'Ada' })).toBeTruthy()
+    expect(screen.getByRole('cell', { name: 'age' })).toBeTruthy()
+  })
+
+  it('shows the failed state when the read or parse rejects', async () => {
+    renderInspector([], () => Promise.reject(new FileBytesError(500, 'unreadable')), '/tmp/proj/report.docx')
+    expect(await screen.findByText('预览失败（文件无法解析）')).toBeTruthy()
+  })
+
+  it('discards a parse that settles after the seat unmounts', async () => {
+    // One shared pending read: the code seat and the office seat both fetch
+    // through it, so a single settle moves both of their continuations.
+    let settle!: (value: { bytes: Uint8Array; contentType: string; size: number }) => void
+    const pending = new Promise<{ bytes: Uint8Array; contentType: string; size: number }>(
+      (r) => { settle = r },
+    )
+    const { view } = renderInspector([], () => pending, '/tmp/proj/data.csv')
+    expect(screen.getByText('载入文件…')).toBeTruthy()
+    view.unmount()
+    await act(async () => { settle(okBytes('name,age\nAda,36\n')) })
+  })
+
+  it('discards a read rejection that lands after the seat unmounts', async () => {
+    let reject!: (reason: unknown) => void
+    const pending = new Promise<{ bytes: Uint8Array; contentType: string; size: number }>(
+      (_r, r) => { reject = r },
+    )
+    const { view } = renderInspector([], () => pending, '/tmp/proj/report.docx')
+    expect(screen.getByText('载入文件…')).toBeTruthy()
+    view.unmount()
+    await act(async () => { reject(new FileBytesError(500, 'unreadable')) })
+  })
+})
+
+describe('virtual code view', () => {
+  it('keeps the visible slice on scroll', async () => {
+    const lines = Array.from({ length: 500 }, (_, i) => `line ${i}\n`).join('')
+    renderInspector([], () => Promise.resolve(okBytes(lines)))
+    expect(await screen.findByText(lineText('line 0'))).toBeTruthy()
+    // The scroll container is the only element carrying the line-height marker.
+    const scroll = document.querySelector('[data-line-height]')
+    expect(scroll).toBeTruthy()
+    fireEvent.scroll(scroll!)
+    expect(screen.getAllByText(lineText('line 0')).length).toBeGreaterThan(0)
+  })
+})

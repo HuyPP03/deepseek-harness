@@ -13,6 +13,7 @@ import { sessionLogQuerySchema } from '../api/downloads.schema.ts'
 import type { RequestPayload, ResponseValue, RpcMethodMap } from '../api/rpc-map.ts'
 import type { ClientRequest, RpcError, RpcRequest, RpcResponse, ServerRequest, ServerResponse } from '../api/rpc.ts'
 import { RpcId } from '../api/rpc.ts'
+import type { SessionId } from '@deepseek-ai/dsh-session/types'
 import type { Wire } from '../api/rpc.schema.ts'
 import { clientRequestSchema, clientResponseSchema } from '../api/rpc.schema.ts'
 import {
@@ -24,6 +25,7 @@ import {
   sessionListRequestSchema,
   sessionModelsRequestSchema,
   sessionPromptRequestSchema,
+  sessionIdSchema,
   sessionRenameRequestSchema,
   sessionSearchRequestSchema,
   sessionSetReferencesRequestSchema,
@@ -45,7 +47,7 @@ import {
   workspaceRenameRequestSchema,
 } from '../api/workspace.schema.ts'
 import { skillListRequestSchema } from '../api/skills.schema.ts'
-import { fileListRequestSchema } from '../api/files.schema.ts'
+import { fileListRequestSchema, fileReadRequestSchema } from '../api/files.schema.ts'
 import {
   agentPresetCopyRequestSchema, agentPresetListRequestSchema, agentPresetOpenDocumentRequestSchema,
   agentPresetReadRequestSchema, agentPresetRemoveRequestSchema, agentPresetSelectRequestSchema,
@@ -124,6 +126,7 @@ const UNARY_ROUTES: UnaryRoutes = {
   'workspace.archiveSession': { schema: workspaceArchiveSessionRequestSchema, invoke: (api, r) => api.workspace.archiveSession(r) },
   'skill.list': { schema: skillListRequestSchema, invoke: (api, r) => api.skills.list(r) },
   'files.list': { schema: fileListRequestSchema, invoke: (api, r, signal) => api.files.list(r, signal) },
+  'files.read': { schema: fileReadRequestSchema, invoke: (api, r) => api.files.read(r) },
   'agentPreset.list': { schema: agentPresetListRequestSchema, invoke: (api, r) => api.agentPresets.list(r) },
   'agentPreset.select': { schema: agentPresetSelectRequestSchema, invoke: (api, r) => api.agentPresets.select(r) },
   'agentPreset.read': { schema: agentPresetReadRequestSchema, invoke: (api, r) => api.agentPresets.read(r) },
@@ -276,6 +279,39 @@ export function toFetchHandler(api: ApiProxy): { fetch: typeof fetch } {
           return new Response('missing or invalid sessionId query parameter', { status: 400 })
         }
         const response = await api.downloads.sessionLog(parsed.data, req.signal)
+        if (req.method === 'GET') return response
+        await response.body?.cancel()
+        return new Response(null, { status: response.status, headers: response.headers })
+      }
+      if (path.startsWith('/api/file/') && (req.method === 'GET' || req.method === 'HEAD')) {
+        // /api/file/<sessionId>/<path>: the file inspector's raw byte channel.
+        // The file path is one percent-encoded segment (the absolute path,
+        // encodeURIComponent on the client) and decodes exactly once at this
+        // boundary — the decoded path is still admitted host-side against the
+        // session's working set, so encoding grants nothing. An unencoded
+        // relative landing resolves against the host process cwd and is
+        // refused as an escape (fail closed).
+        const tail = path.slice('/api/file/'.length)
+        const slash = tail.indexOf('/')
+        if (slash === -1 || tail.slice(slash + 1) === '') {
+          return new Response('not found', { status: 404 })
+        }
+        let sessionId: SessionId
+        try {
+          const decoded = sessionIdSchema.safeParse(decodeURIComponent(tail.slice(0, slash)))
+          if (!decoded.success) return new Response('invalid sessionId path segment', { status: 400 })
+          sessionId = decoded.data
+        } catch {
+          return new Response('invalid sessionId path segment', { status: 400 })
+        }
+        let filePath: string
+        try {
+          filePath = decodeURIComponent(tail.slice(slash + 1))
+        } catch {
+          return new Response('invalid file path segment', { status: 400 })
+        }
+        const download = url.searchParams.get('download') === '1'
+        const response = await api.files.raw({ sessionId, path: filePath, ...download ? { download } : {} }, req.signal)
         if (req.method === 'GET') return response
         await response.body?.cancel()
         return new Response(null, { status: response.status, headers: response.headers })

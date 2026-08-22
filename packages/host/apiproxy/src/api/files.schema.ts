@@ -1,6 +1,6 @@
 /**
  * files domain zod schemas (names derived from map keys: fileListRequestSchema /
- * fileListValueSchema).
+ * fileListValueSchema / fileReadRequestSchema / fileReadValueSchema).
  */
 
 import { z } from 'zod'
@@ -28,3 +28,19 @@ export const fileListValueSchema = z.object({
   files: z.array(fileEntrySchema),
   truncated: z.boolean(),
 }) satisfies z.ZodType<Wire<ResponseValue<'files.list'>>>
+
+/** files.read request payload (the path is a list row's canonical path). */
+export const fileReadRequestSchema = z.object({
+  sessionId: sessionIdSchema,
+  path: z.string().min(1).max(4096),
+}) satisfies z.ZodType<Wire<RequestPayload<'files.read'>>>
+
+/** files.read response value. */
+export const fileReadValueSchema = z.object({
+  path: z.string().min(1),
+  content: z.string(),
+  lines: z.number().int().min(0),
+  truncated: z.boolean(),
+  binary: z.boolean(),
+  size: z.number().int().min(0),
+}) satisfies z.ZodType<Wire<ResponseValue<'files.read'>>>
