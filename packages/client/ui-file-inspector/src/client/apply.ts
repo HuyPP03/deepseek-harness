@@ -23,7 +23,7 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import { FileBrowser } from './FileBrowser.tsx'
 import { FileInspector } from './FileInspector.tsx'
 import { FilesAction } from './FilesAction.tsx'
-import { en, zh, type FileInspectorKey } from './locales.ts'
+import { en, vi, zh, type FileInspectorKey } from './locales.ts'
 
 export type { FileBrowserInjected, FileBrowserProps, FileInspectorInjected, FileInspectorProps } from './contract/slots.ts'
 export type { FilesActionInjected, FilesActionProps } from './FilesAction.tsx'
@@ -53,7 +53,7 @@ export const inject = ['slots', 'fileBytes', 'connection', 'locale']
  * @param ctx - client root context.
  */
 export function apply(ctx: ClientContext): void {
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-file-inspector: dictionaries')
+  ctx.effect(() => ctx.locale.register(NS, { en, vi, zh }), 'ui-file-inspector: dictionaries')
 
   const fileBytes = ctx.get('fileBytes') as FileBytesService
   const files = (ctx.get('connection') as ConnectionHandle).api.files

@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 /**
  * Registration: the MCP settings section and the /mcp decoration come from
  * one apply. The section defers until its slot is declared, the decoration

@@ -29,7 +29,7 @@ import type { PermissionSelect } from '@deepseek-ai/dsh-permission-presets/clien
 import { PermissionRow } from './PermissionRow.tsx'
 import type { PermissionRowInjected } from './PermissionRow.tsx'
 import {
-  accessEn, accessZh, en, zh,
+  accessEn, accessVi, accessZh, en, vi, zh,
 } from './locales.ts'
 import {
   displayPermissionPreset, FULL_ACCESS_PRESET,
@@ -103,6 +103,13 @@ export function apply(ctx: ClientContext): void {
         'confirm.cancel': accessEn['confirm.cancel'],
         'confirm.enable': accessEn['confirm.enable'],
       }),
+      ctx.locale.register(ACCESS_NS, 'vi', {
+        'confirm.title': accessVi['confirm.title'],
+        'confirm.description': accessVi['confirm.description'],
+        'confirm.acknowledge': accessVi['confirm.acknowledge'],
+        'confirm.cancel': accessVi['confirm.cancel'],
+        'confirm.enable': accessVi['confirm.enable'],
+      }),
     ]
     return () => { for (const dispose of disposers) dispose() }
   }, 'ui-permission: Full access confirmation dictionaries')
@@ -111,7 +118,7 @@ export function apply(ctx: ClientContext): void {
   const sessionFor = (session: ClientSessionContext): SessionFace | undefined =>
     sessions.binding(session.sessionId)?.session
 
-  ctx.effect(() => ctx.locale.register('settings.permission', { zh, en }), 'ui-permission: settings row dictionaries')
+  ctx.effect(() => ctx.locale.register('settings.permission', { en, vi, zh }), 'ui-permission: settings row dictionaries')
 
   const connection = ctx.get('connection') as ConnectionHandle
   const controller = new PermissionPresetSettingsController(connection.api)

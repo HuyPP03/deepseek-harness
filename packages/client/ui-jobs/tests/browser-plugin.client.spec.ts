@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 /**
  * ui-job plugin halves: the browser entry's dictionary and header-slot
  * registrations against the real SlotRegistry (with fiber teardown proving
@@ -8,12 +9,16 @@ import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it } from 'vitest'
 import InvariantRegistry from '@deepseek-ai/dsh-invariants'
 import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
-import { stubSettingsScope } from '@deepseek-ai/dsh-client-test-runtime'
+import { stubSettingsScope, usePinnedBrowserLanguages } from '@deepseek-ai/dsh-client-test-runtime'
 import { apply as applyLocale, inject as localeInject } from '@deepseek-ai/dsh-client-locale/client'
 import { apply, inject } from '../src/client/index.ts'
 import { apply as applyNode } from '../src/index.ts'
 import * as JobInvariant from '../src/invariant.ts'
-import { en, NS, zh } from '../src/client/locales.ts'
+import { en, NS, vi, zh } from '../src/client/locales.ts'
+
+// The dictionary spec below reads the initial locale before setting one, so it
+// pins the browser it assumes.
+usePinnedBrowserLanguages('zh-CN')
 
 /** Slot ledger reader: entry ids currently registered in the header list. */
 function headerEntryIds(ctx: Context): (string | undefined)[] {
@@ -68,8 +73,9 @@ describe('ui-job browser half', () => {
     expect(translate('list.aria')).not.toBe(en['list.aria'])
   })
 
-  it('keeps the English dictionary key-identical to the Chinese source of truth', () => {
-    expect(Object.keys(en).sort()).toEqual(Object.keys(zh).sort())
+  it('keeps every locale dictionary key-identical to the English source of truth', () => {
+    expect(Object.keys(vi).sort()).toEqual(Object.keys(en).sort())
+    expect(Object.keys(zh).sort()).toEqual(Object.keys(en).sort())
   })
 })
 

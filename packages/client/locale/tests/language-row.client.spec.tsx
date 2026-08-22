@@ -11,7 +11,11 @@ import { createLanguageRowStore } from '../src/client/settings-store.ts'
 
 afterEach(cleanup)
 
-const OPTIONS = [{ id: 'zh', label: '中文' }, { id: 'en', label: 'English' }]
+const OPTIONS = [
+  { id: 'en', label: 'English' },
+  { id: 'vi', label: 'Tiếng Việt' },
+  { id: 'zh', label: '中文' },
+]
 
 /** Empty global standard-kit hooks (the row reads neither). */
 function emptySessions() {
@@ -57,10 +61,21 @@ describe('LanguageRow', () => {
     const trigger = screen.getByRole('button', { name: /English/ })
     fireEvent.click(trigger)
     expect(trigger.getAttribute('aria-expanded')).toBe('true')
-    fireEvent.click(screen.getByRole('menuitem', { name: '中文' }))
-    expect(b.setLocale).toHaveBeenCalledWith('zh')
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Tiếng Việt' }))
+    expect(b.setLocale).toHaveBeenCalledWith('vi')
     expect(trigger.getAttribute('aria-expanded')).toBe('false')
-    expect(screen.queryByRole('menuitem', { name: '中文' })).toBeNull()
+    expect(screen.queryByRole('menuitem', { name: 'Tiếng Việt' })).toBeNull()
+  })
+
+  it('lists the three shipped locales in display order', () => {
+    mount('en')
+    const trigger = screen.getByRole('button', { name: /English/ })
+    fireEvent.click(trigger)
+    expect(screen.getByRole('menuitem', { name: 'English' })).toBeDefined()
+    expect(screen.getByRole('menuitem', { name: 'Tiếng Việt' })).toBeDefined()
+    expect(screen.getByRole('menuitem', { name: '中文' })).toBeDefined()
+    expect([...screen.getAllByRole('menuitem')].map(el => el.textContent)).toEqual(['English', 'Tiếng Việt', '中文'])
+    fireEvent.click(trigger)
   })
 
   it('closes on outside pointerdown without selecting', () => {
@@ -74,8 +89,8 @@ describe('LanguageRow', () => {
 
   it('follows store changes; an unknown active id falls back to the id itself', () => {
     const b = mount('en')
-    act(() => { b.store.actions.sync('zh', OPTIONS, 1) })
-    expect(screen.getByRole('button', { name: /中文/ })).toBeDefined()
+    act(() => { b.store.actions.sync('vi', OPTIONS, 1) })
+    expect(screen.getByRole('button', { name: /Tiếng Việt/ })).toBeDefined()
     act(() => { b.store.actions.sync('fr', OPTIONS, 2) })
     expect(screen.getByRole('button', { name: /fr/ })).toBeDefined()
   })

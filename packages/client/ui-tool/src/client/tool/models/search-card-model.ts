@@ -21,8 +21,33 @@
  * lost.
  * @module
  */
-import type { SearchBlockProps, SearchFileGroup } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { SearchBlockLabels, SearchBlockProps, SearchFileGroup } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { CommonKeyOf, Translate } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ToolCallBlock } from './tool-call-model.ts'
+
+/**
+ * Build the SearchBlock display copy from the shared block vocabulary (common
+ * namespace), which every locale seat can address. The unit words are plural
+ * selected here so a single result reads `1 match · 1 file`, not `1 matches`.
+ * @param t - a locale seat (any namespace; the keys resolve through common).
+ * @returns the full label set for the search card's `labels`.
+ */
+export function searchBlockLabels(t: Translate<CommonKeyOf>): SearchBlockLabels {
+  return {
+    showingOf: (shown, total) => t('search.showingOf', { shown, total }),
+    pathsUnit: count => t(count === '1' ? 'search.unit.path' : 'search.unit.paths', { count }),
+    matchesUnit: (count, files) =>
+      `${count} ${t(count === '1' ? 'search.unit.match' : 'search.unit.matches')}`
+      + ` · ${files} ${t(files === 1 ? 'search.unit.file' : 'search.unit.files')}`,
+    copy: t('copy'),
+    copied: t('copied'),
+    empty: t('search.empty'),
+    collapseAria: t('search.collapseAria'),
+    expandAria: hidden => t('search.expandAria', { n: hidden }),
+    collapse: t('collapse'),
+    expand: hidden => t('search.expandRest', { n: hidden }),
+  }
+}
 
 /**
  * Distributive `Omit`: a plain `Omit<A | B, K>` keeps only the keys common to

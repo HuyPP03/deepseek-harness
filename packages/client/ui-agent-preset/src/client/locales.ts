@@ -88,6 +88,80 @@ export const en: Record<AgentPresetSettingsKey, string> = {
   deleting: 'Deleting…',
 }
 
+/** Vietnamese copy. */
+export const vi: Record<AgentPresetSettingsKey, string> = {
+  title: 'Preset agent',
+  description: 'Áp dụng cho các session bạn bắt đầu từ giờ. Các session đang chạy giữ nguyên preset lúc bắt đầu.',
+  loading: 'Đang tải preset…',
+  error: 'Không thể tải preset agent.',
+  userTrust: 'Tùy chỉnh',
+  seatHint: 'Preset agent cho session bạn sắp bắt đầu',
+  headerHint: 'Preset agent mà session này chạy, cố định khi bắt đầu',
+  nav: 'Preset agent',
+  sectionIntro:
+    'Preset là bộ plugin mà agent của một session vận hành — công cụ, prompt và khả năng của nó. '
+    + 'Sao chép một preset có sẵn rồi tùy chỉnh thành của riêng bạn, hoặc để agent phác thảo '
+    + 'một preset cho bạn trong chế độ Creator.',
+  builtIn: 'Nạp sẵn',
+  setDefault: 'Đặt làm mặc định',
+  view: 'Xem',
+  presetStandardName: 'Standard mode',
+  presetStandardDescription:
+    'Coding agent đầy đủ với chỉnh sửa file, shell, tìm kiếm file và web, skills, '
+    + 'lập kế hoạch, mục tiêu, subagent và workflow.',
+  presetCodeName: 'PTC mode',
+  presetCodeDescription:
+    'Toàn bộ khả năng của Standard mode, với công cụ được cung cấp qua Code Mode SDK '
+    + 'để model kết hợp thao tác nhiều bước trong một chương trình TypeScript.',
+  presetMinimalName: 'Minimal mode',
+  presetMinimalDescription: 'Coding agent hai công cụ gồm bash và str_replace_editor được duy trì.',
+  presetCordisName: 'Creator mode',
+  presetCordisDescription:
+    'Dành cho việc tạo preset agent tùy chỉnh, với toàn bộ khả năng của Standard mode '
+    + 'cùng kiểm tra runtime, thử nghiệm plugin và hướng dẫn viết preset.',
+  presetChatName: 'Chat mode',
+  presetChatDescription:
+    'Trợ lý chung chỉ đọc, không có thư mục làm việc, dùng cho hỏi đáp, giải thích và phân tích; '
+    + 'truy cập file chỉ ở chế độ đọc và không có công cụ coding.',
+  duplicate: 'Sao chép',
+  duplicateUnavailable: 'Bộ triển khai này không có thư mục preset ghi được',
+  delete: 'Xóa',
+  presetId: 'Định danh',
+  presetIdPlaceholder: 'my-agent',
+  displayName: 'Tên',
+  displayNamePlaceholder: 'Hiển thị trong trình chọn; mặc định là định danh',
+  inUse: 'Đang dùng',
+  builtInGroup: 'Nạp sẵn',
+  customGroup: 'Tùy chỉnh',
+  noDescription: 'Không có mô tả.',
+  brokenBadge: 'Tải thất bại',
+  brokenNoCopy: 'Preset tải thất bại không thể sao chép',
+  copyOf: 'Sao chép từ',
+  composition: 'Cấu thành (agent.cordis.yml)',
+  cancel: 'Hủy',
+  close: 'Đóng',
+  retry: 'Thử lại',
+  copyTitle: 'Sao chép preset',
+  copyIntro:
+    'Toàn bộ preset được sao chép trên máy này. Định danh sẽ thành tên thư mục '
+    + 'và không thể đổi sau này; mọi thứ còn lại chỉnh sửa trong file của chính preset.',
+  create: 'Tạo',
+  creating: 'Đang tạo…',
+  creatorDraft: 'Phác thảo preset tùy chỉnh bằng Creator mode',
+  openLocation: 'Mở thư mục',
+  showLocation: 'Hiển thị vị trí',
+  revealedPathLabel: 'File của preset:',
+  idRequired: 'Hãy đặt định danh cho preset.',
+  idInvalid: 'Dùng chữ thường, chữ số và gạch nối, bắt đầu bằng chữ cái hoặc chữ số.',
+  idTaken: 'Đã có preset dùng định danh này.',
+  deleteTitle: 'Xóa preset này?',
+  deleteDescription:
+    'Thư mục preset sẽ bị xóa. Các session đang chạy trên đó tiếp tục hoạt động; '
+    + 'session mới không thể chọn nó.',
+  deleteConfirm: 'Xóa',
+  deleting: 'Đang xóa…',
+}
+
 /** Simplified Chinese copy. */
 export const zh: Record<AgentPresetSettingsKey, string> = {
   title: 'Agent 预设',

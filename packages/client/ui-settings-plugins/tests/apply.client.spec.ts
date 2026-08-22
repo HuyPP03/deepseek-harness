@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 /** What the browser half registers, and that it all leaves with the fiber. */
 
 import { Context } from '@deepseek-ai/cordis'

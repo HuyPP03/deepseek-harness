@@ -30,7 +30,7 @@ Status: implemented
 
 ## Consequences
 
-- 来自英文浏览器的首访落在英文界面，而语言行依然呈现同样两个以自身语言自述的选项，两个方向的脱身通道都未改变。
+- 来自英文浏览器的首访落在英文界面，而语言行呈现以自身语言自述的选项（[en-first 语言集](../../proposed/feature/2026-08-22-client-locale-en-first-vietnamese.md) 起为三个），两个方向的脱身通道都未改变。
 - `FALLBACK_LOCALE` 收窄回它真正的职责——字典回落与无信号时的答案——不再兼职充当「用户尚未选择」。
 - 在 jsdom 下构造 `LocaleRuntime` 的测试现在依赖环境的 `navigator`：断言本地化文案的用例以一行套件级 `usePinnedBrowserLanguages('zh-CN')`（dsh-client-test-runtime）声明其浏览器，今后任何断言默认值的用例同样如此。本包自己的用例直接给全局打桩，因为它们需要该 helper 刻意不表达的形状（`languages` 缺失、列表与 `language` 解耦、完全没有 `window`）。
 - 探测的代价是每次服务构造遍历一次数组，且不会隐式写入 settings；插件激活后，显式 Host 偏好可能引发一次实时收敛。

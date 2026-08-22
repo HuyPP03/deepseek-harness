@@ -12,8 +12,23 @@
  * a running call always takes the generic path.
  * @module
  */
-import type { WebBlockProps } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { WebBlockLabels, WebBlockProps } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { CommonKeyOf, Translate } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ToolCallBlock } from './tool-call-model.ts'
+
+/**
+ * Build the WebBlock display copy from the shared block vocabulary (common
+ * namespace), which every locale seat can address.
+ * @param t - a locale seat (any namespace; the keys resolve through common).
+ * @returns the full label set for the web card's `labels`.
+ */
+export function webBlockLabels(t: Translate<CommonKeyOf>): WebBlockLabels {
+  return {
+    empty: t('web.empty'),
+    sourcesTruncated: t('web.sourcesTruncated'),
+    contentTruncated: t('web.contentTruncated'),
+  }
+}
 
 /**
  * Derive the web-card props for a tool call, or null when this call is not a

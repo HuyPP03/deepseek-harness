@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 /**
  * apply wiring on a real cordis Context + SlotRegistry: InputTriggerService mounts
  * as ctx.inputTriggers once its sessions dependency is up; the MenuView overlay

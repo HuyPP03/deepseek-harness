@@ -2,7 +2,11 @@
 import { describe, expect, it } from 'vitest'
 import { createLanguageRowStore } from '../src/client/settings-store.ts'
 
-const OPTIONS = [{ id: 'zh', label: '中文' }, { id: 'en', label: 'English' }]
+const OPTIONS = [
+  { id: 'en', label: 'English' },
+  { id: 'vi', label: 'Tiếng Việt' },
+  { id: 'zh', label: '中文' },
+]
 
 describe('createLanguageRowStore', () => {
   it('init shape: empty mirror with revision at -1', () => {
@@ -17,6 +21,9 @@ describe('createLanguageRowStore', () => {
     store.actions.sync('en', OPTIONS, 1)
     expect(store.getSnapshot().active).toBe('en')
     expect(store.getSnapshot().revision).toBe(1)
+    store.actions.sync('vi', OPTIONS, 2)
+    expect(store.getSnapshot().active).toBe('vi')
+    expect(store.getSnapshot().revision).toBe(2)
   })
 
   it('revision guard drops stale and duplicate writes', () => {

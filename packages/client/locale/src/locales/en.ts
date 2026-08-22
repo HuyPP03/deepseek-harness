@@ -1,6 +1,4 @@
-import type { CommonKey } from './zh.ts'
-
-/** en base dictionary for the common namespace, checked complete against the zh key set. */
+/** en base dictionary for the common namespace: cross-feature standard words (the key-set source of truth). */
 export const en = {
   'ok': 'OK',
   'cancel': 'Cancel',
@@ -26,4 +24,31 @@ export const en = {
   'unknown': 'Unknown',
   'none': 'None',
   'truncated': 'Truncated',
-} satisfies Record<CommonKey, string>
+  // The tool-card block surfaces (DiffBlock/ReadBlock/SearchBlock/WebBlock) are
+  // shared by more than one feature, so their display copy lives in the shared
+  // vocabulary rather than in any one namespace.
+  'diff.collapseAria': 'Collapse diff',
+  'diff.expandAria': 'Expand the remaining {n} diff lines',
+  'diff.expandRest': '… {n} more lines',
+  'read.count': 'Showing {shown} of {total} lines',
+  'read.collapseAria': 'Collapse content',
+  'read.expandAria': 'Expand the remaining {n} lines',
+  'read.expandRest': '… {n} more lines',
+  'search.showingOf': 'Showing {shown} of {total}',
+  'search.unit.path': 'path',
+  'search.unit.paths': 'paths',
+  'search.unit.match': 'match',
+  'search.unit.matches': 'matches',
+  'search.unit.file': 'file',
+  'search.unit.files': 'files',
+  'search.empty': 'No results',
+  'search.collapseAria': 'Collapse results',
+  'search.expandAria': 'Expand the remaining {n} result lines',
+  'search.expandRest': '… {n} more lines',
+  'web.empty': 'No results found',
+  'web.sourcesTruncated': 'Source list truncated',
+  'web.contentTruncated': 'Content truncated',
+} satisfies Record<string, string>
+
+/** The common vocabulary key union (en is the key-set source of truth). */
+export type CommonKey = keyof typeof en

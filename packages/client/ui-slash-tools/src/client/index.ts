@@ -17,7 +17,7 @@
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import type { CommandUiContract } from '@deepseek-ai/dsh-client-ui-commands/client'
-import { en, NS, zh, type SlashToolsKey } from './locales.ts'
+import { en, NS, vi, zh, type SlashToolsKey } from './locales.ts'
 
 declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface LocaleNamespaceMap {
@@ -35,7 +35,7 @@ export const inject = ['commandUi', 'locale', 'sessions', 'workspaces']
  * @param ctx - client root context.
  */
 export function apply(ctx: ClientContext): void {
-  ctx.effect(() => ctx.locale.register(NS, { zh, en }), 'ui-slash-tools: dictionaries')
+  ctx.effect(() => ctx.locale.register(NS, { en, vi, zh }), 'ui-slash-tools: dictionaries')
   // The command description is registry-held text: it reads t() once at
   // registration and refreshes only on re-registration, not on locale change.
   const t = ctx.locale.bind(NS)

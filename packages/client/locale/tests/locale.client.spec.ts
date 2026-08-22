@@ -37,31 +37,34 @@ describe('LocaleRuntime', () => {
     vi.unstubAllGlobals()
   })
 
-  it('translates through the active-locale -> zh -> key chain', () => {
+  it('translates through the active-locale -> en -> key chain', () => {
     const { svc } = make()
     svc.register('ns', 'zh', { hello: '你好', onlyZh: '仅中文' })
-    svc.register('ns', 'en', { hello: 'Hello' })
+    svc.register('ns', 'en', { hello: 'Hello', onlyEn: 'Only en' })
     const t = svc.bind('ns')
     expect(svc.getLocale().active).toBe('zh')
     expect(t('hello')).toBe('你好')
+    expect(t('onlyEn')).toBe('Only en')
     svc.setLocale('en')
     expect(t('hello')).toBe('Hello')
-    expect(t('onlyZh')).toBe('仅中文')
+    expect(t('onlyZh')).toBe('onlyZh')
     expect(t('missing.key')).toBe('missing.key')
   })
 
   it('falls through to the common vocabulary after the namespace misses (production keys)', () => {
     const { svc } = make()
-    // The shipped common pair is registered by apply; the bench registers it
-    // directly to pin the production chain: ns -> common -> zh -> key.
+    // The shipped common set is registered by apply; the bench registers it
+    // directly to pin the production chain: ns -> common -> en -> key.
     svc.register('common', 'zh', { retry: '重试' })
     svc.register('common', 'en', { retry: 'Retry' })
     svc.register('ns', 'zh', { own: '自有' })
+    svc.register('ns', 'en', { own: 'Own' })
     const t = svc.bind('ns')
     expect(t('retry')).toBe('重试')
+    expect(t('own')).toBe('自有')
     svc.setLocale('en')
     expect(t('retry')).toBe('Retry')
-    expect(t('own')).toBe('自有')
+    expect(t('own')).toBe('Own')
     // common itself must not recurse: a miss inside common echoes the key.
     // (Wide-string ns hits the untyped bind overload — the typed one rejects
     // unknown keys at compile time, which is the point of the typed registry contract.)
@@ -197,44 +200,47 @@ describe('LocaleRuntime', () => {
     expect(make().svc.getLocale().active).toBe('en')
     stubLanguages('zh-Hant-TW')
     expect(make().svc.getLocale().active).toBe('zh')
+    stubLanguages('vi-VN')
+    expect(make().svc.getLocale().active).toBe('vi')
     // An unshipped language walks the list to the first one this app ships.
     stubLanguages('fr-FR', 'en-US')
     expect(make().svc.getLocale().active).toBe('en')
     // Only `language` populated: an empty ordered list, and a host that
     // exposes no `languages` property at all.
-    vi.stubGlobal('navigator', { languages: [], language: 'en-US' })
-    expect(make().svc.getLocale().active).toBe('en')
-    vi.stubGlobal('navigator', { language: 'en-US' })
-    expect(make().svc.getLocale().active).toBe('en')
-    // No shipped language anywhere in the browser's preferences: zh remains
+    vi.stubGlobal('navigator', { languages: [], language: 'vi-VN' })
+    expect(make().svc.getLocale().active).toBe('vi')
+    vi.stubGlobal('navigator', { language: 'vi-VN' })
+    expect(make().svc.getLocale().active).toBe('vi')
+    // No shipped language anywhere in the browser's preferences: en remains
     // the product default rather than an arbitrary near-match.
     stubLanguages('fr-FR', 'de')
-    expect(make().svc.getLocale().active).toBe('zh')
+    expect(make().svc.getLocale().active).toBe('en')
   })
 
   it('runs outside a browser (node boots): the fallback decides and the machine language does not', () => {
     vi.stubGlobal('window', undefined)
     // Node exposes its own global navigator; without a window it must not
     // reach the resolution at all.
-    stubLanguages('en-US')
+    stubLanguages('vi-VN')
     const { svc } = make()
-    expect(svc.getLocale().active).toBe('zh')
-    svc.setLocale('en')
     expect(svc.getLocale().active).toBe('en')
+    svc.setLocale('zh')
+    expect(svc.getLocale().active).toBe('zh')
   })
 
   it('lets an explicit in-process preference replace the browser-derived value', () => {
     stubLanguages('en-US')
     const { svc } = make()
-    svc.setLocale('zh')
-    expect(svc.getLocale().active).toBe('zh')
+    svc.setLocale('vi')
+    expect(svc.getLocale().active).toBe('vi')
   })
 
-  it('exposes the two shipped locales with self-described labels', () => {
+  it('exposes the three shipped locales with self-described labels in display order', () => {
     const { svc } = make()
     expect(svc.getLocale().locales).toEqual([
-      { id: 'zh', label: '中文' },
       { id: 'en', label: 'English' },
+      { id: 'vi', label: 'Tiếng Việt' },
+      { id: 'zh', label: '中文' },
     ])
   })
 })

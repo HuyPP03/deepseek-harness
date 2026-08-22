@@ -138,6 +138,76 @@ export const en: Record<McpKey, string> = {
   creating: 'Adding…',
 }
 
+/** Vietnamese dictionary, checked complete against the en key set. */
+export const vi: Record<McpKey, string> = {
+  nav: 'Máy chủ MCP',
+  sectionIntro:
+    'Các máy chủ MCP bên ngoài mà bộ triển khai này kết nối. Máy chủ Profile do bộ triển khai khai báo; '
+    + 'máy chủ bạn thêm ở đây cũng được lưu cho lần khởi động tiếp theo.',
+  loading: 'Đang tải máy chủ MCP…',
+  loadError: 'Không tải được máy chủ MCP.',
+  retry: 'Thử lại',
+  noServers: 'Chưa có máy chủ MCP nào được kết nối.',
+  add: 'Thêm máy chủ MCP…',
+  addRowDetail: 'Mở cài đặt MCP để đăng ký máy chủ mới',
+  statusConnecting: 'đang kết nối',
+  statusConnected: 'đã kết nối',
+  statusReconnecting: 'đang kết nối lại',
+  statusDown: 'mất kết nối',
+  toolsOne: '1 công cụ',
+  toolsMany: '{count} công cụ',
+  noTools: 'không có công cụ',
+  reconnect: 'Kết nối lại',
+  reconnecting: 'Đang kết nối lại…',
+  reconnectTitle: 'Kết nối lại “{name}”?',
+  reconnectDescription:
+    'Kết nối sẽ bị ngắt và thiết lập lại từ đầu. '
+    + 'Các lời gọi công cụ đang chạy trên máy chủ này sẽ bị gián đoạn.',
+  reconnectAcknowledge: 'Tôi hiểu các lời gọi công cụ đang chạy trên máy chủ này sẽ bị gián đoạn',
+  reconnectCancel: 'Quay lại',
+  reconnectConfirm: 'Kết nối lại ngay',
+  remove: 'Gỡ bỏ',
+  removeTitle: 'Gỡ bỏ “{name}”?',
+  removeDescription:
+    'Định nghĩa máy chủ sẽ bị xóa và các công cụ của nó bị hủy đăng ký. '
+    + 'Các phiên đang chạy đã gọi công cụ của nó sẽ giữ nguyên trạng thái của riêng mình.',
+  removeAcknowledge: 'Tôi hiểu các công cụ của máy chủ này sẽ bị hủy đăng ký',
+  removeCancel: 'Quay lại',
+  removeConfirm: 'Gỡ bỏ máy chủ',
+  removing: 'Đang gỡ bỏ…',
+  managedOnly: 'Máy chủ này do bộ triển khai khai báo và không thể gỡ bỏ từ đây.',
+  addTitle: 'Thêm máy chủ MCP',
+  addIntro: 'Đăng ký một máy chủ MCP bên ngoài. Tên sẽ trở thành tiền tố công cụ và khóa cài đặt.',
+  serverName: 'Tên máy chủ',
+  serverNamePlaceholder: 'chữ cái, chữ số, - và _ (1–32)',
+  nameRequired: 'Cần có tên máy chủ.',
+  nameInvalid: 'Dùng 1–32 chữ cái, chữ số, “-” hoặc “_”.',
+  nameTaken: 'Đã có máy chủ cùng tên.',
+  transport: 'Phương thức truyền',
+  stdio: 'Quá trình cục bộ (stdio)',
+  streamableHttp: 'Điểm cuối Streamable HTTP',
+  command: 'Lệnh',
+  commandPlaceholder: 'chương trình thực thi cần khởi tạo',
+  commandRequired: 'Lệnh là bắt buộc với máy chủ stdio.',
+  args: 'Tham số',
+  argsPlaceholder: 'mỗi dòng một',
+  env: 'Biến môi trường',
+  envPlaceholder: 'KEY=value, mỗi dòng một',
+  cwd: 'Thư mục làm việc',
+  cwdPlaceholder: 'để trống để dùng mặc định',
+  url: 'URL điểm cuối',
+  urlPlaceholder: 'https://example.com/mcp',
+  urlRequired: 'Cần có URL điểm cuối.',
+  urlInvalid: 'Điểm cuối không phải URL hợp lệ.',
+  headers: 'Đầu yêu cầu',
+  headersPlaceholder: 'Tên: giá trị, mỗi dòng một',
+  timeout: 'Thời gian chờ lời gọi công cụ (ms)',
+  timeoutPlaceholder: '60000',
+  cancel: 'Hủy',
+  create: 'Thêm máy chủ',
+  creating: 'Đang thêm…',
+}
+
 /** 中文文案。 */
 export const zh: Record<McpKey, string> = {
   nav: 'MCP 服务器',

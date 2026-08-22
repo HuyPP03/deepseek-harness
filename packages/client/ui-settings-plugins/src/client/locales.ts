@@ -53,6 +53,47 @@ export const en: Record<PluginsSettingsLocaleKey, string> = {
   webSearchMaxUsesHint: 'How many times one request may search before it must answer.',
 }
 
+/** Vietnamese copy. */
+export const vi: Record<PluginsSettingsLocaleKey, string> = {
+  nav: 'Plugin',
+  title: 'Plugin',
+  intro: 'Cấu hình và kiểm tra các plugin đã cài trong bộ triển khai này.',
+  tabs: 'Góc nhìn plugin',
+  configurableTab: 'Cấu hình plugin',
+  empty: 'Bộ triển khai này không có cài đặt plugin nào.',
+  overridden: 'Đã ghi đè',
+  reset: 'Đặt lại mặc định',
+  readOnly: 'Bộ triển khai này lưu cài đặt ở chế độ chỉ đọc.',
+  expand: 'Hiển thị cài đặt',
+  collapse: 'Ẩn cài đặt',
+  save: 'Lưu',
+  saving: 'Đang lưu…',
+  discard: 'Hủy bỏ',
+  unsaved: 'Chưa lưu',
+  saveFailed: 'Bộ triển khai không chấp nhận các giá trị này; chúng được giữ lại để bạn chỉnh sửa.',
+  invalidNumber: 'Nhập một số, hoặc để trống để dùng giá trị mặc định.',
+  bashTitle: 'Shell',
+  bashDescription: 'Đặt giới hạn cho mọi lệnh agent chạy.',
+  bashTimeoutMs: 'Giới hạn thời gian lệnh (ms)',
+  bashTimeoutMsHint: 'Một lệnh được phép chạy bao lâu trước khi bị kết thúc.',
+  bashMaxOutputBytes: 'Giới hạn đầu ra mỗi luồng (byte)',
+  bashMaxOutputBytesHint: 'Đầu ra vượt quá giới hạn này được đổ sang file tạm thay vì bị mất.',
+  agentLoopTitle: 'Vòng lặp agent',
+  agentLoopDescription: 'Cách agent điều phối các lần gọi công cụ.',
+  agentLoopMaxParallel: 'Gọi công cụ song song',
+  agentLoopMaxParallelHint: 'Giới hạn trên của các lần gọi an toàn song song chạy cùng lúc trong một bước.',
+  webSearchTitle: 'Tìm kiếm web',
+  webSearchDescription: 'Nhà cung cấp tìm kiếm DeepSeek.',
+  webSearchApiKey: 'API key',
+  webSearchApiKeyHint: 'Được lưu ngoài file cài đặt. Để trống để giữ API key hiện tại.',
+  webSearchApiKeySet: 'Đã có API key được cấu hình.',
+  webSearchApiKeyUnset: 'Chưa cấu hình API key; tìm kiếm không khả dụng cho tới khi được cấu hình.',
+  webSearchBaseUrl: 'URL',
+  webSearchBaseUrlHint: 'Để trống để dùng giá trị mặc định của nhà cung cấp.',
+  webSearchMaxUses: 'Số lần tìm kiếm tối đa mỗi request',
+  webSearchMaxUsesHint: 'Một request được phép tìm kiếm bao nhiêu lần trước khi phải trả lời.',
+}
+
 /** Simplified Chinese copy. */
 export const zh: Record<PluginsSettingsLocaleKey, string> = {
   nav: '插件',

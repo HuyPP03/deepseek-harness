@@ -13,8 +13,27 @@
  * until the result arrives.
  * @module
  */
-import type { ReadBlockLine, ReadBlockProps } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { ReadBlockLabels, ReadBlockLine, ReadBlockProps } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { CommonKeyOf, Translate } from '@deepseek-ai/dsh-client-ui-slots'
 import { relativizeToCwd, type ToolCallBlock } from './tool-call-model.ts'
+
+/**
+ * Build the ReadBlock display copy from the shared block vocabulary (common
+ * namespace), which every locale seat can address.
+ * @param t - a locale seat (any namespace; the keys resolve through common).
+ * @returns the full label set for {@link ReadBlockProps}'s `labels`.
+ */
+export function readBlockLabels(t: Translate<CommonKeyOf>): ReadBlockLabels {
+  return {
+    count: (shown, total) => t('read.count', { shown, total }),
+    copy: t('copy'),
+    copied: t('copied'),
+    collapseAria: t('read.collapseAria'),
+    expandAria: hidden => t('read.expandAria', { n: hidden }),
+    collapse: t('collapse'),
+    expand: hidden => t('read.expandRest', { n: hidden }),
+  }
+}
 
 /**
  * Content lines the chat row's resident read body shows before collapsing the
