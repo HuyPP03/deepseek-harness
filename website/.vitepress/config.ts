@@ -45,7 +45,7 @@ interface GuideModuleLink {
  */
 interface GuideModules {
   /** Guide sidebar collection for the locale. */
-  guide: 'zh-guide' | 'en-guide'
+  guide: 'en-guide' | 'zh-guide' | 'vi-guide'
   /** Development module link. */
   develop: GuideModuleLink
   /** Reference module link. */
@@ -58,14 +58,19 @@ interface GuideModules {
  */
 const guideModules = {
   root: {
+    guide: 'en-guide',
+    develop: { label: 'Development', collection: 'en-develop' },
+    reference: { label: 'Reference', collection: 'en-reference' },
+  },
+  zh: {
     guide: 'zh-guide',
     develop: { label: '开发', collection: 'zh-develop' },
     reference: { label: '参考', collection: 'zh-reference' },
   },
-  en: {
-    guide: 'en-guide',
-    develop: { label: 'Development', collection: 'en-develop' },
-    reference: { label: 'Reference', collection: 'en-reference' },
+  vi: {
+    guide: 'vi-guide',
+    develop: { label: 'Phát triển', collection: 'vi-develop' },
+    reference: { label: 'Tham khảo', collection: 'vi-reference' },
   },
 } satisfies Record<DocsLocale, GuideModules>
 
@@ -95,7 +100,7 @@ function guideSidebar(locale: DocsLocale): DefaultTheme.SidebarItem[] {
  */
 function moduleNav(locale: DocsLocale): DefaultTheme.NavItem[] {
   const { develop, reference } = guideModules[locale]
-  const routePrefix = locale === 'root' ? '' : '/en'
+  const routePrefix = locale === 'root' ? '' : locale === 'zh' ? '/zh' : '/vi'
   return [
     { text: develop.label, link: landingLink(locale, develop.collection), activeMatch: `^${routePrefix}/develop/` },
     { text: reference.label, link: landingLink(locale, reference.collection), activeMatch: `^${routePrefix}/reference/` },
@@ -115,12 +120,26 @@ function escapeVueInterpolation(html: string): string {
   return html.replaceAll('{{', '&#123;&#123;').replaceAll('}}', '&#125;&#125;')
 }
 
+/**
+ * Resolve the GitHub edit URL for a projected page from its frontmatter.
+ *
+ * @param page Data of the rendered page, carrying the projector's `editSource` frontmatter.
+ * @returns The canonical source file's GitHub edit URL.
+ * @throws When the page carries no projector `editSource` frontmatter.
+ */
+function editSourcePattern({ frontmatter }: PageData): string {
+  const data: unknown = frontmatter
+  const editSource: unknown = typeof data === 'object' && data !== null ? Reflect.get(data, 'editSource') : undefined
+  if (typeof editSource !== 'string') throw new Error('Projected documentation page has no editSource frontmatter.')
+  return `https://github.com/deepseek-ai/deepseek-harness/edit/master/${editSource}`
+}
+
 const sharedTheme: Pick<DefaultTheme.Config, 'search' | 'socialLinks' | 'editLink'> = {
   search: {
     provider: 'local',
     options: {
       locales: {
-        root: {
+        zh: {
           translations: {
             button: {
               buttonText: '搜索文档',
@@ -143,6 +162,29 @@ const sharedTheme: Pick<DefaultTheme.Config, 'search' | 'socialLinks' | 'editLin
             },
           },
         },
+        vi: {
+          translations: {
+            button: {
+              buttonText: 'Tìm kiếm tài liệu',
+              buttonAriaLabel: 'Tìm kiếm tài liệu',
+            },
+            modal: {
+              displayDetails: 'Hiển thị danh sách chi tiết',
+              resetButtonTitle: 'Xóa tìm kiếm',
+              backButtonTitle: 'Đóng tìm kiếm',
+              noResultsText: 'Không tìm thấy kết quả liên quan',
+              footer: {
+                selectText: 'Chọn',
+                selectKeyAriaLabel: 'Phím Enter',
+                navigateText: 'Chuyển',
+                navigateUpKeyAriaLabel: 'Phím mũi tên lên',
+                navigateDownKeyAriaLabel: 'Phím mũi tên xuống',
+                closeText: 'Đóng',
+                closeKeyAriaLabel: 'Phím Esc',
+              },
+            },
+          },
+        },
       },
     },
   },
@@ -150,13 +192,8 @@ const sharedTheme: Pick<DefaultTheme.Config, 'search' | 'socialLinks' | 'editLin
     { icon: 'github', link: 'https://github.com/deepseek-ai/deepseek-harness' },
   ],
   editLink: {
-    pattern: ({ frontmatter }: PageData) => {
-      const data: unknown = frontmatter
-      const editSource: unknown = typeof data === 'object' && data !== null ? Reflect.get(data, 'editSource') : undefined
-      if (typeof editSource !== 'string') throw new Error('Projected documentation page has no editSource frontmatter.')
-      return `https://github.com/deepseek-ai/deepseek-harness/edit/master/${editSource}`
-    },
-    text: '在 GitHub 上编辑此页',
+    pattern: editSourcePattern,
+    text: 'Edit this page on GitHub',
   },
 }
 
@@ -248,7 +285,7 @@ function siteTitle(previewTag: string): string {
 
 export default withMermaid({
   title: 'DeepSeek Harness',
-  description: '用于构建 Agent Harness 的插件化 SDK',
+  description: 'A plugin-based SDK for building agent harnesses',
   base,
   head: [
     // VitePress leaves head hrefs untouched, so the base belongs here explicitly.
@@ -262,18 +299,41 @@ export default withMermaid({
   outDir: '.dist',
   locales: {
     root: {
-      label: '简体中文',
-      lang: 'zh-CN',
+      label: 'English',
+      lang: 'en-US',
       themeConfig: {
-        siteTitle: siteTitle('技术预览'),
+        siteTitle: siteTitle('Preview'),
         nav: [
-          { text: '入门', link: landingLink('root', guideModules.root.guide), activeMatch: '^/guide/' },
+          { text: 'Guide', link: landingLink('root', guideModules.root.guide), activeMatch: '^/guide/' },
           ...moduleNav('root'),
         ],
         sidebar: {
           '/guide/': guideSidebar('root'),
-          '/develop/': sidebar('root', 'zh-develop'),
-          '/reference/': sidebar('root', 'zh-reference'),
+          '/develop/': sidebar('root', 'en-develop'),
+          '/reference/': sidebar('root', 'en-reference'),
+        },
+        outline: { label: 'On this page' },
+        docFooter: { prev: 'Previous', next: 'Next' },
+      },
+    },
+    zh: {
+      label: '中文',
+      lang: 'zh-CN',
+      link: '/zh/',
+      themeConfig: {
+        siteTitle: siteTitle('技术预览'),
+        nav: [
+          { text: '入门', link: landingLink('zh', guideModules.zh.guide), activeMatch: '^/zh/guide/' },
+          ...moduleNav('zh'),
+        ],
+        sidebar: {
+          '/zh/guide/': guideSidebar('zh'),
+          '/zh/develop/': sidebar('zh', 'zh-develop'),
+          '/zh/reference/': sidebar('zh', 'zh-reference'),
+        },
+        editLink: {
+          pattern: editSourcePattern,
+          text: '在 GitHub 上编辑此页',
         },
         outline: { label: '本页目录' },
         docFooter: { prev: '上一篇', next: '下一篇' },
@@ -286,32 +346,34 @@ export default withMermaid({
         skipToContentLabel: '跳至内容',
       },
     },
-    en: {
-      label: 'English',
-      lang: 'en-US',
-      link: '/en/',
+    vi: {
+      label: 'Tiếng Việt',
+      lang: 'vi-VN',
+      link: '/vi/',
       themeConfig: {
-        siteTitle: siteTitle('Preview'),
+        siteTitle: siteTitle('Bản xem trước'),
         nav: [
-          { text: 'Guide', link: landingLink('en', guideModules.en.guide), activeMatch: '^/en/guide/' },
-          ...moduleNav('en'),
+          { text: 'Hướng dẫn', link: landingLink('vi', guideModules.vi.guide), activeMatch: '^/vi/guide/' },
+          ...moduleNav('vi'),
         ],
         sidebar: {
-          '/en/guide/': guideSidebar('en'),
-          '/en/develop/': sidebar('en', 'en-develop'),
-          '/en/reference/': sidebar('en', 'en-reference'),
+          '/vi/guide/': guideSidebar('vi'),
+          '/vi/develop/': sidebar('vi', 'vi-develop'),
+          '/vi/reference/': sidebar('vi', 'vi-reference'),
         },
         editLink: {
-          pattern: ({ frontmatter }: PageData) => {
-            const data: unknown = frontmatter
-            const editSource: unknown = typeof data === 'object' && data !== null ? Reflect.get(data, 'editSource') : undefined
-            if (typeof editSource !== 'string') throw new Error('Projected documentation page has no editSource frontmatter.')
-            return `https://github.com/deepseek-ai/deepseek-harness/edit/master/${editSource}`
-          },
-          text: 'Edit this page on GitHub',
+          pattern: editSourcePattern,
+          text: 'Sửa trang này trên GitHub',
         },
-        outline: { label: 'On this page' },
-        docFooter: { prev: 'Previous', next: 'Next' },
+        outline: { label: 'Trên trang này' },
+        docFooter: { prev: 'Trước', next: 'Tiếp theo' },
+        darkModeSwitchLabel: 'Giao diện',
+        lightModeSwitchTitle: 'Chuyển sang giao diện sáng',
+        darkModeSwitchTitle: 'Chuyển sang giao diện tối',
+        sidebarMenuLabel: 'Menu',
+        returnToTopLabel: 'Lên đầu trang',
+        langMenuLabel: 'Chọn ngôn ngữ',
+        skipToContentLabel: 'Bỏ qua tới nội dung',
       },
     },
   },

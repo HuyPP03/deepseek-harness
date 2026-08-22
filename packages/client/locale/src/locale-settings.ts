@@ -8,8 +8,8 @@ export const LOCALE_SETTINGS_NAMESPACE = 'locale'
 /** Field carrying an explicit locale selection; absence delegates to the browser. */
 export const LOCALE_PREFERENCE_FIELD = 'preference'
 
-/** Locale identifiers shipped by the browser client. */
-export const LOCALE_IDS = ['zh', 'en'] as const
+/** Locale identifiers shipped by the browser client, in display order (English primary, Vietnamese second, Chinese secondary). */
+export const LOCALE_IDS = ['en', 'vi', 'zh'] as const
 
 /** Shipped locale identifier. */
 export type LocaleId = typeof LOCALE_IDS[number]

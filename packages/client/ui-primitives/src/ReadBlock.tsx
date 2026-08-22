@@ -11,6 +11,7 @@
 
 import { useCallback, useMemo, useState, useSyncExternalStore } from 'react'
 import clsx from 'clsx'
+import { ExpandCollapseToggle } from './ExpandCollapseToggle.tsx'
 import { writeClipboard } from './clipboard.ts'
 import {
   grammarLoadCount,
@@ -35,6 +36,38 @@ export interface ReadBlockLine {
   text: string
 }
 
+/**
+ * Display copy for the read surface; the owner passes localized labels (this
+ * package is cordis-free, so copy arrives via props). Every field defaults to
+ * the built-in English value, so existing consumers render unchanged.
+ */
+export interface ReadBlockLabels {
+  /** Banner note when the read is a window, given the shown and total line counts. */
+  count: (shown: number, total: number) => string
+  /** Copy-button idle label. */
+  copy: string
+  /** Copy-button label during the post-copy confirmation window. */
+  copied: string
+  /** Collapse-toggle aria label while expanded. */
+  collapseAria: string
+  /** Expand-toggle aria label while capped, given the hidden line count. */
+  expandAria: (hidden: number) => string
+  /** Collapse-toggle text while expanded. */
+  collapse: string
+  /** Expand-toggle text while capped, given the hidden line count. */
+  expand: (hidden: number) => string
+}
+
+const DEFAULT_READ_LABELS: ReadBlockLabels = {
+  count: (shown, total) => `Showing ${shown} of ${total} lines`,
+  copy: 'Copy',
+  copied: 'Copied',
+  collapseAria: 'Collapse content',
+  expandAria: hidden => `Expand the remaining ${hidden} lines`,
+  collapse: 'Collapse',
+  expand: hidden => `… ${hidden} more lines`,
+}
+
 export interface ReadBlockProps {
   /** Banner label (the file path, or a tool-supplied replacement title); omitted draws no label. */
   label?: string | undefined
@@ -48,6 +81,8 @@ export interface ReadBlockProps {
   maxLines?: number | undefined
   /** Extra class merged onto the wrapper (callers position; this component draws). */
   className?: string | undefined
+  /** Display copy for the count note and the copy and collapse/expand controls. */
+  labels?: Partial<ReadBlockLabels> | undefined
 }
 
 /**
@@ -74,7 +109,12 @@ export function ReadBlock({
   lang,
   maxLines = DEFAULT_READ_MAX_LINES,
   className,
+  labels,
 }: ReadBlockProps) {
+  const copy = useMemo(
+    () => (labels === undefined ? DEFAULT_READ_LABELS : { ...DEFAULT_READ_LABELS, ...labels }),
+    [labels],
+  )
   // The raw text the copy control writes and the highlighter tokenizes: the
   // window's lines joined by newlines, without the file numbers or any chrome.
   // Highlighting the whole window in one call (not line by line) keeps grammar
@@ -138,7 +178,7 @@ export function ReadBlock({
         <div className={css.label}>{label ?? ''}</div>
         <div className={css.action}>
           {windowed && (
-            <span className={css.count}>{`显示 ${lines.length} / ${totalLines} 行`}</span>
+            <span className={css.count}>{copy.count(lines.length, totalLines)}</span>
           )}
           <span className={css.lang}>{lang ?? ''}</span>
           {/* Hide copy on an empty window, matching TerminalBlock's empty-output
@@ -147,24 +187,14 @@ export function ReadBlock({
               wipe the clipboard with an empty string. */}
           {lines.length > 0 && (
             <button type="button" className={css.copyButton} onClick={onCopy}>
-              {copied ? '复制成功' : '复制'}
+              {copied ? copy.copied : copy.copy}
             </button>
           )}
         </div>
       </div>
       <div className={css.body}>
         {rows(capped ? paired.slice(0, headLines) : paired)}
-        {hidden > 0 && (
-          <button
-            type="button"
-            className={css.expand}
-            aria-expanded={expanded}
-            aria-label={expanded ? '收起内容' : `展开其余 ${hidden} 行`}
-            onClick={onToggle}
-          >
-            {expanded ? '收起' : `… 其余 ${hidden} 行`}
-          </button>
-        )}
+        <ExpandCollapseToggle hidden={hidden} expanded={expanded} className={css.expand} labels={copy} onToggle={onToggle} />
         {capped && rows(paired.slice(paired.length - tailLines))}
       </div>
     </div>

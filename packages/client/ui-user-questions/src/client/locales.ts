@@ -1,28 +1,6 @@
 /** `question` namespace dictionaries. */
 
-/** Simplified Chinese dictionary (the key-set source of truth). */
-export const zh = {
-  'error.incomplete': '请先完成这道问题。',
-  'error.unanswered': '请选择一个选项或填写自定义答案。',
-  'nav.prev': '上一题',
-  'nav.next': '下一题',
-  'nav.minimize': '收起问题卡片',
-  'nav.maximize': '展开问题卡片',
-  'nav.cancel': '放弃整组问题',
-  'option.recommended': '推荐',
-  'custom.placeholder': '输入你的答案',
-  'action.skip': '跳过本题',
-  'action.next': '下一题',
-  'plan.header': '计划待审',
-  'plan.approve': '确认执行',
-  'plan.decline': '拒绝',
-  'plan.discuss': '去聊天里说',
-} satisfies Record<string, string>
-
-/** The question namespace key union. */
-export type QuestionKey = keyof typeof zh
-
-/** English dictionary, checked complete against the zh key set. */
+/** English dictionary (the key-set source of truth). */
 export const en = {
   'error.incomplete': 'Please complete this question first.',
   'error.unanswered': 'Please select an option or enter a custom answer.',
@@ -39,4 +17,45 @@ export const en = {
   'plan.approve': 'Approve',
   'plan.decline': 'Refuse',
   'plan.discuss': 'Chat about it',
+} satisfies Record<string, string>
+
+/** The question namespace key union. */
+export type QuestionKey = keyof typeof en
+
+/** Vietnamese dictionary, checked complete against the en key set. */
+export const vi = {
+  'error.incomplete': 'Vui lòng hoàn thành câu hỏi này trước.',
+  'error.unanswered': 'Vui lòng chọn một phương án hoặc nhập câu trả lời tùy chỉnh.',
+  'nav.prev': 'Câu hỏi trước',
+  'nav.next': 'Câu hỏi tiếp theo',
+  'nav.minimize': 'Thu gọn thẻ câu hỏi',
+  'nav.maximize': 'Mở rộng thẻ câu hỏi',
+  'nav.cancel': 'Bỏ qua tất cả câu hỏi',
+  'option.recommended': 'Đề xuất',
+  'custom.placeholder': 'Nhập câu trả lời của bạn',
+  'action.skip': 'Bỏ qua câu hỏi này',
+  'action.next': 'Tiếp theo',
+  'plan.header': 'Xem xét kế hoạch',
+  'plan.approve': 'Phê duyệt',
+  'plan.decline': 'Từ chối',
+  'plan.discuss': 'Trò chuyện về điều này',
+} satisfies Record<QuestionKey, string>
+
+/** Simplified Chinese dictionary, checked complete against the en key set. */
+export const zh = {
+  'error.incomplete': '请先完成这道问题。',
+  'error.unanswered': '请选择一个选项或填写自定义答案。',
+  'nav.prev': '上一题',
+  'nav.next': '下一题',
+  'nav.minimize': '收起问题卡片',
+  'nav.maximize': '展开问题卡片',
+  'nav.cancel': '放弃整组问题',
+  'option.recommended': '推荐',
+  'custom.placeholder': '输入你的答案',
+  'action.skip': '跳过本题',
+  'action.next': '下一题',
+  'plan.header': '计划待审',
+  'plan.approve': '确认执行',
+  'plan.decline': '拒绝',
+  'plan.discuss': '去聊天里说',
 } satisfies Record<QuestionKey, string>

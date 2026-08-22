@@ -25,7 +25,7 @@ import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 import { McpSection } from './McpSection.tsx'
 import type { McpSectionInjected } from './McpSection.tsx'
 import { McpSectionController } from './section-store.ts'
-import { en, zh, type McpKey } from './locales.ts'
+import { en, vi, zh, type McpKey } from './locales.ts'
 
 export type { McpSectionInjected, McpSectionProps } from './McpSection.tsx'
 export { McpSectionController, type AddDraft, type McpSectionState } from './section-store.ts'
@@ -85,7 +85,7 @@ function serverRow(row: McpServerRow, t: (key: McpKey, params?: Record<string, u
  * @param ctx - client root context.
  */
 export function apply(ctx: ClientContext): void {
-  ctx.effect(() => ctx.locale.register('settings.mcp', { zh, en }), 'ui-mcp: dictionaries')
+  ctx.effect(() => ctx.locale.register('settings.mcp', { en, vi, zh }), 'ui-mcp: dictionaries')
 
   // The section controller owns the roster, the add form, the remove gate,
   // and the in-flight reconnect — one owner, one snapshot.

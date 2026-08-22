@@ -3,7 +3,54 @@
 /** Dictionary namespace owned by this plugin. */
 export const NS = 'workflowRun'
 
-/** Simplified Chinese dictionary (the key-set source of truth). */
+/** English dictionary (the key-set source of truth). */
+export const en = {
+  'run.title': '{name}',
+  'run.members.one': '{count} member',
+  'run.members.other': '{count} members',
+  'run.empty': 'No members started',
+  'phase.unassigned': 'Unphased',
+  'phase.empty': 'Empty phase name',
+  'statusCount.running': 'Running {count}',
+  'statusCount.completed': 'Completed {count}',
+  'statusCount.failed': 'Failed {count}',
+  'statusCount.cancelled': 'Cancelled {count}',
+  'statusCount.interrupted': 'Interrupted {count}',
+  'member.empty': 'Empty member name',
+  'member.open': 'Open {name}',
+  'status.running': 'Running',
+  'status.completed': 'Completed',
+  'status.failed': 'Failed',
+  'status.cancelled': 'Cancelled',
+  'status.interrupted': 'Interrupted',
+} satisfies Record<string, string>
+
+/** Union of this namespace's dictionary keys. */
+export type WorkflowRunKey = keyof typeof en
+
+/** Vietnamese dictionary, checked complete against the en key set. */
+export const vi = {
+  'run.title': '{name}',
+  'run.members.one': '{count} thành viên',
+  'run.members.other': '{count} thành viên',
+  'run.empty': 'Chưa có thành viên nào bắt đầu',
+  'phase.unassigned': 'Chưa phân giai đoạn',
+  'phase.empty': 'Tên giai đoạn trống',
+  'statusCount.running': 'Đang chạy {count}',
+  'statusCount.completed': 'Hoàn thành {count}',
+  'statusCount.failed': 'Thất bại {count}',
+  'statusCount.cancelled': 'Đã hủy {count}',
+  'statusCount.interrupted': 'Đã ngắt {count}',
+  'member.empty': 'Tên thành viên trống',
+  'member.open': 'Mở {name}',
+  'status.running': 'Đang chạy',
+  'status.completed': 'Hoàn thành',
+  'status.failed': 'Thất bại',
+  'status.cancelled': 'Đã hủy',
+  'status.interrupted': 'Đã ngắt',
+} satisfies Record<WorkflowRunKey, string>
+
+/** Simplified Chinese dictionary, checked complete against the en key set. */
 export const zh = {
   'run.title': '{name}',
   'run.members.one': '{count} 个成员',
@@ -23,29 +70,4 @@ export const zh = {
   'status.failed': '失败',
   'status.cancelled': '已取消',
   'status.interrupted': '已中断',
-}
-
-/** English dictionary (same key set). */
-export const en: Record<WorkflowRunKey, string> = {
-  'run.title': '{name}',
-  'run.members.one': '{count} member',
-  'run.members.other': '{count} members',
-  'run.empty': 'No members started',
-  'phase.unassigned': 'Unphased',
-  'phase.empty': 'Empty phase name',
-  'statusCount.running': 'Running {count}',
-  'statusCount.completed': 'Completed {count}',
-  'statusCount.failed': 'Failed {count}',
-  'statusCount.cancelled': 'Cancelled {count}',
-  'statusCount.interrupted': 'Interrupted {count}',
-  'member.empty': 'Empty member name',
-  'member.open': 'Open {name}',
-  'status.running': 'Running',
-  'status.completed': 'Completed',
-  'status.failed': 'Failed',
-  'status.cancelled': 'Cancelled',
-  'status.interrupted': 'Interrupted',
-}
-
-/** Union of this namespace's dictionary keys. */
-export type WorkflowRunKey = keyof typeof zh
+} satisfies Record<WorkflowRunKey, string>

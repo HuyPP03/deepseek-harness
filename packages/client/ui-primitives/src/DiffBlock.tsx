@@ -11,6 +11,7 @@
 import { useCallback, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'
 import clsx from 'clsx'
 import { diffLines, diffWordsWithSpace } from 'diff'
+import { ExpandCollapseToggle } from './ExpandCollapseToggle.tsx'
 import { writeClipboard } from './clipboard.ts'
 import {
   grammarLoadCount,
@@ -55,6 +56,35 @@ export interface DiffHunk {
   lang?: string | undefined
 }
 
+/**
+ * Display copy for the diff surface; the owner passes localized labels (this
+ * package is cordis-free, so copy arrives via props). Every field defaults to
+ * the built-in English value, so existing consumers render unchanged.
+ */
+export interface DiffBlockLabels {
+  /** Copy-button idle label. */
+  copy: string
+  /** Copy-button label during the post-copy confirmation window. */
+  copied: string
+  /** Collapse-toggle aria label while expanded. */
+  collapseAria: string
+  /** Expand-toggle aria label while capped, given the hidden line count. */
+  expandAria: (hidden: number) => string
+  /** Collapse-toggle text while expanded. */
+  collapse: string
+  /** Expand-toggle text while capped, given the hidden line count. */
+  expand: (hidden: number) => string
+}
+
+const DEFAULT_DIFF_LABELS: DiffBlockLabels = {
+  copy: 'Copy',
+  copied: 'Copied',
+  collapseAria: 'Collapse diff',
+  expandAria: hidden => `Expand the remaining ${hidden} diff lines`,
+  collapse: 'Collapse',
+  expand: hidden => `… ${hidden} more lines`,
+}
+
 export interface DiffBlockProps {
   /** One entry per applied hunk, in file order; empty renders nothing. */
   diffs: DiffHunk[]
@@ -62,6 +92,8 @@ export interface DiffBlockProps {
   maxLines?: number | undefined
   /** Extra class merged onto the wrapper (callers position; this component draws). */
   className?: string | undefined
+  /** Display copy for the copy and collapse/expand controls. */
+  labels?: Partial<DiffBlockLabels> | undefined
 }
 
 /** A character range inside one side of a modified line (0-based, end-exclusive). */
@@ -444,8 +476,12 @@ function paintContent(
  * @param props - see {@link DiffBlockProps}.
  * @returns the diff block element.
  */
-export function DiffBlock({ diffs, maxLines = DEFAULT_DIFF_MAX_LINES, className }: DiffBlockProps) {
+export function DiffBlock({ diffs, maxLines = DEFAULT_DIFF_MAX_LINES, className, labels }: DiffBlockProps) {
   const { rows, added, removed, files } = useMemo(() => buildRows(diffs), [diffs])
+  const copy = useMemo(
+    () => (labels === undefined ? DEFAULT_DIFF_LABELS : { ...DEFAULT_DIFF_LABELS, ...labels }),
+    [labels],
+  )
   // Re-render when a lazy grammar finishes loading, so a diff card that showed
   // plain text while its language's grammar imported picks up highlighting. The
   // snapshot value is opaque; only its change across renders drives the memo.
@@ -546,21 +582,11 @@ export function DiffBlock({ diffs, maxLines = DEFAULT_DIFF_MAX_LINES, className 
   return (
     <div className={clsx(css.block, className)} data-diff="">
       <button type="button" className={css.copyButton} onClick={onCopy}>
-        {copied ? '复制成功' : '复制'}
+        {copied ? copy.copied : copy.copy}
       </button>
       <div className={css.body}>
         {head.map((row, index) => renderRow(row, index, 0))}
-        {hidden > 0 && (
-          <button
-            type="button"
-            className={css.expand}
-            aria-expanded={expanded}
-            aria-label={expanded ? '收起差异' : `展开其余 ${hidden} 行差异`}
-            onClick={onToggle}
-          >
-            {expanded ? '收起' : `… 其余 ${hidden} 行`}
-          </button>
-        )}
+        <ExpandCollapseToggle hidden={hidden} expanded={expanded} className={css.expand} labels={copy} onToggle={onToggle} />
         {tail.map((row, index) => renderRow(row, index, rows.length - tailLines))}
       </div>
       <div className={css.footer}>└ +{added} -{removed} · {files} file{files === 1 ? '' : 's'}</div>

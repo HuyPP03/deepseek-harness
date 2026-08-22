@@ -3,7 +3,88 @@
 /** Dictionary namespace owned by this plugin. */
 export const NS = 'subagent'
 
-/** Simplified Chinese dictionary (the key-set source of truth). */
+/** English dictionary (the key-set source of truth). */
+export const en = {
+  'diagnostic.corrupt': 'corrupted session record',
+  'diagnostic.unsupported': 'unsupported subagent record version',
+  'diagnostic.unavailable': 'session record temporarily unavailable',
+  'duration.seconds': '{seconds}s',
+  'duration.minutes': '{minutes}m {seconds}s',
+  'duration.hours': '{hours}h {minutes}m {seconds}s',
+  'duration.days': '{days}d',
+  'duration.daysHours': '{days}d {hours}h',
+  'duration.months': '~{months}mo',
+  'duration.monthsDays': '~{months}mo {days}d',
+  'duration.years': '~{years}y',
+  'duration.yearsMonths': '~{years}y {months}mo',
+  'duration.exactDays': '{days}d {hours}h {minutes}m {seconds}s',
+  'duration.exactTitle': 'Total active duration: {duration}',
+  'loading.label': 'Loading subagents…',
+  'loading.aria': 'Loading subagents',
+  'load.error': 'Unable to load subagents',
+  'retry': 'Retry',
+  'mode.oneShot': 'one-shot',
+  'mode.continuable': 'continuable',
+  'activity.running': 'running',
+  'activity.inactive': 'not running',
+  'branch.collapse': 'Collapse {label} descendants',
+  'branch.expand': 'Expand {label} descendants',
+  'count.total.one': '{count} subagent',
+  'count.total.other': '{count} subagents',
+  'count.running.one': '{count} subagent running',
+  'count.running.other': '{count} subagents running',
+  'tree.aria': 'Subagent sessions',
+  'readonly.oneShot.title': 'One-shot subagent record',
+  'readonly.title': 'This subagent is read-only for now',
+  'readonly.oneShot.body': 'One-shot tasks do not accept follow-ups; review the full execution record here.',
+  'readonly.body': 'The parent session is offline; reopen it to continue sending messages.',
+} satisfies Record<string, string>
+
+/** The `subagent` namespace key union. */
+export type SubagentKey = keyof typeof en
+
+/** Vietnamese dictionary, checked complete against the en key set. */
+export const vi = {
+  'diagnostic.corrupt': 'bản ghi session bị hỏng',
+  'diagnostic.unsupported': 'phiên bản bản ghi subagent không được hỗ trợ',
+  'diagnostic.unavailable': 'bản ghi session tạm thời không khả dụng',
+  'duration.seconds': '{seconds} giây',
+  'duration.minutes': '{minutes} phút {seconds} giây',
+  'duration.hours': '{hours} giờ {minutes} phút {seconds} giây',
+  'duration.days': '{days} ngày',
+  'duration.daysHours': '{days} ngày {hours} giờ',
+  'duration.months': '~{months} tháng',
+  'duration.monthsDays': '~{months} tháng {days} ngày',
+  'duration.years': '~{years} năm',
+  'duration.yearsMonths': '~{years} năm {months} tháng',
+  'duration.exactDays': '{days} ngày {hours} giờ {minutes} phút {seconds} giây',
+  'duration.exactTitle': 'Tổng thời gian hoạt động: {duration}',
+  'loading.label': 'Đang tải subagent…',
+  'loading.aria': 'Đang tải subagent',
+  'load.error': 'Không thể tải subagent',
+  'retry': 'Thử lại',
+  'mode.oneShot': 'một lần',
+  'mode.continuable': 'có thể tiếp tục',
+  'activity.running': 'đang chạy',
+  'activity.inactive': 'đang không chạy',
+  'branch.collapse': 'Thu gọn subagent cấp dưới của {label}',
+  'branch.expand': 'Mở rộng subagent cấp dưới của {label}',
+  'count.total.one': '{count} subagent',
+  'count.total.other': '{count} subagent',
+  'count.running.one': '{count} subagent đang chạy',
+  'count.running.other': '{count} subagent đang chạy',
+  'tree.aria': 'Session của subagent',
+  'readonly.oneShot.title': 'Bản ghi subagent một lần',
+  'readonly.title': 'Subagent này tạm thời chỉ đọc',
+  'readonly.oneShot.body':
+    'Nhiệm vụ một lần không nhận tin nhắn tiếp theo; '
+    + 'xem bản ghi thực thi đầy đủ tại đây.',
+  'readonly.body':
+    'Session cha đang ngoại tuyến; mở lại nó '
+    + 'để tiếp tục gửi tin nhắn.',
+} satisfies Record<SubagentKey, string>
+
+/** Simplified Chinese dictionary, checked complete against the en key set. */
 export const zh = {
   'diagnostic.corrupt': '会话记录损坏',
   'diagnostic.unsupported': '子代理记录版本不受支持',
@@ -38,44 +119,4 @@ export const zh = {
   'readonly.title': '此子代理暂时只读',
   'readonly.oneShot.body': '一次性任务不支持后续消息，可在这里查看完整执行记录。',
   'readonly.body': '父会话当前不在线，重新打开父会话后即可继续发送消息。',
-} as const
-
-/** English dictionary, key-identical to the Chinese source of truth. */
-export const en: Record<SubagentKey, string> = {
-  'diagnostic.corrupt': 'corrupted session record',
-  'diagnostic.unsupported': 'unsupported subagent record version',
-  'diagnostic.unavailable': 'session record temporarily unavailable',
-  'duration.seconds': '{seconds}s',
-  'duration.minutes': '{minutes}m {seconds}s',
-  'duration.hours': '{hours}h {minutes}m {seconds}s',
-  'duration.days': '{days}d',
-  'duration.daysHours': '{days}d {hours}h',
-  'duration.months': '~{months}mo',
-  'duration.monthsDays': '~{months}mo {days}d',
-  'duration.years': '~{years}y',
-  'duration.yearsMonths': '~{years}y {months}mo',
-  'duration.exactDays': '{days}d {hours}h {minutes}m {seconds}s',
-  'duration.exactTitle': 'Total active duration: {duration}',
-  'loading.label': 'Loading subagents…',
-  'loading.aria': 'Loading subagents',
-  'load.error': 'Unable to load subagents',
-  'retry': 'Retry',
-  'mode.oneShot': 'one-shot',
-  'mode.continuable': 'continuable',
-  'activity.running': 'running',
-  'activity.inactive': 'not running',
-  'branch.collapse': 'Collapse {label} descendants',
-  'branch.expand': 'Expand {label} descendants',
-  'count.total.one': '{count} subagent',
-  'count.total.other': '{count} subagents',
-  'count.running.one': '{count} subagent running',
-  'count.running.other': '{count} subagents running',
-  'tree.aria': 'Subagent sessions',
-  'readonly.oneShot.title': 'One-shot subagent record',
-  'readonly.title': 'This subagent is read-only for now',
-  'readonly.oneShot.body': 'One-shot tasks do not accept follow-ups; review the full execution record here.',
-  'readonly.body': 'The parent session is offline; reopen it to continue sending messages.',
-}
-
-/** Key domain of the `subagent` namespace (zh is the source of truth). */
-export type SubagentKey = keyof typeof zh
+} satisfies Record<SubagentKey, string>

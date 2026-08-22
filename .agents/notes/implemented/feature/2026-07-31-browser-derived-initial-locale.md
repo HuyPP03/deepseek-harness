@@ -30,7 +30,7 @@ The Settings Language row opened every first visit in Chinese: `LocaleRuntime` r
 
 ## Consequences
 
-- A first visit from an English browser lands in English, and the Language row still shows the same two self-described options, so the escape hatch is unchanged in either direction.
+- A first visit from an English browser lands in English, and the Language row shows the self-described options (three since the [en-first locale set](../../proposed/feature/2026-08-22-client-locale-en-first-vietnamese.md)), so the escape hatch is unchanged in either direction.
 - `FALLBACK_LOCALE` narrows to its real job — the dictionary fallback and the no-signal answer — and stops standing in for "the user has not chosen".
 - Tests that construct a `LocaleRuntime` under jsdom now depend on the environment's `navigator`: specs asserting localized copy declare their browser with one suite-level `usePinnedBrowserLanguages('zh-CN')` (dsh-client-test-runtime), and any future spec asserting a default must do the same. This package's own specs stub the globals directly, because they need shapes the helper deliberately cannot express (absent `languages`, a list decoupled from `language`, no `window` at all).
 - Detection cost is one array walk per service construction and no implicit settings write; an explicit Host preference may cause one live convergence after plugin activation.

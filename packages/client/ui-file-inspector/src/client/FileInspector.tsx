@@ -9,7 +9,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { clsx } from 'clsx'
-import { DiffBlock, MarkdownText } from '@deepseek-ai/dsh-client-ui-primitives'
+import { DiffBlock, MarkdownText, type DiffBlockLabels } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { CommonKeyOf, Translate } from '@deepseek-ai/dsh-client-ui-slots'
 import { FileBytesError } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ConversationSnapshot } from '@deepseek-ai/dsh-client-runtime/client'
 import { latestFileDiffs, langForPath, previewKindForPath, type PreviewKind } from './changes.ts'
@@ -19,6 +20,26 @@ import css from './FileInspector.module.css'
 
 export type { FileInspectorProps } from './contract/slots.ts'
 import type { FileInspectorProps } from './contract/slots.ts'
+
+/**
+ * The diff surface's display copy, resolved from the shared block vocabulary
+ * (common namespace) through this seat. The conversation tool rows resolve
+ * the same keys through their own seat; the common namespace is the one
+ * address both features share (a cross-plugin import of the other's adapter
+ * is not a sanctioned route).
+ * @param t - this seat's translate (the keys resolve through common).
+ * @returns the full label set for {@link DiffBlock}'s `labels`.
+ */
+function diffBlockLabels(t: Translate<CommonKeyOf>): DiffBlockLabels {
+  return {
+    copy: t('copy'),
+    copied: t('copied'),
+    collapseAria: t('diff.collapseAria'),
+    expandAria: hidden => t('diff.expandAria', { n: hidden }),
+    collapse: t('collapse'),
+    expand: hidden => t('diff.expandRest', { n: hidden }),
+  }
+}
 
 /** The code seat's settled states. */
 type CodeState =
@@ -115,7 +136,7 @@ export function FileInspector({ path, cwd, readFile, fileUrl, useSession, t }: F
         {active === 'preview' && previewKind !== null
           ? <PreviewSeat kind={previewKind} path={path} fileUrl={fileUrl} readFile={readFile} code={code} t={t} />
           : active === 'changes' && changes !== null
-            ? <DiffBlock diffs={changes} />
+            ? <DiffBlock diffs={changes} labels={diffBlockLabels(t)} />
             : codeSeat}
       </div>
     </div>

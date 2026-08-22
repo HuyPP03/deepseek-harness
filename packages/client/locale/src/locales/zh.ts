@@ -1,4 +1,6 @@
-/** zh base dictionary for the common namespace: cross-feature standard words. */
+import type { CommonKey } from './en.ts'
+
+/** zh base dictionary for the common namespace, checked complete against the en key set. */
 export const zh = {
   'ok': '确定',
   'cancel': '取消',
@@ -24,7 +26,25 @@ export const zh = {
   'unknown': '未知',
   'none': '无',
   'truncated': '已截断',
-} satisfies Record<string, string>
-
-/** The common vocabulary key union (zh is the key-set source of truth). */
-export type CommonKey = keyof typeof zh
+  'diff.collapseAria': '收起差异',
+  'diff.expandAria': '展开其余 {n} 行差异',
+  'diff.expandRest': '… 其余 {n} 行',
+  'read.count': '显示 {shown} / {total} 行',
+  'read.collapseAria': '收起内容',
+  'read.expandAria': '展开其余 {n} 行',
+  'read.expandRest': '… 其余 {n} 行',
+  'search.showingOf': '显示 {shown} / 共 {total}',
+  'search.unit.path': '个路径',
+  'search.unit.paths': '个路径',
+  'search.unit.match': '处匹配',
+  'search.unit.matches': '处匹配',
+  'search.unit.file': '个文件',
+  'search.unit.files': '个文件',
+  'search.empty': '无结果',
+  'search.collapseAria': '收起结果',
+  'search.expandAria': '展开其余 {n} 行结果',
+  'search.expandRest': '… 其余 {n} 行',
+  'web.empty': '未找到结果',
+  'web.sourcesTruncated': '来源列表已截断',
+  'web.contentTruncated': '内容已截断',
+} satisfies Record<CommonKey, string>
