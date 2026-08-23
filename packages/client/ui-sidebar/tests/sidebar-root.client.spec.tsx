@@ -112,13 +112,15 @@ describe('SidebarRoot shell', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Collapse sidebar' }))
     expect(b.toggleSidebar).toHaveBeenCalledOnce()
 
-    // Chats tab: the same two starters call startChat instead.
+    cleanup()
+    // The chats tab: the same two starters still call startSession (the
+    // connectors tab is hidden, and a chat is always a session).
     const c = mountShell({ tab: 'chats' })
-    const chatStarters = screen.getAllByRole('button', { name: 'New chat' })
+    const chatStarters = screen.getAllByRole('button', { name: 'New session' })
     expect(chatStarters).toHaveLength(2)
     for (const button of chatStarters) fireEvent.click(button)
-    expect(c.startChat).toHaveBeenCalledTimes(2)
-    expect(c.startSession).not.toHaveBeenCalled()
+    expect(c.startSession).toHaveBeenCalledTimes(2)
+    expect(c.startChat).not.toHaveBeenCalled()
     cleanup()
   })
 
@@ -141,7 +143,7 @@ describe('SidebarRoot shell', () => {
     // The rail has no tablist; the New icon follows the persisted tab.
     mountShell({ collapsed: true, tab: 'chats' })
     expect(screen.queryAllByRole('tab')).toHaveLength(0)
-    expect(screen.getByRole('button', { name: 'New chat' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New session' })).toBeTruthy()
     cleanup()
   })
 
@@ -157,10 +159,12 @@ describe('SidebarRoot shell', () => {
     owner.expandSidebar()
     expect(b.toggleSidebar).not.toHaveBeenCalled()
 
-    // The New control on the connectors tab starts a chat.
-    for (const button of screen.getAllByRole('button', { name: 'New chat' })) fireEvent.click(button)
-    expect(b.startChat).toHaveBeenCalledTimes(2)
-    expect(b.startSession).not.toHaveBeenCalled()
+    // The New control on the connectors tab starts a session (the
+    // connectors tab is hidden from the tablist, but a direct tab set
+    // still renders the region; New always starts a session now).
+    for (const button of screen.getAllByRole('button', { name: 'New session' })) fireEvent.click(button)
+    expect(b.startSession).toHaveBeenCalledTimes(2)
+    expect(b.startChat).not.toHaveBeenCalled()
 
     // Switching back restores the workspaces region with the tab handed over.
     fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))

@@ -45,7 +45,6 @@ export function SidebarRoot({
   collapsed,
   width,
   startSession,
-  startChat,
   toggleSidebar,
   t,
   useStore,
@@ -55,9 +54,9 @@ export function SidebarRoot({
   const tab = useStore(state => state.tab)
   // The New control on the connectors tab starts a chat: connections are a
   // destination, and a workspace session has nothing to do with them.
-  const startNew = tab === 'workspaces' ? () => { startSession() } : startChat
-  const newLabel = tab === 'workspaces' ? t('session.new') : t('chat.new')
-  const newLabelFull = tab === 'workspaces' ? t('session.new.label') : t('chat.new.label')
+  const startNew = startSession
+  const newLabel = t('session.new')
+  const newLabelFull = t('session.new.label')
   // Wide content stays mounted while the collapse animates (fading via
   // .collapsed .wide), unmounts at settle, and remounts right away on expand.
   const [settled, setSettled] = useState(collapsed)
@@ -170,7 +169,7 @@ export function SidebarRoot({
           persisted tab. */}
       {wide && (
         <div className={css.tabs} role="tablist" aria-label={t('tabs.label')}>
-          {(['chats', 'workspaces', 'connectors'] as const).map(candidate => (
+          {(['chats', 'workspaces'] as const).map(candidate => (
             <button
               key={candidate}
               type="button"
@@ -179,7 +178,7 @@ export function SidebarRoot({
               className={clsx(css.tab, tab === candidate && css.tabActive)}
               onClick={() => { if (tab !== candidate) actions.setTab(candidate) }}
             >
-              {t(candidate === 'chats' ? 'tab.chats' : candidate === 'workspaces' ? 'tab.workspaces' : 'tab.connectors')}
+              {t(candidate === 'chats' ? 'tab.chats' : 'tab.workspaces')}
             </button>
           ))}
         </div>

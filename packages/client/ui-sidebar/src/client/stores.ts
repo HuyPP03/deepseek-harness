@@ -32,7 +32,7 @@ type SidebarViewActions = {
  */
 export function createSidebarStore(): EngineStoreHandle<SidebarViewState, SidebarViewActions> {
   return defineStore({
-    init: (): SidebarViewState => ({ tab: 'chats' }),
+    init: (): SidebarViewState => ({ tab: 'workspaces' }),
     persist: 'dsh.sidebar.view.v2',
     actions: {
       setTab: (d, tab: SidebarTab) => { d.tab = tab },
