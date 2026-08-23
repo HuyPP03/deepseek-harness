@@ -8,7 +8,9 @@
 
 区域在其 `apply` 闭包中拥有一个控制器：列表快照（渲染器通过 inject `hooks` 组件绑定到 `useConnectors` 的 `createSnapshotStore`）以及变更方法，区域以普通注入回调的方式触达它们。区域重新挂载（标签页切换）会重新读取列表，因此视图与宿主一样新鲜。
 
-`ConnectorsRegionProps` 组合壳 owner 份额（`wide`、`expandSidebar`）、`connectors` 语言命名空间，以及 inject 面（`hooks.connectors` 存储绑定，加上 `load`/`openTokenDialog`/`setDialogDraft`/`closeDialog`/`saveToken`/`connect`/`disconnect`）。
+选择一行会打开提供商详情：已连接的提供商列出自己的聊天——会话流标记了该提供商 `presetId` 的会话（空白条目隐藏，最新在前）——每一行打开主会话区中的该会话，**New chat** 在同一 preset 下创建新会话（用提供商的 `agentPreset` 调 `session.create`，然后打开）；未连接的提供商保持占位提示，直到第一个会话出现。详情的会话回调（`openSession`/`newProviderChat`）转发到运行时会话服务；提供商 preset id 本身从列表副本解析。
+
+`ConnectorsRegionProps` 组合壳 owner 份额（`wide`、`expandSidebar`）、`connectors` 语言命名空间，以及 inject 面（`hooks.connectors` 存储绑定，加上 `load`/`openTokenDialog`/`setDialogDraft`/`closeDialog`/`saveToken`/`connect`/`authorize`/`deviceLogin`/`disconnect`/`selectProvider`/`openCustomDialog`/`setCustomDraft`/`closeCustomDialog`/`saveCustom`/`removeCustom`/`openSession`/`newProviderChat`），全局标准 hook 还携带 `useSessions` 供详情的聊天列表使用。
 
 `/client` 导出仅为插件本体（`apply`/`inject`）、契约类型、控制器类及其状态类型、语言键联合；区域组件、其行子视图和 CSS 模块保持在插槽注册之后、包内私有。
 

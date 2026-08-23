@@ -361,4 +361,15 @@ export class ConnectorsSectionController {
     const names = row === undefined ? [] : row.servers.map(s => s.serverName)
     this.set({ selectedProvider: id, providerServerNames: names })
   }
+
+  /**
+   * The agent preset one provider's sessions run under, for the provider
+   * detail's New chat: a session born under it belongs to that provider.
+   * @param id - the provider's connector id.
+   * @returns the preset id, absent while the roster has not loaded or the id
+   *   is unknown.
+   */
+  providerPresetId(id: string): string | undefined {
+    return this.state.connectors.find(c => c.id === id)?.presetId
+  }
 }

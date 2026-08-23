@@ -9,6 +9,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
 import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
 import { apply, inject } from '@deepseek-ai/dsh-client-ui-connectors/client'
+import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
 import type { ConnectorsRegionInjected } from '../src/client/contract/slots.ts'
 
 async function bench() {
@@ -24,7 +25,7 @@ async function bench() {
   }
   const api = {
     connectors: {
-      list: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { connectors: [] } } })),
+      list: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { connectors: [row] } } })),
       configure: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { connector: row } } })),
       connect: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { connector: row } } })),
       complete: vi.fn(),
@@ -34,7 +35,9 @@ async function bench() {
     },
   }
   ctx.provide('connection', { api } as never)
-  return { ctx, api }
+  const sessions = { open: vi.fn(), create: vi.fn(async () => 'new-id' as SessionId) }
+  ctx.provide('sessions', sessions as never)
+  return { ctx, api, sessions }
 }
 
 /** The layout frame's entry: the 'sidebar' seat exists only under it. */
@@ -60,11 +63,11 @@ function declareShell(slots: SlotRegistry): () => void {
 
 describe('ui-connectors apply', () => {
   it('declares only the services it uses', () => {
-    expect(inject).toEqual(['slots', 'locale', 'connection'])
+    expect(inject).toEqual(['slots', 'locale', 'connection', 'sessions'])
   })
 
   it('waits for the shell declaration, then registers the region', async () => {
-    const { ctx } = await bench()
+    const { ctx, sessions } = await bench()
     const slots = ctx.get('slots') as SlotRegistry
     const fiber = ctx.plugin({ inject: [...inject], apply })
     // No declaration yet: nothing to fill.
@@ -77,7 +80,7 @@ describe('ui-connectors apply', () => {
     expect(entry.locale).toBe('connectors')
     const injected = (entry.inject as unknown as () => ConnectorsRegionInjected)()
     expect(Object.keys(injected)).toEqual([
-      'hooks', 'load', 'openTokenDialog', 'setDialogDraft', 'closeDialog', 'saveToken', 'connect', 'authorize', 'deviceLogin', 'disconnect', 'selectProvider', 'openCustomDialog', 'setCustomDraft', 'closeCustomDialog', 'saveCustom', 'removeCustom',
+      'hooks', 'load', 'openTokenDialog', 'setDialogDraft', 'closeDialog', 'saveToken', 'connect', 'authorize', 'deviceLogin', 'disconnect', 'selectProvider', 'openCustomDialog', 'setCustomDraft', 'closeCustomDialog', 'saveCustom', 'removeCustom', 'openSession', 'newProviderChat',
     ])
     // The hooks compartment carries the controller's snapshot store.
     const store = injected.hooks.connectors
@@ -86,6 +89,13 @@ describe('ui-connectors apply', () => {
     // The load callback reaches the connection service's connector domain.
     await injected.load()
     expect(store.getSnapshot().status).toBe('ready')
+    // The provider session wiring: opening a session and minting one under
+    // the provider's preset both reach the session service.
+    injected.openSession('atlas' as SessionId)
+    expect(sessions.open).toHaveBeenCalledWith('atlas')
+    await injected.newProviderChat('atlas')
+    expect(sessions.create).toHaveBeenCalledWith({ agentPreset: 'preset' })
+    expect(sessions.open).toHaveBeenCalledWith('new-id')
     // Every remaining callback forwards into the controller over the same
     // service; on the empty roster each one is a guard or a dropped view.
     injected.openTokenDialog('nope')
@@ -96,7 +106,8 @@ describe('ui-connectors apply', () => {
     expect(store.getSnapshot().dialog).toBeNull()
     await injected.connect('nope', 'token')
     await injected.disconnect('nope')
-    expect(store.getSnapshot().connectors).toEqual([])
+    // The mutation answers with the single row the controller adopts.
+    expect(store.getSnapshot().connectors.map(c => c.id)).toEqual(['atlas'])
     await fiber.dispose()
     expect(slots.entries('sidebar.connectors')).toHaveLength(0)
   })

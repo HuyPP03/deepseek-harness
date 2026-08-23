@@ -80,6 +80,9 @@ function mountRow(wire: ConnectorDouble) {
     closeCustomDialog: () => { controller.closeCustomDialog() },
     saveCustom: () => controller.saveCustom(),
     removeCustom: (id: string) => controller.removeCustom(id),
+    useSessions: (selector: (s: never) => unknown) => selector({ ids: [], byId: {}, current: undefined, phase: 'ready', subagentsByParent: {}, jobsBySession: {} } as never),
+    openSession: vi.fn(),
+    newProviderChat: vi.fn(() => Promise.resolve()),
   }
   render(<ConnectorsRegion {...(props as unknown as ConnectorsRegionProps)} />)
   return controller

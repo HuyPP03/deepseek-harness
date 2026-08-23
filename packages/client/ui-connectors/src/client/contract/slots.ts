@@ -6,6 +6,7 @@
  * actions arrive through the region's own inject (the controller's snapshot
  * store via the `hooks` compartment plus the mutation callbacks).
  */
+import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 // Type-only: pull the sidebar shell's SlotMap merge ('sidebar.connectors')
 // into programs that resolve the runtime share below.
@@ -56,6 +57,10 @@ export interface ConnectorsRegionInjected {
   saveCustom: () => Promise<void>
   /** Remove one custom connector and re-list. */
   removeCustom: (id: string) => Promise<void>
+  /** Open one session in the main conversation area. */
+  openSession: (id: SessionId) => void
+  /** Mint a blank session under the provider's preset and open it. */
+  newProviderChat: (providerId: string) => Promise<void>
 }
 
 /** Full component props: the shell's column state, the copy, and the face. */

@@ -8,7 +8,7 @@ export type ConnectorsKey =
   | 'connect' | 'disconnect' | 'configure'
   | 'custom' | 'servers.one' | 'servers.many' | 'server.off'
   | 'rail.label'
-  | 'back' | 'sessions.placeholder' | 'tools.available'
+  | 'back' | 'sessions.placeholder' | 'sessions.new' | 'sessions.empty' | 'tools.available'
   | 'dialog.title' | 'dialog.tokenPlaceholder'
   | 'dialog.cancel' | 'dialog.save' | 'dialog.saving'
   | 'remove'
@@ -44,6 +44,8 @@ export const en: Record<ConnectorsKey, string> = {
   'rail.label': 'Connectors',
   back: 'Back',
   'sessions.placeholder': 'Sessions for this provider will appear here once a connector session is created.',
+  'sessions.new': 'New chat',
+  'sessions.empty': 'No chats for this provider yet.',
   'tools.available': 'Available tools',
   'dialog.title': 'Connect {name}',
   'dialog.tokenPlaceholder': 'Paste your token',
@@ -91,6 +93,8 @@ export const vi: Record<ConnectorsKey, string> = {
   'rail.label': 'Kết nối',
   back: 'Quay lại',
   'sessions.placeholder': 'Các phiên của nhà cung cấp này sẽ hiển thị tại đây khi một phiên kết nối được tạo.',
+  'sessions.new': 'Chat mới',
+  'sessions.empty': 'Chưa có chat nào của nhà cung cấp này.',
   'tools.available': 'Công cụ khả dụng',
   'dialog.title': 'Kết nối {name}',
   'dialog.tokenPlaceholder': 'Dán token của bạn',
@@ -138,6 +142,8 @@ export const zh: Record<ConnectorsKey, string> = {
   'rail.label': '连接器',
   back: '返回',
   'sessions.placeholder': '此提供商的会话将在创建连接器会话后显示在此处。',
+  'sessions.new': '新聊天',
+  'sessions.empty': '此提供商还没有聊天。',
   'tools.available': '可用工具',
   'dialog.title': '连接 {name}',
   'dialog.tokenPlaceholder': '粘贴你的令牌',

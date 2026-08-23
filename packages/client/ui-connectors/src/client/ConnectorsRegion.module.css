@@ -106,6 +106,50 @@
   border-color: var(--dsw-alias-accent-primary);
 }
 
+/* Provider detail: the header's New chat sits after the name (the Back and
+   name keep their left column). */
+.newChatButton {
+  margin-left: auto;
+}
+
+/* The provider chat list scrolls with the region (the .list container does);
+   the rows are flat, hoverable entries. */
+
+/* One provider chat row: title plus the running flag. */
+.sessionList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sessionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.sessionRow:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.sessionTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.sessionRunning {
+  flex: none;
+}
+
 /* Centered full-height message (loading / read failure / empty roster). */
 .message {
   flex: 1;

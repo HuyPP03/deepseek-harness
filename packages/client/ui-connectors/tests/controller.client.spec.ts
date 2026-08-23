@@ -89,6 +89,12 @@ async function ready(connectors: Partial<ConnectorDouble> = {}) {
 }
 
 describe('ConnectorsSectionController', () => {
+  it('resolves a provider preset id from the roster, absent for an unknown id', async () => {
+    const { controller } = await ready()
+    expect(controller.providerPresetId('atlas')).toBe('preset')
+    expect(controller.providerPresetId('unknown')).toBeUndefined()
+  })
+
   it('reads the roster into a copy on success', async () => {
     const { controller } = await ready()
     const state = controller.store.getSnapshot()

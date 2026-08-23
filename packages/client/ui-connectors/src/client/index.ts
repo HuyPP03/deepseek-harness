@@ -35,7 +35,7 @@ const NS = 'connectors'
  * registers into, the locale registry for the copy, and the connection
  * service the controller reads the connector domain through.
  */
-export const inject = ['slots', 'locale', 'connection']
+export const inject = ['slots', 'locale', 'connection', 'sessions']
 
 /**
  * Register the connectors region once the sidebar shell declares its hole.
@@ -62,6 +62,13 @@ export function apply(ctx: ClientContext): void {
     closeCustomDialog: () => controller.closeCustomDialog(),
     saveCustom: () => controller.saveCustom(),
     removeCustom: id => controller.removeCustom(id),
+    openSession: id => ctx.sessions.open(id),
+    newProviderChat: async (providerId: string) => {
+      const presetId = controller.providerPresetId(providerId)
+      if (presetId === undefined) return
+      const id = await ctx.sessions.create({ agentPreset: presetId })
+      ctx.sessions.open(id)
+    },
   })
   ctx.slots.inject('sidebar.connectors', () => ctx.slots.register(
     {

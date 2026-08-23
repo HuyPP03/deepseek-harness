@@ -376,6 +376,7 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
     wide, expandSidebar, t, load, openTokenDialog, setDialogDraft, closeDialog,
     saveToken, connect, authorize, deviceLogin, disconnect, selectProvider, useConnectors,
     openCustomDialog, setCustomDraft, closeCustomDialog, saveCustom, removeCustom,
+    useSessions, openSession, newProviderChat,
   } = props
 
   const handleAuthorize = (id: string): void => {
@@ -430,29 +431,67 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
   } else if (state.connectors.length === 0) {
     body = <div className={css.message}>{t('empty')}</div>
   } else if (state.selectedProvider !== null) {
-    // The selected provider: show its session view (placeholder for now).
+    // The selected provider's detail: a connected provider lists its own
+    // chats (the sessions born under its preset) with a New chat starter;
+    // the others still show the placeholder until a session exists.
     const provider = state.connectors.find(c => c.id === state.selectedProvider)
-    body = provider !== undefined ? (
-      <div className={css.list}>
-        <div className={css.providerHeader}>
-          <Button variant="outline" size="sm" onClick={() => { selectProvider(null) }}>
-            {t('back')}
-          </Button>
-          <span className={css.providerName}>{provider.name}</span>
-        </div>
-        <div className={css.message}>{t('sessions.placeholder')}</div>
-        {state.providerServerNames.length > 0 && (
-          <div className={css.toolsSection}>
-            <span className={css.toolsLabel}>{t('tools.available')}</span>
-            {state.providerServerNames.map(name => (
-              <div key={name} className={css.toolRow}>{name}</div>
-            ))}
+    if (provider === undefined) {
+      body = <div className={css.message}>{t('empty')}</div>
+    } else {
+      const sessions = useSessions(snapshot =>
+        snapshot.ids
+          .map(id => snapshot.byId[id])
+          .filter((entry): entry is NonNullable<typeof entry> =>
+            entry !== undefined && !entry.blank && entry.agentPreset === provider.presetId)
+          .sort((a, b) => b.updatedAt - a.updatedAt),
+      )
+      body = (
+        <div className={css.list}>
+          <div className={css.providerHeader}>
+            <Button variant="outline" size="sm" onClick={() => { selectProvider(null) }}>
+              {t('back')}
+            </Button>
+            <span className={css.providerName}>{provider.name}</span>
+            {provider.state === 'connected' && (
+              <Button variant="outline" size="sm" className={css.newChatButton}
+                onClick={() => { void newProviderChat(provider.id) }}>
+                {t('sessions.new')}
+              </Button>
+            )}
           </div>
-        )}
-      </div>
-    ) : (
-      <div className={css.message}>{t('empty')}</div>
-    )
+          {provider.state !== 'connected' && (
+            <div className={css.message}>{t('sessions.placeholder')}</div>
+          )}
+          {provider.state === 'connected' && (sessions.length === 0
+            ? <div className={css.message}>{t('sessions.empty')}</div>
+            : (
+              <div className={css.sessionList}>
+                {sessions.map(entry => (
+                  <div
+                    key={entry.id}
+                    className={css.sessionRow}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => { openSession(entry.id) }}
+                    onKeyDown={(e) => { if (e.key === 'Enter') openSession(entry.id) }}
+                  >
+                    <span className={css.sessionTitle}>{entry.displayTitle}</span>
+                    <StateDot state={entry.running ? 'ongoing' : 'done'} />
+                  </div>
+                ))}
+              </div>
+            ))}
+          {state.providerServerNames.length > 0 && (
+            <div className={css.toolsSection}>
+              <span className={css.toolsLabel}>{t('tools.available')}</span>
+              {state.providerServerNames.map(name => (
+                <div key={name} className={css.toolRow}>{name}</div>
+              ))}
+            </div>
+          )}
+        </div>
+      )
+    }
   } else {
     // Provider grid: each card is a provider the user can select.
     body = (
