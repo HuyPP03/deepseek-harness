@@ -48,6 +48,14 @@ export interface ConnectorApi {
   complete(request: RpcRequest<{ id: string; token: string }>): Promise<RpcResponse<{ connector: ConnectorView }>>
 
   /**
+   * Begin one connector's browser OAuth flow: the engine returns the URL
+   * the client opens and the flow expiry. The exchange completes
+   * server-side when the provider redirects to the loopback callback;
+   * the connector view transitions to `authorizing` while in flight.
+   */
+  authorize(request: RpcRequest<{ id: string }>): Promise<RpcResponse<{ authorizationUrl: string; expiresAt: number }>>
+
+  /**
    * Unmount the connector's servers, remove its stored credentials and
    * token bundle, and delete its override document; the view returns to
    * `unconfigured`.

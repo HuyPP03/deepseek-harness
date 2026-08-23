@@ -132,6 +132,7 @@ const PRIVILEGED_METHODS = new Set([
   'connector.configure',
   'connector.connect',
   'connector.complete',
+  'connector.authorize',
   'connector.disconnect',
   'connector.add',
   'connector.remove',

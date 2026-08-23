@@ -579,6 +579,22 @@ export interface Config {
 
 来源：[`packages/connectors/connectors/src/index.ts:72`](../packages/connectors/connectors/src/index.ts)
 
+<a id="deepseek-aidsh-connectors-oauth-flow"></a>
+
+## `@deepseek-ai/dsh-connectors-oauth-flow`
+
+```ts config-catalog
+/** Plugin config: the loopback listener and the flow budget. */
+export interface Config {
+  /** Loopback callback port; defaults to 8766. */
+  port?: number
+  /** How long one flow may wait for the browser redirect; defaults to 300000 (5 minutes). */
+  flowTimeoutMs?: number
+}
+```
+
+来源：[`packages/connectors/oauth-flow/src/index.ts:34`](../packages/connectors/oauth-flow/src/index.ts)
+
 <a id="deepseek-aidsh-cordis-host-runner"></a>
 
 ## `@deepseek-ai/dsh-cordis-host-runner`

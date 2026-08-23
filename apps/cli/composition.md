@@ -116,6 +116,10 @@ flowchart LR
   cfg --> plugin_dsh_base_mcp_manager
   plugin_dsh_base_connectors["connectors<br/>@deepseek-ai/dsh-connectors"]
   cfg --> plugin_dsh_base_connectors
+  plugin_dsh_base_oauth_tokens["oauth-tokens<br/>@deepseek-ai/dsh-credentials-oauth-tokens"]
+  cfg --> plugin_dsh_base_oauth_tokens
+  plugin_dsh_base_oauth_flow["oauth-flow<br/>@deepseek-ai/dsh-connectors-oauth-flow"]
+  cfg --> plugin_dsh_base_oauth_flow
   plugin_dsh_base_subagent["subagent<br/>@deepseek-ai/dsh-subagent"]
   cfg --> plugin_dsh_base_subagent
   plugin_dsh_base_subagent_spawn_in_process["subagent-spawn-in-process<br/>@deepseek-ai/dsh-subagent-spawn-in-process"]
@@ -234,6 +238,8 @@ flowchart LR
 | `command-mcp` | `@deepseek-ai/dsh-command-mcp` |
 | `mcp-manager` | `@deepseek-ai/dsh-mcp-manager` |
 | `connectors` | `@deepseek-ai/dsh-connectors` |
+| `oauth-tokens` | `@deepseek-ai/dsh-credentials-oauth-tokens` |
+| `oauth-flow` | `@deepseek-ai/dsh-connectors-oauth-flow` |
 | `subagent` | `@deepseek-ai/dsh-subagent` |
 | `subagent-spawn-in-process` | `@deepseek-ai/dsh-subagent-spawn-in-process` |
 | `subagent-fork-in-process` | `@deepseek-ai/dsh-subagent-fork-in-process` |

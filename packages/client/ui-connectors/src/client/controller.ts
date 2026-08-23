@@ -73,7 +73,7 @@ export class ConnectorsSectionController {
 
   // Only the operations the region drives; the wider connector domain
   // (complete, add, remove) stays host-side until the flow engine lands.
-  constructor(private readonly api: { connectors: Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect'> }) {}
+  constructor(private readonly api: { connectors: Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize'> }) {}
 
   private get state(): ConnectorsSectionState {
     return this.store.getSnapshot()
@@ -190,10 +190,25 @@ export class ConnectorsSectionController {
   /**
    * Mount the named connector's servers through its stored credentials.
    * @param id - the connector to connect.
+   * @param mode - the auth mode to connect through.
    * @returns once the store carries the host's answer.
    */
-  async connect(id: string): Promise<void> {
-    return this.runRowOperation(id, () => this.api.connectors.connect({ id, mode: 'token' }))
+  async connect(id: string, mode: 'token' | 'oauth' | 'device' = 'token'): Promise<void> {
+    return this.runRowOperation(id, () => this.api.connectors.connect({ id, mode }))
+  }
+
+  /**
+   * Begin the named connector's browser OAuth flow: the host returns the
+   * authorization URL and the flow expiry. The caller opens the URL in a
+   * new tab; the host's loopback callback settles the exchange server-side
+   * and the connector view transitions to `connected` (or `error`).
+   * @param id - the connector to authorize.
+   * @returns the authorization URL and the flow's expiry timestamp.
+   */
+  async authorize(id: string): Promise<{ authorizationUrl: string; expiresAt: number }> {
+    const response = await this.api.connectors.authorize({ id })
+    if (!response.result.ok) throw new Error(response.result.error.message)
+    return response.result.value
   }
 
   /**

@@ -148,6 +148,33 @@ export interface ConnectorManifest {
   readonly suggestions?: readonly string[]
 }
 
+/**
+ * The contract the optional OAuth flow engine satisfies on the host plane.
+ * The connectors service reads it through the service store without importing
+ * the engine package, keeping the dependency one-way (engine imports
+ * connectors, never the reverse).
+ */
+export interface ConnectorAuthFlow {
+  /**
+   * Begin one connector's browser flow: discovery, client registration, PKCE,
+   * and the loopback listener.
+   * @param id - the connector id with an `oauth` auth method.
+   * @returns the authorization URL to open and the flow's expiry.
+   */
+  begin(id: string): Promise<{ authorizationUrl: string; expiresAt: number }>
+  /**
+   * Cancel one in-flight flow without recording an error.
+   * @param id - the connector id.
+   */
+  cancel(id: string): void
+  /**
+   * Make one stored bundle presentable: refresh it while its access token
+   * has expired or is close to expiring.
+   * @param id - the connector id owning the bundle.
+   */
+  ensureFresh(id: string): Promise<void>
+}
+
 /** Connection lifecycle state of one connector, derived at read time. */
 export type ConnectorState =
   | 'unconfigured'

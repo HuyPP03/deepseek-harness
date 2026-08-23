@@ -30,8 +30,10 @@ export interface ConnectorsRegionInjected {
   closeDialog: () => void
   /** Store the dialog's token and adopt the updated view. */
   saveToken: () => Promise<void>
-  /** Mount one connector's servers through its stored credentials. */
-  connect: (id: string) => Promise<void>
+  /** Mount one connector's servers through the given auth mode. */
+  connect: (id: string, mode: 'token' | 'oauth' | 'device') => Promise<void>
+  /** Begin one connector's browser OAuth flow; returns the URL to open and the flow expiry. */
+  authorize: (id: string) => Promise<{ authorizationUrl: string; expiresAt: number }>
   /** Unmount one connector's servers and forget its stored credential. */
   disconnect: (id: string) => Promise<void>
 }

@@ -81,6 +81,7 @@ export interface RpcMethodMap {
   'connector.configure': ConnectorApi['configure']
   'connector.connect': ConnectorApi['connect']
   'connector.complete': ConnectorApi['complete']
+  'connector.authorize': ConnectorApi['authorize']
   'connector.disconnect': ConnectorApi['disconnect']
   'connector.add': ConnectorApi['add']
   'connector.remove': ConnectorApi['remove']

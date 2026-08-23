@@ -284,6 +284,7 @@ export class FakeApiClient implements IApiClient {
     configure: payload => this.record('connector.configure', payload, Promise.resolve(ok({ connector: this.connectorView(payload.id) }))),
     connect: payload => this.record('connector.connect', payload, Promise.resolve(ok({ connector: this.connectorView(payload.id) }))),
     complete: payload => this.record('connector.complete', payload, Promise.resolve(ok({ connector: this.connectorView(payload.id) }))),
+    authorize: payload => this.record('connector.authorize', payload, Promise.resolve(ok({ authorizationUrl: 'http://127.0.0.1:8766/authorize', expiresAt: Date.now() + 300_000 }))),
     disconnect: payload => this.record('connector.disconnect', payload, Promise.resolve(ok({ connector: this.connectorView(payload.id) }))),
     add: payload => this.record('connector.add', payload, Promise.resolve(ok({ id: payload.spec.id ?? 'custom' }))),
     remove: payload => this.record('connector.remove', payload, Promise.resolve(ok({}))),

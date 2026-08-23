@@ -87,10 +87,23 @@ export const connectorConnectRequestSchema = z.object({
   mode: z.enum(['token', 'oauth', 'device']),
 }) satisfies z.ZodType<Wire<RequestPayload<'connector.connect'>>>
 
+/** connector.authorize request payload: start the browser OAuth flow for the named connector. */
+export const connectorAuthorizeRequestSchema = z.object({
+  id: z.string().min(1),
+}) satisfies z.ZodType<Wire<RequestPayload<'connector.authorize'>>>
+
+/** connector.authorize response value: the URL the client opens and the flow expiry. */
+export const connectorAuthorizeValueSchema = z.object({
+  authorizationUrl: z.url(),
+  expiresAt: z.number(),
+}) satisfies z.ZodType<Wire<ResponseValue<'connector.authorize'>>>
+
 /** connector.connect response value: the updated view. */
 export const connectorConnectValueSchema = z.object({
   connector: connectorViewSchema,
 }) satisfies z.ZodType<Wire<ResponseValue<'connector.connect'>>>
+
+
 
 /** connector.complete request payload: the auth flow's resulting token. */
 export const connectorCompleteRequestSchema = z.object({

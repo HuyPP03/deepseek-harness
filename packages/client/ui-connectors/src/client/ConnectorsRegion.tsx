@@ -68,13 +68,14 @@ export function canDisconnect(row: ConnectorView): boolean {
  * @param props.onDisconnect - unmount and forget the credential.
  * @returns the row element.
  */
-function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onDisconnect }: {
+function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize, onDisconnect }: {
   row: ConnectorView
   busy: boolean
   error: string | null
   t: ConnectorsRegionProps['t']
   onConfigure: (id: string) => void
-  onConnect: (id: string) => void
+  onConnect: (id: string, mode: 'token' | 'oauth' | 'device') => void
+  onAuthorize: (id: string) => void
   onDisconnect: (id: string) => void
 }): ReactNode {
   const mounted = row.servers.filter(server => server.mounted).length
@@ -118,7 +119,14 @@ function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onDisconnec
               variant="primary"
               size="sm"
               disabled={busy}
-              onClick={() => { onConnect(row.id) }}
+              onClick={() => {
+                const oauthMethod = row.auth.find(a => a.mode === 'oauth')
+                if (oauthMethod !== undefined) {
+                  onAuthorize(row.id)
+                } else {
+                  onConnect(row.id, 'token')
+                }
+              }}
             >
               {t('connect')}
             </Button>
@@ -207,8 +215,14 @@ function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialogProps):
 export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
   const {
     wide, expandSidebar, t, load, openTokenDialog, setDialogDraft, closeDialog,
-    saveToken, connect, disconnect, useConnectors,
+    saveToken, connect, authorize, disconnect, useConnectors,
   } = props
+
+  const handleAuthorize = (id: string): void => {
+    void authorize(id).then(({ authorizationUrl }) => {
+      window.open(authorizationUrl, '_blank', 'noopener,noreferrer')
+    }).catch(() => { /* error surfaces via the controller's opError */ })
+  }
   const state = useConnectors(snapshot => snapshot)
   // The roster read is the region's own: it re-reads on every mount (a tab
   // switch remounts the region), so the view is as fresh as the host.
@@ -260,7 +274,8 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
             error={state.opError?.id === row.id ? state.opError.message : null}
             t={t}
             onConfigure={openTokenDialog}
-            onConnect={(id) => { void connect(id) }}
+            onConnect={(id, mode) => { void connect(id, mode) }}
+            onAuthorize={handleAuthorize}
             onDisconnect={(id) => { void disconnect(id) }}
           />
         ))}

@@ -77,7 +77,7 @@ describe('ui-connectors apply', () => {
     expect(entry.locale).toBe('connectors')
     const injected = (entry.inject as unknown as () => ConnectorsRegionInjected)()
     expect(Object.keys(injected)).toEqual([
-      'hooks', 'load', 'openTokenDialog', 'setDialogDraft', 'closeDialog', 'saveToken', 'connect', 'disconnect',
+      'hooks', 'load', 'openTokenDialog', 'setDialogDraft', 'closeDialog', 'saveToken', 'connect', 'authorize', 'disconnect',
     ])
     // The hooks compartment carries the controller's snapshot store.
     const store = injected.hooks.connectors
@@ -94,7 +94,7 @@ describe('ui-connectors apply', () => {
     injected.closeDialog()
     await injected.saveToken()
     expect(store.getSnapshot().dialog).toBeNull()
-    await injected.connect('nope')
+    await injected.connect('nope', 'token')
     await injected.disconnect('nope')
     expect(store.getSnapshot().connectors).toEqual([])
     await fiber.dispose()

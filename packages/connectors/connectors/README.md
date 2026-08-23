@@ -87,7 +87,7 @@ None.
 ## Known Limitations and Deferred Work
 
 - **Boot-time credential failures surface as server down** — a mounted server whose document references an unconfigured credential fails its mcp-client connection attempts (reconnect backoff, state `down`); the product-level guard (`connect`'s pre-check) fails loud before a mount, so this only reaches a server whose credential was unset out from under it.
-- **No OAuth or device engine** — the `connectors/oauth-flow` package (loopback callback + code-paste fallback) and the M365 device-code loop land in later phases. The shipped Atlassian manifest already carries its bearer as `Authorization: { $cred: atlas }`; the OAuth flow engine stores the bundle under the connector id, which mcp-client presents as `Bearer <accessToken>` from the token store.
+- **No device-code engine** — the M365 device-code loop lands in a later phase; only the browser OAuth flow ([dsh-connectors-oauth-flow](../oauth-flow/README.md)) is composed today.
 - **Polling for passive state** — registry flips without a connector operation (a server dropping, reconnecting) are visible on the next `list()`; no event is emitted for them.
 - **Overrides are a boot-time snapshot** — external edits of the override documents are not hot-reloaded.
 - **`lastError` is in-memory** — a failed mount's message survives until the next successful operation, not across restarts.

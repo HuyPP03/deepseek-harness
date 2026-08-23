@@ -52,7 +52,8 @@ export function apply(ctx: ClientContext): void {
     setDialogDraft: (ref, value) => { controller.setDialogDraft(ref, value) },
     closeDialog: () => { controller.closeDialog() },
     saveToken: () => controller.saveToken(),
-    connect: id => controller.connect(id),
+    connect: (id, mode) => controller.connect(id, mode),
+    authorize: id => controller.authorize(id),
     disconnect: id => controller.disconnect(id),
   })
   ctx.slots.inject('sidebar.connectors', () => ctx.slots.register(

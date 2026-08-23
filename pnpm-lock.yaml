@@ -1049,9 +1049,15 @@ importers:
       '@deepseek-ai/dsh-connectors':
         specifier: workspace:^
         version: link:../../connectors/connectors
+      '@deepseek-ai/dsh-connectors-oauth-flow':
+        specifier: workspace:^
+        version: link:../../connectors/oauth-flow
       '@deepseek-ai/dsh-credentials-local':
         specifier: workspace:^
         version: link:../../credentials/credentials-local
+      '@deepseek-ai/dsh-credentials-oauth-tokens':
+        specifier: workspace:^
+        version: link:../../credentials/oauth-tokens
       '@deepseek-ai/dsh-fs-local':
         specifier: workspace:^
         version: link:../../fs/fs-local
@@ -3599,6 +3605,28 @@ importers:
       '@deepseek-ai/dsh-mcp-registry':
         specifier: workspace:^
         version: link:../../mcp/mcp-registry
+
+  packages/connectors/oauth-flow:
+    dependencies:
+      '@deepseek-ai/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@deepseek-ai/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@deepseek-ai/dsh-connectors':
+        specifier: workspace:^
+        version: link:../connectors
+      '@deepseek-ai/dsh-credentials':
+        specifier: workspace:^
+        version: link:../../credentials/credentials
+      '@deepseek-ai/dsh-credentials-oauth-tokens':
+        specifier: workspace:^
+        version: link:../../credentials/oauth-tokens
+      '@deepseek-ai/dsh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
 
   packages/context/agent-instructions:
     dependencies:

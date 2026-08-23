@@ -38,6 +38,7 @@ import type {} from '@deepseek-ai/dsh-credentials-oauth-tokens'
 import { McpServerExistsError, type McpServerSpec, type StdioServerSpec, type StreamableHttpServerSpec } from '@deepseek-ai/dsh-mcp-manager'
 import { parseConnectorManifest, CUSTOM_CONNECTOR_ID } from './manifest.ts'
 import type {
+  ConnectorAuthFlow,
   ConnectorAuthMethod,
   TokenAuthMethod,
   ConnectorAuthView,
@@ -67,6 +68,8 @@ declare module '@deepseek-ai/cordis' {
   interface Context {
     /** The connector catalog and state machine. */
     connectors: Connectors
+    /** The connector OAuth flow engine, where the deployment composes one. */
+    oauthFlow?: ConnectorAuthFlow
   }
 }
 
@@ -187,6 +190,17 @@ export class ConnectorAuthUnavailableError extends Error {
 }
 
 /** A mutable mirror of a readonly view type, for construction sites. */
+/** Thrown when an oauth connect is attempted before the browser flow stored a token bundle. */
+export class ConnectorAuthPendingError extends Error {
+  constructor(
+    /** The connector id. */
+    readonly connectorId: string,
+  ) {
+    super(`connectors: connector "${connectorId}" has no stored token; authorize it through the browser flow first`)
+    this.name = 'ConnectorAuthPendingError'
+  }
+}
+
 type Writable<T> = { -readonly [K in keyof T]: T[K] }
 
 /** Thrown when an operation needs a seam this deployment does not compose. */
@@ -301,6 +315,36 @@ export class Connectors extends Service {
   }
 
   /**
+   * The byoApp client id the user configured through `configure`, while
+   * configured; the flow engine reads it at registration.
+   * @param id - the connector id.
+   * @returns the configured client id, or `undefined` while unconfigured.
+   */
+  overrideClientId(id: string): string | undefined {
+    return this.overrides.get(id)?.clientId
+  }
+
+  /**
+   * Record an auth-flow failure for one connector and republish its state:
+   * the failure surfaces as the connector's `error` state with the message
+   * as `lastError`, until the next successful operation clears it.
+   * @param id - the connector id.
+   * @param message - the failure to surface.
+   */
+  async recordFlowFailure(id: string, message: string): Promise<void> {
+    const manifest = this.find(id)
+    if (manifest === undefined) return
+    this.lastError.set(id, message)
+    // The failure is published once, as a one-shot view: the transition log
+    // is reset so a later settle to the same label republishes, and the
+    // stored label is dropped so the next derived state starts clean. The
+    // message stays in the in-memory view until the next settled operation
+    // (configure, connect, disconnect) clears lastError.
+    this.lastState.delete(id)
+    this.publish(manifest, await this.view(manifest))
+  }
+
+  /**
    * Configure one connector: store the provided credential values through
    * the credentials seam, persist the non-secret fields in its override
    * document, and — for a token method that is fully configured for the
@@ -372,11 +416,13 @@ export class Connectors extends Service {
 
   /**
    * Connect one connector: mount its servers with every slot resolved.
-   * `token` mode resolves now; `oauth` and `device` modes need their flow
-   * engines, which a deployment opts into separately, and refuse until then.
+   * `token` mode resolves now; `oauth` mode mounts through the stored token
+   * bundle (refreshing it through the flow engine when one is composed);
+   * `device` mode refuses until its flow engine lands.
    *
    * @param id - the connector id.
    * @param mode - the auth mode to connect through.
+   * @throws {@link ConnectorAuthPendingError} when an oauth connector has no stored bundle yet.
    */
   async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<void> {
     const manifest = this.require(id)
@@ -384,9 +430,20 @@ export class Connectors extends Service {
     if (method === undefined) {
       throw new Error(`connectors: connector "${id}" supports no ${mode} auth`)
     }
-    if (mode === 'oauth') throw new ConnectorAuthUnavailableError(id, 'oauth')
     if (mode === 'device') throw new ConnectorAuthUnavailableError(id, 'device')
-    // Both throws above leave `mode === 'token'`, so `method` is a token method.
+    if (mode === 'oauth') {
+      // The browser flow (connector.authorize) stores the bundle first; a
+      // stored one may be refreshable before the mount presents it.
+      if (this.ctx.get('oauthFlow') === undefined) throw new ConnectorAuthUnavailableError(id, 'oauth')
+      const bundle = this.ctx.get('oauthTokens')?.get(id)
+      if (bundle === undefined) throw new ConnectorAuthPendingError(id)
+      const flow = this.ctx.get('oauthFlow')
+      if (flow !== undefined) await flow.ensureFresh(id)
+      await this.mountServers(manifest)
+      this.lastError.delete(id)
+      this.publish(manifest, await this.view(manifest))
+      return
+    }
     await this.requireTokenRefsStored(id, method as TokenAuthMethod)
     await this.mountServers(manifest)
     this.lastError.delete(id)

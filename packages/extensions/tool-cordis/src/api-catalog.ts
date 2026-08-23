@@ -531,14 +531,26 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'inFlight', description: 'whether a flow is in flight.' }],
       },
       {
+        signature: 'overrideClientId(id: string): string | undefined',
+        description: 'The byoApp client id the user configured through `configure`, while configured; the flow engine reads it at registration.',
+        parameters: [{ name: 'id', description: 'the connector id.' }],
+        returns: 'the configured client id, or `undefined` while unconfigured.',
+      },
+      {
+        signature: 'async recordFlowFailure(id: string, message: string): Promise<void>',
+        description: 'Record an auth-flow failure for one connector and republish its state: the failure surfaces as the connector\'s `error` state with the message as `lastError`, until the next successful operation clears it.',
+        parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'message', description: 'the failure to surface.' }],
+      },
+      {
         signature: 'async configure(id: string, fields: ConnectorConfigureFields): Promise<void>',
         description: 'Configure one connector: store the provided credential values through the credentials seam, persist the non-secret fields in its override document, and — for a token method that is fully configured for the first time — mount its servers.',
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'fields', description: 'the fields to set; absent fields are left untouched.' }],
       },
       {
         signature: 'async connect(id: string, mode: \'token\' | \'oauth\' | \'device\'): Promise<void>',
-        description: 'Connect one connector: mount its servers with every slot resolved. `token` mode resolves now; `oauth` and `device` modes need their flow engines, which a deployment opts into separately, and refuse until then.',
+        description: 'Connect one connector: mount its servers with every slot resolved. `token` mode resolves now; `oauth` mode mounts through the stored token bundle (refreshing it through the flow engine when one is composed); `device` mode refuses until its flow engine lands.',
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'mode', description: 'the auth mode to connect through.' }],
+        throws: ['{@link ConnectorAuthPendingError} when an oauth connector has no stored bundle yet.'],
       },
       {
         signature: 'async disconnect(id: string): Promise<void>',
