@@ -47,6 +47,7 @@ const READY: ConnectorsSectionState = {
   error: null,
   connectors: ROSTER,
   selectedProvider: null,
+  providerServerNames: [],
   busyId: null,
   opError: null,
   dialog: null,
