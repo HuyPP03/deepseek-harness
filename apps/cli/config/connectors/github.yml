@@ -1,0 +1,18 @@
+id: github
+name: GitHub
+description: Repositories, issues, pull requests, and code search on GitHub.
+presetId: github
+workspaceDirName: github
+auth:
+  - mode: token
+    credentialRefs: [GITHUB_PERSONAL_ACCESS_TOKEN]
+    howTo: Create a fine-grained personal access token at github.com/settings/tokens, scoped to the repositories you want to reach.
+servers:
+  - serverName: github
+    transport: stdio
+    command: npx
+    args: ['-y', '@modelcontextprotocol/server-github']
+    env: { GITHUB_PERSONAL_ACCESS_TOKEN: { $cred: GITHUB_PERSONAL_ACCESS_TOKEN } }
+suggestions:
+  - List my open pull requests
+  - Summarize the issues assigned to me

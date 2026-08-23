@@ -104,6 +104,23 @@ export interface RpcErrorDetailsMap {
   'mcp-server-exists': { serverName: string }
   /** The deployment composes no mcp-manager, so the user-server lifecycle is unavailable. */
   'mcp-manager-unavailable': {}
+  /**
+   * The deployment composes no connectors service (or the operation needs a seam this deployment does not
+   * compose), so the connector surface is unavailable.
+   */
+  'connector-unavailable': {}
+  /** No connector with this id in the catalog. */
+  'connector-not-found': { id: string }
+  /** A custom connector would claim an id that is already taken. */
+  'connector-exists': { id: string }
+  /** A custom-only operation targeted a shipped connector. */
+  'connector-not-custom': { id: string }
+  /** A `{$cred}` slot resolved to a credential that is not stored; the message names the reference. */
+  'connector-credential-missing': { id: string; ref: string }
+  /** A `{$override}` slot targeted a field that was never configured; the message names the field. */
+  'connector-override-missing': { id: string; field: string }
+  /** The connector declares the auth mode but its flow engine is not composed in this deployment. */
+  'connector-auth-unavailable': { id: string; mode: 'oauth' | 'device' }
   /** The requested file path resolves outside the session's working set (cwd or attached references), lexically or after symlinks. */
   'file-path-escape': { path: string }
   /** The admitted path names no existing file (vanished between listing and read). */

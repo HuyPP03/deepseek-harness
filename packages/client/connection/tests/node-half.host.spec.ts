@@ -177,6 +177,10 @@ describe('connection node half', () => {
       // reconnaissance, and copy/remove/openDocument manage the roster and
       // drive the host desktop.
       'agentPreset.read', 'agentPreset.copy', 'agentPreset.openDocument', 'agentPreset.remove',
+      // Connector mutations manage external connections and their secrets;
+      // the roster read beside them stays unprivileged.
+      'connector.configure', 'connector.connect', 'connector.complete',
+      'connector.disconnect', 'connector.add', 'connector.remove',
     ]) {
       const denied = fakeResponse()
       await routes[0]!.handler(

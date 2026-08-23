@@ -312,6 +312,29 @@ function fakeApi(overrides: Partial<{ muxFrames: MuxFrame[]; hostFrames: HostFra
         return { rpcId: request.rpcId, result: { ok: true, value: {} } }
       },
     },
+    connectors: {
+      async list(request) {
+        return { rpcId: request.rpcId, result: { ok: true, value: { connectors: [] } } }
+      },
+      async configure(request) {
+        return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
+      },
+      async connect(request) {
+        return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
+      },
+      async complete(request) {
+        return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
+      },
+      async disconnect(request) {
+        return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
+      },
+      async add(request) {
+        return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
+      },
+      async remove(request) {
+        return { rpcId: request.rpcId, result: { ok: true, value: {} } }
+      },
+    },
     llm: {
       async providers(request) {
         return { rpcId: request.rpcId, result: { ok: true, value: { providers: [] } } }

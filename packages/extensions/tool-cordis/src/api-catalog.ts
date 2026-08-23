@@ -503,6 +503,62 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
     ],
   },
   {
+    key: 'connectors',
+    summary: 'The catalog, the user\'s overrides, and the operations over both.',
+    description: 'The catalog, the user\'s overrides, and the operations over both.',
+    methods: [
+      {
+        signature: 'async list(): Promise<readonly ConnectorView[]>',
+        description: 'Every catalog and custom connector as a wire-safe view, sorted by id.',
+        parameters: [],
+        returns: 'the connector views.',
+      },
+      {
+        signature: 'async get(id: string): Promise<ConnectorView | undefined>',
+        description: 'One connector\'s wire-safe view.',
+        parameters: [{ name: 'id', description: 'the connector id.' }],
+        returns: 'the view, or `undefined` while the id is not in the catalog.',
+      },
+      {
+        signature: 'manifest(id: string): ConnectorManifest | undefined',
+        description: 'The raw manifest of one connector, for host-internal consumers; the wire surface is the view, which carries no server commands or URLs.',
+        parameters: [{ name: 'id', description: 'the connector id.' }],
+        returns: 'the manifest, or `undefined` while the id is not in the catalog.',
+      },
+      {
+        signature: 'setAuthorizing(id: string, inFlight: boolean): void',
+        description: 'Mark one connector\'s auth flow in flight or settled. The flow engine is the only writer: while flagged, the derived state is `authorizing` regardless of the seams underneath.',
+        parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'inFlight', description: 'whether a flow is in flight.' }],
+      },
+      {
+        signature: 'async configure(id: string, fields: ConnectorConfigureFields): Promise<void>',
+        description: 'Configure one connector: store the provided credential values through the credentials seam, persist the non-secret fields in its override document, and — for a token method that is fully configured for the first time — mount its servers.',
+        parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'fields', description: 'the fields to set; absent fields are left untouched.' }],
+      },
+      {
+        signature: 'async connect(id: string, mode: \'token\' | \'oauth\' | \'device\'): Promise<void>',
+        description: 'Connect one connector: mount its servers with every slot resolved. `token` mode resolves now; `oauth` and `device` modes need their flow engines, which a deployment opts into separately, and refuse until then.',
+        parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'mode', description: 'the auth mode to connect through.' }],
+      },
+      {
+        signature: 'async disconnect(id: string): Promise<void>',
+        description: 'Disconnect one connector: unmount its servers, remove its stored credentials and token bundle, and delete its override document.',
+        parameters: [{ name: 'id', description: 'the connector id.' }],
+      },
+      {
+        signature: 'async addCustom(spec: AddCustomSpec): Promise<string>',
+        description: 'Author one custom connector: persist its manifest under the user directory and copy the shipped `custom` preset to it. A failed preset copy leaves no manifest file; a failed manifest write removes the preset copy.',
+        parameters: [{ name: 'spec', description: 'the custom connector definition.' }],
+        returns: 'the new connector id.',
+      },
+      {
+        signature: 'async removeCustom(id: string): Promise<void>',
+        description: 'Remove one custom connector: remove its preset copy, its manifest, its servers, and its stored credentials. Shipped connectors refuse.',
+        parameters: [{ name: 'id', description: 'the custom connector id.' }],
+      },
+    ],
+  },
+  {
     key: 'credentials',
     summary: 'Abstract credential service.',
     description: 'Abstract credential service. Providers implement the four operations over their source layers; one seam-wide rule binds them all: an empty stored value is absent everywhere — `resolve` skips it, `describe` reports it unconfigured — so a blank never masquerades as a configured secret.',
@@ -972,6 +1028,35 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         description: 'Delete one feedback item. Absence is successful regardless of the supplied version; an existing item requires an exact version match.',
         parameters: [{ name: 'request', description: 'Session, message, and observed item version.' }],
         returns: 'the stable absent postcondition, or an explicit failure.',
+      },
+    ],
+  },
+  {
+    key: 'oauthTokens',
+    summary: 'File-backed OAuth token bundle store (`.connectors/oauth-tokens.json`).',
+    description: 'File-backed OAuth token bundle store (`.connectors/oauth-tokens.json`).',
+    methods: [
+      {
+        signature: 'get(ownerId: string): OAuthTokenBundle | undefined',
+        description: 'The current bundle for one owner, read from the live snapshot.',
+        parameters: [{ name: 'ownerId', description: 'the owner to look up.' }],
+        returns: 'the stored bundle, or `undefined` while the owner is unconfigured.',
+      },
+      {
+        signature: 'list(): readonly string[]',
+        description: 'The owner ids currently in the snapshot, sorted.',
+        parameters: [],
+        returns: 'the stored owner ids.',
+      },
+      {
+        signature: 'put(ownerId: string, bundle: OAuthTokenBundle): Promise<void>',
+        description: 'Durably store one owner\'s bundle, replacing any bundle the owner already holds. The write folds in unobserved on-disk state under a cross-process writer lock, so a concurrent writer or an external edit cannot be lost. `createdAt` keeps the first stored value for this owner; `updatedAt` is always the commit time.',
+        parameters: [{ name: 'ownerId', description: 'the owner to store for.' }, { name: 'bundle', description: 'the bundle to store.' }],
+      },
+      {
+        signature: 'remove(ownerId: string): Promise<void>',
+        description: 'Remove one owner\'s bundle; removing an absent owner is a no-op.',
+        parameters: [{ name: 'ownerId', description: 'the owner to remove.' }],
       },
     ],
   },
@@ -2372,6 +2457,14 @@ export const EVENT_API: readonly EventApiEntry[] = [
     parameters: [],
   },
   {
+    name: 'connector/state',
+    mode: 'emit',
+    signature: '\'connector/state\'(connectorId: string, state: ConnectorState): void',
+    summary: 'A connector\'s derived state changed as the result of a connector operation (configure, connect, disconnect, add, remove) or an auth flow transition.',
+    description: 'A connector\'s derived state changed as the result of a connector operation (configure, connect, disconnect, add, remove) or an auth flow transition. Registry status flips that happen without a connector operation are not emitted; surfaces poll `list` for those. Listener failures are contained and logged, except `INVARIANT`-coded failures, which rethrow after every listener ran.',
+    parameters: [{ name: 'connectorId', description: 'the connector whose state changed.' }, { name: 'state', description: 'the new derived state.' }],
+  },
+  {
     name: 'cordis/dynamic-package',
     mode: 'emit',
     signature: '\'cordis/dynamic-package\'(pkg: DynamicCordisPackage): void',
@@ -2482,6 +2575,14 @@ export const EVENT_API: readonly EventApiEntry[] = [
     summary: 'Waterfall around every streaming model call (retry, replay, routing).',
     description: 'Waterfall around every streaming model call (retry, replay, routing). Bound to the LlmRuntime; call `next()` to reach the resolved adapter\'s stream, or yield your own chunks to short-circuit.',
     parameters: [{ name: 'options', description: 'the full request. A LOOP-built request carries the process-local {@link markAgentLoopRequest} identity and arrives deep-frozen (mutation throws): its content is a pure function of the session log (the reconstructability Agent Note), so listeners read it, never rewrite it. Hand-built calls do not carry that marker; their messages already obey the immutable creation contract.' }],
+  },
+  {
+    name: 'oauth-tokens/updated',
+    mode: 'emit',
+    signature: '\'oauth-tokens/updated\'(ownerId: string): void',
+    summary: 'Committed change to one owner\'s stored bundle: a `put`, a `remove`, or an external edit observed in storage.',
+    description: 'Committed change to one owner\'s stored bundle: a `put`, a `remove`, or an external edit observed in storage. Listener failures are contained and logged — a sync throw and an async rejection alike — without changing the committed operation\'s outcome, except `INVARIANT`-coded failures, which rethrow after every listener ran; that rethrow reaches the emitter only from synchronous listeners, so invariant checks on this event must not be async functions.',
+    parameters: [{ name: 'ownerId', description: 'the owner whose stored bundle changed.' }],
   },
   {
     name: 'session-telemetry/record',
@@ -2700,6 +2801,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface AdapterRegistrationHandle {\n    (): void;\n    replace(providers: string[]): void;\n}',
   },
   {
+    name: 'AddCustomSpec',
+    declaration: 'export interface AddCustomSpec {\n    readonly name: string;\n    readonly id?: string;\n    readonly transport: \'stdio\' | \'streamable-http\';\n    readonly command?: string;\n    readonly args?: readonly string[];\n    readonly env?: Record<string, string>;\n    readonly url?: string;\n    readonly headers?: Record<string, string>;\n    readonly tokenVar?: string;\n    readonly tokenVarIsHeader?: boolean;\n}',
+  },
+  {
     name: 'Agent',
     declaration: 'export interface Agent {\n    readonly id: SessionId;\n    readonly options: AgentOptions;\n    readonly session: Session;\n    readonly inbox: Inbox;\n    readonly status: AgentStatus;\n    readonly ctx: Context;\n    cancel(cause: AgentCancelCause, options?: CancelOptions): void;\n    whenIdle(): Promise<void>;\n    runMaintenance<T>(task: (signal: AbortSignal) => Promise<T>): Promise<T>;\n    send(message: UserMessage, target: InboxTarget, wakeup: boolean): void;\n    followup(message: UserMessage): void;\n    steer(message: UserMessage): void;\n    inject(message: UserMessage): void;\n}',
   },
@@ -2916,6 +3021,46 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type ConfinedSandboxMode = Exclude<SandboxMode, \'danger-full-access\'>;',
   },
   {
+    name: 'ConnectorAuthMethod',
+    declaration: 'export type ConnectorAuthMethod = TokenAuthMethod | OauthAuthMethod | DeviceAuthMethod;',
+  },
+  {
+    name: 'ConnectorAuthView',
+    declaration: 'export interface ConnectorAuthView {\n    readonly mode: \'token\' | \'oauth\' | \'device\';\n    readonly configured: boolean;\n    readonly howTo?: string;\n    readonly setupGuide?: readonly string[];\n    readonly reauthHint?: string;\n}',
+  },
+  {
+    name: 'ConnectorConfigureFields',
+    declaration: 'export interface ConnectorConfigureFields {\n    token?: string;\n    credentials?: Record<string, string>;\n    url?: string;\n    clientId?: string;\n    clientSecret?: string;\n    products?: string[];\n    orgMode?: boolean;\n    readOnly?: boolean;\n}',
+  },
+  {
+    name: 'ConnectorManifest',
+    declaration: 'export interface ConnectorManifest {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly presetId: string;\n    readonly workspaceDirName: string;\n    readonly products?: readonly string[];\n    readonly servers: readonly ConnectorServerSpec[];\n    readonly auth: readonly ConnectorAuthMethod[];\n    readonly suggestions?: readonly string[];\n}',
+  },
+  {
+    name: 'ConnectorServerSpec',
+    declaration: 'export type ConnectorServerSpec = ConnectorStdioServerSpec | ConnectorStreamableHttpServerSpec;',
+  },
+  {
+    name: 'ConnectorServerView',
+    declaration: 'export interface ConnectorServerView {\n    readonly serverName: string;\n    readonly mounted: boolean;\n    readonly status?: \'connecting\' | \'connected\' | \'reconnecting\' | \'down\';\n}',
+  },
+  {
+    name: 'ConnectorState',
+    declaration: 'export type ConnectorState = \'unconfigured\' | \'needs-auth\' | \'authorizing\' | \'connecting\' | \'connected\' | \'reconnecting\' | \'down\' | \'error\';',
+  },
+  {
+    name: 'ConnectorStdioServerSpec',
+    declaration: 'export interface ConnectorStdioServerSpec {\n    readonly serverName: string;\n    readonly transport: \'stdio\';\n    readonly command: string;\n    readonly args?: readonly string[];\n    readonly env?: Record<string, ServerValue>;\n    readonly cwd?: string;\n    readonly toolCallTimeoutMs?: number;\n}',
+  },
+  {
+    name: 'ConnectorStreamableHttpServerSpec',
+    declaration: 'export interface ConnectorStreamableHttpServerSpec {\n    readonly serverName: string;\n    readonly transport: \'streamable-http\';\n    readonly url: string;\n    readonly headers?: Record<string, ServerValue>;\n    readonly toolCallTimeoutMs?: number;\n}',
+  },
+  {
+    name: 'ConnectorView',
+    declaration: 'export interface ConnectorView {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly presetId: string;\n    readonly state: ConnectorState;\n    readonly lastError?: string;\n    readonly custom: boolean;\n    readonly servers: readonly ConnectorServerView[];\n    readonly auth: readonly ConnectorAuthView[];\n    readonly suggestions: readonly string[];\n    readonly products?: readonly string[];\n}',
+  },
+  {
     name: 'ContentBlockMap',
     declaration: 'export interface ContentBlockMap {\n    \'text\': TextBlock;\n    \'reasoning\': ReasoningBlock;\n    \'image\': ImageBlock;\n    \'tool-call\': ToolCallBlock;\n    \'tool-result\': ToolResultBlock;\n}',
   },
@@ -3006,6 +3151,14 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'CredentialRef',
     declaration: 'export type CredentialRef = Branded<\'CredentialRef\'>;',
+  },
+  {
+    name: 'CredRefPlaceholder',
+    declaration: 'export interface CredRefPlaceholder {\n    readonly $cred: string;\n}',
+  },
+  {
+    name: 'DeviceAuthMethod',
+    declaration: 'export interface DeviceAuthMethod {\n    readonly mode: \'device\';\n    readonly howTo?: string;\n    readonly loginTool?: string;\n    readonly verifyTool?: string;\n}',
   },
   {
     name: 'DiffCallView',
@@ -3568,12 +3721,24 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface ModelModalityMap {\n    text: \'text\';\n    image: \'image\';\n}',
   },
   {
+    name: 'OauthAuthMethod',
+    declaration: 'export interface OauthAuthMethod {\n    readonly mode: \'oauth\';\n    readonly serverUrl: string;\n    readonly byoApp?: boolean;\n    readonly setupGuide?: readonly string[];\n    readonly reauthHint?: string;\n}',
+  },
+  {
+    name: 'OAuthTokenBundle',
+    declaration: 'export interface OAuthTokenBundle {\n    readonly accessToken: string;\n    readonly expiresAt: number;\n    readonly tokenEndpoint: string;\n    readonly refreshToken?: string;\n    readonly scope?: string;\n    readonly clientId?: string;\n    readonly createdAt: number;\n    readonly updatedAt: number;\n}',
+  },
+  {
     name: 'ObjectJsonSchema',
     declaration: 'export type ObjectJsonSchema = JsonSchemaNode & {\n    type: \'object\';\n};',
   },
   {
     name: 'OneShotSubagentDescriptorData',
     declaration: 'export interface OneShotSubagentDescriptorData extends SubagentDescriptorBase {\n    readonly mode: \'one-shot\';\n    readonly label?: string;\n}',
+  },
+  {
+    name: 'OverridePlaceholder',
+    declaration: 'export interface OverridePlaceholder {\n    readonly $override: string;\n}',
   },
   {
     name: 'PermissionSelect',
@@ -3826,6 +3991,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'ServerResponse',
     declaration: 'export interface ServerResponse {\n    type: \'server-response\';\n    rpcId: RpcId;\n    result: RpcResult<unknown>;\n}',
+  },
+  {
+    name: 'ServerValue',
+    declaration: 'export type ServerValue = string | CredRefPlaceholder | OverridePlaceholder;',
   },
   {
     name: 'SessionAvailability',
@@ -4430,6 +4599,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'TodoItem',
     declaration: 'export interface TodoItem {\n    content: string;\n    status: \'pending\' | \'in_progress\' | \'completed\';\n}',
+  },
+  {
+    name: 'TokenAuthMethod',
+    declaration: 'export interface TokenAuthMethod {\n    readonly mode: \'token\';\n    readonly credentialRefs: readonly string[];\n    readonly howTo?: string;\n}',
   },
   {
     name: 'TokenMeasurement',

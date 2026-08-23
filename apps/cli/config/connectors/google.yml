@@ -1,0 +1,22 @@
+id: google
+name: Google Workspace
+description: Gmail and Google Drive through the Gmail MCP server.
+presetId: google
+workspaceDirName: google
+products: [gmail, drive]
+auth:
+  - mode: oauth
+    serverUrl: https://gmailmcp.googleapis.com/mcp/v1
+    byoApp: true
+    setupGuide:
+      - Create an OAuth client of type Desktop app in the Google Cloud Console.
+      - Enable the Gmail API and the Drive API for the project.
+      - Paste the client id and client secret into the connector settings.
+    reauthHint: "If Google asks you to sign in again, the previous session expired: re-run the sign-in and keep the same client id."
+servers:
+  - serverName: google-gmail
+    transport: streamable-http
+    url: https://gmailmcp.googleapis.com/mcp/v1
+suggestions:
+  - Summarize my unread emails
+  - Find the Drive file this message references

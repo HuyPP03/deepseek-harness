@@ -1,0 +1,18 @@
+id: notion
+name: Notion
+description: Read and write Notion pages, databases, and comments.
+presetId: notion
+workspaceDirName: notion
+auth:
+  - mode: token
+    credentialRefs: [NOTION_API_TOKEN]
+    howTo: Create an internal integration at notion.so/profile/integrations, then add it to the pages and databases you want to share.
+servers:
+  - serverName: notion
+    transport: stdio
+    command: npx
+    args: ['-y', '@notionhq/notion-mcp-server']
+    env: { NOTION_TOKEN: { $cred: NOTION_API_TOKEN } }
+suggestions:
+  - Summarize my workspace
+  - Find the pages that mention this project

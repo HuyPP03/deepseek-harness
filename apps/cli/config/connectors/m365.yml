@@ -1,0 +1,18 @@
+id: m365
+name: Microsoft 365
+description: Outlook, OneDrive, and Teams on Microsoft 365.
+presetId: m365
+workspaceDirName: m365
+auth:
+  - mode: device
+    howTo: Sign in with your work or school account when prompted.
+    loginTool: login
+    verifyTool: verify-login
+servers:
+  - serverName: m365
+    transport: stdio
+    command: npx
+    args: ['-y', '@softeria/ms-365-mcp-server']
+suggestions:
+  - Summarize my unread mail
+  - Find the OneDrive file this message references

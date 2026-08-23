@@ -13,6 +13,7 @@ import type { FilesApi } from './files.ts'
 import type { GoalsApi } from './goals.ts'
 import type { SettingsApi } from './settings.ts'
 import type { CredentialsApi } from './credentials.ts'
+import type { ConnectorApi } from './connector.ts'
 import type { LlmApi } from './llm.ts'
 import type { SubagentsApi } from './subagents.ts'
 import type { McpApi } from './mcp.ts'
@@ -76,6 +77,13 @@ export interface RpcMethodMap {
   'credentials.describe': CredentialsApi['describe']
   'credentials.set': CredentialsApi['set']
   'credentials.unset': CredentialsApi['unset']
+  'connector.list': ConnectorApi['list']
+  'connector.configure': ConnectorApi['configure']
+  'connector.connect': ConnectorApi['connect']
+  'connector.complete': ConnectorApi['complete']
+  'connector.disconnect': ConnectorApi['disconnect']
+  'connector.add': ConnectorApi['add']
+  'connector.remove': ConnectorApi['remove']
   'llm.providers': LlmApi['providers']
   'llm.models': LlmApi['models']
   'llm.discoverModels': LlmApi['discoverModels']

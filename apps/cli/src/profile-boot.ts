@@ -34,6 +34,9 @@ import { resolveDshHome } from '@deepseek-ai/dsh-home-paths'
 /** Shipped agent-preset root: beside this app's own config, in both source and built layouts. */
 const SHIPPED_PRESET_ROOT = fileURLToPath(new URL('../config/agent-presets/', import.meta.url))
 
+/** Shipped connector catalog: beside this app's own config, in both source and built layouts. */
+const SHIPPED_CONNECTOR_CATALOG = fileURLToPath(new URL('../config/connectors/', import.meta.url))
+
 import { DSH_LAUNCH_ENVIRONMENT_KEY, type LaunchEnvironmentSnapshot } from '@deepseek-ai/dsh-launch-environment'
 import { provideCmdline } from '@deepseek-ai/dsh-cmdline'
 import { createProcessShutdown, type ProcessShutdown } from './process-shutdown.ts'
@@ -162,6 +165,20 @@ function composeProfile(
       config: {
         ...(rows.get('agent-presets')?.config ?? {}) as Record<string, unknown>,
         roots: [{ path: SHIPPED_PRESET_ROOT, trust: 'system' }],
+      },
+    })
+  }
+  // The SHIPPED catalog is the part of the connector roster only this app can
+  // resolve: it sits beside this app's own config, in both the source and built
+  // layouts. The writable user directory stays `dsh-connectors`' own default
+  // (`.connectors` under the harness home), so a launcher that never reaches
+  // this patch still loads customs and overrides from the home.
+  if (rows.has('connectors')) {
+    composedOverlays.push({
+      id: 'connectors',
+      config: {
+        ...(rows.get('connectors')?.config ?? {}) as Record<string, unknown>,
+        catalogDir: SHIPPED_CONNECTOR_CATALOG,
       },
     })
   }

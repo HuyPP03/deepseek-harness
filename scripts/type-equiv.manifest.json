@@ -1606,6 +1606,11 @@
       "source": "packages/credentials/credentials/src/index.ts"
     },
     {
+      "doc": "docs/subsystems/connectors.md",
+      "symbol": "ConnectorState",
+      "source": "packages/connectors/connectors/src/types.ts"
+    },
+    {
       "doc": "docs/subsystems/settings.md",
       "symbol": "SettingsDescribeOptions",
       "source": "packages/settings/settings/src/index.ts"
