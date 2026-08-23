@@ -215,7 +215,7 @@ function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialogProps):
 export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
   const {
     wide, expandSidebar, t, load, openTokenDialog, setDialogDraft, closeDialog,
-    saveToken, connect, authorize, disconnect, useConnectors,
+    saveToken, connect, authorize, disconnect, selectProvider, useConnectors,
   } = props
 
   const handleAuthorize = (id: string): void => {
@@ -261,23 +261,48 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
     )
   } else if (state.connectors.length === 0) {
     body = <div className={css.message}>{t('empty')}</div>
+  } else if (state.selectedProvider !== null) {
+    // The selected provider: show its session view (placeholder for now).
+    const provider = state.connectors.find(c => c.id === state.selectedProvider)
+    body = provider !== undefined ? (
+      <div className={css.list}>
+        <div className={css.providerHeader}>
+          <Button variant="outline" size="sm" onClick={() => { selectProvider(null) }}>
+            {t('back')}
+          </Button>
+          <span className={css.providerName}>{provider.name}</span>
+        </div>
+        <div className={css.message}>{t('sessions.placeholder')}</div>
+      </div>
+    ) : (
+      <div className={css.message}>{t('empty')}</div>
+    )
   } else {
+    // Provider list: each row is a provider the user can select.
     body = (
       <div className={css.list}>
         {state.connectors.map(row => (
-          <ConnectorRow
+          <div
             key={row.id}
-            row={row}
-            // One operation at a time (the controller gates a second in
-            // flight), so every row action rides the same busy flag.
-            busy={state.busyId !== null}
-            error={state.opError?.id === row.id ? state.opError.message : null}
-            t={t}
-            onConfigure={openTokenDialog}
-            onConnect={(id, mode) => { void connect(id, mode) }}
-            onAuthorize={handleAuthorize}
-            onDisconnect={(id) => { void disconnect(id) }}
-          />
+            className={clsx(css.providerRow, state.selectedProvider === row.id && css.providerSelected)}
+            role="button"
+            tabIndex={0}
+            onClick={() => { selectProvider(row.id) }}
+            onKeyDown={(e) => { if (e.key === 'Enter') selectProvider(row.id) }}
+          >
+            <ConnectorRow
+              row={row}
+              // One operation at a time (the controller gates a second in
+              // flight), so every row action rides the same busy flag.
+              busy={state.busyId !== null}
+              error={state.opError?.id === row.id ? state.opError.message : null}
+              t={t}
+              onConfigure={openTokenDialog}
+              onConnect={(id, mode) => { void connect(id, mode) }}
+              onAuthorize={handleAuthorize}
+              onDisconnect={(id) => { void disconnect(id) }}
+            />
+          </div>
         ))}
       </div>
     )

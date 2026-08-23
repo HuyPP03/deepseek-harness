@@ -46,6 +46,7 @@ const READY: ConnectorsSectionState = {
   status: 'ready',
   error: null,
   connectors: ROSTER,
+  selectedProvider: null,
   busyId: null,
   opError: null,
   dialog: null,
@@ -186,7 +187,7 @@ describe('ConnectorsRegion', () => {
     expect(screen.getByRole('button', { name: 'Disconnect' })).toBeTruthy()
 
     // The authorizing row is mid-flow: its name sits in a button-free row.
-    expect(screen.getAllByRole('button')).toHaveLength(5)
+    expect(screen.getAllByRole('button')).toHaveLength(5 + 8)
 
     // A tokenless unconfigured row has no action; its howTo guides instead.
     expect(screen.getByText('Run the provider setup.')).toBeTruthy()
@@ -204,10 +205,11 @@ describe('ConnectorsRegion', () => {
   it('disables the row actions while its operation is in flight', () => {
     renderRegion({ busyId: 'notion' })
     // Every row action shares the busy gate: with one operation in flight
-    // no row action is enabled, on any row.
-    const buttons = screen.getAllByRole('button')
-    expect(buttons).toHaveLength(5)
-    for (const button of buttons) expect(button.hasAttribute('disabled')).toBe(true)
+    // no row action is enabled, on any row. The provider select buttons
+    // are not gated (they only switch the view, they don't mutate).
+    const actionButtons = screen.getAllByRole('button').filter(b => !b.className.includes('providerRow'))
+    expect(actionButtons).toHaveLength(5)
+    for (const button of actionButtons) expect(button.hasAttribute('disabled')).toBe(true)
   })
 
   it('renders a row operation failure under its row', () => {

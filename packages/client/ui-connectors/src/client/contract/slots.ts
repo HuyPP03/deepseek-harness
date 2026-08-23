@@ -36,6 +36,8 @@ export interface ConnectorsRegionInjected {
   authorize: (id: string) => Promise<{ authorizationUrl: string; expiresAt: number }>
   /** Unmount one connector's servers and forget its stored credential. */
   disconnect: (id: string) => Promise<void>
+  /** Select a provider to view its sessions; null returns to the provider list. */
+  selectProvider: (id: string | null) => void
 }
 
 /** Full component props: the shell's column state, the copy, and the face. */

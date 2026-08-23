@@ -184,3 +184,33 @@
   justify-content: flex-end;
   gap: 8px;
 }
+
+.providerRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px;
+  margin: 2px 0;
+}
+
+.providerRow:hover {
+  background: var(--dsw-bg-hover);
+}
+
+.providerSelected {
+  background: var(--dsw-bg-active);
+}
+
+.providerHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 4px;
+}
+
+.providerName {
+  font-weight: 600;
+  font-size: 14px;
+}

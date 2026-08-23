@@ -8,6 +8,7 @@ export type ConnectorsKey =
   | 'connect' | 'disconnect' | 'configure'
   | 'custom' | 'servers.one' | 'servers.many' | 'server.off'
   | 'rail.label'
+  | 'back' | 'sessions.placeholder'
   | 'dialog.title' | 'dialog.tokenPlaceholder'
   | 'dialog.cancel' | 'dialog.save' | 'dialog.saving'
 
@@ -33,6 +34,8 @@ export const en: Record<ConnectorsKey, string> = {
   'servers.many': '{count} servers',
   'server.off': 'not mounted',
   'rail.label': 'Connectors',
+  back: 'Back',
+  'sessions.placeholder': 'Sessions for this provider will appear here once a connector session is created.',
   'dialog.title': 'Connect {name}',
   'dialog.tokenPlaceholder': 'Paste your token',
   'dialog.cancel': 'Cancel',
@@ -62,6 +65,8 @@ export const vi: Record<ConnectorsKey, string> = {
   'servers.many': '{count} máy chủ',
   'server.off': 'chưa bật',
   'rail.label': 'Kết nối',
+  back: 'Quay lại',
+  'sessions.placeholder': 'Các phiên của nhà cung cấp này sẽ hiển thị tại đây khi một phiên kết nối được tạo.',
   'dialog.title': 'Kết nối {name}',
   'dialog.tokenPlaceholder': 'Dán token của bạn',
   'dialog.cancel': 'Hủy',
@@ -91,6 +96,8 @@ export const zh: Record<ConnectorsKey, string> = {
   'servers.many': '{count} 个服务器',
   'server.off': '未挂载',
   'rail.label': '连接器',
+  back: '返回',
+  'sessions.placeholder': '此提供商的会话将在创建连接器会话后显示在此处。',
   'dialog.title': '连接 {name}',
   'dialog.tokenPlaceholder': '粘贴你的令牌',
   'dialog.cancel': '取消',

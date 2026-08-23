@@ -45,6 +45,8 @@ export interface ConnectorsSectionState {
   error: string | null
   /** The secret-free views, in the host's id order. */
   connectors: readonly ConnectorView[]
+  /** The selected provider (connector id); null shows the provider list. */
+  selectedProvider: string | null
   /** The row with an operation in flight, absent when none. */
   busyId: string | null
   /** The row-level operation failure, absent when none. */
@@ -57,6 +59,7 @@ const INITIAL: ConnectorsSectionState = {
   status: 'loading',
   error: null,
   connectors: [],
+  selectedProvider: null,
   busyId: null,
   opError: null,
   dialog: null,
@@ -218,5 +221,14 @@ export class ConnectorsSectionController {
    */
   async disconnect(id: string): Promise<void> {
     return this.runRowOperation(id, () => this.api.connectors.disconnect({ id }))
+  }
+
+  /**
+   * Select a provider: the region switches from the provider list to that
+   * provider's session view. Selecting null returns to the list.
+   * @param id - the connector id to select, or null to clear.
+   */
+  selectProvider(id: string | null): void {
+    this.set({ selectedProvider: id })
   }
 }

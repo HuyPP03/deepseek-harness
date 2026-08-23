@@ -55,6 +55,7 @@ export function apply(ctx: ClientContext): void {
     connect: (id, mode) => controller.connect(id, mode),
     authorize: id => controller.authorize(id),
     disconnect: id => controller.disconnect(id),
+    selectProvider: id => controller.selectProvider(id),
   })
   ctx.slots.inject('sidebar.connectors', () => ctx.slots.register(
     {
