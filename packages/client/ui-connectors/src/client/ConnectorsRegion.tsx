@@ -273,6 +273,14 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
           <span className={css.providerName}>{provider.name}</span>
         </div>
         <div className={css.message}>{t('sessions.placeholder')}</div>
+        {state.providerServerNames.length > 0 && (
+          <div className={css.toolsSection}>
+            <span className={css.toolsLabel}>{t('tools.available')}</span>
+            {state.providerServerNames.map(name => (
+              <div key={name} className={css.toolRow}>{name}</div>
+            ))}
+          </div>
+        )}
       </div>
     ) : (
       <div className={css.message}>{t('empty')}</div>

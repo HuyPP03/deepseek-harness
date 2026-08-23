@@ -47,6 +47,8 @@ export interface ConnectorsSectionState {
   connectors: readonly ConnectorView[]
   /** The selected provider (connector id); null shows the provider list. */
   selectedProvider: string | null
+  /** The MCP server names the selected provider mounts (for the tool list). */
+  providerServerNames: readonly string[]
   /** The row with an operation in flight, absent when none. */
   busyId: string | null
   /** The row-level operation failure, absent when none. */
@@ -60,6 +62,7 @@ const INITIAL: ConnectorsSectionState = {
   error: null,
   connectors: [],
   selectedProvider: null,
+  providerServerNames: [],
   busyId: null,
   opError: null,
   dialog: null,
@@ -229,6 +232,12 @@ export class ConnectorsSectionController {
    * @param id - the connector id to select, or null to clear.
    */
   selectProvider(id: string | null): void {
-    this.set({ selectedProvider: id })
+    if (id === null) {
+      this.set({ selectedProvider: null, providerServerNames: [] })
+      return
+    }
+    const row = this.state.connectors.find(c => c.id === id)
+    const names = row === undefined ? [] : row.servers.map(s => s.serverName)
+    this.set({ selectedProvider: id, providerServerNames: names })
   }
 }
