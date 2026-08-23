@@ -57,7 +57,7 @@ function fail<T>(message: string): RpcResponse<T> {
 }
 
 /** The four wire calls the controller drives, typed by the real domain. */
-type ConnectorDouble = Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin'>
+type ConnectorDouble = Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin' | 'add' | 'remove'>
 
 function fakeConnectors(overrides: Partial<ConnectorDouble> = {}) {
   // The fakes answer the RpcResponse shapes the controller unwraps; the
@@ -68,6 +68,8 @@ function fakeConnectors(overrides: Partial<ConnectorDouble> = {}) {
     connect: vi.fn(async (payload: { id: string }) => ok({ connector: view({ id: payload.id, state: 'connected' }) })),
     authorize: vi.fn(async () => ok({ authorizationUrl: 'http://127.0.0.1:8766/authorize', expiresAt: Date.now() + 300_000 })),
     deviceLogin: vi.fn(async () => ok({ status: 'ready' as const, expiresAt: Date.now() })),
+    add: vi.fn(async () => ok({ id: 'custom' })),
+    remove: vi.fn(async () => ok({})),
     disconnect: vi.fn(async (payload: { id: string }) => ok({ connector: view({ id: payload.id, state: 'unconfigured', auth: [{ mode: 'token', configured: false }] }) })),
   }
   return { ...base, ...overrides }

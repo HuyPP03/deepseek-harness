@@ -37,6 +37,16 @@ export interface RowOpError {
   message: string
 }
 
+/** The custom connector dialog: the AddCustomSpec draft, one string per field. */
+export interface CustomConnectorDialog {
+  /** The draft per form field: name, id, transport, command, args, url, tokenVar, tokenVarIsHeader. */
+  drafts: Record<string, string>
+  /** Whether the save is in flight. */
+  saving: boolean
+  /** The last save failure, cleared by the next edit. */
+  error: string | null
+}
+
 /** Page snapshot the renderer subscribes to. */
 export interface ConnectorsSectionState {
   /** Roster read lifecycle; an error keeps the last good roster if one was shown. */
@@ -55,6 +65,8 @@ export interface ConnectorsSectionState {
   opError: RowOpError | null
   /** The open token dialog, absent when closed. */
   dialog: ConnectTokenDialog | null
+  /** The open custom connector dialog, absent when closed. */
+  customDialog: CustomConnectorDialog | null
 }
 
 const INITIAL: ConnectorsSectionState = {
@@ -66,6 +78,7 @@ const INITIAL: ConnectorsSectionState = {
   busyId: null,
   opError: null,
   dialog: null,
+  customDialog: null,
 }
 
 /**
@@ -79,7 +92,7 @@ export class ConnectorsSectionController {
 
   // Only the operations the region drives; the wider connector domain
   // (complete, add, remove) stays host-side until the flow engine lands.
-  constructor(private readonly api: { connectors: Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin'> }) {}
+  constructor(private readonly api: { connectors: Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin' | 'add' | 'remove'> }) {}
 
   private get state(): ConnectorsSectionState {
     return this.store.getSnapshot()
@@ -170,7 +183,9 @@ export class ConnectorsSectionController {
       return
     }
     this.withView(response.result.value.connector)
-    this.set({ dialog: null })
+    // The dialog belongs to its provider's view: close it and return to
+    // the provider list so the adopted row is visible.
+    this.set({ dialog: null, selectedProvider: null, providerServerNames: [] })
   }
 
   /**
@@ -245,6 +260,91 @@ export class ConnectorsSectionController {
    */
   async disconnect(id: string): Promise<void> {
     return this.runRowOperation(id, () => this.api.connectors.disconnect({ id }))
+  }
+
+  /**
+   * Open the custom connector dialog over an empty draft.
+   */
+  openCustomDialog(): void {
+    this.set({
+      customDialog: {
+        drafts: { name: '', id: '', transport: 'stdio', command: '', args: '', url: '', tokenVar: '', tokenVarIsHeader: '' },
+        saving: false, error: null,
+      },
+    })
+  }
+
+  /**
+   * Name the draft one form field is typing; clears a previous save failure.
+   * @param field - the field name the value belongs to.
+   * @param value - the value so far.
+   */
+  setCustomDraft(field: string, value: string): void {
+    const { customDialog } = this.state
+    if (customDialog === null) return
+    this.set({ customDialog: { ...customDialog, drafts: { ...customDialog.drafts, [field]: value }, error: null } })
+  }
+
+  /** Close the custom dialog, discarding the draft. */
+  closeCustomDialog(): void {
+    if (this.state.customDialog === null) return
+    this.set({ customDialog: null })
+  }
+
+  /**
+   * Persist the dialog's draft through connector.add and re-list the roster:
+   * the response carries only the new id, so the next read is what surfaces
+   * the row. A failure keeps the dialog open over its draft.
+   * @returns once the store carries the host's answer.
+   */
+  async saveCustom(): Promise<void> {
+    const { customDialog } = this.state
+    if (customDialog === null || customDialog.saving) return
+    const d = customDialog.drafts
+    const transport = (d.transport === 'streamable-http' ? 'streamable-http' : 'stdio') as 'stdio' | 'streamable-http'
+    const args = (d.args ?? '').split(',').map(a => a.trim()).filter(a => a !== '')
+    const tokenVar = (d.tokenVar ?? '').trim()
+    this.set({ customDialog: { ...customDialog, saving: true, error: null } })
+    const response = await this.api.connectors.add({
+      spec: {
+        name: (d.name ?? '').trim(),
+        ...(d.id !== undefined && d.id.trim() !== '' ? { id: d.id.trim() } : {}),
+        transport,
+        ...(transport === 'stdio'
+          ? { command: (d.command ?? '').trim(), ...(args.length > 0 ? { args } : {}) }
+          : { url: (d.url ?? '').trim() }),
+        ...(tokenVar !== ''
+          ? {
+            tokenVar,
+            ...(transport === 'streamable-http' ? { tokenVarIsHeader: d.tokenVarIsHeader === 'true' } : {}),
+          }
+          : {}),
+      },
+    })
+    if (!response.result.ok) {
+      this.set({ customDialog: { ...customDialog, saving: false, error: response.result.error.message } })
+      return
+    }
+    this.set({ customDialog: null })
+    await this.load()
+  }
+
+  /**
+   * Remove one custom connector: the host deletes its manifest and unmounts
+   * its server; the roster re-lists to drop the row.
+   * @param id - the custom connector to remove.
+   * @returns once the store carries the host's answer.
+   */
+  async removeCustom(id: string): Promise<void> {
+    if (this.state.busyId !== null) return
+    this.set({ busyId: id, opError: null })
+    const response = await this.api.connectors.remove({ id })
+    if (!response.result.ok) {
+      this.set({ busyId: null, opError: { id, message: response.result.error.message } })
+      return
+    }
+    this.set({ busyId: null, selectedProvider: this.state.selectedProvider === id ? null : this.state.selectedProvider })
+    await this.load()
   }
 
   /**

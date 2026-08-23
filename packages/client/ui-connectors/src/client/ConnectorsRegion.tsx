@@ -14,7 +14,7 @@ import {
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ConnectorState, ConnectorView } from '@deepseek-ai/dsh-api-remotes/client'
 import type { ConnectorsRegionProps } from './contract/slots.ts'
-import type { ConnectTokenDialog } from './controller.ts'
+import type { ConnectTokenDialog, CustomConnectorDialog } from './controller.ts'
 import type { ConnectorsKey } from './locales.ts'
 import css from './ConnectorsRegion.module.css'
 
@@ -68,7 +68,7 @@ export function canDisconnect(row: ConnectorView): boolean {
  * @param props.onDisconnect - unmount and forget the credential.
  * @returns the row element.
  */
-function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize, onDeviceLogin, onDisconnect }: {
+function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize, onDeviceLogin, onDisconnect, onRemove }: {
   row: ConnectorView
   busy: boolean
   error: string | null
@@ -78,6 +78,7 @@ function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize
   onAuthorize: (id: string) => void
   onDeviceLogin: (id: string) => void
   onDisconnect: (id: string) => void
+  onRemove: (id: string) => void
 }): ReactNode {
   const mounted = row.servers.filter(server => server.mounted).length
   const off = row.servers.length - mounted
@@ -103,7 +104,7 @@ function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize
       )}
       {guidance !== null && <span className={css.rowMeta}>{guidance}</span>}
       {message !== null && <span className={css.rowError}>{message}</span>}
-      {(canConfigure(row) || canConnect(row) || canDisconnect(row)) && (
+      {(canConfigure(row) || canConnect(row) || canDisconnect(row) || row.custom) && (
         <div className={css.rowActions}>
           {canConfigure(row) && (
             <Button
@@ -143,6 +144,16 @@ function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize
               onClick={() => { onDisconnect(row.id) }}
             >
               {t('disconnect')}
+            </Button>
+          )}
+          {row.custom && (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={busy}
+              onClick={() => { onRemove(row.id) }}
+            >
+              {t('remove')}
             </Button>
           )}
         </div>
@@ -212,6 +223,150 @@ function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialogProps):
 }
 
 /**
+ * Render the custom connector dialog: one form over the AddCustomSpec fields
+ * (name, id, transport, command/args or url, optional token var).
+ * @param props - the dialog state and the controller's draft mutators.
+ * @returns the modal.
+ */
+function CustomDialog({ dialog, t, onClose, onDraft, onSave }: {
+  dialog: CustomConnectorDialog
+  t: ConnectorsRegionProps['t']
+  onClose: () => void
+  onDraft: (field: string, value: string) => void
+  onSave: () => Promise<void>
+}): ReactNode {
+  const d = dialog.drafts
+  const isHttp = d.transport === 'streamable-http'
+  const valid = (d.name ?? '').trim() !== ''
+    && (isHttp || (d.command ?? '').trim() !== '')
+    && (!isHttp || (d.url ?? '').trim() !== '')
+  return (
+    <Modal
+      open
+      onClose={onClose}
+      title={t('custom.new.title')}
+      closeLabel={t('dialog.cancel')}
+      className={css.dialog as string}
+      footer={(
+        <div className={css.dialogFooter}>
+          <Button variant="outline" size="sm" disabled={dialog.saving} onClick={onClose}>
+            {t('dialog.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            autoFocus
+            disabled={dialog.saving || !valid}
+            onClick={() => { void onSave() }}
+          >
+            {dialog.saving ? t('custom.new.saving') : t('custom.new.save')}
+          </Button>
+        </div>
+      )}
+    >
+      <div className={css.dialogField}>
+        <span className={css.dialogFieldLabel}>{t('custom.new.name')}</span>
+        <Input
+          type="text"
+          value={d.name ?? ''}
+          placeholder="My Service"
+          onChange={(e) => { onDraft('name', e.target.value) }}
+        />
+      </div>
+      <div className={css.dialogField}>
+        <span className={css.dialogFieldLabel}>{t('custom.new.id')}</span>
+        <Input
+          type="text"
+          value={d.id ?? ''}
+          placeholder="my-service"
+          onChange={(e) => { onDraft('id', e.target.value) }}
+        />
+      </div>
+      <div className={css.dialogField}>
+        <span className={css.dialogFieldLabel}>{t('custom.new.transport')}</span>
+        <div className={css.customTransport}>
+          <label>
+            <input
+              type="radio"
+              name="transport"
+              value="stdio"
+              checked={!isHttp}
+              onChange={() => { onDraft('transport', 'stdio') }}
+            />
+            {t('custom.new.transport.stdio')}
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="transport"
+              value="streamable-http"
+              checked={isHttp}
+              onChange={() => { onDraft('transport', 'streamable-http') }}
+            />
+            {t('custom.new.transport.http')}
+          </label>
+        </div>
+      </div>
+      {!isHttp && (
+        <div className={css.dialogField}>
+          <span className={css.dialogFieldLabel}>{t('custom.new.command')}</span>
+          <Input
+            type="text"
+            value={d.command ?? ''}
+            placeholder="npx"
+            onChange={(e) => { onDraft('command', e.target.value) }}
+          />
+        </div>
+      )}
+      {!isHttp && (
+        <div className={css.dialogField}>
+          <span className={css.dialogFieldLabel}>{t('custom.new.args')}</span>
+          <Input
+            type="text"
+            value={d.args ?? ''}
+            placeholder="-y, @example/mcp-server"
+            onChange={(e) => { onDraft('args', e.target.value) }}
+          />
+        </div>
+      )}
+      {isHttp && (
+        <div className={css.dialogField}>
+          <span className={css.dialogFieldLabel}>{t('custom.new.url')}</span>
+          <Input
+            type="text"
+            value={d.url ?? ''}
+            placeholder="https://example.com/mcp"
+            onChange={(e) => { onDraft('url', e.target.value) }}
+          />
+        </div>
+      )}
+      <div className={css.dialogField}>
+        <span className={css.dialogFieldLabel}>{t('custom.new.tokenVar')}</span>
+        <Input
+          type="text"
+          value={d.tokenVar ?? ''}
+          placeholder="MY_SERVICE_TOKEN"
+          onChange={(e) => { onDraft('tokenVar', e.target.value) }}
+        />
+      </div>
+      {isHttp && (
+        <div className={css.dialogField}>
+          <label>
+            <input
+              type="checkbox"
+              checked={d.tokenVarIsHeader === 'true'}
+              onChange={(e) => { onDraft('tokenVarIsHeader', e.target.checked ? 'true' : 'false') }}
+            />
+            {t('custom.new.tokenVarIsHeader')}
+          </label>
+        </div>
+      )}
+      {dialog.error !== null && <span className={css.dialogError}>{dialog.error}</span>}
+    </Modal>
+  )
+}
+
+/**
  * Render the connectors browsing region.
  * @param props - composed slot props (owner share + locale + inject face).
  * @returns the region element tree.
@@ -220,6 +375,7 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
   const {
     wide, expandSidebar, t, load, openTokenDialog, setDialogDraft, closeDialog,
     saveToken, connect, authorize, deviceLogin, disconnect, selectProvider, useConnectors,
+    openCustomDialog, setCustomDraft, closeCustomDialog, saveCustom, removeCustom,
   } = props
 
   const handleAuthorize = (id: string): void => {
@@ -301,6 +457,11 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
     // Provider list: each row is a provider the user can select.
     body = (
       <div className={css.list}>
+        <div className={css.listHeader}>
+          <Button variant="outline" size="sm" onClick={() => { openCustomDialog() }}>
+            {t('custom.new.button')}
+          </Button>
+        </div>
         {state.connectors.map(row => (
           <div
             key={row.id}
@@ -322,6 +483,7 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
               onAuthorize={handleAuthorize}
               onDeviceLogin={handleDeviceLogin}
               onDisconnect={(id) => { void disconnect(id) }}
+              onRemove={(id) => { void removeCustom(id) }}
             />
           </div>
         ))}
@@ -340,6 +502,15 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
           onClose={closeDialog}
           onDraft={setDialogDraft}
           onSave={saveToken}
+        />
+      )}
+      {state.customDialog !== null && (
+        <CustomDialog
+          dialog={state.customDialog}
+          t={t}
+          onClose={closeCustomDialog}
+          onDraft={setCustomDraft}
+          onSave={saveCustom}
         />
       )}
     </div>

@@ -77,7 +77,7 @@ describe('ui-connectors apply', () => {
     expect(entry.locale).toBe('connectors')
     const injected = (entry.inject as unknown as () => ConnectorsRegionInjected)()
     expect(Object.keys(injected)).toEqual([
-      'hooks', 'load', 'openTokenDialog', 'setDialogDraft', 'closeDialog', 'saveToken', 'connect', 'authorize', 'deviceLogin', 'disconnect', 'selectProvider',
+      'hooks', 'load', 'openTokenDialog', 'setDialogDraft', 'closeDialog', 'saveToken', 'connect', 'authorize', 'deviceLogin', 'disconnect', 'selectProvider', 'openCustomDialog', 'setCustomDraft', 'closeCustomDialog', 'saveCustom', 'removeCustom',
     ])
     // The hooks compartment carries the controller's snapshot store.
     const store = injected.hooks.connectors

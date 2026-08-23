@@ -11,6 +11,14 @@ export type ConnectorsKey =
   | 'back' | 'sessions.placeholder' | 'tools.available'
   | 'dialog.title' | 'dialog.tokenPlaceholder'
   | 'dialog.cancel' | 'dialog.save' | 'dialog.saving'
+  | 'remove'
+  | 'custom.new.button'
+  | 'custom.new.title'
+  | 'custom.new.name' | 'custom.new.id' | 'custom.new.transport'
+  | 'custom.new.transport.stdio' | 'custom.new.transport.http'
+  | 'custom.new.command' | 'custom.new.args' | 'custom.new.url'
+  | 'custom.new.tokenVar' | 'custom.new.tokenVarIsHeader'
+  | 'custom.new.save' | 'custom.new.saving'
 
 /** English dictionary (the key-set source of truth). */
 export const en: Record<ConnectorsKey, string> = {
@@ -42,6 +50,21 @@ export const en: Record<ConnectorsKey, string> = {
   'dialog.cancel': 'Cancel',
   'dialog.save': 'Save & connect',
   'dialog.saving': 'Saving…',
+  remove: 'Remove',
+  'custom.new.button': 'New connector',
+  'custom.new.title': 'New custom connector',
+  'custom.new.name': 'Name',
+  'custom.new.id': 'Id (optional)',
+  'custom.new.transport': 'Transport',
+  'custom.new.transport.stdio': 'stdio (command)',
+  'custom.new.transport.http': 'streamable-http (url)',
+  'custom.new.command': 'Command',
+  'custom.new.args': 'Args (comma-separated)',
+  'custom.new.url': 'URL',
+  'custom.new.tokenVar': 'Token variable (optional)',
+  'custom.new.tokenVarIsHeader': 'Token is an HTTP header',
+  'custom.new.save': 'Create',
+  'custom.new.saving': 'Creating…',
 }
 
 /** Vietnamese dictionary, checked complete against the en key set. */
@@ -74,6 +97,21 @@ export const vi: Record<ConnectorsKey, string> = {
   'dialog.cancel': 'Hủy',
   'dialog.save': 'Lưu & kết nối',
   'dialog.saving': 'Đang lưu…',
+  remove: 'Xóa',
+  'custom.new.button': 'Kết nối mới',
+  'custom.new.title': 'Kết nối tùy chỉnh mới',
+  'custom.new.name': 'Tên',
+  'custom.new.id': 'Id (tuỳ chọn)',
+  'custom.new.transport': 'Transport',
+  'custom.new.transport.stdio': 'stdio (lệnh)',
+  'custom.new.transport.http': 'streamable-http (url)',
+  'custom.new.command': 'Lệnh',
+  'custom.new.args': 'Đối số (phân tách bằng dấu phẩy)',
+  'custom.new.url': 'URL',
+  'custom.new.tokenVar': 'Biến token (tuỳ chọn)',
+  'custom.new.tokenVarIsHeader': 'Token là HTTP header',
+  'custom.new.save': 'Tạo',
+  'custom.new.saving': 'Đang tạo…',
 }
 
 /** Simplified Chinese dictionary, checked complete against the en key set. */
@@ -106,4 +144,19 @@ export const zh: Record<ConnectorsKey, string> = {
   'dialog.cancel': '取消',
   'dialog.save': '保存并连接',
   'dialog.saving': '正在保存…',
+  remove: '移除',
+  'custom.new.button': '新建连接器',
+  'custom.new.title': '新建自定义连接器',
+  'custom.new.name': '名称',
+  'custom.new.id': 'Id（可选）',
+  'custom.new.transport': '传输',
+  'custom.new.transport.stdio': 'stdio（命令）',
+  'custom.new.transport.http': 'streamable-http（url）',
+  'custom.new.command': '命令',
+  'custom.new.args': '参数（逗号分隔）',
+  'custom.new.url': 'URL',
+  'custom.new.tokenVar': '令牌变量（可选）',
+  'custom.new.tokenVarIsHeader': '令牌是 HTTP 头',
+  'custom.new.save': '创建',
+  'custom.new.saving': '正在创建…',
 }

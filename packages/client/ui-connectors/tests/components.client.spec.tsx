@@ -51,6 +51,7 @@ const READY: ConnectorsSectionState = {
   busyId: null,
   opError: null,
   dialog: null,
+  customDialog: null,
 }
 
 function renderRegion(
@@ -65,7 +66,15 @@ function renderRegion(
     closeDialog: vi.fn(),
     saveToken: vi.fn(() => Promise.resolve()),
     connect: vi.fn(() => Promise.resolve()),
+    authorize: vi.fn(() => Promise.resolve({ authorizationUrl: 'http://127.0.0.1:8766/authorize', expiresAt: Date.now() + 300_000 })),
+    deviceLogin: vi.fn(() => Promise.resolve({ status: 'ready' as const, expiresAt: Date.now() })),
     disconnect: vi.fn(() => Promise.resolve()),
+    selectProvider: vi.fn(),
+    openCustomDialog: vi.fn(),
+    setCustomDraft: vi.fn(),
+    closeCustomDialog: vi.fn(),
+    saveCustom: vi.fn(() => Promise.resolve()),
+    removeCustom: vi.fn(() => Promise.resolve()),
   }
   const props = {
     wide: options.wide ?? true,
@@ -113,12 +122,16 @@ async function renderDriven(overrides: Partial<{
   configure: () => Promise<unknown>
   connect: () => Promise<unknown>
   disconnect: () => Promise<unknown>
+  add: () => Promise<unknown>
+  remove: () => Promise<unknown>
 }> = {}, row: ConnectorView = DRIVEN_ROW) {
   const connectors = {
     list: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { connectors: [row] } } })),
     configure: vi.fn(async () => okView()),
     connect: vi.fn(async () => okView()),
     disconnect: vi.fn(async () => okView()),
+    add: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { id: 'custom' } } })),
+    remove: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: {} } })),
     ...overrides,
   }
   const controller = new ConnectorsSectionController({ connectors } as never)
@@ -135,8 +148,16 @@ async function renderDriven(overrides: Partial<{
     setDialogDraft: (ref: string, value: string) => { controller.setDialogDraft(ref, value) },
     closeDialog: () => { controller.closeDialog() },
     saveToken: () => controller.saveToken(),
-    connect: (id: string) => controller.connect(id),
+    connect: (id: string, mode?: 'token' | 'oauth' | 'device') => controller.connect(id, mode),
+    authorize: (id: string) => controller.authorize(id),
+    deviceLogin: (id: string) => controller.deviceLogin(id),
     disconnect: (id: string) => controller.disconnect(id),
+    selectProvider: (id: string | null) => { controller.selectProvider(id) },
+    openCustomDialog: () => { controller.openCustomDialog() },
+    setCustomDraft: (field: string, value: string) => { controller.setCustomDraft(field, value) },
+    closeCustomDialog: () => { controller.closeCustomDialog() },
+    saveCustom: () => controller.saveCustom(),
+    removeCustom: (id: string) => controller.removeCustom(id),
   }
   const viewApi = render(<ConnectorsRegion {...(props as unknown as ConnectorsRegionProps)} />)
   await waitFor(() => {
@@ -188,7 +209,7 @@ describe('ConnectorsRegion', () => {
     expect(screen.getByRole('button', { name: 'Disconnect' })).toBeTruthy()
 
     // The authorizing row is mid-flow: its name sits in a button-free row.
-    expect(screen.getAllByRole('button')).toHaveLength(5 + 8)
+    expect(screen.getAllByRole('button')).toHaveLength(5 + 8 + 1 + 1)
 
     // A tokenless unconfigured row has no action; its howTo guides instead.
     expect(screen.getByText('Run the provider setup.')).toBeTruthy()
@@ -208,7 +229,9 @@ describe('ConnectorsRegion', () => {
     // Every row action shares the busy gate: with one operation in flight
     // no row action is enabled, on any row. The provider select buttons
     // are not gated (they only switch the view, they don't mutate).
-    const actionButtons = screen.getAllByRole('button').filter(b => !b.className.includes('providerRow'))
+    // The New connector header is not gated either.
+    // The custom row's Remove sits outside the busy gate: filter it out here.
+    const actionButtons = screen.getAllByRole('button').filter(b => !b.className.includes('providerRow') && b.textContent !== 'New connector' && b.textContent !== 'Remove')
     expect(actionButtons).toHaveLength(5)
     for (const button of actionButtons) expect(button.hasAttribute('disabled')).toBe(true)
   })

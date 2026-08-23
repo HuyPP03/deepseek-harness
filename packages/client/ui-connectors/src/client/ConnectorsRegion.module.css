@@ -236,3 +236,46 @@
   color: var(--dsw-text);
   padding: 2px 0;
 }
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 4px 0;
+}
+
+.customField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.customFieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dsw-text-muted);
+}
+
+.customFieldInput {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 13px;
+  color: var(--dsw-text);
+  background: var(--dsw-surface);
+  border: 1px solid var(--dsw-border);
+  border-radius: 6px;
+}
+
+.customTransport {
+  display: flex;
+  gap: 12px;
+}
+
+.customTransport label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}

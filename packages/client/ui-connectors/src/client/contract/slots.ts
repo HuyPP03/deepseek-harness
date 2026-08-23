@@ -46,6 +46,16 @@ export interface ConnectorsRegionInjected {
   disconnect: (id: string) => Promise<void>
   /** Select a provider to view its sessions; null returns to the provider list. */
   selectProvider: (id: string | null) => void
+  /** Open the custom connector dialog over an empty draft. */
+  openCustomDialog: () => void
+  /** Name the draft one form field is typing. */
+  setCustomDraft: (field: string, value: string) => void
+  /** Close the custom dialog, discarding the draft. */
+  closeCustomDialog: () => void
+  /** Persist the dialog's draft through connector.add and re-list. */
+  saveCustom: () => Promise<void>
+  /** Remove one custom connector and re-list. */
+  removeCustom: (id: string) => Promise<void>
 }
 
 /** Full component props: the shell's column state, the copy, and the face. */

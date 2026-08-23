@@ -57,6 +57,11 @@ export function apply(ctx: ClientContext): void {
     deviceLogin: id => controller.deviceLogin(id),
     disconnect: id => controller.disconnect(id),
     selectProvider: id => controller.selectProvider(id),
+    openCustomDialog: () => controller.openCustomDialog(),
+    setCustomDraft: (field, value) => controller.setCustomDraft(field, value),
+    closeCustomDialog: () => controller.closeCustomDialog(),
+    saveCustom: () => controller.saveCustom(),
+    removeCustom: id => controller.removeCustom(id),
   })
   ctx.slots.inject('sidebar.connectors', () => ctx.slots.register(
     {
