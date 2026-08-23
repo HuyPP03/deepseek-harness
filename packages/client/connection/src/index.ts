@@ -124,6 +124,17 @@ const PRIVILEGED_METHODS = new Set([
   'mcp.add',
   'mcp.remove',
   'mcp.reconnect',
+  // A connector `configure`/`complete` carries credential values into the
+  // secret store, `connect`/`disconnect` drive live external processes and
+  // endpoints, and `add`/`remove` write or delete manifests whose env and
+  // headers may hold secrets. `connector.list` stays unprivileged: its rows
+  // are secret-free, and the browser's connector surface needs them.
+  'connector.configure',
+  'connector.connect',
+  'connector.complete',
+  'connector.disconnect',
+  'connector.add',
+  'connector.remove',
 ])
 
 /**

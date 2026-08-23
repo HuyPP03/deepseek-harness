@@ -32,6 +32,19 @@ import { isUserInvocable } from '@deepseek-ai/dsh-skill'
 // are optional — a deployment without either still serves every other domain.
 import { McpServerNotReportedError } from '@deepseek-ai/dsh-mcp-registry'
 import { McpServerExistsError, McpServerNotManagedError } from '@deepseek-ai/dsh-mcp-manager'
+// The connector domain: same value-edge pattern as the mcp domain — the
+// service is optional, and the named rejections narrow to stable codes at
+// this wire boundary.
+import type { Connectors, ConnectorView } from '@deepseek-ai/dsh-connectors'
+import {
+  ConnectorAuthUnavailableError,
+  ConnectorCredentialMissingError,
+  ConnectorExistsError,
+  ConnectorNotFoundError,
+  ConnectorNotCustomError,
+  ConnectorOverrideMissingError,
+  ConnectorSeamUnavailableError,
+} from '@deepseek-ai/dsh-connectors'
 import type { Workspace, WorkspaceRecord } from '@deepseek-ai/dsh-workspace'
 import {
   workspaceDomainState, workspaceRecord, WorkspaceId as brandWorkspaceId,
@@ -2109,6 +2122,39 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
     return { code: 'internal', message: 'credentials service is absent: this deployment does not mount a credential provider (e.g. @deepseek-ai/dsh-credentials-local) in its composition', details: {} }
   }
 
+  /** Missing-service report shared by the connector domain. */
+  function connectorsAbsent(): RpcError {
+    return { code: 'connector-unavailable', message: 'this deployment composes no connectors service, so the connector surface is unavailable', details: {} }
+  }
+
+  /**
+   * Narrow one connector operation rejection to a stable wire code; the
+   * service's named errors carry their own ids, refs, and fields, so the
+   * details never restate anything but the error's own text.
+   */
+  function connectorError(error: unknown): RpcError {
+    if (error instanceof ConnectorNotFoundError) return { code: 'connector-not-found', message: error.message, details: { id: error.connectorId } }
+    if (error instanceof ConnectorExistsError) return { code: 'connector-exists', message: error.message, details: { id: error.connectorId } }
+    if (error instanceof ConnectorNotCustomError) return { code: 'connector-not-custom', message: error.message, details: { id: error.connectorId } }
+    if (error instanceof ConnectorCredentialMissingError) return { code: 'connector-credential-missing', message: error.message, details: { id: error.connectorId, ref: error.ref } }
+    if (error instanceof ConnectorOverrideMissingError) return { code: 'connector-override-missing', message: error.message, details: { id: error.connectorId, field: error.field } }
+    if (error instanceof ConnectorAuthUnavailableError) return { code: 'connector-auth-unavailable', message: error.message, details: { id: error.connectorId, mode: error.mode } }
+    if (error instanceof ConnectorSeamUnavailableError) return { code: 'connector-unavailable', message: error.message, details: {} }
+    return { code: 'internal', message: error instanceof Error ? error.message : String(error), details: {} }
+  }
+
+  /**
+   * Re-read one connector's wire-safe view after a committed operation.
+   * The operation already required the id from the catalog, so an absent
+   * view here is an invariant break, not a caller error.
+   */
+  async function connectorView(connectors: Connectors, id: string): Promise<ConnectorView> {
+    const view = await connectors.get(id)
+    /* v8 ignore next -- the operation resolved this id from the catalog; no wired operation deletes it, so the view cannot vanish */
+    if (view === undefined) throw new Error(`connectors: no view for "${id}" after a committed operation`)
+    return view
+  }
+
   /** Map one redacted settings descriptor to its wire view. */
   function namespaceView(descriptor: SettingsDescriptor): SettingsNamespaceView {
     return {
@@ -3684,6 +3730,87 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
           })
         }
         return ok(request, {})
+      },
+    },
+
+    connectors: {
+      // A deployment with no connectors service answers with an empty roster:
+      // composing no connector is a valid deployment, and the surface shows none.
+      async list(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return ok(request, { connectors: [] })
+        return ok(request, { connectors: await connectors.list() })
+      },
+
+      async configure(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return err(request, connectorsAbsent())
+        const { id, fields } = request.payload
+        try {
+          await connectors.configure(id, fields)
+          return ok(request, { connector: await connectorView(connectors, id) })
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
+      },
+
+      async connect(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return err(request, connectorsAbsent())
+        const { id, mode } = request.payload
+        try {
+          await connectors.connect(id, mode)
+          return ok(request, { connector: await connectorView(connectors, id) })
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
+      },
+
+      async complete(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return err(request, connectorsAbsent())
+        const { id, token } = request.payload
+        try {
+          await connectors.configure(id, { token })
+          return ok(request, { connector: await connectorView(connectors, id) })
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
+      },
+
+      async disconnect(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return err(request, connectorsAbsent())
+        const { id } = request.payload
+        try {
+          await connectors.disconnect(id)
+          return ok(request, { connector: await connectorView(connectors, id) })
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
+      },
+
+      async add(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return err(request, connectorsAbsent())
+        try {
+          const id = await connectors.addCustom(request.payload.spec)
+          return ok(request, { id })
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
+      },
+
+      async remove(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return err(request, connectorsAbsent())
+        const { id } = request.payload
+        try {
+          await connectors.removeCustom(id)
+          return ok(request, {})
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
       },
     },
 

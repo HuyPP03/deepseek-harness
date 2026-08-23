@@ -226,6 +226,31 @@ export class FakeApiClient implements IApiClient {
     unset: payload => this.record('credentials.unset', payload, Promise.resolve(ok({}))),
   }
 
+  readonly connectors: IApiClient['connectors'] = {
+    list: payload => this.record('connector.list', payload, Promise.resolve(ok({ connectors: [] }))),
+    configure: payload => this.record('connector.configure', payload, Promise.resolve(ok({ connector: this.connectorView(payload.id) }))),
+    connect: payload => this.record('connector.connect', payload, Promise.resolve(ok({ connector: this.connectorView(payload.id) }))),
+    complete: payload => this.record('connector.complete', payload, Promise.resolve(ok({ connector: this.connectorView(payload.id) }))),
+    disconnect: payload => this.record('connector.disconnect', payload, Promise.resolve(ok({ connector: this.connectorView(payload.id) }))),
+    add: payload => this.record('connector.add', payload, Promise.resolve(ok({ id: payload.spec.id ?? 'custom' }))),
+    remove: payload => this.record('connector.remove', payload, Promise.resolve(ok({}))),
+  }
+
+  /** The minimal secret-free view the connector verbs echo back. */
+  private connectorView(id: string) {
+    return {
+      id,
+      name: id,
+      description: 'fake',
+      presetId: id,
+      state: 'unconfigured' as const,
+      custom: true,
+      servers: [] as const,
+      auth: [] as const,
+      suggestions: [] as const,
+    }
+  }
+
   readonly llm: IApiClient['llm'] = {
     providers: payload => this.record('llm.providers', payload, Promise.resolve(ok({ providers: [] }))),
     models: payload => this.record('llm.models', payload, Promise.resolve(ok({ groups: [], failures: [] }))),

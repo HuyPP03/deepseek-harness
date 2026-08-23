@@ -1,0 +1,18 @@
+id: slack
+name: Slack
+description: Channels, direct messages, and workspace search on Slack.
+presetId: slack
+workspaceDirName: slack
+auth:
+  - mode: token
+    credentialRefs: [SLACK_BOT_TOKEN]
+    howTo: Create a Slack app with bot token scopes for the channels you want to read and post, then invite it to those channels.
+servers:
+  - serverName: slack
+    transport: stdio
+    command: npx
+    args: ['-y', '@modelcontextprotocol/server-slack']
+    env: { SLACK_BOT_TOKEN: { $cred: SLACK_BOT_TOKEN } }
+suggestions:
+  - Summarize the messages I have not read
+  - Find the thread where this decision was made

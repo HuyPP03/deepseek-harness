@@ -1063,6 +1063,24 @@ describe('FixtureApiClient (protocol-level fake carrier)', () => {
       .toEqual(['create', 'edit', 'pause', 'resume', 'complete', 'clear'])
     expect(goalEvents.some(event => event.type === 'user/message'
       && event.data.source?.kind === 'goal' && event.data.source.round === 0)).toBe(false)
+    // Connector plane: the fixture composes no connectors service, so the
+    // roster is empty and every mutating verb lands on the seam-missing code.
+    const roster = await client.connectors.list({})
+    expect(roster.result).toMatchObject({ ok: true, value: { connectors: [] } })
+    const configure = await client.connectors.configure({ id: 'demo', fields: {} })
+    const connect = await client.connectors.connect({ id: 'demo', mode: 'token' })
+    const complete = await client.connectors.complete({ id: 'demo', token: 'fixture-token' })
+    const disconnect = await client.connectors.disconnect({ id: 'demo' })
+    const add = await client.connectors.add({ spec: { name: 'demo', transport: 'stdio', command: 'npx' } })
+    const remove = await client.connectors.remove({ id: 'demo' })
+    for (const response of [configure, connect, complete, disconnect, add, remove]) {
+      expect(response.result).toMatchObject({
+        ok: false,
+        error: { code: 'connector-unavailable', message: 'fixture: no connectors service is composed' },
+      })
+    }
+    expect(configure.result).toMatchObject({ ok: false, error: { details: { id: 'demo' } } })
+    expect(add.result).toMatchObject({ ok: false, error: { details: {} } })
   })
 
   it('maps empty, prompt-reject, and workspace-first query scenarios', async () => {

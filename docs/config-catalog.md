@@ -557,6 +557,26 @@ export interface ToolResultPruneConfig {
 
 Source: [`packages/compaction/compaction-tool-result-pruner/src/types.ts:4`](../packages/compaction/compaction-tool-result-pruner/src/types.ts)
 
+<a id="deepseek-aidsh-connectors"></a>
+
+## `@deepseek-ai/dsh-connectors`
+
+Requires: `mcpManager`
+
+```ts config-catalog
+/** Connectors config; the Loader validates before the constructor runs. */
+export interface Config {
+  /** Directory holding one YAML manifest per shipped connector; no default — an unset catalog is empty. */
+  readonly catalogDir?: string
+  /** Directory holding user override documents and custom connector manifests; defaults to `.connectors` under the harness home. */
+  readonly userDir?: string
+  /** Harness home used when `userDir` is omitted; defaults to `$DSH_HOME` or `~/.dsh`. */
+  readonly dshHome?: string
+}
+```
+
+Source: [`packages/connectors/connectors/src/index.ts:72`](../packages/connectors/connectors/src/index.ts)
+
 <a id="deepseek-aidsh-cordis-host-runner"></a>
 
 ## `@deepseek-ai/dsh-cordis-host-runner`
@@ -592,6 +612,26 @@ export interface Config {
 ```
 
 Source: [`packages/credentials/credentials-local/src/index.ts:55`](../packages/credentials/credentials-local/src/index.ts)
+
+<a id="deepseek-aidsh-credentials-oauth-tokens"></a>
+
+## `@deepseek-ai/dsh-credentials-oauth-tokens`
+
+```ts config-catalog
+/** Plugin config: file location and hot-reload behavior. */
+export interface Config {
+  /** Token document path; defaults to `.connectors/oauth-tokens.json` under the harness home. */
+  path?: string
+  /** Harness home used when `path` is omitted; defaults to `$DSH_HOME` or `~/.dsh`. */
+  dshHome?: string
+  /** Watch the document and hot-publish external edits; defaults to true. */
+  watch?: boolean
+  /** Watcher write-settle window in milliseconds; defaults to 100. */
+  debounceMs?: number
+}
+```
+
+Source: [`packages/credentials/oauth-tokens/src/index.ts:45`](../packages/credentials/oauth-tokens/src/index.ts)
 
 <a id="deepseek-aidsh-e2b"></a>
 

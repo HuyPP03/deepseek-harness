@@ -67,6 +67,11 @@ import {
 import {
   credentialsDescribeRequestSchema, credentialsSetRequestSchema, credentialsUnsetRequestSchema,
 } from '../api/credentials.schema.ts'
+import {
+  connectorAddRequestSchema, connectorCompleteRequestSchema, connectorConfigureRequestSchema,
+  connectorConnectRequestSchema, connectorDisconnectRequestSchema, connectorListRequestSchema,
+  connectorRemoveRequestSchema,
+} from '../api/connector.schema.ts'
 import { llmDiscoverModelsRequestSchema, llmModelsRequestSchema, llmProvidersRequestSchema } from '../api/llm.schema.ts'
 import {
   mcpAddRequestSchema, mcpListRequestSchema, mcpReconnectRequestSchema, mcpRemoveRequestSchema,
@@ -147,6 +152,13 @@ const UNARY_ROUTES: UnaryRoutes = {
   'credentials.describe': { schema: credentialsDescribeRequestSchema, invoke: (api, r) => api.credentials.describe(r) },
   'credentials.set': { schema: credentialsSetRequestSchema, invoke: (api, r) => api.credentials.set(r) },
   'credentials.unset': { schema: credentialsUnsetRequestSchema, invoke: (api, r) => api.credentials.unset(r) },
+  'connector.list': { schema: connectorListRequestSchema, invoke: (api, r) => api.connectors.list(r) },
+  'connector.configure': { schema: connectorConfigureRequestSchema, invoke: (api, r) => api.connectors.configure(r) },
+  'connector.connect': { schema: connectorConnectRequestSchema, invoke: (api, r) => api.connectors.connect(r) },
+  'connector.complete': { schema: connectorCompleteRequestSchema, invoke: (api, r) => api.connectors.complete(r) },
+  'connector.disconnect': { schema: connectorDisconnectRequestSchema, invoke: (api, r) => api.connectors.disconnect(r) },
+  'connector.add': { schema: connectorAddRequestSchema, invoke: (api, r) => api.connectors.add(r) },
+  'connector.remove': { schema: connectorRemoveRequestSchema, invoke: (api, r) => api.connectors.remove(r) },
   'llm.providers': { schema: llmProvidersRequestSchema, invoke: (api, r) => api.llm.providers(r) },
   'llm.models': { schema: llmModelsRequestSchema, invoke: (api, r) => api.llm.models(r) },
   'llm.discoverModels': { schema: llmDiscoverModelsRequestSchema, invoke: (api, r, signal) => api.llm.discoverModels(r, signal) },
@@ -188,7 +200,6 @@ function fullResponse(narrow: RpcResponse<unknown>): Response {
  */
 // K appears once in the signature but ties the UNARY_ROUTES[K] row lookup to its own
 // schema/invoke pairing; a union parameter degrades the row to an uninvokable intersection.
-// oxlint-disable-next-line typescript/no-unnecessary-type-parameters
 async function handleUnary<K extends keyof RpcMethodMap>(
   api: ApiProxy, method: K, message: ClientRequest, signal: AbortSignal,
 ): Promise<Response> {

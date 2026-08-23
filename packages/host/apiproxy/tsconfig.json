@@ -110,6 +110,9 @@
       "path": "../../mcp/mcp-manager"
     },
     {
+      "path": "../../connectors/connectors"
+    },
+    {
       "path": "../directory-picker"
     },
     {

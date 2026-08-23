@@ -310,6 +310,14 @@
     - id: mcp-manager
       name: '@deepseek-ai/dsh-mcp-manager'
 
+    # Predefined external connections: a YAML catalog plus the per-connector
+    # state machine over the mcp-manager. Mounted in the base so the chat
+    # screen's connector surface exists in every profile; a deployment with
+    # no catalog directory boots an empty roster, and `apps/cli` patches in
+    # its shipped catalog root.
+    - id: connectors
+      name: '@deepseek-ai/dsh-connectors'
+
     - id: subagent
       name: '@deepseek-ai/dsh-subagent'
 

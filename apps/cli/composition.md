@@ -114,6 +114,8 @@ flowchart LR
   cfg --> plugin_dsh_base_command_mcp
   plugin_dsh_base_mcp_manager["mcp-manager<br/>@deepseek-ai/dsh-mcp-manager"]
   cfg --> plugin_dsh_base_mcp_manager
+  plugin_dsh_base_connectors["connectors<br/>@deepseek-ai/dsh-connectors"]
+  cfg --> plugin_dsh_base_connectors
   plugin_dsh_base_subagent["subagent<br/>@deepseek-ai/dsh-subagent"]
   cfg --> plugin_dsh_base_subagent
   plugin_dsh_base_subagent_spawn_in_process["subagent-spawn-in-process<br/>@deepseek-ai/dsh-subagent-spawn-in-process"]
@@ -231,6 +233,7 @@ flowchart LR
 | `mcp-registry` | `@deepseek-ai/dsh-mcp-registry` |
 | `command-mcp` | `@deepseek-ai/dsh-command-mcp` |
 | `mcp-manager` | `@deepseek-ai/dsh-mcp-manager` |
+| `connectors` | `@deepseek-ai/dsh-connectors` |
 | `subagent` | `@deepseek-ai/dsh-subagent` |
 | `subagent-spawn-in-process` | `@deepseek-ai/dsh-subagent-spawn-in-process` |
 | `subagent-fork-in-process` | `@deepseek-ai/dsh-subagent-fork-in-process` |

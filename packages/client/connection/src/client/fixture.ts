@@ -3034,6 +3034,41 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         return ok(request, {})
       },
     },
+    connectors: {
+      // The fixture composes no connectors service, so the roster is empty and
+      // every mutating verb reports the seam-missing code, mirroring the host.
+      list: request => ok(request, { connectors: [] }),
+      configure: request => err(request, {
+        code: 'connector-unavailable',
+        message: 'fixture: no connectors service is composed',
+        details: { id: request.payload.id },
+      }),
+      connect: request => err(request, {
+        code: 'connector-unavailable',
+        message: 'fixture: no connectors service is composed',
+        details: { id: request.payload.id },
+      }),
+      complete: request => err(request, {
+        code: 'connector-unavailable',
+        message: 'fixture: no connectors service is composed',
+        details: { id: request.payload.id },
+      }),
+      disconnect: request => err(request, {
+        code: 'connector-unavailable',
+        message: 'fixture: no connectors service is composed',
+        details: { id: request.payload.id },
+      }),
+      add: request => err(request, {
+        code: 'connector-unavailable',
+        message: 'fixture: no connectors service is composed',
+        details: {},
+      }),
+      remove: request => err(request, {
+        code: 'connector-unavailable',
+        message: 'fixture: no connectors service is composed',
+        details: { id: request.payload.id },
+      }),
+    },
     llm: {
       providers: request => ok(request, {
         providers: [
@@ -3246,6 +3281,13 @@ export class FixtureApiClient extends AbstractApiClient {
       case 'credentials.describe': return this.api.credentials.describe(request)
       case 'credentials.set': return this.api.credentials.set(request)
       case 'credentials.unset': return this.api.credentials.unset(request)
+      case 'connector.list': return this.api.connectors.list(request)
+      case 'connector.configure': return this.api.connectors.configure(request)
+      case 'connector.connect': return this.api.connectors.connect(request)
+      case 'connector.complete': return this.api.connectors.complete(request)
+      case 'connector.disconnect': return this.api.connectors.disconnect(request)
+      case 'connector.add': return this.api.connectors.add(request)
+      case 'connector.remove': return this.api.connectors.remove(request)
       case 'llm.providers': return this.api.llm.providers(request)
       case 'llm.models': return this.api.llm.models(request)
       case 'llm.discoverModels': return this.api.llm.discoverModels(request, signal)

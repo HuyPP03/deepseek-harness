@@ -189,6 +189,22 @@ const SERVICE_ROLES: ServiceRole[] = [
     note: 'Configuration carries references to secrets; providers own the values. Consumers resolve per operation, so a rotated credential reaches the very next request; the web gateway exposes value-free views and write-only storage.',
   },
   {
+    key: 'connectors',
+    pkg: 'connectors',
+    title: 'Predefined external connections',
+    mode: 'core',
+    consumers: ['apiproxy'],
+    note: 'A YAML catalog plus per-connector documents over MCP servers; derives unconfigured→connected state from the registry, credential, and token seams, and mounts servers through mcp-manager. The web gateway exposes the secret-free views and the configure/connect/add/remove verbs.',
+  },
+  {
+    key: 'oauthTokens',
+    pkg: 'oauth-tokens',
+    title: 'OAuth token bundle store',
+    mode: 'core',
+    consumers: ['connectors'],
+    note: 'A file-backed, owner-keyed store of OAuth token bundles at .connectors/oauth-tokens.json; the connector auth flow re-puts refreshed bundles or removes them, and consumers read the current bundle at each use.',
+  },
+  {
     key: 'sessionTelemetry',
     pkg: 'session-telemetry',
     title: 'Session telemetry seam',
