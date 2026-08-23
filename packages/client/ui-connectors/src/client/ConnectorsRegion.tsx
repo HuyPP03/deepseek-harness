@@ -139,22 +139,25 @@ function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onDisconnec
   )
 }
 
-/** Token dialog props: the draft plus the actions that mutate it. */
+/** Token dialog props: the drafts plus the actions that mutate them. */
 interface TokenDialogProps {
   dialog: ConnectTokenDialog
   t: ConnectorsRegionProps['t']
   onClose: () => void
-  onDraft: (value: string) => void
+  onDraft: (ref: string, value: string) => void
   onSave: () => Promise<void>
 }
 
 /**
- * Render the token dialog: one secret field over a fixed connector, with the
- * token method's obtaining instructions as the description.
- * @param props - the draft, the copy, and the mutations.
+ * Render the token dialog: one secret field per credential reference over a
+ * fixed connector, with the token method's obtaining instructions as the
+ * description.
+ * @param props - the drafts, the copy, and the mutations.
  * @returns the modal.
  */
 function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialogProps): ReactNode {
+  const refs = Object.keys(dialog.drafts)
+  const allDrafted = refs.length > 0 && Object.values(dialog.drafts).every(value => value.trim() !== '')
   return (
     <Modal
       open
@@ -172,7 +175,7 @@ function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialogProps):
             variant="primary"
             size="sm"
             autoFocus
-            disabled={dialog.saving || dialog.draft.trim() === ''}
+            disabled={dialog.saving || !allDrafted}
             onClick={() => { void onSave() }}
           >
             {dialog.saving ? t('dialog.saving') : t('dialog.save')}
@@ -180,16 +183,18 @@ function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialogProps):
         </div>
       )}
     >
-      <div className={css.dialogField}>
-        <span className={css.dialogFieldLabel}>{t('dialog.token')}</span>
-        <Input
-          type="password"
-          value={dialog.draft}
-          placeholder={t('dialog.tokenPlaceholder')}
-          onChange={(event) => { onDraft(event.target.value) }}
-        />
-        {dialog.error !== null && <span className={css.dialogError}>{dialog.error}</span>}
-      </div>
+      {refs.map(ref => (
+        <div className={css.dialogField} key={ref}>
+          <span className={css.dialogFieldLabel}>{ref}</span>
+          <Input
+            type="password"
+            value={dialog.drafts[ref]}
+            placeholder={t('dialog.tokenPlaceholder')}
+            onChange={(event) => { onDraft(ref, event.target.value) }}
+          />
+        </div>
+      ))}
+      {dialog.error !== null && <span className={css.dialogError}>{dialog.error}</span>}
     </Modal>
   )
 }

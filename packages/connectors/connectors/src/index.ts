@@ -514,7 +514,10 @@ export class Connectors extends Service {
         mode: method.mode,
         configured: await this.methodConfigured(method, manifest.id, overrides),
       }
-      if (method.mode === 'token' && method.howTo !== undefined) view.howTo = method.howTo
+      if (method.mode === 'token') {
+        view.credentialRefs = [...method.credentialRefs]
+        if (method.howTo !== undefined) view.howTo = method.howTo
+      }
       if (method.mode === 'oauth') {
         if (method.setupGuide !== undefined) view.setupGuide = [...method.setupGuide]
         if (method.reauthHint !== undefined) view.reauthHint = method.reauthHint

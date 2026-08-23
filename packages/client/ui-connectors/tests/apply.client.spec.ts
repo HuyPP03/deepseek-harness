@@ -90,7 +90,7 @@ describe('ui-connectors apply', () => {
     // service; on the empty roster each one is a guard or a dropped view.
     injected.openTokenDialog('nope')
     expect(store.getSnapshot().dialog).toBeNull()
-    injected.setDialogDraft('sekrit')
+    injected.setDialogDraft('NOTION_API_TOKEN', 'sekrit')
     injected.closeDialog()
     await injected.saveToken()
     expect(store.getSnapshot().dialog).toBeNull()

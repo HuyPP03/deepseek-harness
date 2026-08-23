@@ -194,7 +194,7 @@ A connector's derived state changed as the result of a connector operation (conf
 'connector/state'(connectorId: string, state: ConnectorState): void
 ```
 
-Source: [`packages/connectors/connectors/src/types.ts:225`](../../packages/connectors/connectors/src/types.ts)
+Source: [`packages/connectors/connectors/src/types.ts:227`](../../packages/connectors/connectors/src/types.ts)
 
 <a id="oauth-tokens-events"></a>
 

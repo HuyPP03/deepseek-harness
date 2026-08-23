@@ -3026,7 +3026,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ConnectorAuthView',
-    declaration: 'export interface ConnectorAuthView {\n    readonly mode: \'token\' | \'oauth\' | \'device\';\n    readonly configured: boolean;\n    readonly howTo?: string;\n    readonly setupGuide?: readonly string[];\n    readonly reauthHint?: string;\n}',
+    declaration: 'export interface ConnectorAuthView {\n    readonly mode: \'token\' | \'oauth\' | \'device\';\n    readonly configured: boolean;\n    readonly credentialRefs?: readonly string[];\n    readonly howTo?: string;\n    readonly setupGuide?: readonly string[];\n    readonly reauthHint?: string;\n}',
   },
   {
     name: 'ConnectorConfigureFields',

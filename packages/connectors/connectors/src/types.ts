@@ -175,6 +175,8 @@ export interface ConnectorAuthView {
   readonly mode: 'token' | 'oauth' | 'device'
   /** Whether this method currently has everything it needs. */
   readonly configured: boolean
+  /** The token method's credential reference names, one field per reference; the names are public manifest data. */
+  readonly credentialRefs?: readonly string[]
   /** User-facing instructions for obtaining the credential. */
   readonly howTo?: string
   /** Setup instructions for pre-registered-app OAuth methods. */

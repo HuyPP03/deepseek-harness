@@ -24,8 +24,8 @@ export interface ConnectorsRegionInjected {
   load: () => Promise<void>
   /** Open the token dialog over one connector's unconfigured token method. */
   openTokenDialog: (id: string) => void
-  /** Name the token the dialog is typing. */
-  setDialogDraft: (value: string) => void
+  /** Name the draft one credential reference is typing. */
+  setDialogDraft: (ref: string, value: string) => void
   /** Close the dialog, discarding the draft. */
   closeDialog: () => void
   /** Store the dialog's token and adopt the updated view. */

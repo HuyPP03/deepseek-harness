@@ -308,7 +308,10 @@ describe('catalog and list', () => {
     expect(wire).not.toContain('gmailmcp.googleapis.com')
     const notion = views.find(view => view.id === 'notion')
     expect(notion?.auth).toEqual([
-      { mode: 'token', configured: false, howTo: 'Create an internal integration.' },
+      {
+        mode: 'token', configured: false, howTo: 'Create an internal integration.',
+        credentialRefs: ['NOTION_API_TOKEN'],
+      },
     ])
     expect(notion?.suggestions).toEqual(['Summarize my workspace'])
     const google = views.find(view => view.id === 'google')

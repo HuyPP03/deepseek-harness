@@ -24,7 +24,10 @@ function view(withFields: Partial<ConnectorView> & { id: string }): ConnectorVie
 const TOKEN_UNCONFIGURED = view({
   id: 'atlas',
   state: 'unconfigured',
-  auth: [{ mode: 'token', configured: false, howTo: 'Create a token in your dashboard.' }],
+  auth: [{
+    mode: 'token', configured: false, howTo: 'Create a token in your dashboard.',
+    credentialRefs: ['ATLASSIAN_USERNAME', 'ATLASSIAN_TOKEN'],
+  }],
 })
 
 const TOKEN_CONFIGURED = view({
@@ -36,7 +39,7 @@ const TOKEN_CONFIGURED = view({
 const TOKEN_NO_HOWTO = view({
   id: 'linear',
   state: 'unconfigured',
-  auth: [{ mode: 'token', configured: false }],
+  auth: [{ mode: 'token', configured: false, credentialRefs: ['LINEAR_API_TOKEN'] }],
 })
 
 const OAUTH_ONLY = view({
@@ -117,12 +120,14 @@ describe('ConnectorsSectionController', () => {
     expect(dialog).toMatchObject({
       id: 'atlas', name: 'atlas',
       howTo: 'Create a token in your dashboard.',
-      draft: '', saving: false, error: null,
+      // One empty draft per declared reference, in the method's order.
+      drafts: { ATLASSIAN_USERNAME: '', ATLASSIAN_TOKEN: '' },
+      saving: false, error: null,
     })
     // A token method without instructions opens with a null guidance.
     controller.openTokenDialog('linear')
     dialog = controller.store.getSnapshot().dialog
-    expect(dialog).toMatchObject({ id: 'linear', howTo: null })
+    expect(dialog).toMatchObject({ id: 'linear', howTo: null, drafts: { LINEAR_API_TOKEN: '' } })
 
     controller.closeDialog()
     // A configured token row and a tokenless row have no dialog.
@@ -136,44 +141,51 @@ describe('ConnectorsSectionController', () => {
     expect(controller.store.getSnapshot().dialog).not.toBe(dialog)
   })
 
-  it('patches the dialog draft and clears its previous failure', async () => {
+  it('patches one reference draft at a time and clears its previous failure', async () => {
     const { controller } = await ready()
     controller.openTokenDialog('atlas')
-    controller.setDialogDraft('sekrit')
+    controller.setDialogDraft('ATLASSIAN_USERNAME', 'me')
     let dialog = controller.store.getSnapshot().dialog
-    expect(dialog?.draft).toBe('sekrit')
-    controller.setDialogDraft('sekrit2')
+    expect(dialog?.drafts).toEqual({ ATLASSIAN_USERNAME: 'me', ATLASSIAN_TOKEN: '' })
+    controller.setDialogDraft('ATLASSIAN_TOKEN', 'sekrit')
     dialog = controller.store.getSnapshot().dialog
-    expect(dialog?.draft).toBe('sekrit2')
+    expect(dialog?.drafts).toEqual({ ATLASSIAN_USERNAME: 'me', ATLASSIAN_TOKEN: 'sekrit' })
 
     // A closed dialog swallows drafts.
     controller.closeDialog()
-    controller.setDialogDraft('ignored')
+    controller.setDialogDraft('ATLASSIAN_USERNAME', 'ignored')
     expect(controller.store.getSnapshot().dialog).toBeNull()
   })
 
-  it('saves the token and adopts the response view, closing the dialog', async () => {
+  it('saves the drafts per reference and adopts the response view, closing the dialog', async () => {
     const { controller, api } = await ready()
     controller.openTokenDialog('atlas')
-    controller.setDialogDraft('sekrit')
+    controller.setDialogDraft('ATLASSIAN_USERNAME', 'me')
+    controller.setDialogDraft('ATLASSIAN_TOKEN', 'sekrit')
     await controller.saveToken()
-    expect(api.connectors.configure).toHaveBeenCalledWith({ id: 'atlas', fields: { token: 'sekrit' } })
+    expect(api.connectors.configure).toHaveBeenCalledWith({
+      id: 'atlas',
+      fields: { credentials: { ATLASSIAN_USERNAME: 'me', ATLASSIAN_TOKEN: 'sekrit' } },
+    })
     const state = controller.store.getSnapshot()
     expect(state.dialog).toBeNull()
     expect(state.connectors.find(c => c.id === 'atlas')?.auth).toEqual([{ mode: 'token', configured: true }])
   })
 
-  it('keeps the dialog open over its draft when the save fails', async () => {
+  it('keeps the dialog open over its drafts when the save fails', async () => {
     const { controller } = await ready({
       configure: async () => fail('store refused'),
     })
     controller.openTokenDialog('atlas')
-    controller.setDialogDraft('sekrit')
+    controller.setDialogDraft('ATLASSIAN_TOKEN', 'sekrit')
     await controller.saveToken()
     const dialog = controller.store.getSnapshot().dialog
-    expect(dialog).toMatchObject({ draft: 'sekrit', saving: false, error: 'store refused' })
+    expect(dialog).toMatchObject({
+      drafts: { ATLASSIAN_USERNAME: '', ATLASSIAN_TOKEN: 'sekrit' },
+      saving: false, error: 'store refused',
+    })
     // The next edit clears the failure.
-    controller.setDialogDraft('sekrit2')
+    controller.setDialogDraft('ATLASSIAN_TOKEN', 'sekrit2')
     expect(controller.store.getSnapshot().dialog?.error).toBeNull()
   })
 
@@ -184,7 +196,7 @@ describe('ConnectorsSectionController', () => {
       configure: vi.fn(() => pending) as unknown as ConnectorDouble['configure'],
     })
     controller.openTokenDialog('atlas')
-    controller.setDialogDraft('sekrit')
+    controller.setDialogDraft('ATLASSIAN_TOKEN', 'sekrit')
     const saving = controller.saveToken()
     void controller.saveToken()
     resolve(ok({ connector: view({ id: 'atlas', state: 'connected' }) }))

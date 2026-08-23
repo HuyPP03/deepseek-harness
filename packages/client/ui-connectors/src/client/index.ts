@@ -49,7 +49,7 @@ export function apply(ctx: ClientContext): void {
     hooks: { connectors: controller.store },
     load: () => controller.load(),
     openTokenDialog: (id) => { controller.openTokenDialog(id) },
-    setDialogDraft: (value) => { controller.setDialogDraft(value) },
+    setDialogDraft: (ref, value) => { controller.setDialogDraft(ref, value) },
     closeDialog: () => { controller.closeDialog() },
     saveToken: () => controller.saveToken(),
     connect: id => controller.connect(id),

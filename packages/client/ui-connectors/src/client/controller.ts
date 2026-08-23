@@ -13,7 +13,7 @@
 import type { ConnectorView, IApiClient, RpcResponse } from '@deepseek-ai/dsh-api-remotes/client'
 import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 
-/** The token dialog: one secret field over a fixed connector. */
+/** The token dialog: one secret field per credential reference over a fixed connector. */
 export interface ConnectTokenDialog {
   /** The connector id the draft belongs to. */
   id: string
@@ -21,8 +21,8 @@ export interface ConnectTokenDialog {
   name: string
   /** The token method's obtaining instructions, absent when it has none. */
   howTo: string | null
-  /** The token being typed; cleared by the next open. */
-  draft: string
+  /** The draft value per credential reference, in the method's declared order; cleared by the next open. */
+  drafts: Record<string, string>
   /** Whether the save is in flight. */
   saving: boolean
   /** The last save failure, cleared by the next edit. */
@@ -118,22 +118,26 @@ export class ConnectorsSectionController {
     const row = this.state.connectors.find(c => c.id === id)
     const token = row === undefined ? undefined : row.auth.find(a => a.mode === 'token')
     if (row === undefined || token === undefined || token.configured) return
+    const drafts: Record<string, string> = {}
+    /* v8 ignore next -- credentialRefs is optional only for wire consumers that predate it; a shipped host always fills it */
+    for (const ref of token.credentialRefs ?? []) drafts[ref] = ''
     this.set({
       dialog: {
         id, name: row.name, howTo: token.howTo ?? null,
-        draft: '', saving: false, error: null,
+        drafts, saving: false, error: null,
       },
     })
   }
 
   /**
-   * Name the token the dialog is typing; clears a previous save failure.
-   * @param value - the token text so far.
+   * Name the draft one credential reference is typing; clears a previous save failure.
+   * @param ref - the credential reference the field belongs to.
+   * @param value - the value so far.
    */
-  setDialogDraft(value: string): void {
+  setDialogDraft(ref: string, value: string): void {
     const { dialog } = this.state
     if (dialog === null) return
-    this.set({ dialog: { ...dialog, draft: value, error: null } })
+    this.set({ dialog: { ...dialog, drafts: { ...dialog.drafts, [ref]: value }, error: null } })
   }
 
   /** Close the dialog, discarding the draft. */
@@ -153,7 +157,7 @@ export class ConnectorsSectionController {
     this.set({ dialog: { ...dialog, saving: true, error: null } })
     const response = await this.api.connectors.configure({
       id: dialog.id,
-      fields: { token: dialog.draft },
+      fields: { credentials: { ...dialog.drafts } },
     })
     if (!response.result.ok) {
       this.set({ dialog: { ...dialog, saving: false, error: response.result.error.message } })

@@ -8,7 +8,7 @@ export type ConnectorsKey =
   | 'connect' | 'disconnect' | 'configure'
   | 'custom' | 'servers.one' | 'servers.many' | 'server.off'
   | 'rail.label'
-  | 'dialog.title' | 'dialog.token' | 'dialog.tokenPlaceholder'
+  | 'dialog.title' | 'dialog.tokenPlaceholder'
   | 'dialog.cancel' | 'dialog.save' | 'dialog.saving'
 
 /** English dictionary (the key-set source of truth). */
@@ -34,7 +34,6 @@ export const en: Record<ConnectorsKey, string> = {
   'server.off': 'not mounted',
   'rail.label': 'Connectors',
   'dialog.title': 'Connect {name}',
-  'dialog.token': 'Token',
   'dialog.tokenPlaceholder': 'Paste your token',
   'dialog.cancel': 'Cancel',
   'dialog.save': 'Save & connect',
@@ -64,7 +63,6 @@ export const vi: Record<ConnectorsKey, string> = {
   'server.off': 'chưa bật',
   'rail.label': 'Kết nối',
   'dialog.title': 'Kết nối {name}',
-  'dialog.token': 'Token',
   'dialog.tokenPlaceholder': 'Dán token của bạn',
   'dialog.cancel': 'Hủy',
   'dialog.save': 'Lưu & kết nối',
@@ -94,7 +92,6 @@ export const zh: Record<ConnectorsKey, string> = {
   'server.off': '未挂载',
   'rail.label': '连接器',
   'dialog.title': '连接 {name}',
-  'dialog.token': '令牌',
   'dialog.tokenPlaceholder': '粘贴你的令牌',
   'dialog.cancel': '取消',
   'dialog.save': '保存并连接',

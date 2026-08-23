@@ -29,6 +29,7 @@ export const connectorServerViewSchema = z.object({
 export const connectorAuthViewSchema = z.object({
   mode: z.enum(['token', 'oauth', 'device']),
   configured: z.boolean(),
+  credentialRefs: z.array(credentialRefNameSchema).optional(),
   howTo: z.string().optional(),
   setupGuide: z.array(z.string()).optional(),
   reauthHint: z.string().optional(),

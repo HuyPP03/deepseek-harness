@@ -79,12 +79,15 @@ function renderRegion(
   return { ...actions, expandSidebar: props.expandSidebar, view: viewApi }
 }
 
-/** The one-row roster the dialog tests drive: an unconfigured token connector. */
+/** The one-row roster the dialog tests drive: an unconfigured multi-reference token connector. */
 const DRIVEN_ROW = view({
   id: 'atlas',
   description: 'Atlassian Cloud',
   state: 'unconfigured',
-  auth: [{ mode: 'token', configured: false, howTo: 'Create a token in your dashboard.' }],
+  auth: [{
+    mode: 'token', configured: false, howTo: 'Create a token in your dashboard.',
+    credentialRefs: ['ATLASSIAN_USERNAME', 'ATLASSIAN_TOKEN'],
+  }],
 })
 
 /** The response view a successful configure/connect adopts. */
@@ -127,7 +130,7 @@ async function renderDriven(overrides: Partial<{
     useConnectors: bindSnapshotSelector(controller.store),
     load: () => controller.load(),
     openTokenDialog: (id: string) => { controller.openTokenDialog(id) },
-    setDialogDraft: (value: string) => { controller.setDialogDraft(value) },
+    setDialogDraft: (ref: string, value: string) => { controller.setDialogDraft(ref, value) },
     closeDialog: () => { controller.closeDialog() },
     saveToken: () => controller.saveToken(),
     connect: (id: string) => controller.connect(id),
@@ -220,16 +223,23 @@ describe('ConnectorsRegion', () => {
     expect(a.expandSidebar).toHaveBeenCalledOnce()
   })
 
-  it('drives the token dialog end to end: open, guard, save, adopt the view', async () => {
+  it('drives the token dialog end to end: one field per reference, guard, save, adopt the view', async () => {
     const { connectors } = await renderDriven()
     fireEvent.click(screen.getByRole('button', { name: 'Configure' }))
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByText('Connect atlas')).toBeTruthy()
     expect(within(dialog).getByText('Create a token in your dashboard.')).toBeTruthy()
-    const input = within(dialog).getByPlaceholderText('Paste your token') as HTMLInputElement
-    // An empty draft cannot save.
+    // One secret field per declared reference, labeled by its name.
+    expect(within(dialog).getByText('ATLASSIAN_USERNAME')).toBeTruthy()
+    expect(within(dialog).getByText('ATLASSIAN_TOKEN')).toBeTruthy()
+    const [usernameInput, tokenInput] = within(dialog).getAllByPlaceholderText('Paste your token') as [HTMLInputElement, HTMLInputElement]
+    // An incomplete draft cannot save: only the first reference is filled.
     expect(within(dialog).queryByRole('button', { name: 'Save & connect' })?.hasAttribute('disabled')).toBe(true)
-    fireEvent.change(input, { target: { value: 'sekrit' } })
+    fireEvent.change(usernameInput, { target: { value: 'me' } })
+    await waitFor(() => {
+      expect(within(dialog).queryByRole('button', { name: 'Save & connect' })?.hasAttribute('disabled')).toBe(true)
+    })
+    fireEvent.change(tokenInput, { target: { value: 'sekrit' } })
     await waitFor(() => {
       expect(within(dialog).queryByRole('button', { name: 'Save & connect' })?.hasAttribute('disabled')).toBe(false)
     })
@@ -237,7 +247,10 @@ describe('ConnectorsRegion', () => {
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).toBeNull()
     })
-    expect(connectors.configure).toHaveBeenCalledWith({ id: 'atlas', fields: { token: 'sekrit' } })
+    expect(connectors.configure).toHaveBeenCalledWith({
+      id: 'atlas',
+      fields: { credentials: { ATLASSIAN_USERNAME: 'me', ATLASSIAN_TOKEN: 'sekrit' } },
+    })
     // The response view was adopted: the row now reads connected.
     expect(screen.getByText('Connected')).toBeTruthy()
   })
@@ -250,7 +263,9 @@ describe('ConnectorsRegion', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Configure' }))
     const dialog = screen.getByRole('dialog')
-    fireEvent.change(within(dialog).getByPlaceholderText('Paste your token'), { target: { value: 'sekrit' } })
+    const [usernameInput, tokenInput] = within(dialog).getAllByPlaceholderText('Paste your token') as [HTMLInputElement, HTMLInputElement]
+    fireEvent.change(usernameInput, { target: { value: 'me' } })
+    fireEvent.change(tokenInput, { target: { value: 'sekrit' } })
     await waitFor(() => {
       expect(within(dialog).queryByRole('button', { name: 'Save & connect' })?.hasAttribute('disabled')).toBe(false)
     })
@@ -276,7 +291,9 @@ describe('ConnectorsRegion', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: 'Configure' }))
     const dialog = screen.getByRole('dialog')
-    fireEvent.change(within(dialog).getByPlaceholderText('Paste your token'), { target: { value: 'sekrit' } })
+    const [usernameInput, tokenInput] = within(dialog).getAllByPlaceholderText('Paste your token') as [HTMLInputElement, HTMLInputElement]
+    fireEvent.change(usernameInput, { target: { value: 'me' } })
+    fireEvent.change(tokenInput, { target: { value: 'sekrit' } })
     await waitFor(() => {
       expect(within(dialog).queryByRole('button', { name: 'Save & connect' })?.hasAttribute('disabled')).toBe(false)
     })
@@ -285,7 +302,7 @@ describe('ConnectorsRegion', () => {
       expect(within(dialog).getByText('store refused')).toBeTruthy()
     })
     // The next edit clears the failure.
-    fireEvent.change(within(dialog).getByPlaceholderText('Paste your token'), { target: { value: 'sekrit2' } })
+    fireEvent.change(tokenInput, { target: { value: 'sekrit2' } })
     await waitFor(() => {
       expect(within(dialog).queryByText('store refused')).toBeNull()
     })
@@ -296,11 +313,14 @@ describe('ConnectorsRegion', () => {
       id: 'linear',
       description: 'Linear workspace',
       state: 'unconfigured',
-      auth: [{ mode: 'token', configured: false }],
+      auth: [{ mode: 'token', configured: false, credentialRefs: ['LINEAR_API_TOKEN'] }],
     }))
     fireEvent.click(screen.getByRole('button', { name: 'Configure' }))
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByText('Connect linear')).toBeTruthy()
+    // A single-reference method renders its one field labeled by the ref name.
+    expect(within(dialog).getByText('LINEAR_API_TOKEN')).toBeTruthy()
+    expect(within(dialog).getAllByPlaceholderText('Paste your token')).toHaveLength(1)
     // No howTo, no description paragraph under the title.
     expect(within(dialog).queryByText('Create a token in your dashboard.')).toBeNull()
   })

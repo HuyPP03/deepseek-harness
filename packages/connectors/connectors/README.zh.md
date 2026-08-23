@@ -51,7 +51,7 @@ suggestions:
 | `addCustom(spec)` | 创建 `custom-<slug>`：复制 `custom` 预设、持久化清单、无认证需求时自动挂载。 |
 | `removeCustom(id)` | 卸载、清除凭据、删除清单与预设副本。拒绝删除预定义 id。 |
 
-wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`mounted`、`status`；认证条目携带 `mode`、`configured` 与面向用户的提示——从不携带值。
+wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`mounted`、`status`；认证条目携带 `mode`、`configured`、token 方法的 `credentialRefs`（公共引用名——客户端 token 对话框的按引用字段）与面向用户的提示——从不携带值。
 
 ### 状态
 
@@ -87,7 +87,7 @@ wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`m
 ## 已知限制与延迟工作
 
 - **启动时的凭据失败表现为服务器 down**——文档引用未配置凭据的已挂载服务器会在 mcp-client 连接尝试中失败（重连退避，状态 `down`）；产品层守卫（`connect` 预检）在挂载前大声失败，因此这只影响凭据被从下抽掉的服务器。
-- **没有 OAuth 或 device 引擎**——`connectors/oauth-flow` 包（loopback 回调 + 粘贴 code 回退）与 M365 device-code 循环将在后续阶段落地。
+- **没有 OAuth 或 device 引擎**——`connectors/oauth-flow` 包（loopback 回调 + 粘贴 code 回退）与 M365 device-code 循环将在后续阶段落地。随附的 Atlassian 清单已把 bearer 携带为 `Authorization: { $cred: atlas }`；OAuth 流程引擎把令牌包存在连接器 id 之下，mcp-client 从令牌存储以 `Bearer <accessToken>` 呈现。
 - **被动状态靠轮询**——没有连接器操作的注册表翻转（服务器掉线、重连）在下次 `list()` 时可见；不为它们发出事件。
 - **override 是 boot 时快照**——override 文档的外部编辑不会热重载。
 - **`lastError` 在内存中**——失败挂载的报错在下一次成功操作前保留，但不跨重启。

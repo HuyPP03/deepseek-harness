@@ -5,14 +5,16 @@ presetId: slack
 workspaceDirName: slack
 auth:
   - mode: token
-    credentialRefs: [SLACK_BOT_TOKEN]
-    howTo: Create a Slack app with bot token scopes for the channels you want to read and post, then invite it to those channels.
+    credentialRefs: [SLACK_BOT_TOKEN, SLACK_TEAM_ID]
+    howTo: Create a Slack app with bot token scopes for the channels you want to read and post, invite it to those channels, then copy the bot token and your workspace Team ID from the Slack API console.
 servers:
   - serverName: slack
     transport: stdio
     command: npx
     args: ['-y', '@modelcontextprotocol/server-slack']
-    env: { SLACK_BOT_TOKEN: { $cred: SLACK_BOT_TOKEN } }
+    env:
+      SLACK_BOT_TOKEN: { $cred: SLACK_BOT_TOKEN }
+      SLACK_TEAM_ID: { $cred: SLACK_TEAM_ID }
 suggestions:
   - Summarize the messages I have not read
   - Find the thread where this decision was made
