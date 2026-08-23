@@ -10,6 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { chmod, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { parse } from 'yaml'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
@@ -376,10 +377,11 @@ describe('token flow', () => {
     expect(await stateOf(ctx, 'notion')).toBe('connected')
     expect(events).toEqual([['notion', 'connected']])
 
-    // The persisted server document carries the resolved literal (the P0a
-    // interim: P1 moves resolution into mcp-client's $cred support).
+    // The persisted server document keeps the credential reference;
+    // mcp-client resolves it at connect time from the credentials store.
     const serverDoc = await readFile(join(root, '.mcp', 'notion.cordis.yml'), 'utf8')
-    expect(serverDoc).toContain('sekret')
+    expect(serverDoc).toContain('$cred: NOTION_API_TOKEN')
+    expect(serverDoc).not.toContain('sekret')
     const credDoc = await readFile(join(root, '.credentials.yaml'), 'utf8')
     expect(credDoc).toContain('NOTION_API_TOKEN')
 
@@ -407,25 +409,37 @@ describe('token flow', () => {
 
   it('resolves a multi-reference token plus an override field', async () => {
     const { ctx, root } = await boot()
-    // The override slot is first in the env: no url yet.
-    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorOverrideMissingError)
+    // No stored credentials yet: the connect pre-check fails on the first
+    // declared reference.
+    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorCredentialMissingError)
+    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(/ATLASSIAN_USERNAME/)
 
     await ctx.connectors.configure('atlas', { credentials: { ATLASSIAN_USERNAME: 'me' } })
     expect(await stateOf(ctx, 'atlas')).toBe('unconfigured')
 
-    // With the url stored, the missing credential is what a connect hits next.
-    await ctx.connectors.configure('atlas', { url: 'https://x.atlassian.net' })
+    // The second reference is still missing.
     await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorCredentialMissingError)
-    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(/ATLASSIAN_TOKEN/)
 
+    // Both references stored but the override unset: the mount preparation
+    // fails for the missing override.
     await ctx.connectors.configure('atlas', { credentials: { ATLASSIAN_TOKEN: 'tok' } })
+    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorOverrideMissingError)
+
+    // The url no longer blocks the pre-check; an explicit connect mounts.
+    await ctx.connectors.configure('atlas', { url: 'https://x.atlassian.net' })
+    await ctx.connectors.connect('atlas', 'token')
     await poll(() => ctx.tools.get('mcp__atlas__remote') !== undefined, 'atlas tool')
     expect(await stateOf(ctx, 'atlas')).toBe('connected')
 
-    const serverDoc = await readFile(join(root, '.mcp', 'atlas.cordis.yml'), 'utf8')
-    expect(serverDoc).toContain('https://x.atlassian.net')
-    expect(serverDoc).toContain('me')
-    expect(serverDoc).toContain('tok')
+    // The document resolves the override to its literal and keeps the
+    // credential references for mcp-client, never the stored values.
+    const [entry] = parse(await readFile(join(root, '.mcp', 'atlas.cordis.yml'), 'utf8')) as Array<{ config: { env: Record<string, unknown> } }>
+    if (entry === undefined) throw new Error('the atlas server document is empty')
+    expect(entry.config.env).toEqual({
+      ATL_API_BASE_URL: 'https://x.atlassian.net',
+      ATL_USERNAME: { $cred: 'ATLASSIAN_USERNAME' },
+      ATL_TOKEN: { $cred: 'ATLASSIAN_TOKEN' },
+    })
 
     const overrideDoc = JSON.parse(await readFile(join(root, 'user', 'atlas.json'), 'utf8')) as Record<string, unknown>
     expect(overrideDoc).toEqual({ url: 'https://x.atlassian.net' })
@@ -868,7 +882,8 @@ describe('multi-server mount', () => {
     expect(docA).toContain('cwd')
     const docB = await readFile(join(root, '.mcp', 'duo-b.cordis.yml'), 'utf8')
     expect(docB).toContain('literal')
-    expect(docB).toContain('duo-secret')
+    expect(docB).toContain('$cred: DUO_TOKEN')
+    expect(docB).not.toContain('duo-secret')
   })
 
   it('unmounts the servers it added when a later mount is refused', async () => {

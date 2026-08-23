@@ -1,0 +1,3 @@
+name: Notion mode
+description: Read and write Notion pages, databases, and comments through the connected Notion MCP tools.
+order: 5

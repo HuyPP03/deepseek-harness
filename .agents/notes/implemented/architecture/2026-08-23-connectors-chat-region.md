@@ -35,4 +35,4 @@ The chat screen now carries the connector surface, and the client retains no sec
 - [Connectors — the host foundation](2026-08-23-connectors-host-foundation.md) — the state machine and verbs this page drives.
 - [Slot system standard](2026-07-22-slot-type-chain-implementation.md) — the composition pattern behind the new hole.
 
-Deferred, in order: P1 `{$cred}` placeholders in mcp-client and the preset roster, P3 oauth-flow engine with real `connector.complete`, P4 device-code flow, P5 custom-connector UI.
+Deferred, in order: P3 oauth-flow engine with real `connector.complete`, P4 device-code flow, P5 custom-connector UI. P1's `{$cred}` seam and preset roster are [landed](2026-08-23-connectors-cred-refs-and-presets.md).

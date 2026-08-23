@@ -3153,10 +3153,6 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type CredentialRef = Branded<\'CredentialRef\'>;',
   },
   {
-    name: 'CredRefPlaceholder',
-    declaration: 'export interface CredRefPlaceholder {\n    readonly $cred: string;\n}',
-  },
-  {
     name: 'DeviceAuthMethod',
     declaration: 'export interface DeviceAuthMethod {\n    readonly mode: \'device\';\n    readonly howTo?: string;\n    readonly loginTool?: string;\n    readonly verifyTool?: string;\n}',
   },
@@ -3737,10 +3733,6 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface OneShotSubagentDescriptorData extends SubagentDescriptorBase {\n    readonly mode: \'one-shot\';\n    readonly label?: string;\n}',
   },
   {
-    name: 'OverridePlaceholder',
-    declaration: 'export interface OverridePlaceholder {\n    readonly $override: string;\n}',
-  },
-  {
     name: 'PermissionSelect',
     declaration: 'export interface PermissionSelect {\n    options: PresetOption[];\n    currentValue: string;\n}',
   },
@@ -3991,10 +3983,6 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'ServerResponse',
     declaration: 'export interface ServerResponse {\n    type: \'server-response\';\n    rpcId: RpcId;\n    result: RpcResult<unknown>;\n}',
-  },
-  {
-    name: 'ServerValue',
-    declaration: 'export type ServerValue = string | CredRefPlaceholder | OverridePlaceholder;',
   },
   {
     name: 'SessionAvailability',

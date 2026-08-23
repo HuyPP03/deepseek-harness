@@ -17,12 +17,14 @@ import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { MAX_TIMER_DELAY_MS } from '@deepseek-ai/dsh-timeout'
 import type { McpRegistry } from '@deepseek-ai/dsh-mcp-registry'
+import type { ServerValue } from './credentials.ts'
 import { RECONNECT_DEFAULTS, resolveReconnectPolicy, startConnection } from './connection.ts'
 import type { ReconnectConfig } from './connection.ts'
 // Side-effect type import: declaration-merges `ctx.tools` onto Context.
 import type {} from '@deepseek-ai/dsh-tools'
 
 export type { McpResult } from './tools.ts'
+export type { CredentialRefValue, ResolvedConfig, ServerValue } from './credentials.ts'
 export type { ReconnectConfig, ResolvedReconnectPolicy } from './connection.ts'
 
 /** Cordis plugin name used by loader diagnostics. */
@@ -61,8 +63,12 @@ export interface StdioConfig {
   command: string
   /** Arguments passed directly, without shell interpolation. */
   args: string[]
-  /** Extra env vars merged on top of scrubbed ambient env. */
-  env: Record<string, string>
+  /**
+   * Extra env vars merged on top of scrubbed ambient env. A value may be a
+   * `{$cred: REF}` credential reference, resolved at every connection attempt
+   * through the optional `credentials` and `oauthTokens` services.
+   */
+  env: Record<string, ServerValue>
   /** Working directory for the child process. */
   cwd: string
   /** Per-tool-call timeout in milliseconds. */
@@ -85,8 +91,13 @@ export interface StreamableHttpConfig {
   serverName: string
   /** MCP endpoint URL. */
   url: string
-  /** Additional headers attached to MCP requests. */
-  headers: Record<string, string>
+  /**
+   * Additional headers attached to MCP requests. A value may be a
+   * `{$cred: REF}` credential reference, resolved at every connection attempt
+   * through the optional `credentials` and `oauthTokens` services (a stored
+   * token bundle becomes a `Bearer` header value).
+   */
+  headers: Record<string, ServerValue>
   /** Per-tool-call timeout in milliseconds. */
   toolCallTimeoutMs: number
   /** Fail plugin activation when the initial connection or tool synchronization fails. */
@@ -97,6 +108,9 @@ export interface StreamableHttpConfig {
 
 /** Configuration for one stdio or Streamable HTTP MCP server. */
 export type Config = StdioConfig | StreamableHttpConfig
+
+/** One env or header value: a literal or a `{$cred: REF}` credential reference. */
+const ServerValueSchema = z.union([z.string(), z.object({ $cred: z.string().required() })])
 
 const Reconnect: z<ReconnectConfig> = z.object({
   enabled: z.boolean().default(RECONNECT_DEFAULTS.enabled),
@@ -111,7 +125,7 @@ export const Config = z.union([
     serverName: z.string().required().pattern(SERVER_NAME_PATTERN),
     command: z.string().required(),
     args: z.array(String).default([]),
-    env: z.dict(String).default({}),
+    env: z.dict(ServerValueSchema).default({}),
     cwd: z.string().default(''),
     toolCallTimeoutMs: z.number().default(DEFAULT_TOOL_CALL_TIMEOUT_MS),
     failOnStartupError: z.boolean().default(false),
@@ -121,7 +135,7 @@ export const Config = z.union([
     transport: z.const('streamable-http'),
     serverName: z.string().required().pattern(SERVER_NAME_PATTERN),
     url: z.string().required(),
-    headers: z.dict(String).default({}),
+    headers: z.dict(ServerValueSchema).default({}),
     toolCallTimeoutMs: z.number().default(DEFAULT_TOOL_CALL_TIMEOUT_MS),
     failOnStartupError: z.boolean().default(false),
     reconnect: Reconnect,

@@ -21,7 +21,7 @@ Status: implemented
 
 临时决定，在后续阶段落地前记录于包 README：
 
-- 密钥内联进生成的 `.mcp` 文档。mcp-client 的 `{$cred}` 占位接缝（含 oauth-tokens 派生的 bearer）在 P1 到达。
+- 密钥内联进生成的 `.mcp` 文档。[已被 P1 取代](2026-08-23-connectors-cred-refs-and-presets.md)：mcp-client 按连接尝试解析 `{$cred}`，持久化文档保留引用。
 - `connect()` 对 `oauth` 与 `device` 方式抛出 `ConnectorAuthUnavailableError`；`setAuthorizing` 是 P3 oauth-flow 引擎的接缝。
 - 无授权的自定义连接器在 `addCustom` 时自动挂载；`lastError` 仅存于内存；覆盖文档是启动时快照。
 - 令牌存储是被动的（无定时器），并镜像 credentials-local 的存储纪律：`0700` 目录下的 `0600` 文件、跨进程写锁、chokidar 热发布、整体快照替换。
@@ -51,4 +51,4 @@ Status: implemented
 - [MCP client auto-reconnect](../feature/2026-08-06-mcp-client-auto-reconnect.md) —— `reconnecting`/`down` 背后的重连策略。
 - [Provider credential lifecycle](../bug-fix/2026-08-06-provider-credential-lifecycle.md) —— 令牌存储所镜像的密钥存储纪律。
 
-按顺序延迟：P0b ui-sidebar store + `client/ui-connectors`、P1 mcp-client 的 `{$cred}`、P3 oauth-flow 引擎、P4 device-code、P5 自定义连接器 UI。
+按顺序延迟：P0b ui-sidebar store + `client/ui-connectors`（已落地）、P3 oauth-flow 引擎、P4 device-code、P5 自定义连接器 UI。P1 的 `{$cred}` 接缝与 preset 名册已[落地](2026-08-23-connectors-cred-refs-and-presets.md)。

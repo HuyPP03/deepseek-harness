@@ -39,10 +39,10 @@ The model sees `mcp__github__create_issue`, `mcp__web__search`, … — the same
 | `serverName` | both | yes | Namespace for this server's model-facing tool names; `[A-Za-z0-9_-]{1,32}`, unique across live instances |
 | `command` | stdio | yes | Executable to spawn |
 | `args` | stdio | no | Arguments passed to the command |
-| `env` | stdio | no | Extra env vars merged on top of scrubbed ambient env |
+| `env` | stdio | no | Extra env vars merged on top of scrubbed ambient env; a value may be a literal string or a `{$cred: REF}` credential reference |
 | `cwd` | stdio | no | Working directory for the child process |
 | `url` | http | yes | MCP server URL |
-| `headers` | http | no | Extra headers (e.g. auth tokens) |
+| `headers` | http | no | Extra headers (e.g. auth tokens); a value may be a literal string or a `{$cred: REF}` credential reference |
 | `toolCallTimeoutMs` | both | no | Timeout per `callTool` invocation (default 60000) |
 | `failOnStartupError` | both | no | Reject plugin activation when initial connection or tool synchronization fails (default `false`) |
 | `reconnect.enabled` | both | no | Reconnect automatically after a lost connection (default `true`) |
@@ -58,6 +58,10 @@ Every MCP tool has two names: the raw MCP name (sent on the wire in `tools/call`
 - A duplicate `serverName` across live instances fails the later plugin instance at load.
 - A server listing the same tool name twice is rejected as an invalid tool list.
 - A foreign registration squatting on this server's namespace rolls back the whole generation (never a partial set), with a loud error.
+
+## Credential references
+
+`env` and `headers` values may carry a `{$cred: REF}` reference instead of a literal. Each connection attempt resolves the reference before the transport starts: a stored `credentials` value for the reference wins; otherwise an `oauthTokens` bundle for the reference is presented as `Bearer <accessToken>`; otherwise the attempt fails with a named error naming the server and the reference. Resolution is per attempt, not per mount, so a refreshed or rotated value reaches the next attempt without a restart. Both services are optional: a literal-only config never touches them.
 
 ## Behavior
 
@@ -77,6 +81,8 @@ Every MCP tool has two names: the raw MCP name (sent on the wire in `tools/call`
 |---|---|
 | `ctx.tools` | Register/unregister MCP tools |
 | `ctx.mcpRegistry` | Optionally report the server's live state for `/mcp` |
+| `ctx.credentials` | Optionally resolve `{$cred}` references at each connection attempt |
+| `ctx.oauthTokens` | Optionally resolve a `{$cred}` reference to a `Bearer` value when the credentials store has none |
 | `ctx.attachments` | Optionally validate and persist image result batches before model projection |
 | `ctx.llm` | Optionally prove the exact calling route explicitly supports image input |
 

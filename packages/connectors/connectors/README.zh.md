@@ -32,7 +32,7 @@ suggestions:
 ```
 
 - `auth` 列出 `token`（一个或多个凭据引用）、`oauth`（服务器 URL，可选自带应用的 client）或 `device`（登录/校验工具名）方法。空列表表示服务器无需认证。
-- 服务器 `env`/`headers` 的值可以是字面量，或占位符 `{ $cred: REF }`（从凭据存储解析）与 `{ $override: FIELD }`（从连接器的用户 override 文档解析：`url`、`clientId`、`products`、`orgMode`、`readOnly`）。在 YAML 中，占位符要写成映射——`{ $cred: REF }`——而不是带引号的字符串。
+- 服务器 `env`/`headers` 的值可以是字面量或占位符 `{ $cred: REF }` 与 `{ $override: FIELD }`。`$cred` 引用透传到挂载服务器的文档，mcp-client 在每次连接尝试时从凭据存储解析（对 OAuth 连接器的 bearer 标头，则从 token 存储解析为 `Bearer <accessToken>`）；`$override` 引用在挂载时从连接器的用户 override 文档（`url`、`clientId`、`products`、`orgMode`、`readOnly`）解析。在 YAML 中，占位符要写成映射——`{ $cred: REF }`——而不是带引号的字符串。
 - 每份清单都严格解析；无效清单会让 boot 失败，而不是被跳过。
 
 ## 服务
@@ -46,7 +46,7 @@ suggestions:
 | `manifest(id)` | 原始清单（host 内部用；视图永不携带命令、env 或 URL）。 |
 | `setAuthorizing(id, inFlight)` | 标记进行中的认证流程；标记期间状态读作 `authorizing`。 |
 | `configure(id, fields)` | 存储 token/凭据值与/或 override 字段。token 方法配置完整时自动连接；挂载失败会记录 `lastError`，而不是丢掉已存值。 |
-| `connect(id, mode)` | 以 token 挂载。`oauth` 与 `device` 在流程引擎落地前以 `ConnectorAuthUnavailableError` 拒绝。 |
+| `connect(id, mode)` | 以 token 挂载；每个已声明的凭据引用必须先已存储（否则抛 `ConnectorCredentialMissingError`）。`oauth` 与 `device` 在流程引擎落地前以 `ConnectorAuthUnavailableError` 拒绝。 |
 | `disconnect(id)` | 卸载、清除连接器的凭据、删除其令牌包，并删除其 override 文档。 |
 | `addCustom(spec)` | 创建 `custom-<slug>`：复制 `custom` 预设、持久化清单、无认证需求时自动挂载。 |
 | `removeCustom(id)` | 卸载、清除凭据、删除清单与预设副本。拒绝删除预定义 id。 |
@@ -71,9 +71,9 @@ wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`m
 
 可选 seam：`credentials`、`oauthTokens`、`agentPresets` 通过 `ctx.get` 消费；需要某个缺失 seam 的操作以 `ConnectorSeamUnavailableError` 失败，而读取在没有它们时仍可用。
 
-## 临时行为（在认证流程与 mcp-client 工作落地前）
+## 临时行为（在认证流程引擎落地前）
 
-- `{$cred}`/`{$override}` 在挂载时内联解析；持久化的 `.mcp` 服务器文档携带解析后的字面量，而非占位符。凭据轮换需要重连。
+- `$cred` 解析在 mcp-client：持久化的 `.mcp` 文档保留引用，每次连接尝试从凭据存储或 OAuth token 存储解析，因此新存或刷新后的值在下次尝试即生效。`$override` 仍在挂载时解析（用户 override 文档的 boot 时快照）。
 - OAuth 与 device 流程在本阶段没有引擎：`connect(id, 'oauth'|'device')` 以具名错误拒绝；byoApp OAuth 方法在存好 client id + secret 后即为“已配置”（状态 `needs-auth`）。
 
 ## Model Experience
@@ -86,7 +86,7 @@ wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`m
 
 ## 已知限制与延迟工作
 
-- **持久化服务器文档中的字面量**——在 mcp-client 获得原生 `{$cred}` 解析前，密文被内联进管理器的 `.mcp` 文档；轮换凭据需要断开/重连。
+- **启动时的凭据失败表现为服务器 down**——文档引用未配置凭据的已挂载服务器会在 mcp-client 连接尝试中失败（重连退避，状态 `down`）；产品层守卫（`connect` 预检）在挂载前大声失败，因此这只影响凭据被从下抽掉的服务器。
 - **没有 OAuth 或 device 引擎**——`connectors/oauth-flow` 包（loopback 回调 + 粘贴 code 回退）与 M365 device-code 循环将在后续阶段落地。
 - **被动状态靠轮询**——没有连接器操作的注册表翻转（服务器掉线、重连）在下次 `list()` 时可见；不为它们发出事件。
 - **override 是 boot 时快照**——override 文档的外部编辑不会热重载。

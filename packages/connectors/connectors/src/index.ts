@@ -31,6 +31,7 @@ import z from '@deepseek-ai/schemastery'
 import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
 import { dshHomePath, expandHomePath } from '@deepseek-ai/dsh-home-paths'
 import { credentialRef, type CredentialProvider } from '@deepseek-ai/dsh-credentials'
+import type { ServerValue as McpServerValue } from '@deepseek-ai/dsh-mcp-client'
 import { UnknownPresetError } from '@deepseek-ai/dsh-agent-presets'
 import type {} from '@deepseek-ai/dsh-agent-presets'
 import type {} from '@deepseek-ai/dsh-credentials-oauth-tokens'
@@ -38,6 +39,7 @@ import { McpServerExistsError, type McpServerSpec, type StdioServerSpec, type St
 import { parseConnectorManifest, CUSTOM_CONNECTOR_ID } from './manifest.ts'
 import type {
   ConnectorAuthMethod,
+  TokenAuthMethod,
   ConnectorAuthView,
   ConnectorManifest,
   ConnectorServerSpec,
@@ -384,6 +386,8 @@ export class Connectors extends Service {
     }
     if (mode === 'oauth') throw new ConnectorAuthUnavailableError(id, 'oauth')
     if (mode === 'device') throw new ConnectorAuthUnavailableError(id, 'device')
+    // Both throws above leave `mode === 'token'`, so `method` is a token method.
+    await this.requireTokenRefsStored(id, method as TokenAuthMethod)
     await this.mountServers(manifest)
     this.lastError.delete(id)
     this.publish(manifest, await this.view(manifest))
@@ -637,7 +641,7 @@ export class Connectors extends Service {
     for (const server of manifest.servers) {
       if (this.ctx.mcpManager.userServers().includes(server.serverName)) continue
       try {
-        await this.ctx.mcpManager.add(await this.toManagerSpec(manifest.id, server))
+        await this.ctx.mcpManager.add(this.toManagerSpec(manifest, server))
         added.push(server.serverName)
       } catch (error) {
         for (const name of added) await this.ctx.mcpManager.remove(name)
@@ -655,11 +659,11 @@ export class Connectors extends Service {
    * credentials seam; the persisted server document carries the literal,
    * never the reference.
    */
-  private async toManagerSpec(id: string, server: ConnectorServerSpec): Promise<McpServerSpec> {
+  private toManagerSpec(manifest: ConnectorManifest, server: ConnectorServerSpec): McpServerSpec {
     if (server.transport === 'stdio') {
-      const env: Record<string, string> = {}
+      const env: Record<string, McpServerValue> = {}
       for (const [key, slot] of Object.entries(server.env ?? {})) {
-        env[key] = await this.resolveValue(id, slot)
+        env[key] = this.resolveSlot(manifest, slot)
       }
       const spec: Writable<StdioServerSpec> = {
         serverName: server.serverName,
@@ -672,9 +676,9 @@ export class Connectors extends Service {
       if (server.toolCallTimeoutMs !== undefined) spec.toolCallTimeoutMs = server.toolCallTimeoutMs
       return spec
     }
-    const headers: Record<string, string> = {}
+    const headers: Record<string, McpServerValue> = {}
     for (const [key, slot] of Object.entries(server.headers ?? {})) {
-      headers[key] = await this.resolveValue(id, slot)
+      headers[key] = this.resolveSlot(manifest, slot)
     }
     const spec: Writable<StreamableHttpServerSpec> = {
       serverName: server.serverName,
@@ -686,19 +690,39 @@ export class Connectors extends Service {
     return spec
   }
 
-  /** Resolve one placeholder slot to its literal value. */
-  private async resolveValue(id: string, slot: ServerValue): Promise<string> {
+  /**
+   * Pass a `{$cred}` reference through — after verifying that a token method's
+   * slot only references one of its declared refs — and resolve an `$override`
+   * slot to its literal. An oauth-method reference is an owner id for the
+   * token store and passes through unchecked.
+   */
+  private resolveSlot(manifest: ConnectorManifest, slot: ServerValue): McpServerValue {
     if (typeof slot === 'string') return slot
     if ('$cred' in slot) {
-      const credentials = this.ctx.get('credentials')
-      const resolved = credentials !== undefined ? await credentials.resolve(credentialRef(slot.$cred)) : undefined
-      if (resolved === undefined) throw new ConnectorCredentialMissingError(id, slot.$cred)
-      return resolved.value
+      const method = manifest.auth.find(entry => entry.mode === 'token')
+      if (method !== undefined && !method.credentialRefs.includes(slot.$cred)) {
+        throw new ConnectorCredentialMissingError(manifest.id, slot.$cred)
+      }
+      return { $cred: slot.$cred }
     }
-    const overrides = this.overrides.get(id) ?? {}
+    const overrides = this.overrides.get(manifest.id) ?? {}
     const value = (overrides as Record<string, unknown>)[slot.$override]
-    if (typeof value !== 'string' || value.length === 0) throw new ConnectorOverrideMissingError(id, slot.$override)
+    if (typeof value !== 'string' || value.length === 0) throw new ConnectorOverrideMissingError(manifest.id, slot.$override)
     return value
+  }
+
+  /**
+   * Fail a token connect early when a reference is unconfigured: the server
+   * document carries the reference through to mcp-client, where a missing
+   * value would surface as a connection failure rather than this product
+   * error.
+   */
+  private async requireTokenRefsStored(id: string, method: TokenAuthMethod): Promise<void> {
+    const credentials = this.ctx.get('credentials')
+    for (const ref of method.credentialRefs) {
+      const resolved = credentials !== undefined ? await credentials.resolve(credentialRef(ref)) : undefined
+      if (resolved === undefined) throw new ConnectorCredentialMissingError(id, ref)
+    }
   }
 
   private credentialsOrThrow(operation: string): CredentialProvider {

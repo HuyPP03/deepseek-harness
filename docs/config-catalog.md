@@ -575,7 +575,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/connectors/connectors/src/index.ts:72`](../packages/connectors/connectors/src/index.ts)
+Source: [`packages/connectors/connectors/src/index.ts:74`](../packages/connectors/connectors/src/index.ts)
 
 <a id="deepseek-aidsh-cordis-host-runner"></a>
 
@@ -1294,8 +1294,12 @@ export interface StdioConfig {
   command: string
   /** Arguments passed directly, without shell interpolation. */
   args: string[]
-  /** Extra env vars merged on top of scrubbed ambient env. */
-  env: Record<string, string>
+  /**
+   * Extra env vars merged on top of scrubbed ambient env. A value may be a
+   * `{$cred: REF}` credential reference, resolved at every connection attempt
+   * through the optional `credentials` and `oauthTokens` services.
+   */
+  env: Record<string, ServerValue>
   /** Working directory for the child process. */
   cwd: string
   /** Per-tool-call timeout in milliseconds. */
@@ -1318,8 +1322,13 @@ export interface StreamableHttpConfig {
   serverName: string
   /** MCP endpoint URL. */
   url: string
-  /** Additional headers attached to MCP requests. */
-  headers: Record<string, string>
+  /**
+   * Additional headers attached to MCP requests. A value may be a
+   * `{$cred: REF}` credential reference, resolved at every connection attempt
+   * through the optional `credentials` and `oauthTokens` services (a stored
+   * token bundle becomes a `Bearer` header value).
+   */
+  headers: Record<string, ServerValue>
   /** Per-tool-call timeout in milliseconds. */
   toolCallTimeoutMs: number
   /** Fail plugin activation when the initial connection or tool synchronization fails. */
@@ -1327,6 +1336,9 @@ export interface StreamableHttpConfig {
   /** Automatic reconnect policy after a lost connection; omission uses the defaults. */
   reconnect?: ReconnectConfig
 }
+
+/** A literal server value or a credential reference. */
+export type ServerValue = string | CredentialRefValue
 
 /** Automatic reconnect policy for one MCP server connection. */
 export interface ReconnectConfig {
@@ -1339,9 +1351,15 @@ export interface ReconnectConfig {
   /** Consecutive failed attempts per outage before giving up for good (default 10). */
   maxAttempts?: number
 }
+
+/** One `{$cred: REF}` reference carried by a server env or header value. */
+export interface CredentialRefValue {
+  /** The credential reference to resolve at connect time. */
+  readonly $cred: string
+}
 ```
 
-Source: [`packages/mcp/mcp-client/src/index.ts:99`](../packages/mcp/mcp-client/src/index.ts)
+Source: [`packages/mcp/mcp-client/src/index.ts:110`](../packages/mcp/mcp-client/src/index.ts)
 
 <a id="deepseek-aidsh-mcp-manager"></a>
 

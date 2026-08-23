@@ -188,9 +188,11 @@ describe('connectors real Loader composition', () => {
     await ctx.connectors.configure('notion', { token: 'shipped-token' })
     expect(ctx.tools.get('mcp__notion__remote')).toBeDefined()
     expect((await ctx.connectors.get('notion'))?.state).toBe('connected')
-    // P0a interim: the persisted server document carries the resolved literal.
+    // The persisted server document keeps the credential reference;
+    // mcp-client resolves it at connect time from the credentials store.
     const serverDoc = await readFile(join(root!, '.mcp', 'notion.cordis.yml'), 'utf8')
-    expect(serverDoc).toContain('shipped-token')
+    expect(serverDoc).toContain('$cred: NOTION_API_TOKEN')
+    expect(serverDoc).not.toContain('shipped-token')
     const credDoc = await readFile(join(root!, '.credentials.yaml'), 'utf8')
     expect(credDoc).toContain('NOTION_API_TOKEN')
     expect(events).toEqual([['notion', 'connected']])

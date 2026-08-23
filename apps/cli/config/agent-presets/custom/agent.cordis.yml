@@ -1,0 +1,80 @@
+# The `custom` agent preset: the template for user-defined connectors.
+# `dsh-connectors` copies it to a new preset id (the connector id) when a
+# custom connector is added, so a custom connector session starts from
+# the same working-directory-free assistant composition as the shipped
+# connector presets.
+#
+# The custom connector's MCP server is mounted host-wide by mcp-manager;
+# nothing here owns its lifecycle.
+
+# ── identity ────────────────────────────────────────────────────────────────
+
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    text: >-
+      You are an AI assistant powered by the {{model}} model, connected to a user-defined external service. Use the connected tools to work with that service. You have no working directory and cannot create or modify files; filesystem access is read-only.
+
+# ── shell ───────────────────────────────────────────────────────────────────
+
+# `shell-env` and the sandboxed executors stay in the HOST composition, same as
+# `standard`; the session's sandbox mode confines what these tools may do.
+- id: tool-bash
+  name: '@deepseek-ai/dsh-tool-bash'
+  disabled: !!js process.platform === 'win32'
+
+- id: tool-pwsh
+  name: '@deepseek-ai/dsh-tool-pwsh'
+  disabled: !!js process.platform !== 'win32'
+
+# ── filesystem ──────────────────────────────────────────────────────────────
+
+# The session's sandbox mode confines the write paths, so these register
+# into the host registry like `standard`'s and need no realm.
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+- id: tool-fs-search
+  name: '@deepseek-ai/dsh-tool-fs-search'
+  config:
+    sampleOverCapGlobResults: false
+
+# ── background jobs ─────────────────────────────────────────────────────────
+
+# Only the model-facing controls, over the host-plane task registry.
+- id: tool-jobs
+  name: '@deepseek-ai/dsh-tool-jobs'
+
+# ── compaction ──────────────────────────────────────────────────────────────
+
+# Same realm reasoning as `standard`: `compaction-basic` reads
+# `toolResultPrune` through `ctx.get`, so the pruner shares its realm.
+- id: compaction
+  name: cordis:group
+  group: true
+  isolate:
+    compaction: true
+    toolResultPruner: true
+  config:
+    - id: compaction-basic
+      name: '@deepseek-ai/dsh-compaction-basic'
+
+    - id: command-compact
+      name: '@deepseek-ai/dsh-command-compact'
+
+    - id: tool-result-pruner
+      name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+      config:
+        thresholdChars: 8192
+        headChars: 4096
+        tailChars: 1024
+
+# ── remaining model-facing rows ─────────────────────────────────────────────
+
+- id: tool-ask-user
+  name: '@deepseek-ai/dsh-tool-ask-user'
+
+# The `web` service and its providers stay in the host composition; only
+# the model-facing tools are per-session.
+- id: tool-web
+  name: '@deepseek-ai/dsh-tool-web'

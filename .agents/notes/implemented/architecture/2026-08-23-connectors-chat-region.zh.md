@@ -35,4 +35,4 @@ P0a 赋予了连接器宿主侧身份、`connector.*` 动词和内置目录，�
 - [Connectors — the host foundation](2026-08-23-connectors-host-foundation.md) —— 此页面驱动的状态机与动词。
 - [Slot system standard](2026-07-22-slot-type-chain-implementation.md) —— 新孔位背后的组合模式。
 
-按顺序延迟：P1 mcp-client 的 `{$cred}` 占位与 preset 名册、P3 带真实 `connector.complete` 的 oauth-flow 引擎、P4 device-code 流、P5 自定义连接器 UI。
+按顺序延迟：P3 带真实 `connector.complete` 的 oauth-flow 引擎、P4 device-code 流、P5 自定义连接器 UI。P1 的 `{$cred}` 接缝与 preset 名册已[落地](2026-08-23-connectors-cred-refs-and-presets.md)。

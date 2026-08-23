@@ -5,6 +5,8 @@
  * @module @deepseek-ai/dsh-mcp-manager/types
  */
 
+import type { ServerValue } from '@deepseek-ai/dsh-mcp-client'
+
 /** One user MCP server added over a spawned child process (stdio transport). */
 export interface StdioServerSpec {
   /**
@@ -19,8 +21,13 @@ export interface StdioServerSpec {
   readonly command: string
   /** Arguments passed directly, without shell interpolation; defaults to none. */
   readonly args?: readonly string[]
-  /** Extra env vars merged on top of the scrubbed ambient env; defaults to none. */
-  readonly env?: Record<string, string>
+  /**
+   * Extra env vars merged on top of the scrubbed ambient env; defaults to none.
+   * A value may be a `{$cred: REF}` credential reference; mcp-client resolves
+   * it at every connection attempt, so the persisted document keeps the
+   * reference, never the secret.
+   */
+  readonly env?: Record<string, ServerValue>
   /** Working directory for the child process; defaults to the process default. */
   readonly cwd?: string
   /** Per-tool-call timeout in milliseconds; defaults to the mcp-client default. */
@@ -39,8 +46,13 @@ export interface StreamableHttpServerSpec {
   readonly transport: 'streamable-http'
   /** MCP endpoint URL. */
   readonly url: string
-  /** Additional headers attached to MCP requests; defaults to none. */
-  readonly headers?: Record<string, string>
+  /**
+   * Additional headers attached to MCP requests; defaults to none. A value
+   * may be a `{$cred: REF}` credential reference; mcp-client resolves it at
+   * every connection attempt, so the persisted document keeps the reference,
+   * never the secret.
+   */
+  readonly headers?: Record<string, ServerValue>
   /** Per-tool-call timeout in milliseconds; defaults to the mcp-client default. */
   readonly toolCallTimeoutMs?: number
 }

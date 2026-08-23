@@ -127,7 +127,7 @@ async addCustom(spec: AddCustomSpec): Promise<string>
 async removeCustom(id: string): Promise<void>
 ```
 
-Source: [`packages/connectors/connectors/src/index.ts:224`](../../packages/connectors/connectors/src/index.ts)
+Source: [`packages/connectors/connectors/src/index.ts:226`](../../packages/connectors/connectors/src/index.ts)
 
 <a id="ctxoauthtokens--oauthtokenstore"></a>
 

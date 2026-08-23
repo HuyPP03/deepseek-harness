@@ -1,0 +1,3 @@
+name: Google Workspace mode
+description: Read Gmail and Google Drive through the connected Google MCP tools.
+order: 7

@@ -21,7 +21,7 @@ Ownership stays with the existing services: mcp-manager/mcp-client owns mounting
 
 Interim decisions, documented in the package READMEs until the later phases land:
 
-- Secrets are inlined into the generated `.mcp` documents. The `{$cred}` placeholder seam in mcp-client (with bearer-from-oauth-tokens) arrives in P1.
+- Secrets are inlined into the generated `.mcp` documents. [Superseded by P1](2026-08-23-connectors-cred-refs-and-presets.md): mcp-client resolves `{$cred}` per connection attempt, and the persisted documents keep the reference.
 - `connect()` for `oauth` and `device` methods throws `ConnectorAuthUnavailableError`; `setAuthorizing` is the P3 oauth-flow engine's seam.
 - A custom without auth auto-mounts at `addCustom`; `lastError` is in-memory only; override documents are a boot-time snapshot.
 - The token store is passive (no timers) and mirrors the credentials-local storage discipline: `0600` file under `0700`, cross-process writer lock, chokidar hot-publish, wholesale snapshot replacement.
@@ -51,4 +51,4 @@ The product now has an external-connection identity (id, state, lastError, docum
 - [MCP client auto-reconnect](../feature/2026-08-06-mcp-client-auto-reconnect.md) — the reconnect policy behind `reconnecting`/`down`.
 - [Provider credential lifecycle](../bug-fix/2026-08-06-provider-credential-lifecycle.md) — the secret-storage discipline the token store mirrors.
 
-Deferred, in order: P0b ui-sidebar store + `client/ui-connectors`, P1 `{$cred}` in mcp-client, P3 oauth-flow engine, P4 device-code, P5 custom-connector UI.
+Deferred, in order: P0b ui-sidebar store + `client/ui-connectors` (landed), P3 oauth-flow engine, P4 device-code, P5 custom-connector UI. P1's `{$cred}` seam and preset roster are [landed](2026-08-23-connectors-cred-refs-and-presets.md).

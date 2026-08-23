@@ -12,7 +12,7 @@ import ToolRuntime, { type JsonValue } from '@deepseek-ai/dsh-tools'
 import type { PostToolDecision } from '@deepseek-ai/dsh-tools'
 import { publicToolName, syncTools, type ToolBridgeOptions } from '@deepseek-ai/dsh-mcp-client/src/tools.ts'
 import { createTransport } from '@deepseek-ai/dsh-mcp-client/src/transport.ts'
-import type { Config } from '@deepseek-ai/dsh-mcp-client'
+import type { ResolvedConfig } from '@deepseek-ai/dsh-mcp-client/src/credentials.ts'
 
 const testToolSignal = new AbortController().signal
 
@@ -1125,7 +1125,7 @@ describe('tool execution edge cases', () => {
 
 describe('createTransport', () => {
   it('creates StdioClientTransport for stdio config', () => {
-    const config: Config = {
+    const config: ResolvedConfig = {
       transport: 'stdio',
       serverName: 'srv',
       command: 'node',
@@ -1142,7 +1142,7 @@ describe('createTransport', () => {
   })
 
   it('creates StreamableHTTPClientTransport for http config without headers', () => {
-    const config: Config = {
+    const config: ResolvedConfig = {
       transport: 'streamable-http',
       serverName: 'srv',
       url: 'http://localhost:3000/mcp',
@@ -1157,7 +1157,7 @@ describe('createTransport', () => {
   })
 
   it('creates StreamableHTTPClientTransport for http config with headers', () => {
-    const config: Config = {
+    const config: ResolvedConfig = {
       transport: 'streamable-http',
       serverName: 'srv',
       url: 'http://localhost:3000/mcp',
@@ -1179,7 +1179,7 @@ describe('createTransport', () => {
       process.env.API_KEY = 'hidden'
       process.env.AUTH_TOKEN = 'hidden'
 
-      const config: Config = {
+      const config: ResolvedConfig = {
         transport: 'stdio',
         serverName: 'srv',
         command: 'echo',
@@ -1205,7 +1205,7 @@ describe('createTransport', () => {
   })
 
   it('merges explicit env on top of scrubbed ambient env', () => {
-    const config: Config = {
+    const config: ResolvedConfig = {
       transport: 'stdio',
       serverName: 'srv',
       command: 'echo',
