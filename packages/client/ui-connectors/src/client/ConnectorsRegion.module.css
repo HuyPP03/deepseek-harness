@@ -70,6 +70,10 @@
   flex-direction: column;
   gap: 6px;
   padding: 0 8px 8px 4px;
+  /* Elevated surface: the cards paint the l1 rung (above the base), so the
+     grid's own scrollport takes the l2 pair (scrollbar.css rebind contract). */
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .gridCards {
@@ -89,12 +93,10 @@
   border: 1px solid var(--dsw-alias-border-l1);
   background: var(--dsw-alias-bg-layer-1);
   cursor: pointer;
-  /* The card is the sheet's elevated surface (the l1 rung, above the base);
-     the grid's scroll container sits on it, so the l2 pair follows. */
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
+/* The grid's scroll container sits on the card's elevated surface; the l2
+   pair keeps the thumb aligned with the hover rung the cards paint. */
 .card:hover {
   border-color: var(--dsw-alias-border-l2);
   background: var(--dsw-alias-bg-layer-2);
