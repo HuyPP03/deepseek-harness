@@ -74,19 +74,41 @@ async function bench() {
   const ctx = new Context()
   // The host's answer, mutable so a spec can move the default the way the
   // settings surface does and watch who re-reads it.
-  let ROSTER: typeof ROSTER_ONE | typeof ROSTER_MOVED | typeof ROSTER_AUTHORED = ROSTER_ONE
-  const moveDefault = (): void => { ROSTER = ROSTER_MOVED }
+  const calls: string[] = []
+  // The seat's filter claims this preset as a connector's; the chip must
+  // hide it, while the settings row (the full roster) keeps it.
+  const CONNECTOR_PRESET = 'slack'
+  const ROSTER_WITH_PROVIDER = {
+    rpcId: 'r',
+    result: {
+      ok: true as const,
+      value: {
+        presets: [
+          { id: 'standard', trust: 'system', isDefault: true },
+          { id: CONNECTOR_PRESET, trust: 'system', isDefault: false },
+        ],
+        authorable: true,
+        hasDocument: true,
+      },
+    },
+  }
+  // The host's answer, mutable so a spec can move the default the way the
+  // settings surface does and watch who re-reads it.
+  let roster: typeof ROSTER_ONE | typeof ROSTER_MOVED | typeof ROSTER_AUTHORED = ROSTER_ONE
+  const moveDefault = (): void => { roster = ROSTER_MOVED }
   await ctx.plugin(SlotRegistry).await()
   const locale = new LocaleRuntime(ctx)
   ctx.provide('locale', locale)
   // The plugins inject `remote`; forwarded events reach them through the
   // same `$dispatch` handoff the connection sink makes.
   new TestRemote(ctx)
-  const calls: string[] = []
   ctx.provide('connection', {
     api: {
+      connectors: {
+        list: () => { calls.push('connectors:list'); return Promise.resolve({ rpcId: 'r', result: { ok: true as const, value: { connectors: [{ id: 'slack', name: 'slack', description: '', presetId: CONNECTOR_PRESET, state: 'connected', custom: false, servers: [], auth: [], suggestions: [] }] } } }) },
+      },
       agentPresets: {
-        list: () => { calls.push('list'); return Promise.resolve(ROSTER) },
+        list: () => { calls.push('list'); return Promise.resolve(roster) },
         read: () => Promise.resolve({
           rpcId: 'r',
           result: { ok: true as const, value: { agentPreset: 'standard', trust: 'system', content: '' } },
@@ -95,7 +117,7 @@ async function bench() {
           calls.push(`copy:${payload.agentPreset}`)
           // The host's roster now contains it, which is the whole point of the
           // copy and what every surface must converge on.
-          ROSTER = ROSTER_AUTHORED
+          roster = ROSTER_AUTHORED
           return Promise.resolve({ rpcId: 'r', result: { ok: true as const, value: { agentPreset: payload.agentPreset } } })
         },
         openDocument: (payload: { agentPreset: string }) => {
@@ -118,7 +140,7 @@ async function bench() {
       },
     },
   } as never)
-  return { ctx, slots: ctx.get('slots') as SlotRegistry, calls, moveDefault }
+  return { ctx, slots: ctx.get('slots') as SlotRegistry, calls, moveDefault, setRoster: (r: typeof roster) => { roster = r }, rosterWithProvider: ROSTER_WITH_PROVIDER, rosterOne: ROSTER_ONE }
 }
 
 function declareRoot(slots: SlotRegistry): () => void {
@@ -226,10 +248,32 @@ describe('ui-agent-preset apply', () => {
       .toEqual([{ id: 'standard', trust: 'system', isDefault: true }])
   })
 
+  it('hides a provider preset from the chip but keeps it in the settings row', async () => {
+    const { ctx, slots, setRoster, rosterWithProvider } = await bench()
+    declareRoot(slots)
+    declareConversation(slots)
+    ctx.provide('conversation', {} as never)
+    ctx.provide('sessions', sessionsDouble({ byId: {} }) as never)
+    ctx.provide('workspaces', workspacesDouble() as never)
+    await ctx.plugin({ inject: [...inject, 'conversation', 'sessions', 'workspaces'], apply }).await()
+
+    const row = (slots.entries('settings.general.item')[0]!.inject as unknown as () => AgentPresetRowInjected)()
+    const chip = (slots.entries('conversation.hero.agentPreset')[0]!.inject as unknown as () => AgentPresetSeatInjected)()
+    // The deployment composes a connector that claims the 'slack' preset.
+    setRoster(rosterWithProvider)
+    await chip.load()
+    // The chip hides the provider preset; the settings row keeps the full roster.
+    expect(chip.hooks.agentPresetSeat.getSnapshot().options.map(o => o.id)).toEqual(['standard'])
+    await row.load()
+    expect(row.hooks.agentPreset.getSnapshot().options.map(o => o.id)).toEqual(['standard', 'slack'])
+  })
+
   it('routes the section actions to one controller', async () => {
-    const { ctx, slots, calls } = await bench()
+    const { ctx, slots, calls, setRoster, rosterOne } = await bench()
     declareRoot(slots)
     await ctx.plugin({ inject: [...inject], apply }).await()
+    // The section manages the full roster, provider presets included.
+    setRoster(rosterOne)
     const section = (slots.entries('settings.section')[0]!.inject as unknown as () => AgentPresetSectionInjected)()
 
     await section.load()

@@ -63,7 +63,7 @@ export class AgentPresetSeatController {
   private staged: string | undefined
 
   constructor(
-    private readonly api: Pick<IApiClient, 'agentPresets'>,
+    private readonly api: Pick<IApiClient, 'agentPresets' | 'connectors'>,
     /** The session the hero is about to hand over to, when there is one. */
     private readonly currentSession: () => SeatSessionSummary | undefined,
     /**
@@ -91,8 +91,16 @@ export class AgentPresetSeatController {
       }
       const { presets } = response.result.value
       this.fallback = presets.find(preset => preset.isDefault)?.id ?? presets[0]?.id ?? ''
+      // A provider preset is a connector's own mode: the Connectors tab is
+      // its home, so the new-session chip hides it. The Settings roster keeps
+      // the full list (it manages the presets), and a session that already
+      // runs under one still resolves by id below, so the filter never
+      // strands the display of an existing session.
+      const providerPresetIds = await this.readProviderPresetIds()
       this.set({
-        options: presetOptions(presets),
+        options: providerPresetIds === null
+          ? presetOptions(presets)
+          : presetOptions(presets).filter(option => !providerPresetIds.has(option.id)),
         // Staged pick first, then the composition the current session
         // already carries, then the deployment default. The middle term is
         // what keeps a late-landing load from regressing the display after
@@ -106,6 +114,24 @@ export class AgentPresetSeatController {
       this.set({ error: messageOf(error) })
     }
   }
+
+  /**
+   * The preset ids the deployment's composed connectors claim, for the
+   * seat's filter; an empty set when the roster read fails or no connector
+   * is composed (the chip then shows the full roster).
+   * @returns the claimed preset ids.
+   */
+  private async readProviderPresetIds(): Promise<Set<string> | null> {
+    try {
+      const response = await this.api.connectors.list({})
+      if (!response.result.ok) return null
+      return new Set(response.result.value.connectors.map(view => view.presetId))
+    } catch {
+      return null
+    }
+  }
+
+
 
   /**
    * Stage one preset for the next session, applying it immediately when a

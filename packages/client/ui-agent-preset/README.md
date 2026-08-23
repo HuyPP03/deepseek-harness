@@ -16,6 +16,8 @@ The chip opens on the deployment default and its pick is *staged* — the screen
 
 A session that has started is refused rather than queued: the host answers `agent-preset-locked`, and the stage is dropped instead of waiting for a session that will never accept it.
 
+The chip hides provider presets: the preset a composed [connector](../ui-connectors/README.md) claims (`connector.list`'s `presetId`) belongs to the Connectors tab, where a provider's own chats live, so the new-session chip offers only the ordinary modes. The General row and the settings section keep the full roster — they manage the presets the deployment ships, provider presets included — and a session that already runs under a hidden preset still resolves its label by id, so the filter never strands an existing session's display.
+
 ## The session-header label
 
 A third surface, beside the session title: the preset THIS session runs, as static chrome. A control there would promise a switch the host refuses outright. It reads the preset from the session's own summary and resolves the display name against the same roster the General row reads. Forwarded `agent-preset/selected` owner events fold committed blank-session switches into that shared summary in every tab; the initiating tab may already have applied the RPC echo, and the merge is idempotent.

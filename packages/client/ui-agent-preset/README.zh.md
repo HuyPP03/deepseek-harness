@@ -16,6 +16,8 @@ chip 以部署默认值打开，其选择是**暂存**的——该界面先于�
 
 已经开始的会话会被直接拒绝而非排队：宿主返回 `agent-preset-locked`，暂存值随之丢弃，而不是去等一个永远不会接受它的会话。
 
+chip 会隐藏 provider preset：被某个已组合的[连接器](../ui-connectors/README.md)声明的 preset（`connector.list` 的 `presetId`）归属于 Connectors 标签页——provider 自己的聊天在那里——所以新会话 chip 只提供普通模式。General 行和设置部分保留完整名单——它们管理部署随附的 preset，包括 provider preset——而且已经在某个被隐藏的 preset 下运行的会话仍按 id 解析其标签，因此过滤永远不会使既有会话的显示落空。
+
 ## 会话标题旁的标签
 
 第三个表层，位于会话标题旁：**本会话**所运行的 preset，作为静态装饰呈现。在那里放一个控件，等于承诺一次宿主会断然拒绝的切换。它从会话自身的摘要读取 preset，并在 General 行所读的同一份名单上解析显示名称。转发的 owner 事件 `agent-preset/selected` 会在每个标签页中把已经提交的空会话切换折进这份共享摘要；发起方标签页可能已经采用 RPC 回执，而合并是幂等的。
