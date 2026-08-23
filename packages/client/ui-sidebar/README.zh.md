@@ -4,7 +4,7 @@
 
 侧边栏外壳插件：负责字标、新建操作、浏览标签、布局持有的折叠控件、可感知滚动的区域 seat，以及固定在底部的 Settings seat。[ui-workspace](../ui-workspace/README.md) 持有渲染到 `sidebar.workspaces` 的 Session 浏览器；本包既不派生其中的行，也不持有其视图偏好。折叠到布局拥有的 56px 轨道仍属于本地呈现行为。约定：[slot 系统标准](../../../.agents/notes/implemented/architecture/2026-07-22-slot-type-chain-implementation.md)。
 
-外壳持有浏览标签 store（`chats` ｜ `workspaces` ｜ `connectors`，持久化为 `dsh.sidebar.view.v2`，默认 `chats`）：展开栏在新建按钮上方渲染标签列表，当前标签决定区域 registrant——`chats` 与 `workspaces` 把标签交给 `sidebar.workspaces` owner（平铺聊天列表或 Workspace 树），`connectors` 则把区域换成 `sidebar.connectors` registrant（[ui-connectors](../ui-connectors/README.md) 名册）。字标与新建按钮跟随当前标签：Workspaces 启动运行时的页面局部前端 Session Intent；其余标签启动聊天，复用当前空白聊天会话或以 `agentPreset: 'chat'` 新建并打开。轨道没有标签控件，其新建图标跟随已持久化的标签。
+外壳持有浏览标签 store（`chats` ｜ `workspaces` ｜ `connectors`，持久化为 `dsh.sidebar.view.v2`，默认 `workspaces`）：展开栏在新建按钮上方渲染三标签列表，当前标签决定区域 registrant——`chats` 与 `workspaces` 把标签交给 `sidebar.workspaces` owner（平铺聊天列表或 Workspace 树），`connectors` 则把区域换成 `sidebar.connectors` registrant（[ui-connectors](../ui-connectors/README.md) 名册）。字标与新建按钮跟随当前标签：Workspaces 以 “New Session” 启动运行时的页面局部前端 Session Intent，Chats 以 “New Chat” 启动聊天（复用当前空白聊天会话或以 `agentPreset: 'chat'` 新建并打开）；`connectors` 标签不渲染新建控件（该区域自带的 “New connector” 负责创建条目）。轨道没有标签控件，其新建图标跟随已持久化的标签。
 
 New Session 会启动运行时的页面局部前端 Session Intent。运行时优先使用作用域操作明确指定的 Workspace，否则使用当前 Session 所属 Workspace，再否则使用最近活跃 Workspace；一个 Workspace 都没有时则清空选择，进入空白 New Session 页面。Workspace 专属控件与共享选择器由 ui-workspace 持有。
 

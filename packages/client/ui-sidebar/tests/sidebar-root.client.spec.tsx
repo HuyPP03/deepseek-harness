@@ -102,7 +102,7 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
 
 describe('SidebarRoot shell', () => {
   it('routes New (capsule + wordmark) to the active tab starter', () => {
-    // Workspaces tab: both starters call startSession.
+    // Workspaces tab (the default): both starters call startSession.
     const b = mountShell()
     const starters = screen.getAllByRole('button', { name: 'New session' })
     expect(starters).toHaveLength(2)
@@ -113,14 +113,14 @@ describe('SidebarRoot shell', () => {
     expect(b.toggleSidebar).toHaveBeenCalledOnce()
 
     cleanup()
-    // The chats tab: the same two starters still call startSession (the
-    // connectors tab is hidden, and a chat is always a session).
+    // The chats tab: the same two starters are "New chat" and call startChat
+    // (the ungrouped blank chat the Chats tab lists).
     const c = mountShell({ tab: 'chats' })
-    const chatStarters = screen.getAllByRole('button', { name: 'New session' })
+    const chatStarters = screen.getAllByRole('button', { name: 'New chat' })
     expect(chatStarters).toHaveLength(2)
     for (const button of chatStarters) fireEvent.click(button)
-    expect(c.startSession).toHaveBeenCalledTimes(2)
-    expect(c.startChat).not.toHaveBeenCalled()
+    expect(c.startChat).toHaveBeenCalledTimes(2)
+    expect(c.startSession).not.toHaveBeenCalled()
     cleanup()
   })
 
@@ -140,10 +140,11 @@ describe('SidebarRoot shell', () => {
     expect(b.store.getSnapshot().tab).toBe('chats')
     cleanup()
 
-    // The rail has no tablist; the New icon follows the persisted tab.
+    // The rail has no tablist; the New icon follows the persisted tab (the
+    // chats tab persists "New chat").
     mountShell({ collapsed: true, tab: 'chats' })
     expect(screen.queryAllByRole('tab')).toHaveLength(0)
-    expect(screen.getByRole('button', { name: 'New session' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New chat' })).toBeTruthy()
     cleanup()
   })
 
@@ -159,12 +160,9 @@ describe('SidebarRoot shell', () => {
     owner.expandSidebar()
     expect(b.toggleSidebar).not.toHaveBeenCalled()
 
-    // The New control on the connectors tab starts a session (the
-    // connectors tab is hidden from the tablist, but a direct tab set
-    // still renders the region; New always starts a session now).
-    for (const button of screen.getAllByRole('button', { name: 'New session' })) fireEvent.click(button)
-    expect(b.startSession).toHaveBeenCalledTimes(2)
-    expect(b.startChat).not.toHaveBeenCalled()
+    // The connectors tab has no New control: its roster mints its own
+    // connectors, and a blank session has nothing to do with the roster.
+    expect(screen.queryByRole('button', { name: 'New session' })).toBeNull()
 
     // Switching back restores the workspaces region with the tab handed over.
     fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))

@@ -231,7 +231,7 @@ describe('ConnectorsRegion', () => {
     // are not gated (they only switch the view, they don't mutate).
     // The New connector header is not gated either.
     // The custom row's Remove sits outside the busy gate: filter it out here.
-    const actionButtons = screen.getAllByRole('button').filter(b => !b.className.includes('providerRow') && b.textContent !== 'New connector' && b.textContent !== 'Remove')
+    const actionButtons = screen.getAllByRole('button').filter(b => !b.className.includes('card') && b.textContent !== 'New connector' && b.textContent !== 'Remove')
     expect(actionButtons).toHaveLength(5)
     for (const button of actionButtons) expect(button.hasAttribute('disabled')).toBe(true)
   })

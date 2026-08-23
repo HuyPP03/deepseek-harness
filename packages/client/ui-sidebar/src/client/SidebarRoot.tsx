@@ -45,6 +45,7 @@ export function SidebarRoot({
   collapsed,
   width,
   startSession,
+  startChat,
   toggleSidebar,
   t,
   useStore,
@@ -52,11 +53,13 @@ export function SidebarRoot({
   renderSlot,
 }: SidebarRootComponentProps) {
   const tab = useStore(state => state.tab)
-  // The New control on the connectors tab starts a chat: connections are a
-  // destination, and a workspace session has nothing to do with them.
-  const startNew = startSession
-  const newLabel = t('session.new')
-  const newLabelFull = t('session.new.label')
+  // The New control follows the active tab: Chats mints the ungrouped blank
+  // chat (a chat is what the Chats tab lists), Workspaces starts a session.
+  // The connectors tab has no New control at all: the region's own
+  // "New connector" mints its entries.
+  const startNew = tab === 'workspaces' ? () => { startSession() } : startChat
+  const newLabel = tab === 'workspaces' ? t('session.new') : t('chat.new')
+  const newLabelFull = tab === 'workspaces' ? t('session.new.label') : t('chat.new.label')
   // Wide content stays mounted while the collapse animates (fading via
   // .collapsed .wide), unmounts at settle, and remounts right away on expand.
   const [settled, setSettled] = useState(collapsed)
@@ -142,8 +145,8 @@ export function SidebarRoot({
           <button
             type="button"
             className={clsx(css.brand, css.wide)}
-            aria-label={newLabelFull}
-            onClick={() => { startNew() }}
+            aria-label={tab === 'connectors' ? t('tabs.label') : newLabelFull}
+            onClick={() => { if (tab !== 'connectors') startNew() }}
           >
             <BrandWordmark />
           </button>
@@ -164,12 +167,12 @@ export function SidebarRoot({
         </Tooltip>
       </div>
 
-      {/* The browsing tabs: the ungrouped chat rows vs the workspace tree.
-          Wide only — the rail has no room, and its New icon follows the
-          persisted tab. */}
+      {/* The browsing tabs: the ungrouped chat rows, the workspace tree,
+          or the external connections roster. Wide only — the rail has no
+          room, and its New icon follows the persisted tab. */}
       {wide && (
         <div className={css.tabs} role="tablist" aria-label={t('tabs.label')}>
-          {(['chats', 'workspaces'] as const).map(candidate => (
+          {(['chats', 'workspaces', 'connectors'] as const).map(candidate => (
             <button
               key={candidate}
               type="button"
@@ -178,24 +181,28 @@ export function SidebarRoot({
               className={clsx(css.tab, tab === candidate && css.tabActive)}
               onClick={() => { if (tab !== candidate) actions.setTab(candidate) }}
             >
-              {t(candidate === 'chats' ? 'tab.chats' : 'tab.workspaces')}
+              {t(`tab.${candidate}` as const)}
             </button>
           ))}
         </div>
       )}
 
-      {/* Expanded, the button carries its own label — tooltip only on the rail. */}
-      <Tooltip label={newLabelFull} delayMs={500} disabled={wide}>
-        <button
-          type="button"
-          className={css.newSession}
-          aria-label={newLabelFull}
-          onClick={() => { startNew() }}
-        >
-          <IconNewChatOutline16 size={wide ? 14 : 18} />
-          {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{newLabel}</span>}
-        </button>
-      </Tooltip>
+      {/* Expanded, the button carries its own label — tooltip only on the rail.
+          The connectors tab has no blank session to start: its New control is
+          the region's own "New connector". */}
+      {tab !== 'connectors' && (
+        <Tooltip label={newLabelFull} delayMs={500} disabled={wide}>
+          <button
+            type="button"
+            className={css.newSession}
+            aria-label={newLabelFull}
+            onClick={() => { startNew() }}
+          >
+            <IconNewChatOutline16 size={wide ? 14 : 18} />
+            {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{newLabel}</span>}
+          </button>
+        </Tooltip>
+      )}
 
       {/* The browsing region fills the column between the controls and the
           foot in both states; its rail icon column rides the same slot. The

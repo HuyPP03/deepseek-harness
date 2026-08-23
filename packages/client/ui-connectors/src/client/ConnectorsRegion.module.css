@@ -60,6 +60,50 @@
   padding: 0 8px 8px 4px;
 }
 
+/* The provider roster as a card grid: two equal columns, cards keep the
+   row anatomy (dot + name + state, description, actions) in a card frame. */
+.grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 8px 8px 4px;
+}
+
+.gridCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-content: start;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  background: var(--dsw-alias-bg-layer-1);
+  cursor: pointer;
+  /* The card is the sheet's elevated surface (the l1 rung, above the base);
+     the grid's scroll container sits on it, so the l2 pair follows. */
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.card:hover {
+  border-color: var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-2);
+}
+
+.cardSelected {
+  border-color: var(--dsw-alias-accent-primary);
+}
+
 /* Centered full-height message (loading / read failure / empty roster). */
 .message {
   flex: 1;
@@ -83,10 +127,6 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: 1px solid var(--dsw-alias-border-l1);
-  background: var(--dsw-alias-bg-layer-1);
 }
 
 .rowMain {
@@ -149,6 +189,7 @@
 .rowActions {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   justify-content: flex-end;
   gap: 6px;
   margin-top: 4px;
@@ -208,6 +249,9 @@
   align-items: center;
   gap: 12px;
   padding: 8px 4px;
+  position: sticky;
+  top: 0;
+  background: var(--dsw-alias-bg-layer-1);
 }
 
 .providerName {
@@ -242,6 +286,11 @@
   align-items: center;
   justify-content: flex-end;
   padding: 4px 0;
+}
+
+/* Grid mode: the header spans both columns. */
+.list.grid .listHeader {
+  grid-column: 1 / -1;
 }
 
 .customField {

@@ -454,39 +454,41 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
       <div className={css.message}>{t('empty')}</div>
     )
   } else {
-    // Provider list: each row is a provider the user can select.
+    // Provider grid: each card is a provider the user can select.
     body = (
-      <div className={css.list}>
+      <div className={css.grid}>
         <div className={css.listHeader}>
           <Button variant="outline" size="sm" onClick={() => { openCustomDialog() }}>
             {t('custom.new.button')}
           </Button>
         </div>
-        {state.connectors.map(row => (
-          <div
-            key={row.id}
-            className={clsx(css.providerRow, state.selectedProvider === row.id && css.providerSelected)}
-            role="button"
-            tabIndex={0}
-            onClick={() => { selectProvider(row.id) }}
-            onKeyDown={(e) => { if (e.key === 'Enter') selectProvider(row.id) }}
-          >
-            <ConnectorRow
-              row={row}
-              // One operation at a time (the controller gates a second in
-              // flight), so every row action rides the same busy flag.
-              busy={state.busyId !== null}
-              error={state.opError?.id === row.id ? state.opError.message : null}
-              t={t}
-              onConfigure={openTokenDialog}
-              onConnect={(id, mode) => { void connect(id, mode) }}
-              onAuthorize={handleAuthorize}
-              onDeviceLogin={handleDeviceLogin}
-              onDisconnect={(id) => { void disconnect(id) }}
-              onRemove={(id) => { void removeCustom(id) }}
-            />
-          </div>
-        ))}
+        <div className={css.gridCards}>
+          {state.connectors.map(row => (
+            <div
+              key={row.id}
+              className={clsx(css.card, state.selectedProvider === row.id && css.cardSelected)}
+              role="button"
+              tabIndex={0}
+              onClick={() => { selectProvider(row.id) }}
+              onKeyDown={(e) => { if (e.key === 'Enter') selectProvider(row.id) }}
+            >
+              <ConnectorRow
+                row={row}
+                // One operation at a time (the controller gates a second in
+                // flight), so every row action rides the same busy flag.
+                busy={state.busyId !== null}
+                error={state.opError?.id === row.id ? state.opError.message : null}
+                t={t}
+                onConfigure={openTokenDialog}
+                onConnect={(id, mode) => { void connect(id, mode) }}
+                onAuthorize={handleAuthorize}
+                onDeviceLogin={handleDeviceLogin}
+                onDisconnect={(id) => { void disconnect(id) }}
+                onRemove={(id) => { void removeCustom(id) }}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     )
   }

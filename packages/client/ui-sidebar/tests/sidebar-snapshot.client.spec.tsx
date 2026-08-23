@@ -51,8 +51,10 @@ describe('sidebar shell snapshots', () => {
   it('renders the expanded column (wordmark, capsule, empty holes)', async () => {
     const { runtime } = await bench({ locale: 'en' })
     const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 300 })
-    // Default tab is Chats: wordmark + capsule both start a chat.
+    // Default tab is Workspaces: wordmark + capsule both start a session,
+    // and the tablist carries the third (connectors) tab.
     expect(slot.view.getAllByRole('button', { name: 'New session' })).toHaveLength(2)
+    expect(slot.view.getByRole('tab', { name: 'Connectors' })).toBeTruthy()
     expect(slot.container).toMatchSnapshot()
     await runtime.dispose()
   })
