@@ -54,6 +54,7 @@ export function apply(ctx: ClientContext): void {
     saveToken: () => controller.saveToken(),
     connect: (id, mode) => controller.connect(id, mode),
     authorize: id => controller.authorize(id),
+    deviceLogin: id => controller.deviceLogin(id),
     disconnect: id => controller.disconnect(id),
     selectProvider: id => controller.selectProvider(id),
   })

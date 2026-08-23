@@ -34,6 +34,14 @@ export interface ConnectorsRegionInjected {
   connect: (id: string, mode: 'token' | 'oauth' | 'device') => Promise<void>
   /** Begin one connector's browser OAuth flow; returns the URL to open and the flow expiry. */
   authorize: (id: string) => Promise<{ authorizationUrl: string; expiresAt: number }>
+  /** Begin one connector's device-code flow; returns the sign-in facts for the user. */
+  deviceLogin: (id: string) => Promise<{
+    status: 'device-code' | 'ready'
+    verificationUri?: string
+    userCode?: string
+    message?: string
+    expiresAt: number
+  }>
   /** Unmount one connector's servers and forget its stored credential. */
   disconnect: (id: string) => Promise<void>
   /** Select a provider to view its sessions; null returns to the provider list. */

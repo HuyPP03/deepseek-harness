@@ -3790,6 +3790,20 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         }
       },
 
+      async deviceLogin(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return err(request, connectorsAbsent())
+        const flow = ctx.get('deviceFlow')
+        if (flow === undefined) return err(request, { code: 'connector-unavailable', message: 'the device-flow engine is not composed in this deployment', details: {} })
+        const { id } = request.payload
+        try {
+          const result = await flow.begin(id)
+          return ok(request, result)
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
+      },
+
       async disconnect(request) {
         const connectors = ctx.get('connectors')
         if (connectors === undefined) return err(request, connectorsAbsent())

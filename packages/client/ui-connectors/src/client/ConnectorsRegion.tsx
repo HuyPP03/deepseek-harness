@@ -68,7 +68,7 @@ export function canDisconnect(row: ConnectorView): boolean {
  * @param props.onDisconnect - unmount and forget the credential.
  * @returns the row element.
  */
-function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize, onDisconnect }: {
+function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize, onDeviceLogin, onDisconnect }: {
   row: ConnectorView
   busy: boolean
   error: string | null
@@ -76,6 +76,7 @@ function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize
   onConfigure: (id: string) => void
   onConnect: (id: string, mode: 'token' | 'oauth' | 'device') => void
   onAuthorize: (id: string) => void
+  onDeviceLogin: (id: string) => void
   onDisconnect: (id: string) => void
 }): ReactNode {
   const mounted = row.servers.filter(server => server.mounted).length
@@ -121,8 +122,11 @@ function ConnectorRow({ row, busy, error, t, onConfigure, onConnect, onAuthorize
               disabled={busy}
               onClick={() => {
                 const oauthMethod = row.auth.find(a => a.mode === 'oauth')
+                const deviceMethod = row.auth.find(a => a.mode === 'device')
                 if (oauthMethod !== undefined) {
                   onAuthorize(row.id)
+                } else if (deviceMethod !== undefined) {
+                  onDeviceLogin(row.id)
                 } else {
                   onConnect(row.id, 'token')
                 }
@@ -215,12 +219,20 @@ function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialogProps):
 export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
   const {
     wide, expandSidebar, t, load, openTokenDialog, setDialogDraft, closeDialog,
-    saveToken, connect, authorize, disconnect, selectProvider, useConnectors,
+    saveToken, connect, authorize, deviceLogin, disconnect, selectProvider, useConnectors,
   } = props
 
   const handleAuthorize = (id: string): void => {
     void authorize(id).then(({ authorizationUrl }) => {
       window.open(authorizationUrl, '_blank', 'noopener,noreferrer')
+    }).catch(() => { /* error surfaces via the controller's opError */ })
+  }
+
+  const handleDeviceLogin = (id: string): void => {
+    void deviceLogin(id).then((result) => {
+      if (result.status === 'device-code' && result.verificationUri !== undefined) {
+        window.open(result.verificationUri, '_blank', 'noopener,noreferrer')
+      }
     }).catch(() => { /* error surfaces via the controller's opError */ })
   }
   const state = useConnectors(snapshot => snapshot)
@@ -308,6 +320,7 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
               onConfigure={openTokenDialog}
               onConnect={(id, mode) => { void connect(id, mode) }}
               onAuthorize={handleAuthorize}
+              onDeviceLogin={handleDeviceLogin}
               onDisconnect={(id) => { void disconnect(id) }}
             />
           </div>

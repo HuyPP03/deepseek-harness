@@ -56,6 +56,21 @@ export interface ConnectorApi {
   authorize(request: RpcRequest<{ id: string }>): Promise<RpcResponse<{ authorizationUrl: string; expiresAt: number }>>
 
   /**
+   * Begin one connector's device-code flow: the engine drives the provider's
+   * login tool and returns the sign-in facts the user completes in a
+   * browser. The verify poll runs server-side; the connector view
+   * transitions to `authorizing` while in flight and `connected` when the
+   * sign-in settles.
+   */
+  deviceLogin(request: RpcRequest<{ id: string }>): Promise<RpcResponse<{
+    status: 'device-code' | 'ready'
+    verificationUri?: string
+    userCode?: string
+    message?: string
+    expiresAt: number
+  }>>
+
+  /**
    * Unmount the connector's servers, remove its stored credentials and
    * token bundle, and delete its override document; the view returns to
    * `unconfigured`.

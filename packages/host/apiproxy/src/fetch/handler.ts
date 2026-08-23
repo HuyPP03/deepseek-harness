@@ -69,8 +69,8 @@ import {
 } from '../api/credentials.schema.ts'
 import {
   connectorAddRequestSchema, connectorAuthorizeRequestSchema, connectorCompleteRequestSchema,
-  connectorConfigureRequestSchema, connectorConnectRequestSchema, connectorDisconnectRequestSchema,
-  connectorListRequestSchema, connectorRemoveRequestSchema,
+  connectorConfigureRequestSchema, connectorConnectRequestSchema, connectorDeviceLoginRequestSchema,
+  connectorDisconnectRequestSchema, connectorListRequestSchema, connectorRemoveRequestSchema,
 } from '../api/connector.schema.ts'
 import { llmDiscoverModelsRequestSchema, llmModelsRequestSchema, llmProvidersRequestSchema } from '../api/llm.schema.ts'
 import {
@@ -157,6 +157,7 @@ const UNARY_ROUTES: UnaryRoutes = {
   'connector.connect': { schema: connectorConnectRequestSchema, invoke: (api, r) => api.connectors.connect(r) },
   'connector.complete': { schema: connectorCompleteRequestSchema, invoke: (api, r) => api.connectors.complete(r) },
   'connector.authorize': { schema: connectorAuthorizeRequestSchema, invoke: (api, r) => api.connectors.authorize(r) },
+  'connector.deviceLogin': { schema: connectorDeviceLoginRequestSchema, invoke: (api, r) => api.connectors.deviceLogin(r) },
   'connector.disconnect': { schema: connectorDisconnectRequestSchema, invoke: (api, r) => api.connectors.disconnect(r) },
   'connector.add': { schema: connectorAddRequestSchema, invoke: (api, r) => api.connectors.add(r) },
   'connector.remove': { schema: connectorRemoveRequestSchema, invoke: (api, r) => api.connectors.remove(r) },

@@ -79,7 +79,7 @@ export class ConnectorsSectionController {
 
   // Only the operations the region drives; the wider connector domain
   // (complete, add, remove) stays host-side until the flow engine lands.
-  constructor(private readonly api: { connectors: Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize'> }) {}
+  constructor(private readonly api: { connectors: Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin'> }) {}
 
   private get state(): ConnectorsSectionState {
     return this.store.getSnapshot()
@@ -201,6 +201,27 @@ export class ConnectorsSectionController {
    */
   async connect(id: string, mode: 'token' | 'oauth' | 'device' = 'token'): Promise<void> {
     return this.runRowOperation(id, () => this.api.connectors.connect({ id, mode }))
+  }
+
+  /**
+   * Begin the named connector's device-code flow: the host drives the
+   * provider's login tool and returns the sign-in facts the user completes
+   * in a browser. The verify poll runs server-side; the connector view
+   * transitions to `authorizing` while in flight and `connected` when the
+   * sign-in settles.
+   * @param id - the connector to device-login.
+   * @returns the device code facts.
+   */
+  async deviceLogin(id: string): Promise<{
+    status: 'device-code' | 'ready'
+    verificationUri?: string
+    userCode?: string
+    message?: string
+    expiresAt: number
+  }> {
+    const response = await this.api.connectors.deviceLogin({ id })
+    if (!response.result.ok) throw new Error(response.result.error.message)
+    return response.result.value
   }
 
   /**
