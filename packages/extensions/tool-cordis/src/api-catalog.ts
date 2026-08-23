@@ -542,14 +542,20 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'message', description: 'the failure to surface.' }],
       },
       {
+        signature: 'async settleAuthFlow(id: string): Promise<void>',
+        description: 'Settle an auth flow that completed without a stored credential (a device login): clear the authorizing flag, drop any recorded failure, and republish the connector\'s view.',
+        parameters: [{ name: 'id', description: 'the connector the flow settled for.' }],
+      },
+      {
         signature: 'async configure(id: string, fields: ConnectorConfigureFields): Promise<void>',
         description: 'Configure one connector: store the provided credential values through the credentials seam, persist the non-secret fields in its override document, and — for a token method that is fully configured for the first time — mount its servers.',
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'fields', description: 'the fields to set; absent fields are left untouched.' }],
       },
       {
-        signature: 'async connect(id: string, mode: \'token\' | \'oauth\' | \'device\'): Promise<void>',
-        description: 'Connect one connector: mount its servers with every slot resolved. `token` mode resolves now; `oauth` mode mounts through the stored token bundle (refreshing it through the flow engine when one is composed); `device` mode refuses until its flow engine lands.',
+        signature: 'async connect(id: string, mode: \'token\' | \'oauth\' | \'device\'): Promise<DeviceFlowStart | undefined>',
+        description: 'Connect one connector: mount its servers with every slot resolved. `token` mode resolves now; `oauth` mode mounts through the stored token bundle (refreshing it through the flow engine when one is composed); `device` mode mounts first, then hands the mount to the device-code flow engine, which drives the provider\'s login tool and settles the state in the background.',
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'mode', description: 'the auth mode to connect through.' }],
+        returns: 'the device flow\'s start facts for a `device` connect; `undefined` otherwise.',
         throws: ['{@link ConnectorAuthPendingError} when an oauth connector has no stored bundle yet.'],
       },
       {
@@ -3167,6 +3173,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'DeviceAuthMethod',
     declaration: 'export interface DeviceAuthMethod {\n    readonly mode: \'device\';\n    readonly howTo?: string;\n    readonly loginTool?: string;\n    readonly verifyTool?: string;\n}',
+  },
+  {
+    name: 'DeviceFlowStart',
+    declaration: 'export interface DeviceFlowStart {\n    verificationUri?: string;\n    userCode?: string;\n    message?: string;\n    expiresAt: number;\n    status: \'device-code\' | \'ready\';\n}',
   },
   {
     name: 'DiffCallView',

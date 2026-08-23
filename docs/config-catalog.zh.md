@@ -579,6 +579,22 @@ export interface Config {
 
 来源：[`packages/connectors/connectors/src/index.ts:72`](../packages/connectors/connectors/src/index.ts)
 
+<a id="deepseek-aidsh-connectors-device-flow"></a>
+
+## `@deepseek-ai/dsh-connectors-device-flow`
+
+```ts config-catalog
+/** Plugin config: the flow window and the verify poll cadence. */
+export interface Config {
+  /** How long one flow may wait for the sign-in; defaults to 900000 (15 minutes). */
+  flowTimeoutMs?: number
+  /** How often the verify tool is polled; defaults to 5000 (5 seconds). */
+  pollIntervalMs?: number
+}
+```
+
+来源：[`packages/connectors/device-flow/src/index.ts:32`](../packages/connectors/device-flow/src/index.ts)
+
 <a id="deepseek-aidsh-connectors-oauth-flow"></a>
 
 ## `@deepseek-ai/dsh-connectors-oauth-flow`

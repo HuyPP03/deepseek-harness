@@ -98,6 +98,14 @@ overrideClientId(id: string): string | undefined
 async recordFlowFailure(id: string, message: string): Promise<void>
 
 /**
+ * Settle an auth flow that completed without a stored credential (a
+ * device login): clear the authorizing flag, drop any recorded failure,
+ * and republish the connector's view.
+ * @param id - the connector the flow settled for.
+ */
+async settleAuthFlow(id: string): Promise<void>
+
+/**
  * Configure one connector: store the provided credential values through
  * the credentials seam, persist the non-secret fields in its override
  * document, and — for a token method that is fully configured for the
@@ -112,13 +120,16 @@ async configure(id: string, fields: ConnectorConfigureFields): Promise<void>
  * Connect one connector: mount its servers with every slot resolved.
  * `token` mode resolves now; `oauth` mode mounts through the stored token
  * bundle (refreshing it through the flow engine when one is composed);
- * `device` mode refuses until its flow engine lands.
+ * `device` mode mounts first, then hands the mount to the device-code flow
+ * engine, which drives the provider's login tool and settles the state in
+ * the background.
  *
  * @param id - the connector id.
  * @param mode - the auth mode to connect through.
  * @throws {@link ConnectorAuthPendingError} when an oauth connector has no stored bundle yet.
+ * @returns the device flow's start facts for a `device` connect; `undefined` otherwise.
  */
-async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<void>
+async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<DeviceFlowStart | undefined>
 
 /**
  * Disconnect one connector: unmount its servers, remove its stored
@@ -146,7 +157,7 @@ async addCustom(spec: AddCustomSpec): Promise<string>
 async removeCustom(id: string): Promise<void>
 ```
 
-Source: [`packages/connectors/connectors/src/index.ts:240`](../../packages/connectors/connectors/src/index.ts)
+Source: [`packages/connectors/connectors/src/index.ts:244`](../../packages/connectors/connectors/src/index.ts)
 
 <a id="ctxoauthtokens--oauthtokenstore"></a>
 
@@ -213,7 +224,7 @@ A connector's derived state changed as the result of a connector operation (conf
 'connector/state'(connectorId: string, state: ConnectorState): void
 ```
 
-Source: [`packages/connectors/connectors/src/types.ts:254`](../../packages/connectors/connectors/src/types.ts)
+Source: [`packages/connectors/connectors/src/types.ts:297`](../../packages/connectors/connectors/src/types.ts)
 
 <a id="oauth-tokens-events"></a>
 

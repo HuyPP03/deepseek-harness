@@ -102,7 +102,7 @@ function successResult(text: string): ToolExecutionResult {
 }
 
 function failureResult(text: string): ToolExecutionResult {
-  return { isError: true, error: { code: 'ERROR', message: text }, content: [{ type: 'text', text }] }
+  return { isError: true, error: { message: text }, content: [{ type: 'text', text }] }
 }
 
 const M365_YML = [
