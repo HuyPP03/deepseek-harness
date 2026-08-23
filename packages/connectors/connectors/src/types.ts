@@ -175,6 +175,49 @@ export interface ConnectorAuthFlow {
   ensureFresh(id: string): Promise<void>
 }
 
+/**
+ * The device-code flow's start result: what the client shows the user while
+ * the provider-side sign-in runs.
+ */
+export interface DeviceFlowStart {
+  /** The sign-in page to open, for a device-code start. */
+  verificationUri?: string
+  /** The one-time code to enter on the sign-in page, for a device-code start. */
+  userCode?: string
+  /** The provider's full sign-in instruction, for a device-code start. */
+  message?: string
+  /** When the in-flight flow settles on its own (timeout), epoch milliseconds. */
+  expiresAt: number
+  /** Whether the user must complete a sign-in, or the server was already authenticated. */
+  status: 'device-code' | 'ready'
+}
+
+/**
+ * The contract the optional device-code flow engine satisfies on the host
+ * plane, mirroring {@link ConnectorAuthFlow}: the connectors service mounts
+ * the connector's servers first, then the engine drives the provider's
+ * server-side login and verify tools and settles the connector's state.
+ * The dependency stays one-way (engine imports connectors, never the
+ * reverse).
+ */
+export interface ConnectorDeviceFlow {
+  /**
+   * Begin one connector's device-code flow over its mounted server: drive
+   * the login tool, parse the provider's sign-in instruction, and poll the
+   * verify tool in the background until it settles or the window closes.
+   * @param id - the connector id with a `device` auth method.
+   * @returns the start facts for the client to show, or `ready` when the
+   *   server was already authenticated.
+   */
+  begin(id: string): Promise<DeviceFlowStart>
+  /**
+   * Cancel one in-flight flow without recording an error: polling stops and
+   * the connector's servers unmount.
+   * @param id - the connector id.
+   */
+  cancel(id: string): void
+}
+
 /** Connection lifecycle state of one connector, derived at read time. */
 export type ConnectorState =
   | 'unconfigured'

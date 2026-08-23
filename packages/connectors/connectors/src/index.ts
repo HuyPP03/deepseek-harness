@@ -39,6 +39,8 @@ import { McpServerExistsError, type McpServerSpec, type StdioServerSpec, type St
 import { parseConnectorManifest, CUSTOM_CONNECTOR_ID } from './manifest.ts'
 import type {
   ConnectorAuthFlow,
+  ConnectorDeviceFlow,
+  DeviceFlowStart,
   ConnectorAuthMethod,
   TokenAuthMethod,
   ConnectorAuthView,
@@ -70,6 +72,8 @@ declare module '@deepseek-ai/cordis' {
     connectors: Connectors
     /** The connector OAuth flow engine, where the deployment composes one. */
     oauthFlow?: ConnectorAuthFlow
+    /** The connector device-code flow engine, where the deployment composes one. */
+    deviceFlow?: ConnectorDeviceFlow
   }
 }
 
@@ -345,6 +349,20 @@ export class Connectors extends Service {
   }
 
   /**
+   * Settle an auth flow that completed without a stored credential (a
+   * device login): clear the authorizing flag, drop any recorded failure,
+   * and republish the connector's view.
+   * @param id - the connector the flow settled for.
+   */
+  async settleAuthFlow(id: string): Promise<void> {
+    const manifest = this.find(id)
+    if (manifest === undefined) return
+    this.setAuthorizing(id, false)
+    this.lastError.delete(id)
+    this.publish(manifest, await this.view(manifest))
+  }
+
+  /**
    * Configure one connector: store the provided credential values through
    * the credentials seam, persist the non-secret fields in its override
    * document, and — for a token method that is fully configured for the
@@ -418,19 +436,39 @@ export class Connectors extends Service {
    * Connect one connector: mount its servers with every slot resolved.
    * `token` mode resolves now; `oauth` mode mounts through the stored token
    * bundle (refreshing it through the flow engine when one is composed);
-   * `device` mode refuses until its flow engine lands.
+   * `device` mode mounts first, then hands the mount to the device-code flow
+   * engine, which drives the provider's login tool and settles the state in
+   * the background.
    *
    * @param id - the connector id.
    * @param mode - the auth mode to connect through.
    * @throws {@link ConnectorAuthPendingError} when an oauth connector has no stored bundle yet.
+   * @returns the device flow's start facts for a `device` connect; `undefined` otherwise.
    */
-  async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<void> {
+  async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<DeviceFlowStart | undefined> {
     const manifest = this.require(id)
     const method = manifest.auth.find(entry => entry.mode === mode)
     if (method === undefined) {
       throw new Error(`connectors: connector "${id}" supports no ${mode} auth`)
     }
-    if (mode === 'device') throw new ConnectorAuthUnavailableError(id, 'device')
+    if (mode === 'device') {
+      const flow = this.ctx.get('deviceFlow')
+      if (flow === undefined) throw new ConnectorAuthUnavailableError(id, 'device')
+      await this.mountServers(manifest)
+      try {
+        const started = await flow.begin(id)
+        this.lastError.delete(id)
+        this.publish(manifest, await this.view(manifest))
+        return started
+      } catch (error) {
+        // The login tool refused or the server went down mid-flow: roll the
+        // mount back so a failed connect leaves no partial trace, and
+        // surface the failure as the connector's error state.
+        await this.unmountServers(manifest)
+        this.recordFlowFailure(id, error instanceof Error ? error.message : String(error))
+        throw error
+      }
+    }
     if (mode === 'oauth') {
       // The browser flow (connector.authorize) stores the bundle first; a
       // stored one may be refreshable before the mount presents it.
@@ -709,6 +747,18 @@ export class Connectors extends Service {
           throw new Error(`connectors: server name "${server.serverName}" of connector "${manifest.id}" is already taken by another MCP server`, { cause: error })
         }
         throw error
+      }
+    }
+  }
+
+  /**
+   * Unmount every server the manifest declares, for a rolled-back connect.
+   * @param manifest - the manifest whose servers to remove.
+   */
+  private async unmountServers(manifest: ConnectorManifest): Promise<void> {
+    for (const server of manifest.servers) {
+      if (this.ctx.mcpManager.userServers().includes(server.serverName)) {
+        await this.ctx.mcpManager.remove(server.serverName)
       }
     }
   }
