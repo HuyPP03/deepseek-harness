@@ -58,6 +58,7 @@
     "@deepseek-ai/dsh-compaction-basic": "workspace:^",
     "@deepseek-ai/dsh-compaction-tool-result-pruner": "workspace:^",
     "@deepseek-ai/dsh-connectors": "workspace:^",
+    "@deepseek-ai/dsh-connectors-device-flow": "workspace:^",
     "@deepseek-ai/dsh-connectors-oauth-flow": "workspace:^",
     "@deepseek-ai/dsh-credentials-local": "workspace:^",
     "@deepseek-ai/dsh-credentials-oauth-tokens": "workspace:^",

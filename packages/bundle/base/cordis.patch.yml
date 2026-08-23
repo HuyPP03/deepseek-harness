@@ -331,6 +331,12 @@
     - id: oauth-flow
       name: '@deepseek-ai/dsh-connectors-oauth-flow'
 
+    # The connector device-code flow engine: drives the provider's
+    # server-side login and verify tools, parses the sign-in instruction,
+    # and polls until the sign-in settles or the window closes.
+    - id: device-flow
+      name: '@deepseek-ai/dsh-connectors-device-flow'
+
     - id: subagent
       name: '@deepseek-ai/dsh-subagent'
 

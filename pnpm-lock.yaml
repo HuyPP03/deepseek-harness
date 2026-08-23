@@ -1049,6 +1049,9 @@ importers:
       '@deepseek-ai/dsh-connectors':
         specifier: workspace:^
         version: link:../../connectors/connectors
+      '@deepseek-ai/dsh-connectors-device-flow':
+        specifier: workspace:^
+        version: link:../../connectors/device-flow
       '@deepseek-ai/dsh-connectors-oauth-flow':
         specifier: workspace:^
         version: link:../../connectors/oauth-flow
