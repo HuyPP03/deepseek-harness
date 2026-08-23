@@ -53,9 +53,11 @@ export function SidebarRoot({
   renderSlot,
 }: SidebarRootComponentProps) {
   const tab = useStore(state => state.tab)
-  const startNew = tab === 'chats' ? startChat : () => { startSession() }
-  const newLabel = tab === 'chats' ? t('chat.new') : t('session.new')
-  const newLabelFull = tab === 'chats' ? t('chat.new.label') : t('session.new.label')
+  // The New control on the connectors tab starts a chat: connections are a
+  // destination, and a workspace session has nothing to do with them.
+  const startNew = tab === 'workspaces' ? () => { startSession() } : startChat
+  const newLabel = tab === 'workspaces' ? t('session.new') : t('chat.new')
+  const newLabelFull = tab === 'workspaces' ? t('session.new.label') : t('chat.new.label')
   // Wide content stays mounted while the collapse animates (fading via
   // .collapsed .wide), unmounts at settle, and remounts right away on expand.
   const [settled, setSettled] = useState(collapsed)
@@ -168,7 +170,7 @@ export function SidebarRoot({
           persisted tab. */}
       {wide && (
         <div className={css.tabs} role="tablist" aria-label={t('tabs.label')}>
-          {(['chats', 'workspaces'] as const).map(candidate => (
+          {(['chats', 'workspaces', 'connectors'] as const).map(candidate => (
             <button
               key={candidate}
               type="button"
@@ -177,7 +179,7 @@ export function SidebarRoot({
               className={clsx(css.tab, tab === candidate && css.tabActive)}
               onClick={() => { if (tab !== candidate) actions.setTab(candidate) }}
             >
-              {t(candidate === 'chats' ? 'tab.chats' : 'tab.workspaces')}
+              {t(candidate === 'chats' ? 'tab.chats' : candidate === 'workspaces' ? 'tab.workspaces' : 'tab.connectors')}
             </button>
           ))}
         </div>
@@ -197,13 +199,19 @@ export function SidebarRoot({
       </Tooltip>
 
       {/* The browsing region fills the column between the controls and the
-          foot in both states; its rail icon column rides the same slot. */}
+          foot in both states; its rail icon column rides the same slot. The
+          connectors tab swaps the region for its own registrant. */}
       <div className={css.regionArea}>
-        {renderSlot('sidebar.workspaces', {
-          wide,
-          expandSidebar: () => { if (collapsed) toggleSidebar() },
-          tab,
-        })}
+        {tab === 'connectors'
+          ? renderSlot('sidebar.connectors', {
+            wide,
+            expandSidebar: () => { if (collapsed) toggleSidebar() },
+          })
+          : renderSlot('sidebar.workspaces', {
+            wide,
+            expandSidebar: () => { if (collapsed) toggleSidebar() },
+            tab,
+          })}
       </div>
 
       {/* Footer actions stack above Settings in both sidebar widths. */}

@@ -146,6 +146,14 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       >
         Workspaces
       </button>
+      <button
+        aria-selected="false"
+        class="tab"
+        role="tab"
+        type="button"
+      >
+        Connectors
+      </button>
     </div>
     <button
       aria-label="New chat"
@@ -260,6 +268,14 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
         type="button"
       >
         工作区
+      </button>
+      <button
+        aria-selected="false"
+        class="tab"
+        role="tab"
+        type="button"
+      >
+        连接
       </button>
     </div>
     <button

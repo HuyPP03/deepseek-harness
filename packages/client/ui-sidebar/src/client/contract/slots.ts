@@ -24,6 +24,12 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'sidebar.workspaces': { kind: 'single'; scope: 'root'; owner: SidebarSectionOwnerProps }
     /**
+     * The predefined external connections browsing region, shown when the
+     * shell's active tab is 'connectors'. Declared by this package's 'sidebar'
+     * entry; ui-connectors registers the roster region.
+     */
+    'sidebar.connectors': { kind: 'single'; scope: 'root'; owner: SidebarConnectorsOwnerProps }
+    /**
      * The settings seat at the sidebar foot. Declared by this package's
      * 'sidebar' entry; ui-settings registers its trigger row + modal panel.
      * The sidebar passes only its column state — it holds no settings state.
@@ -49,6 +55,13 @@ export interface SidebarSectionOwnerProps {
   /** The shell's active browsing tab: the ungrouped chat rows or the workspace tree. */
   tab: SidebarTab
 }
+
+/**
+ * Owner share of the connectors hole: the same column state as the browser
+ * hole (this region never receives `tab` — the shell renders it only on the
+ * connectors tab).
+ */
+export type SidebarConnectorsOwnerProps = Pick<SidebarSectionOwnerProps, 'wide' | 'expandSidebar'>
 
 /**
  * Owner share of the sidebar settings seat: the column display state the
@@ -93,6 +106,6 @@ export type SidebarRootInjected = {
  */
 export type SidebarRootComponentProps =
   PropsRuntime<'sidebar'>
-  & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.settings' | 'sidebar.footer.action'>
+  & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.connectors' | 'sidebar.settings' | 'sidebar.footer.action'>
   & PropsStore<ReturnType<typeof createSidebarStore>>
   & SidebarRootInjected & PropsLocale<'sidebar'>

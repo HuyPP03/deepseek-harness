@@ -255,6 +255,11 @@
     - id: ui-workspace
       name: '@deepseek-ai/dsh-client-ui-workspace'
 
+    # The connectors browsing region on the sidebar's connectors tab: the
+    # secret-free roster with connect / configure / disconnect.
+    - id: ui-connectors
+      name: '@deepseek-ai/dsh-client-ui-connectors'
+
     # Input triggers: the '/' | '@' pipeline (ui-input-trigger), the command surface over
     # it (ui-commands), and the three reference sources (ui-skill / ui-subagent / ui-file-mention).
     - id: ui-input-trigger

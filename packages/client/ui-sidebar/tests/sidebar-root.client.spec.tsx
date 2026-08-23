@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
 import type {
-  SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarSectionOwnerProps,
+  SidebarConnectorsOwnerProps, SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarSectionOwnerProps,
   SidebarSettingsOwnerProps,
 } from '../src/client/contract/slots.ts'
 import { SidebarRoot } from '../src/client/SidebarRoot.tsx'
@@ -30,7 +30,7 @@ const neverHook = (() => { throw new Error('shell must not read global hooks') }
 function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
   collapsed?: boolean
   width?: number
-  tab?: 'chats' | 'workspaces'
+  tab?: 'chats' | 'workspaces' | 'connectors'
 } = {}) {
   const startSession = vi.fn()
   const startChat = vi.fn()
@@ -38,6 +38,7 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
   const store = createSidebarStore().create()
   store.actions.setTab(tab)
   let regionOwner: SidebarSectionOwnerProps | undefined
+  let connectorsOwner: SidebarConnectorsOwnerProps | undefined
   let settingsOwner: SidebarSettingsOwnerProps | undefined
   let footerActionOwner: SidebarFooterActionOwnerProps | undefined
   let current = { collapsed, width }
@@ -49,7 +50,7 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
       useStore={bindSnapshotSelector(store)} actions={store.actions}
       renderSlot={((
         key: string,
-        owner: SidebarFooterActionOwnerProps | SidebarSectionOwnerProps | SidebarSettingsOwnerProps,
+        owner: SidebarConnectorsOwnerProps | SidebarFooterActionOwnerProps | SidebarSectionOwnerProps | SidebarSettingsOwnerProps,
       ) => {
         if (key === 'sidebar.settings') {
           settingsOwner = owner
@@ -58,6 +59,12 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
         if (key === 'sidebar.footer.action') {
           footerActionOwner = owner
           return <div data-testid="footer-action-seat" data-wide={owner.wide} />
+        }
+        if (key === 'sidebar.connectors') {
+          // The union collapses to the widest member; the cast names the
+          // branch's actual owner (the stub's parameter is a union stand-in).
+          connectorsOwner = owner as SidebarConnectorsOwnerProps
+          return <div data-testid="connectors-region" data-wide={owner.wide} />
         }
         regionOwner = owner as SidebarSectionOwnerProps
         return <div data-testid="region" data-wide={owner.wide} />
@@ -73,6 +80,10 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
     regionOwner: () => {
       if (regionOwner === undefined) throw new Error('region owner not rendered')
       return regionOwner
+    },
+    connectorsOwner: () => {
+      if (connectorsOwner === undefined) throw new Error('connectors owner not rendered')
+      return connectorsOwner
     },
     settingsOwner: () => {
       if (settingsOwner === undefined) throw new Error('settings owner not rendered')
@@ -132,6 +143,37 @@ describe('SidebarRoot shell', () => {
     expect(screen.queryAllByRole('tab')).toHaveLength(0)
     expect(screen.getByRole('button', { name: 'New chat' })).toBeTruthy()
     cleanup()
+  })
+
+  it('swaps the browsing region for the connectors registrant on the connectors tab', () => {
+    const b = mountShell({ tab: 'connectors' })
+    // The workspaces region is not rendered at all; the connectors owner
+    // carries the column state but no tab (the shell renders it on one tab).
+    expect(screen.queryByTestId('region')).toBeNull()
+    expect(screen.getByTestId('connectors-region')).toBeTruthy()
+    const owner = b.connectorsOwner()
+    expect(owner.wide).toBe(true)
+    expect('tab' in owner).toBe(false)
+    owner.expandSidebar()
+    expect(b.toggleSidebar).not.toHaveBeenCalled()
+
+    // The New control on the connectors tab starts a chat.
+    for (const button of screen.getAllByRole('button', { name: 'New chat' })) fireEvent.click(button)
+    expect(b.startChat).toHaveBeenCalledTimes(2)
+    expect(b.startSession).not.toHaveBeenCalled()
+
+    // Switching back restores the workspaces region with the tab handed over.
+    fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
+    expect(screen.getByTestId('region')).toBeTruthy()
+    expect(screen.queryByTestId('connectors-region')).toBeNull()
+    expect(b.regionOwner().tab).toBe('chats')
+  })
+
+  it('expands on the connectors region request when the column is collapsed', () => {
+    const b = mountShell({ tab: 'connectors', collapsed: true })
+    expect(b.connectorsOwner().wide).toBe(false)
+    b.connectorsOwner().expandSidebar()
+    expect(b.toggleSidebar).toHaveBeenCalledOnce()
   })
 
   it('hands the region its wide flag and clamps expandSidebar to the collapsed state', () => {
