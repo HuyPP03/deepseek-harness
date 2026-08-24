@@ -35,6 +35,7 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
   const startSession = vi.fn()
   const startChat = vi.fn()
   const toggleSidebar = vi.fn()
+  const setCenterView = vi.fn()
   const store = createSidebarStore().create()
   store.actions.setTab(tab)
   let regionOwner: SidebarSectionOwnerProps | undefined
@@ -46,7 +47,8 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
     <SidebarRoot
       collapsed={current.collapsed} width={current.width}
       useSessions={neverHook} useWorkspaces={neverHook}
-      startSession={startSession} startChat={startChat} toggleSidebar={toggleSidebar} t={t}
+      startSession={startSession} startChat={startChat} toggleSidebar={toggleSidebar}
+      setCenterView={setCenterView} t={t}
       useStore={bindSnapshotSelector(store)} actions={store.actions}
       renderSlot={((
         key: string,
@@ -77,6 +79,7 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
     startChat,
     store,
     toggleSidebar,
+    setCenterView,
     regionOwner: () => {
       if (regionOwner === undefined) throw new Error('region owner not rendered')
       return regionOwner
@@ -146,6 +149,25 @@ describe('SidebarRoot shell', () => {
     expect(screen.queryAllByRole('tab')).toHaveLength(0)
     expect(screen.getByRole('button', { name: 'New chat' })).toBeTruthy()
     cleanup()
+  })
+
+  it('mirrors the browsing tab into the center view (connectors shows the directory)', () => {
+    const b = mountShell()
+    // Mount syncs the persisted tab (workspaces) to the conversation view,
+    // and exactly once — an unchanged tab issues no further writes.
+    expect(b.setCenterView).toHaveBeenCalledTimes(1)
+    expect(b.setCenterView).toHaveBeenCalledWith('conversation')
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Connectors' }))
+    expect(b.setCenterView).toHaveBeenLastCalledWith('connectors')
+    fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
+    expect(b.setCenterView).toHaveBeenLastCalledWith('conversation')
+    expect(b.setCenterView).toHaveBeenCalledTimes(3)
+    cleanup()
+
+    // A cold mount on the connectors tab syncs the directory view too.
+    const c = mountShell({ tab: 'connectors' })
+    expect(c.setCenterView).toHaveBeenCalledWith('connectors')
   })
 
   it('swaps the browsing region for the connectors registrant on the connectors tab', () => {

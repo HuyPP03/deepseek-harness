@@ -9,8 +9,9 @@
  */
 import type { PropsLocale, PropsRenderSlots, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 // Type-only: pulls ui-layout's SlotMap merge (the 'sidebar' entry) into every
-// program that sees this contract, so PropsRuntime<'sidebar'> resolves.
-import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
+// program that sees this contract, so PropsRuntime<'sidebar'> resolves, and
+// the CenterView union the tab-sync action writes.
+import type { CenterView } from '@deepseek-ai/dsh-client-ui-layout/client'
 import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 import type { createSidebarStore, SidebarTab } from '../stores.ts'
 
@@ -97,6 +98,12 @@ export type SidebarRootInjected = {
   startChat: () => void
   /** Toggle the sidebar column through the layout service. */
   toggleSidebar: () => void
+  /**
+   * Switch the center column's full-column view through the layout service:
+   * the shell mirrors its active browsing tab (the connectors tab shows the
+   * directory overlay, the others the conversation).
+   */
+  setCenterView: (view: CenterView) => void
 }
 
 /**

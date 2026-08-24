@@ -40,6 +40,10 @@ export function apply(ctx: ClientContext): void {
     startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
     startChat: () => { void ctx.workspaces.startChat().then((id) => { ctx.sessions.open(id) }) },
     toggleSidebar: () => { ctx.layout.toggleSidebar() },
+    // The shell mirrors its active browsing tab into the layout's center
+    // view (the connectors tab shows the directory overlay over the center
+    // column; the frame renders against the store value).
+    setCenterView: (view) => { ctx.layout.setCenterView(view) },
   })
   ctx.effect(
     () => ctx.slots.register({

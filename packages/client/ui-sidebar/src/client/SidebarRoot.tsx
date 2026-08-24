@@ -47,12 +47,20 @@ export function SidebarRoot({
   startSession,
   startChat,
   toggleSidebar,
+  setCenterView,
   t,
   useStore,
   actions,
   renderSlot,
 }: SidebarRootComponentProps) {
   const tab = useStore(state => state.tab)
+  // The browsing tab drives the center column's full-column view: the
+  // connectors tab shows the directory overlay over the conversation, the
+  // other tabs the conversation. An effect (not the click handler) so the
+  // persisted tab restored on mount syncs too.
+  useEffect(() => {
+    setCenterView(tab === 'connectors' ? 'connectors' : 'conversation')
+  }, [tab, setCenterView])
   // The New control follows the active tab: Chats mints the ungrouped blank
   // chat (a chat is what the Chats tab lists), Workspaces starts a session.
   // The connectors tab has no New control at all: the region's own
