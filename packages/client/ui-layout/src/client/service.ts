@@ -9,7 +9,7 @@
  * declared action set, delivered as the registration's bound actions.
  */
 import type { BoundActions } from '@deepseek-ai/dsh-client-ui-slots'
-import type { createLayoutStore } from './stores.ts'
+import type { CenterView, createLayoutStore } from './stores.ts'
 
 /** The layout store's bound action set (framework-baked, draft params peeled). */
 export type PanelActions = BoundActions<ReturnType<typeof createLayoutStore>>
@@ -23,6 +23,12 @@ export type PanelActions = BoundActions<ReturnType<typeof createLayoutStore>>
 export interface ILayout {
   /** Toggle the sidebar panel (closed ⟷ contract default width). */
   toggleSidebar(): void
+  /**
+   * Switch the center column's full-column view (the resident conversation
+   * and the connectors directory overlay). The sidebar's browsing tab is the
+   * driver; the frame renders against the store value.
+   */
+  setCenterView(view: CenterView): void
   /** Open the details panel (no-op when already open). */
   openDetails(): void
   /** Close the details panel. */
@@ -47,6 +53,11 @@ export class LayoutController implements ILayout {
   /** Toggle the sidebar panel (closed ⟷ contract default width). */
   toggleSidebar(): void {
     this.#require().toggleSidebar()
+  }
+
+  /** Switch the center column's full-column view (see {@link ILayout.setCenterView}). */
+  setCenterView(view: CenterView): void {
+    this.#require().setCenterView(view)
   }
 
   /** Open the details panel (no-op when already open). */
