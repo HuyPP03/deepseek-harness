@@ -62,6 +62,18 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'conversation': { kind: 'single'; scope: 'session-maybe'; owner: ConvOwnerProps }
     /**
+     * The full-column overlay above the center column, rendered while the
+     * layout store's centerView is 'connectors' (the sidebar's connectors
+     * tab drives it). OCCUPIED by ui-connectors' connectors directory — the
+     * big browse cards and the selected provider's detail. The conversation
+     * underneath stays mounted, so switching views back and forth keeps its
+     * state.
+     *
+     * No owner props: the directory's roster and actions arrive through its
+     * own inject face.
+     */
+    'main.connectors': { kind: 'single'; scope: 'root' }
+    /**
      * The right details column, shown when the layout opens it. OCCUPIED by
      * ui-conversation's DetailsPanel, which declares the tool-details seat
      * inside it — registering here replaces the column and takes that seat
@@ -123,6 +135,7 @@ export function apply(ctx: ClientContext): void {
       children: {
         'sidebar': { kind: 'single', scope: 'root' },
         'conversation': { kind: 'single', scope: 'session-maybe' },
+        'main.connectors': { kind: 'single', scope: 'root' },
         'details': { kind: 'single', scope: 'session' },
         'shell.overlay': { kind: 'list', scope: 'root' },
       },

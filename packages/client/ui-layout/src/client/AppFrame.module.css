@@ -34,6 +34,21 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  position: relative; /* anchors the connectors overlay */
+}
+
+/* The connectors directory overlay: covers the center column while the
+   layout store's centerView is 'connectors'. Below the drag handles
+   (z-index 2) and the frame overlay layer (z-index 20); the conversation
+   underneath stays mounted and keeps its state. */
+.centerOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--dsw-alias-bg-base);
 }
 
 .detailsCol {
