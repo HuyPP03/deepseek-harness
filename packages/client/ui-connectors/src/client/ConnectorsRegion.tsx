@@ -6,17 +6,21 @@
  * link icon that requests expansion; the shell renders this region only on
  * the connectors tab, so no tab state crosses the boundary.
  */
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
 import {
   Button, IconLinkOutline16, Input, Modal, StateDot, Tooltip, type StateDotState,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ConnectorState, ConnectorView } from '@deepseek-ai/dsh-api-remotes/client'
+import type { SessionSummary } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ConnectorsRegionProps } from './contract/slots.ts'
 import type { ConnectTokenDialog, CustomConnectorDialog } from './controller.ts'
 import type { ConnectorsKey } from './locales.ts'
 import css from './ConnectorsRegion.module.css'
+
+/** The stable empty list the provider-session memo returns when no provider is selected. */
+const EMPTY_SESSIONS: readonly SessionSummary[] = []
 
 /** Each derived state's `state.*` copy key (the translate takes the union, not a template). */
 const STATE_KEY: Record<ConnectorState, ConnectorsKey> = {
@@ -393,6 +397,21 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
     }).catch(() => { /* error surfaces via the controller's opError */ })
   }
   const state = useConnectors(snapshot => snapshot)
+  // The session list is the whole snapshot (a stable reference between
+  // changes); the provider's chats are derived below with useMemo rather
+  // than a per-render array inside a conditional selector — the hook must
+  // run on every render regardless of the selected provider.
+  const sessionList = useSessions(snapshot => snapshot)
+  const providerSessions: readonly SessionSummary[] = useMemo(() => {
+    if (state.selectedProvider === null) return EMPTY_SESSIONS
+    const provider = state.connectors.find(c => c.id === state.selectedProvider)
+    if (provider === undefined) return EMPTY_SESSIONS
+    return sessionList.ids
+      .map(id => sessionList.byId[id])
+      .filter((entry): entry is SessionSummary =>
+        entry !== undefined && !entry.blank && entry.agentPreset === provider.presetId)
+      .sort((a, b) => b.updatedAt - a.updatedAt)
+  }, [state.selectedProvider, state.connectors, sessionList])
   // The roster read is the region's own: it re-reads on every mount (a tab
   // switch remounts the region), so the view is as fresh as the host.
   useEffect(() => {
@@ -438,13 +457,6 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
     if (provider === undefined) {
       body = <div className={css.message}>{t('empty')}</div>
     } else {
-      const sessions = useSessions(snapshot =>
-        snapshot.ids
-          .map(id => snapshot.byId[id])
-          .filter((entry): entry is NonNullable<typeof entry> =>
-            entry !== undefined && !entry.blank && entry.agentPreset === provider.presetId)
-          .sort((a, b) => b.updatedAt - a.updatedAt),
-      )
       body = (
         <div className={css.list}>
           <div className={css.providerHeader}>
@@ -462,11 +474,11 @@ export function ConnectorsRegion(props: ConnectorsRegionProps): ReactNode {
           {provider.state !== 'connected' && (
             <div className={css.message}>{t('sessions.placeholder')}</div>
           )}
-          {provider.state === 'connected' && (sessions.length === 0
+          {provider.state === 'connected' && (providerSessions.length === 0
             ? <div className={css.message}>{t('sessions.empty')}</div>
             : (
               <div className={css.sessionList}>
-                {sessions.map(entry => (
+                {providerSessions.map(entry => (
                   <div
                     key={entry.id}
                     className={css.sessionRow}

@@ -118,7 +118,10 @@ function renderRegion(
       ),
     useConnectors: bindSnapshotSelector(store),
     ...actions,
-    useSessions: (selector: (s: SessionListState) => unknown) => selector(options.sessions ?? SESSIONS),
+    // A real hook binding (the renderer's own mechanism), not a plain
+    // selector call: a conditionally called useSessions must trip React's
+    // hook-order check in the test exactly as it does in the browser.
+    useSessions: bindSnapshotSelector(createSnapshotStore(options.sessions ?? SESSIONS)),
   }
   const viewApi = render(<ConnectorsRegion {...(props as unknown as ConnectorsRegionProps)} />)
   return { ...actions, expandSidebar: props.expandSidebar, view: viewApi }
@@ -161,9 +164,13 @@ type DrivenWireOverrides = Partial<{
  * draft, guard, and failure display are controller facts, so the driven
  * runtime keeps the store and the actions honest.
  */
-async function renderDriven(overrides: DrivenWireOverrides = {}, row: ConnectorView = DRIVEN_ROW, sessions: SessionListState = SESSIONS) {
+async function renderDriven(
+  overrides: DrivenWireOverrides = {},
+  rows: readonly ConnectorView[] = [DRIVEN_ROW],
+  sessions: SessionListState = SESSIONS,
+) {
   const connectors = {
-    list: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { connectors: [row] } } })),
+    list: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { connectors: [...rows] } } })),
     configure: vi.fn(async () => okView()),
     connect: vi.fn(async () => okView()),
     disconnect: vi.fn(async () => okView()),
@@ -180,7 +187,7 @@ async function renderDriven(overrides: DrivenWireOverrides = {}, row: ConnectorV
         /\{(\w+)}/g, (m, name: string) => (name in (params ?? {}) ? String(params?.[name]) : m),
       ),
     useConnectors: bindSnapshotSelector(controller.store),
-    useSessions: (selector: (s: SessionListState) => unknown) => selector(sessions),
+    useSessions: bindSnapshotSelector(createSnapshotStore(sessions)),
     load: () => controller.load(),
     openTokenDialog: (id: string) => { controller.openTokenDialog(id) },
     setDialogDraft: (ref: string, value: string) => { controller.setDialogDraft(ref, value) },
@@ -322,6 +329,24 @@ describe('ConnectorsRegion', () => {
     expect(b.view.getByRole('button', { name: 'New chat' })).toBeTruthy()
   })
 
+  it('keeps a stable hook order while the provider detail toggles (React #310 regression)', async () => {
+    // The list → detail → list → detail transitions mount and unmount the
+    // provider's session branch. A session hook that ran only inside the
+    // detail branch changed the hook count across these renders and crashed
+    // the whole sidebar slot with "Rendered more hooks than during the
+    // previous render"; the hook must run on every render.
+    const { controller } = await renderDriven({}, ROSTER)
+    controller.selectProvider('github')
+    await waitFor(() => { expect(screen.getByText('GitHub chat newer')).toBeTruthy() })
+    controller.selectProvider(null)
+    await waitFor(() => { expect(screen.getByText('Notion workspace')).toBeTruthy() })
+    controller.selectProvider('github')
+    await waitFor(() => { expect(screen.getByText('GitHub chat newer')).toBeTruthy() })
+    // Switching providers keeps the branch mounted: only the data moves.
+    controller.selectProvider('slack')
+    await waitFor(() => { expect(screen.getByText('Slack chat')).toBeTruthy() })
+  })
+
   it('drives the token dialog end to end: one field per reference, guard, save, adopt the view', async () => {
     const { connectors } = await renderDriven()
     fireEvent.click(screen.getByRole('button', { name: 'Configure' }))
@@ -408,12 +433,12 @@ describe('ConnectorsRegion', () => {
   })
 
   it('leaves the dialog descriptionless when the token method has no howTo', async () => {
-    await renderDriven({}, view({
+    await renderDriven({}, [view({
       id: 'linear',
       description: 'Linear workspace',
       state: 'unconfigured',
       auth: [{ mode: 'token', configured: false, credentialRefs: ['LINEAR_API_TOKEN'] }],
-    }))
+    })])
     fireEvent.click(screen.getByRole('button', { name: 'Configure' }))
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByText('Connect linear')).toBeTruthy()
