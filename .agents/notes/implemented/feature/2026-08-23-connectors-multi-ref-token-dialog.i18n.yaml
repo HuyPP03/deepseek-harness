@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-08-23-connectors-multi-ref-token-dialog.md
+2026-08-23-connectors-multi-ref-token-dialog.md: 49bc99675603fbace93f776d25b19f912515d3bb
+2026-08-23-connectors-multi-ref-token-dialog.zh.md: 651d708b9e470d9c11df1310be1e61a3fd7b4ddd

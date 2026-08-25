@@ -473,16 +473,18 @@ function SessionTree({
 
 /** The chats tab body: the workspace-less sessions as one draggable flat list. */
 function ChatsList({
-  useSessions, workspaces, archivedSessionIds, open, forkSession,
+  useSessions, workspaces, archivedSessionIds, connectorPresetIds, open, forkSession,
   onSessionRename, onSessionArchive, sessionOrderByAccount, setSessionOrder, t,
 }: Pick<SessionTreeProps, 'useSessions' | 'open' | 'forkSession' | 'onSessionRename' | 'onSessionArchive' | 'archivedSessionIds' | 'sessionOrderByAccount' | 'setSessionOrder' | 't'> & {
   workspaces: readonly WorkspaceView[]
+  /** The preset ids of every connector; their sessions are hidden here. */
+  connectorPresetIds: ReadonlySet<string>
 }) {
   const list = useSessions(s => s)
   const ungroupedOrder = sessionOrderByAccount[UNGROUPED_KEY]
   const rows = useMemo(
-    () => deriveChats(list, workspaces, archivedSessionIds, ungroupedOrder),
-    [list, workspaces, archivedSessionIds, ungroupedOrder],
+    () => deriveChats(list, workspaces, archivedSessionIds, ungroupedOrder, connectorPresetIds),
+    [list, workspaces, archivedSessionIds, ungroupedOrder, connectorPresetIds],
   )
   const [drag, setDrag] = useState<DragState | null>(null)
   const dropCommitted = useRef(false)
@@ -565,6 +567,7 @@ function SearchResults({
   open,
   workspaces,
   archivedSessionIds,
+  connectorPresetIds,
   query,
   remote,
   resultLimit,
@@ -572,6 +575,8 @@ function SearchResults({
 }: Pick<SessionTreeProps, 'useSessions' | 'open' | 't'> & {
   workspaces: readonly WorkspaceView[]
   archivedSessionIds: readonly SessionNode['id'][]
+  /** The preset ids of every connector; their sessions never match. */
+  connectorPresetIds: ReadonlySet<string>
   query: string
   remote: RemoteSearchState
   resultLimit: number
@@ -581,8 +586,8 @@ function SearchResults({
     ? remote
     : { query, status: 'loading' as const, items: [], hasMore: false }
   const results = useMemo(
-    () => deriveSearchResults(list, workspaces, query, archivedSessionIds, currentRemote, resultLimit),
-    [list, workspaces, query, archivedSessionIds, currentRemote, resultLimit],
+    () => deriveSearchResults(list, workspaces, query, archivedSessionIds, connectorPresetIds, currentRemote, resultLimit),
+    [list, workspaces, query, archivedSessionIds, connectorPresetIds, currentRemote, resultLimit],
   )
   const pending = currentRemote.status === 'loading'
   const failed = currentRemote.status === 'error'
@@ -649,6 +654,7 @@ export function WorkspaceBrowser({
   searchSessions,
   searchResultLimit,
   useDirectoryFlow,
+  useConnectorPresetIds,
   renderSlot,
   t,
 }: WorkspaceBrowserProps) {
@@ -659,6 +665,9 @@ export function WorkspaceBrowser({
   // Live occupancy of this surface's directory-flow hole (the same source the
   // flow reads): a composition without a picking affordance can add nothing.
   const directoryFlowAvailable = useDirectoryFlow(occupied => occupied)
+  // The preset ids of every connector: the chats tab keeps those sessions
+  // out of its rows and search — the provider detail is their only home.
+  const connectorPresetIds = useConnectorPresetIds(ids => ids)
   const orderBy = useStore(s => s.orderBy)
   const groupExpansion = useStore(s => s.groupExpansion)
   const sessionOrderByAccount = useStore(s => s.sessionOrderByAccount)
@@ -1036,6 +1045,7 @@ export function WorkspaceBrowser({
               open={open}
               workspaces={workspaces}
               archivedSessionIds={archivedSessionIds}
+              connectorPresetIds={connectorPresetIds}
               query={normalizedQuery}
               remote={remoteSearch}
               resultLimit={searchResultLimit}
@@ -1052,6 +1062,7 @@ export function WorkspaceBrowser({
                 onSessionRename={onSessionRename}
                 onSessionArchive={onSessionArchive}
                 archivedSessionIds={archivedSessionIds}
+                connectorPresetIds={connectorPresetIds}
                 sessionOrderByAccount={sessionOrderByAccount}
                 setSessionOrder={actions.setSessionOrder}
                 t={t}

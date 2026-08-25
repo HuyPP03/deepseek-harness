@@ -57,6 +57,7 @@ describe('@deepseek-ai/dsh-command-mcp registration', () => {
       name: 'mcp',
       description: 'List the connected MCP servers and their tools',
       input: { hint: '[server]' },
+      providerHidden: true,
     })
 
     await test.plugin.dispose()

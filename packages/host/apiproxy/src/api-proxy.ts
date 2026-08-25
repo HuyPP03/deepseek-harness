@@ -3778,6 +3778,36 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         }
       },
 
+      async authorize(request) {
+        const flow = ctx.get('oauthFlow')
+        if (flow === undefined) return err(request, { code: 'connector-unavailable', message: 'the oauth-flow engine is not composed in this deployment', details: {} })
+        const { id } = request.payload
+        try {
+          const result = await flow.begin(id)
+          return ok(request, result)
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
+      },
+
+      async deviceLogin(request) {
+        const connectors = ctx.get('connectors')
+        if (connectors === undefined) return err(request, connectorsAbsent())
+        const flow = ctx.get('deviceFlow')
+        if (flow === undefined) return err(request, { code: 'connector-unavailable', message: 'the device-flow engine is not composed in this deployment', details: {} })
+        const { id } = request.payload
+        try {
+          // Drive the flow through the connectors service: a device login
+          // needs the connector's server mounted first, and connect() owns
+          // the mount, the begin, and the mount rollback on failure.
+          const result = await connectors.connect(id, 'device')
+          if (result === undefined) return err(request, { code: 'internal', message: 'device-flow: the connect produced no sign-in start', details: {} })
+          return ok(request, result)
+        } catch (error: unknown) {
+          return err(request, connectorError(error))
+        }
+      },
+
       async disconnect(request) {
         const connectors = ctx.get('connectors')
         if (connectors === undefined) return err(request, connectorsAbsent())

@@ -153,6 +153,8 @@
     { "path": "./packages/credentials/credentials-local" },
     { "path": "./packages/credentials/oauth-tokens" },
     { "path": "./packages/connectors/connectors" },
+    { "path": "./packages/connectors/oauth-flow" },
+    { "path": "./packages/connectors/device-flow" },
     { "path": "./packages/session-query/tool-session-query" },
     { "path": "./packages/storage/storage" },
     { "path": "./packages/storage/storage-json" },

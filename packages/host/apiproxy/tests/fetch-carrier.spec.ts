@@ -325,6 +325,12 @@ function fakeApi(overrides: Partial<{ muxFrames: MuxFrame[]; hostFrames: HostFra
       async complete(request) {
         return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
       },
+      async authorize(request) {
+        return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
+      },
+      async deviceLogin(request) {
+        return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
+      },
       async disconnect(request) {
         return { rpcId: request.rpcId, result: { ok: false, error: { code: 'connector-unavailable', message: 'stub', details: {} } } }
       },

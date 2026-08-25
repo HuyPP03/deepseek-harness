@@ -1,0 +1,61 @@
+/* Connectors dialogs (token + OAuth app + custom connector): one modal per draft. */
+
+.dialog {
+  width: 360px;
+  max-width: calc(100vw - 32px);
+}
+
+.dialogField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dialogFieldLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.dialogFieldHint {
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+/* The byoApp app-registration steps, numbered, above the credential fields. */
+.setupSteps {
+  margin: 0 0 12px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.dialogError {
+  font-size: 12px;
+  color: var(--dsw-alias-state-error-primary);
+  overflow-wrap: anywhere;
+}
+
+.dialogFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.customTransport {
+  display: flex;
+  gap: 12px;
+}
+
+.customTransport label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}

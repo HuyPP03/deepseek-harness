@@ -261,11 +261,12 @@ describe('connector RPC domain', () => {
         expect(view.state).toBe('unconfigured')
         expect(view.custom).toBe(false)
       }
-      // The wire view carries no server command, URL, or credential field.
+      // The wire view carries no server command, URL, or credential value.
       const wire = JSON.stringify(value)
       expect(wire).not.toContain('fixture')
       expect(wire).not.toContain('gmailmcp.googleapis.com')
-      expect(wire).not.toContain('NOTION_API_TOKEN')
+      // The token method's reference names are public manifest data and cross.
+      expect(wire).toContain('NOTION_API_TOKEN')
     } finally {
       await dispose()
     }
@@ -280,7 +281,7 @@ describe('connector RPC domain', () => {
       expect(value.connector.id).toBe('notion')
       expect(value.connector.state).toBe('connected')
       expect(value.connector.servers).toEqual([{ serverName: 'notion', mounted: true, status: 'connected' }])
-      expect(value.connector.auth).toEqual([{ mode: 'token', configured: true }])
+      expect(value.connector.auth).toEqual([{ mode: 'token', configured: true, credentialRefs: ['NOTION_API_TOKEN'] }])
       const credDoc = await readFile(join(root, '.credentials.yaml'), 'utf8')
       expect(credDoc).toContain('NOTION_API_TOKEN')
     } finally {

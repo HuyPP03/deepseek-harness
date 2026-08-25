@@ -31,13 +31,18 @@ import z from '@deepseek-ai/schemastery'
 import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
 import { dshHomePath, expandHomePath } from '@deepseek-ai/dsh-home-paths'
 import { credentialRef, type CredentialProvider } from '@deepseek-ai/dsh-credentials'
+import type { ServerValue as McpServerValue } from '@deepseek-ai/dsh-mcp-client'
 import { UnknownPresetError } from '@deepseek-ai/dsh-agent-presets'
 import type {} from '@deepseek-ai/dsh-agent-presets'
 import type {} from '@deepseek-ai/dsh-credentials-oauth-tokens'
 import { McpServerExistsError, type McpServerSpec, type StdioServerSpec, type StreamableHttpServerSpec } from '@deepseek-ai/dsh-mcp-manager'
 import { parseConnectorManifest, CUSTOM_CONNECTOR_ID } from './manifest.ts'
 import type {
+  ConnectorAuthFlow,
+  ConnectorDeviceFlow,
+  DeviceFlowStart,
   ConnectorAuthMethod,
+  TokenAuthMethod,
   ConnectorAuthView,
   ConnectorManifest,
   ConnectorServerSpec,
@@ -65,6 +70,10 @@ declare module '@deepseek-ai/cordis' {
   interface Context {
     /** The connector catalog and state machine. */
     connectors: Connectors
+    /** The connector OAuth flow engine, where the deployment composes one. */
+    oauthFlow?: ConnectorAuthFlow
+    /** The connector device-code flow engine, where the deployment composes one. */
+    deviceFlow?: ConnectorDeviceFlow
   }
 }
 
@@ -185,6 +194,17 @@ export class ConnectorAuthUnavailableError extends Error {
 }
 
 /** A mutable mirror of a readonly view type, for construction sites. */
+/** Thrown when an oauth connect is attempted before the browser flow stored a token bundle. */
+export class ConnectorAuthPendingError extends Error {
+  constructor(
+    /** The connector id. */
+    readonly connectorId: string,
+  ) {
+    super(`connectors: connector "${connectorId}" has no stored token; authorize it through the browser flow first`)
+    this.name = 'ConnectorAuthPendingError'
+  }
+}
+
 type Writable<T> = { -readonly [K in keyof T]: T[K] }
 
 /** Thrown when an operation needs a seam this deployment does not compose. */
@@ -299,6 +319,50 @@ export class Connectors extends Service {
   }
 
   /**
+   * The byoApp client id the user configured through `configure`, while
+   * configured; the flow engine reads it at registration.
+   * @param id - the connector id.
+   * @returns the configured client id, or `undefined` while unconfigured.
+   */
+  overrideClientId(id: string): string | undefined {
+    return this.overrides.get(id)?.clientId
+  }
+
+  /**
+   * Record an auth-flow failure for one connector and republish its state:
+   * the failure surfaces as the connector's `error` state with the message
+   * as `lastError`, until the next successful operation clears it.
+   * @param id - the connector id.
+   * @param message - the failure to surface.
+   */
+  async recordFlowFailure(id: string, message: string): Promise<void> {
+    const manifest = this.find(id)
+    if (manifest === undefined) return
+    this.lastError.set(id, message)
+    // The failure is published once, as a one-shot view: the transition log
+    // is reset so a later settle to the same label republishes, and the
+    // stored label is dropped so the next derived state starts clean. The
+    // message stays in the in-memory view until the next settled operation
+    // (configure, connect, disconnect) clears lastError.
+    this.lastState.delete(id)
+    this.publish(manifest, await this.view(manifest))
+  }
+
+  /**
+   * Settle an auth flow that completed without a stored credential (a
+   * device login): clear the authorizing flag, drop any recorded failure,
+   * and republish the connector's view.
+   * @param id - the connector the flow settled for.
+   */
+  async settleAuthFlow(id: string): Promise<void> {
+    const manifest = this.find(id)
+    if (manifest === undefined) return
+    this.setAuthorizing(id, false)
+    this.lastError.delete(id)
+    this.publish(manifest, await this.view(manifest))
+  }
+
+  /**
    * Configure one connector: store the provided credential values through
    * the credentials seam, persist the non-secret fields in its override
    * document, and — for a token method that is fully configured for the
@@ -370,20 +434,55 @@ export class Connectors extends Service {
 
   /**
    * Connect one connector: mount its servers with every slot resolved.
-   * `token` mode resolves now; `oauth` and `device` modes need their flow
-   * engines, which a deployment opts into separately, and refuse until then.
+   * `token` mode resolves now; `oauth` mode mounts through the stored token
+   * bundle (refreshing it through the flow engine when one is composed);
+   * `device` mode mounts first, then hands the mount to the device-code flow
+   * engine, which drives the provider's login tool and settles the state in
+   * the background.
    *
    * @param id - the connector id.
    * @param mode - the auth mode to connect through.
+   * @throws {@link ConnectorAuthPendingError} when an oauth connector has no stored bundle yet.
+   * @returns the device flow's start facts for a `device` connect; `undefined` otherwise.
    */
-  async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<void> {
+  async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<DeviceFlowStart | undefined> {
     const manifest = this.require(id)
     const method = manifest.auth.find(entry => entry.mode === mode)
     if (method === undefined) {
       throw new Error(`connectors: connector "${id}" supports no ${mode} auth`)
     }
-    if (mode === 'oauth') throw new ConnectorAuthUnavailableError(id, 'oauth')
-    if (mode === 'device') throw new ConnectorAuthUnavailableError(id, 'device')
+    if (mode === 'device') {
+      const flow = this.ctx.get('deviceFlow')
+      if (flow === undefined) throw new ConnectorAuthUnavailableError(id, 'device')
+      await this.mountServers(manifest)
+      try {
+        const started = await flow.begin(id)
+        this.lastError.delete(id)
+        this.publish(manifest, await this.view(manifest))
+        return started
+      } catch (error) {
+        // The login tool refused or the server went down mid-flow: roll the
+        // mount back so a failed connect leaves no partial trace, and
+        // surface the failure as the connector's error state.
+        await this.unmountServers(manifest)
+        this.recordFlowFailure(id, error instanceof Error ? error.message : String(error))
+        throw error
+      }
+    }
+    if (mode === 'oauth') {
+      // The browser flow (connector.authorize) stores the bundle first; a
+      // stored one may be refreshable before the mount presents it.
+      if (this.ctx.get('oauthFlow') === undefined) throw new ConnectorAuthUnavailableError(id, 'oauth')
+      const bundle = this.ctx.get('oauthTokens')?.get(id)
+      if (bundle === undefined) throw new ConnectorAuthPendingError(id)
+      const flow = this.ctx.get('oauthFlow')
+      if (flow !== undefined) await flow.ensureFresh(id)
+      await this.mountServers(manifest)
+      this.lastError.delete(id)
+      this.publish(manifest, await this.view(manifest))
+      return
+    }
+    await this.requireTokenRefsStored(id, method as TokenAuthMethod)
     await this.mountServers(manifest)
     this.lastError.delete(id)
     this.publish(manifest, await this.view(manifest))
@@ -500,9 +599,12 @@ export class Connectors extends Service {
     const overrides = this.overrides.get(manifest.id) ?? {}
     const registry = this.ctx.mcpManager.servers()
     const servers: ConnectorServerView[] = manifest.servers.map((server) => {
-      const status = registry.find(entry => entry.serverName === server.serverName)?.status
-      const view: Writable<ConnectorServerView> = { serverName: server.serverName, mounted: status !== undefined }
-      if (status !== undefined) view.status = status
+      const entry = registry.find(candidate => candidate.serverName === server.serverName)
+      const view: Writable<ConnectorServerView> = { serverName: server.serverName, mounted: entry !== undefined }
+      if (entry !== undefined) {
+        view.status = entry.status
+        view.tools = entry.tools.map(tool => tool.name)
+      }
       return view
     })
     const auth: ConnectorAuthView[] = await Promise.all(manifest.auth.map(async (method) => {
@@ -510,8 +612,12 @@ export class Connectors extends Service {
         mode: method.mode,
         configured: await this.methodConfigured(method, manifest.id, overrides),
       }
-      if (method.mode === 'token' && method.howTo !== undefined) view.howTo = method.howTo
+      if (method.mode === 'token') {
+        view.credentialRefs = [...method.credentialRefs]
+        if (method.howTo !== undefined) view.howTo = method.howTo
+      }
       if (method.mode === 'oauth') {
+        view.byoApp = method.byoApp === true
         if (method.setupGuide !== undefined) view.setupGuide = [...method.setupGuide]
         if (method.reauthHint !== undefined) view.reauthHint = method.reauthHint
       }
@@ -605,11 +711,10 @@ export class Connectors extends Service {
     const tokens = this.ctx.get('oauthTokens')
     if (tokens !== undefined && tokens.get(id) !== undefined) return true
     if (method.mode === 'oauth' && method.byoApp) {
-      const credentials = this.ctx.get('credentials')
-      const secret = credentials !== undefined && overrides.clientId !== undefined
-        ? await credentials.resolve(credentialRef(clientSecretRef(id)))
-        : undefined
-      return overrides.clientId !== undefined && secret !== undefined
+      // The client id alone starts the flow: the secret is optional (public
+      // desktop clients, e.g. Google's, keep none) and the flow presents it
+      // only when one is stored.
+      return overrides.clientId !== undefined
     }
     return false
   }
@@ -637,7 +742,7 @@ export class Connectors extends Service {
     for (const server of manifest.servers) {
       if (this.ctx.mcpManager.userServers().includes(server.serverName)) continue
       try {
-        await this.ctx.mcpManager.add(await this.toManagerSpec(manifest.id, server))
+        await this.ctx.mcpManager.add(this.toManagerSpec(manifest, server))
         added.push(server.serverName)
       } catch (error) {
         for (const name of added) await this.ctx.mcpManager.remove(name)
@@ -650,16 +755,28 @@ export class Connectors extends Service {
   }
 
   /**
+   * Unmount every server the manifest declares, for a rolled-back connect.
+   * @param manifest - the manifest whose servers to remove.
+   */
+  private async unmountServers(manifest: ConnectorManifest): Promise<void> {
+    for (const server of manifest.servers) {
+      if (this.ctx.mcpManager.userServers().includes(server.serverName)) {
+        await this.ctx.mcpManager.remove(server.serverName)
+      }
+    }
+  }
+
+  /**
    * Convert one manifest server spec into the mcp-manager spec, resolving
    * every placeholder to its literal value. P0a resolves inline through the
    * credentials seam; the persisted server document carries the literal,
    * never the reference.
    */
-  private async toManagerSpec(id: string, server: ConnectorServerSpec): Promise<McpServerSpec> {
+  private toManagerSpec(manifest: ConnectorManifest, server: ConnectorServerSpec): McpServerSpec {
     if (server.transport === 'stdio') {
-      const env: Record<string, string> = {}
+      const env: Record<string, McpServerValue> = {}
       for (const [key, slot] of Object.entries(server.env ?? {})) {
-        env[key] = await this.resolveValue(id, slot)
+        env[key] = this.resolveSlot(manifest, slot)
       }
       const spec: Writable<StdioServerSpec> = {
         serverName: server.serverName,
@@ -672,9 +789,9 @@ export class Connectors extends Service {
       if (server.toolCallTimeoutMs !== undefined) spec.toolCallTimeoutMs = server.toolCallTimeoutMs
       return spec
     }
-    const headers: Record<string, string> = {}
+    const headers: Record<string, McpServerValue> = {}
     for (const [key, slot] of Object.entries(server.headers ?? {})) {
-      headers[key] = await this.resolveValue(id, slot)
+      headers[key] = this.resolveSlot(manifest, slot)
     }
     const spec: Writable<StreamableHttpServerSpec> = {
       serverName: server.serverName,
@@ -686,19 +803,39 @@ export class Connectors extends Service {
     return spec
   }
 
-  /** Resolve one placeholder slot to its literal value. */
-  private async resolveValue(id: string, slot: ServerValue): Promise<string> {
+  /**
+   * Pass a `{$cred}` reference through — after verifying that a token method's
+   * slot only references one of its declared refs — and resolve an `$override`
+   * slot to its literal. An oauth-method reference is an owner id for the
+   * token store and passes through unchecked.
+   */
+  private resolveSlot(manifest: ConnectorManifest, slot: ServerValue): McpServerValue {
     if (typeof slot === 'string') return slot
     if ('$cred' in slot) {
-      const credentials = this.ctx.get('credentials')
-      const resolved = credentials !== undefined ? await credentials.resolve(credentialRef(slot.$cred)) : undefined
-      if (resolved === undefined) throw new ConnectorCredentialMissingError(id, slot.$cred)
-      return resolved.value
+      const method = manifest.auth.find(entry => entry.mode === 'token')
+      if (method !== undefined && !method.credentialRefs.includes(slot.$cred)) {
+        throw new ConnectorCredentialMissingError(manifest.id, slot.$cred)
+      }
+      return { $cred: slot.$cred }
     }
-    const overrides = this.overrides.get(id) ?? {}
+    const overrides = this.overrides.get(manifest.id) ?? {}
     const value = (overrides as Record<string, unknown>)[slot.$override]
-    if (typeof value !== 'string' || value.length === 0) throw new ConnectorOverrideMissingError(id, slot.$override)
+    if (typeof value !== 'string' || value.length === 0) throw new ConnectorOverrideMissingError(manifest.id, slot.$override)
     return value
+  }
+
+  /**
+   * Fail a token connect early when a reference is unconfigured: the server
+   * document carries the reference through to mcp-client, where a missing
+   * value would surface as a connection failure rather than this product
+   * error.
+   */
+  private async requireTokenRefsStored(id: string, method: TokenAuthMethod): Promise<void> {
+    const credentials = this.ctx.get('credentials')
+    for (const ref of method.credentialRefs) {
+      const resolved = credentials !== undefined ? await credentials.resolve(credentialRef(ref)) : undefined
+      if (resolved === undefined) throw new ConnectorCredentialMissingError(id, ref)
+    }
   }
 
   private credentialsOrThrow(operation: string): CredentialProvider {

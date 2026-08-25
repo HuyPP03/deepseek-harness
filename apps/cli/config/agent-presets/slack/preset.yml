@@ -1,0 +1,3 @@
+name: Slack mode
+description: Read and post Slack messages and search the workspace through the connected Slack MCP tools.
+order: 8

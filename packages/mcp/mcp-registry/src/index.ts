@@ -16,7 +16,9 @@
  * @module @deepseek-ai/dsh-mcp-registry
  */
 
+import { CallId } from '@deepseek-ai/dsh-llm'
 import { Context, Service } from '@deepseek-ai/cordis'
+import { createBridgeTools, type BridgeFaces } from './bridge.ts'
 import type { McpServerView } from './types.ts'
 
 export type { McpServerStatus, McpServerView, McpToolInfo } from './types.ts'
@@ -53,14 +55,56 @@ export interface McpServerReporter {
 }
 
 /**
- * Live MCP server registry over one app root.
+ * Live MCP server registry over one app root. Besides the read face, the
+ * registry registers the model-facing MCP bridge (`mcp_list`,
+ * `mcp_describe`, `mcp_call`) once per app: the per-server tools the mcp
+ * clients register are unlisted, so a large MCP tool surface never enters the
+ * request `tools` array and the model reaches each tool on demand instead.
  */
 export class McpRegistry extends Service {
+  static inject = ['tools']
+
   /** Reporters keyed by server namespace, in registration order. */
   private readonly reporters = new Map<string, McpServerReporter>()
 
   constructor(ctx: Context) {
     super(ctx, 'mcpRegistry')
+  }
+
+  /**
+   * Register the three bridge tools over this registry's faces. Each
+   * registration rides a ctx effect so disposing the service removes it.
+   */
+  protected async [Service.init](): Promise<void> {
+    const tools = this.ctx.tools
+    const faces: BridgeFaces = {
+      servers: () => this.servers(),
+      target: (name) => {
+        const definition = tools.get(name)
+        return definition?.unlisted === true && definition.name.startsWith('mcp__') ? definition : undefined
+      },
+      dispatch: async (name, args, exec) => {
+        const result = await tools.execute({
+          callId: CallId(`mcp-call-${Date.now()}-${Math.random().toString(36).slice(2)}`),
+          name,
+          arguments: args,
+          ...(exec.agent !== undefined ? { agent: exec.agent } : {}),
+          parent: exec.token,
+          signal: exec.signal,
+        })
+        return result.isError
+          ? { isError: true, message: result.error.message, content: result.content }
+          : { isError: false, value: result.value, message: '', content: result.content }
+      },
+    }
+    const bridge = createBridgeTools(faces)
+    for (const [label, definition] of [
+      ['mcp_list', bridge.list],
+      ['mcp_describe', bridge.describe],
+      ['mcp_call', bridge.call],
+    ] as const) {
+      this.ctx.effect(() => tools.register(definition), `mcp-registry: ${label}`)
+    }
   }
 
   /**

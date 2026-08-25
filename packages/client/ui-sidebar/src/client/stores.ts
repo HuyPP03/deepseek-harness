@@ -7,8 +7,11 @@
  */
 import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-runtime/client'
 
-/** The sidebar browsing tabs: the ungrouped chat rows, or the workspace tree. */
-export type SidebarTab = 'chats' | 'workspaces'
+/**
+ * The sidebar browsing tabs: the ungrouped chat rows, the workspace tree, or
+ * the predefined external connections.
+ */
+export type SidebarTab = 'chats' | 'workspaces' | 'connectors'
 
 /** Sidebar shell viewing state persisted across surface remounts and reloads. */
 type SidebarViewState = {
@@ -29,8 +32,8 @@ type SidebarViewActions = {
  */
 export function createSidebarStore(): EngineStoreHandle<SidebarViewState, SidebarViewActions> {
   return defineStore({
-    init: (): SidebarViewState => ({ tab: 'chats' }),
-    persist: 'dsh.sidebar.view.v1',
+    init: (): SidebarViewState => ({ tab: 'workspaces' }),
+    persist: 'dsh.sidebar.view.v2',
     actions: {
       setTab: (d, tab: SidebarTab) => { d.tab = tab },
     },

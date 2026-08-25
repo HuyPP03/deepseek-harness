@@ -29,6 +29,7 @@ export const connectorServerViewSchema = z.object({
 export const connectorAuthViewSchema = z.object({
   mode: z.enum(['token', 'oauth', 'device']),
   configured: z.boolean(),
+  credentialRefs: z.array(credentialRefNameSchema).optional(),
   howTo: z.string().optional(),
   setupGuide: z.array(z.string()).optional(),
   reauthHint: z.string().optional(),
@@ -86,10 +87,37 @@ export const connectorConnectRequestSchema = z.object({
   mode: z.enum(['token', 'oauth', 'device']),
 }) satisfies z.ZodType<Wire<RequestPayload<'connector.connect'>>>
 
+/** connector.authorize request payload: start the browser OAuth flow for the named connector. */
+export const connectorAuthorizeRequestSchema = z.object({
+  id: z.string().min(1),
+}) satisfies z.ZodType<Wire<RequestPayload<'connector.authorize'>>>
+
+/** connector.authorize response value: the URL the client opens and the flow expiry. */
+export const connectorAuthorizeValueSchema = z.object({
+  authorizationUrl: z.url(),
+  expiresAt: z.number(),
+}) satisfies z.ZodType<Wire<ResponseValue<'connector.authorize'>>>
+
+/** connector.deviceLogin request payload: start the device-code flow for the named connector. */
+export const connectorDeviceLoginRequestSchema = z.object({
+  id: z.string().min(1),
+}) satisfies z.ZodType<Wire<RequestPayload<'connector.deviceLogin'>>>
+
+/** connector.deviceLogin response value: the device code facts for the user to complete. */
+export const connectorDeviceLoginValueSchema = z.object({
+  status: z.enum(['device-code', 'ready']),
+  verificationUri: z.url().optional(),
+  userCode: z.string().min(1).optional(),
+  message: z.string().min(1).optional(),
+  expiresAt: z.number(),
+}) satisfies z.ZodType<Wire<ResponseValue<'connector.deviceLogin'>>>
+
 /** connector.connect response value: the updated view. */
 export const connectorConnectValueSchema = z.object({
   connector: connectorViewSchema,
 }) satisfies z.ZodType<Wire<ResponseValue<'connector.connect'>>>
+
+
 
 /** connector.complete request payload: the auth flow's resulting token. */
 export const connectorCompleteRequestSchema = z.object({

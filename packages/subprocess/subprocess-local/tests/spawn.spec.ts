@@ -903,16 +903,20 @@ describe('environment and spill-file hardening', () => {
     process.env.DSH_TEST_TOKEN = 'also-secret'
     process.env.SUBPROCESS_TEST_PASSWORD = 'password-secret'
     process.env.DSH_TEST_PLAIN = 'visible'
+    // The GitHub connector's token reference: the agent's bash tool must
+    // never see it (the MCP server process is the only holder).
+    process.env.GITHUB_PERSONAL_ACCESS_TOKEN = 'ghp_connector_token'
     try {
       const result = await finish(spawnSubprocess(spec(
-        'echo "[${DSH_TEST_API_KEY:-absent}|${DSH_TEST_TOKEN:-absent}|${SUBPROCESS_TEST_PASSWORD:-absent}|${DSH_TEST_PLAIN:-absent}]"',
+        'echo "[${DSH_TEST_API_KEY:-absent}|${DSH_TEST_TOKEN:-absent}|${SUBPROCESS_TEST_PASSWORD:-absent}|${DSH_TEST_PLAIN:-absent}|${GITHUB_PERSONAL_ACCESS_TOKEN:-absent}]"',
       )))
-      expect(result.stdout.text.trim()).toBe('[absent|absent|absent|absent]')
+      expect(result.stdout.text.trim()).toBe('[absent|absent|absent|absent|absent]')
     } finally {
       delete process.env.DSH_TEST_API_KEY
       delete process.env.DSH_TEST_TOKEN
       delete process.env.SUBPROCESS_TEST_PASSWORD
       delete process.env.DSH_TEST_PLAIN
+      delete process.env.GITHUB_PERSONAL_ACCESS_TOKEN
     }
   })
 

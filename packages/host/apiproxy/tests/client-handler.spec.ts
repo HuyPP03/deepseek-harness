@@ -137,6 +137,8 @@ function scriptedApi(overrides: {
       configure: err,
       connect: err,
       complete: err,
+      authorize: err,
+      deviceLogin: err,
       disconnect: err,
       add: err,
       remove: err,

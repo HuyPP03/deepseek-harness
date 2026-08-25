@@ -19,7 +19,7 @@ beforeEach(() => { localStorage.clear() })
 describe('createLayoutStore', () => {
   it('initializes the sidebar at its default width, details closed, wide viewport assumed', () => {
     const { store } = createLayoutStore().create()
-    expect(store.getSnapshot()).toEqual({ sidebar: SIDEBAR_DEFAULT, details: 0, narrow: false, narrowExpanded: false })
+    expect(store.getSnapshot()).toEqual({ sidebar: SIDEBAR_DEFAULT, details: 0, centerView: 'conversation', narrow: false, narrowExpanded: false })
   })
 
   it('each create() is an independent instance (factory is not a singleton)', () => {
@@ -55,7 +55,7 @@ describe('createLayoutStore', () => {
     actions.setSidebar(400)
     actions.setNarrow(true)
     actions.toggleSidebar()
-    expect(store.getSnapshot()).toEqual({ sidebar: 400, details: 0, narrow: true, narrowExpanded: true })
+    expect(store.getSnapshot()).toEqual({ sidebar: 400, details: 0, centerView: 'conversation', narrow: true, narrowExpanded: true })
     actions.toggleSidebar()
     expect(store.getSnapshot().narrowExpanded).toBe(false)
     expect(store.getSnapshot().sidebar).toBe(400)
@@ -96,8 +96,21 @@ describe('createLayoutStore', () => {
     expect(second.store.getSnapshot()).toEqual({
       sidebar: SIDEBAR_DEFAULT,
       details: 0,
+      centerView: 'conversation',
       narrow: false,
       narrowExpanded: false,
     })
+  })
+
+  it('setCenterView switches the center view and is independent of the panels', () => {
+    const { store, actions } = createLayoutStore().create()
+    expect(store.getSnapshot().centerView).toBe('conversation')
+    actions.setCenterView('connectors')
+    expect(store.getSnapshot().centerView).toBe('connectors')
+    // A panel write does not touch the center view, and vice versa.
+    actions.setSidebar(400)
+    expect(store.getSnapshot().centerView).toBe('connectors')
+    actions.setCenterView('conversation')
+    expect(store.getSnapshot().sidebar).toBe(400)
   })
 })

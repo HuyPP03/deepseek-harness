@@ -3053,6 +3053,16 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
         message: 'fixture: no connectors service is composed',
         details: { id: request.payload.id },
       }),
+      authorize: request => err(request, {
+        code: 'connector-unavailable',
+        message: 'fixture: no oauth-flow engine is composed',
+        details: { id: request.payload.id },
+      }),
+      deviceLogin: request => err(request, {
+        code: 'connector-unavailable',
+        message: 'fixture: no device-flow engine is composed',
+        details: { id: request.payload.id },
+      }),
       disconnect: request => err(request, {
         code: 'connector-unavailable',
         message: 'fixture: no connectors service is composed',
@@ -3285,6 +3295,8 @@ export class FixtureApiClient extends AbstractApiClient {
       case 'connector.configure': return this.api.connectors.configure(request)
       case 'connector.connect': return this.api.connectors.connect(request)
       case 'connector.complete': return this.api.connectors.complete(request)
+      case 'connector.authorize': return this.api.connectors.authorize(request)
+      case 'connector.deviceLogin': return this.api.connectors.deviceLogin(request)
       case 'connector.disconnect': return this.api.connectors.disconnect(request)
       case 'connector.add': return this.api.connectors.add(request)
       case 'connector.remove': return this.api.connectors.remove(request)

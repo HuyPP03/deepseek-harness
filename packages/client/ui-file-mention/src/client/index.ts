@@ -30,11 +30,14 @@
  * scanner matches word-ish names only (no dots or slashes), so file paths
  * take no chip decoration in the draft (known limitation; extending the
  * scanner is an input-machine change). Subagent scopes list nothing, like
- * the other sources.
+ * the other sources; provider chats (a session whose agent runs a connector
+ * preset) do too — they carry no project, so there are no workspace files to
+ * mention (the connectors' published preset set is the authority, read at
+ * call time).
  */
 
 import type { ConnectionHandle, FileEntry, SessionId } from '@deepseek-ai/dsh-api-remotes/client'
-import type { ClientContext, ISessions } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ClientContext, ISessions, SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 import type {
   InputTriggerCandidate, InputTriggerServiceContract, InputTriggerSource,
 } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
@@ -75,8 +78,22 @@ export function apply(ctx: ClientContext): void {
 
   const keyOf = (sessionId: SessionId, query: string): string => `${sessionId}\u0000${query}`
 
+  /**
+   * Whether one session is a provider chat (its agent runs a connector preset):
+   * provider chats carry no project, so they have no workspace files to mention.
+   * Reads the list snapshot plus the connectors' published preset set at call
+   * time (both settled by the time a user opens the '@' source).
+   */
+  const isProviderChat = (sessionId: SessionId): boolean => {
+    const preset = sessions.list.getSnapshot().byId[sessionId]?.agentPreset
+    if (preset === undefined) return false
+    const provided = ctx.get('connectorPresetIds') as SnapshotStore<ReadonlySet<string>> | undefined
+    return provided !== undefined && provided.getSnapshot().has(preset)
+  }
+
   const fetchFiles = (sessionId: SessionId, query: string): Promise<readonly FileEntry[]> => {
     if (sessions.subagentAddress(sessionId) !== undefined) return Promise.resolve([])
+    if (isProviderChat(sessionId)) return Promise.resolve([])
     const key = keyOf(sessionId, query)
     const live = query !== ''
     const ttl = live ? FILES_QUERY_TTL_MS : FILES_BROWSE_TTL_MS

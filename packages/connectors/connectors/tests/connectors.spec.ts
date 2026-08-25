@@ -10,7 +10,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { chmod, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { Context } from '@deepseek-ai/cordis'
+import { parse } from 'yaml'
+import { Context, Service } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
 import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
@@ -22,6 +23,7 @@ import LocalCredentialProvider from '@deepseek-ai/dsh-credentials-local'
 import OAuthTokenStore from '@deepseek-ai/dsh-credentials-oauth-tokens'
 import AgentPresets from '@deepseek-ai/dsh-agent-presets'
 import Connectors, {
+  ConnectorAuthPendingError,
   ConnectorAuthUnavailableError,
   ConnectorCredentialMissingError,
   ConnectorExistsError,
@@ -36,6 +38,9 @@ const sdk = vi.hoisted(() => {
   const control = {
     connectImpl: async (): Promise<void> => {},
   }
+  const flowControl = {
+    ensureFreshImpl: async (): Promise<void> => {},
+  }
   class MockClient {
     onclose: (() => void) | undefined
     connect = vi.fn(async () => { await control.connectImpl() })
@@ -46,8 +51,39 @@ const sdk = vi.hoisted(() => {
     })
     setNotificationHandler = vi.fn()
   }
-  return { MockClient, control }
+  return { MockClient, control, flowControl }
 })
+
+/**
+ * One test-only stand-in for the oauth-flow engine: records the ids its
+ * refresh seam is asked to keep fresh, settling through the shared control
+ * so a test can fail or gate a refresh.
+ */
+class FakeOAuthFlow extends Service {
+  readonly ensured: string[] = []
+
+  constructor(ctx: Context) {
+    super(ctx, 'oauthFlow')
+  }
+
+  async* [Service.init](): AsyncGenerator<() => Promise<void> | void, void, void> {
+    yield () => {}
+  }
+
+  async begin(_id: string): Promise<{ authorizationUrl: string; expiresAt: number }> {
+    throw new Error('the connectors suite does not drive browser flows')
+  }
+
+  cancel(_id: string): void {
+    throw new Error('the connectors suite does not drive browser flows')
+  }
+
+  async ensureFresh(id: string): Promise<void> {
+    this.ensured.push(id)
+    await sdk.flowControl.ensureFreshImpl()
+  }
+}
+
 
 vi.mock('@modelcontextprotocol/sdk/client/index.js', () => ({ Client: sdk.MockClient }))
 vi.mock('@modelcontextprotocol/sdk/client/stdio.js', () => ({ StdioClientTransport: vi.fn() }))
@@ -203,6 +239,7 @@ beforeEach(() => {
   // Tests override the connect behavior to gate or fail attempts; every test
   // starts from a clean, immediately-succeeding connect.
   sdk.control.connectImpl = async () => {}
+  sdk.flowControl.ensureFreshImpl = async () => {}
 })
 
 afterEach(async () => {
@@ -236,6 +273,7 @@ interface BootOptions {
   withCredentials?: boolean
   withTokens?: boolean
   withPresets?: boolean
+  withOAuthFlow?: boolean
 }
 
 async function boot(options: BootOptions = {}): Promise<{ ctx: Context; root: string }> {
@@ -262,6 +300,9 @@ async function boot(options: BootOptions = {}): Promise<{ ctx: Context; root: st
   }
   if (options.withTokens ?? true) {
     await track(ctx.plugin(OAuthTokenStore, { path: join(root, 'tokens.json'), watch: false }))
+  }
+  if (options.withOAuthFlow) {
+    new FakeOAuthFlow(ctx)
   }
   if (options.withPresets ?? true) {
     const systemPresets = join(root, 'presets')
@@ -307,7 +348,10 @@ describe('catalog and list', () => {
     expect(wire).not.toContain('gmailmcp.googleapis.com')
     const notion = views.find(view => view.id === 'notion')
     expect(notion?.auth).toEqual([
-      { mode: 'token', configured: false, howTo: 'Create an internal integration.' },
+      {
+        mode: 'token', configured: false, howTo: 'Create an internal integration.',
+        credentialRefs: ['NOTION_API_TOKEN'],
+      },
     ])
     expect(notion?.suggestions).toEqual(['Summarize my workspace'])
     const google = views.find(view => view.id === 'google')
@@ -376,10 +420,11 @@ describe('token flow', () => {
     expect(await stateOf(ctx, 'notion')).toBe('connected')
     expect(events).toEqual([['notion', 'connected']])
 
-    // The persisted server document carries the resolved literal (the P0a
-    // interim: P1 moves resolution into mcp-client's $cred support).
+    // The persisted server document keeps the credential reference;
+    // mcp-client resolves it at connect time from the credentials store.
     const serverDoc = await readFile(join(root, '.mcp', 'notion.cordis.yml'), 'utf8')
-    expect(serverDoc).toContain('sekret')
+    expect(serverDoc).toContain('$cred: NOTION_API_TOKEN')
+    expect(serverDoc).not.toContain('sekret')
     const credDoc = await readFile(join(root, '.credentials.yaml'), 'utf8')
     expect(credDoc).toContain('NOTION_API_TOKEN')
 
@@ -407,25 +452,37 @@ describe('token flow', () => {
 
   it('resolves a multi-reference token plus an override field', async () => {
     const { ctx, root } = await boot()
-    // The override slot is first in the env: no url yet.
-    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorOverrideMissingError)
+    // No stored credentials yet: the connect pre-check fails on the first
+    // declared reference.
+    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorCredentialMissingError)
+    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(/ATLASSIAN_USERNAME/)
 
     await ctx.connectors.configure('atlas', { credentials: { ATLASSIAN_USERNAME: 'me' } })
     expect(await stateOf(ctx, 'atlas')).toBe('unconfigured')
 
-    // With the url stored, the missing credential is what a connect hits next.
-    await ctx.connectors.configure('atlas', { url: 'https://x.atlassian.net' })
+    // The second reference is still missing.
     await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorCredentialMissingError)
-    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(/ATLASSIAN_TOKEN/)
 
+    // Both references stored but the override unset: the mount preparation
+    // fails for the missing override.
     await ctx.connectors.configure('atlas', { credentials: { ATLASSIAN_TOKEN: 'tok' } })
+    await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorOverrideMissingError)
+
+    // The url no longer blocks the pre-check; an explicit connect mounts.
+    await ctx.connectors.configure('atlas', { url: 'https://x.atlassian.net' })
+    await ctx.connectors.connect('atlas', 'token')
     await poll(() => ctx.tools.get('mcp__atlas__remote') !== undefined, 'atlas tool')
     expect(await stateOf(ctx, 'atlas')).toBe('connected')
 
-    const serverDoc = await readFile(join(root, '.mcp', 'atlas.cordis.yml'), 'utf8')
-    expect(serverDoc).toContain('https://x.atlassian.net')
-    expect(serverDoc).toContain('me')
-    expect(serverDoc).toContain('tok')
+    // The document resolves the override to its literal and keeps the
+    // credential references for mcp-client, never the stored values.
+    const [entry] = parse(await readFile(join(root, '.mcp', 'atlas.cordis.yml'), 'utf8')) as Array<{ config: { env: Record<string, unknown> } }>
+    if (entry === undefined) throw new Error('the atlas server document is empty')
+    expect(entry.config.env).toEqual({
+      ATL_API_BASE_URL: 'https://x.atlassian.net',
+      ATL_USERNAME: { $cred: 'ATLASSIAN_USERNAME' },
+      ATL_TOKEN: { $cred: 'ATLASSIAN_TOKEN' },
+    })
 
     const overrideDoc = JSON.parse(await readFile(join(root, 'user', 'atlas.json'), 'utf8')) as Record<string, unknown>
     expect(overrideDoc).toEqual({ url: 'https://x.atlassian.net' })
@@ -444,10 +501,67 @@ describe('oauth and device modes', () => {
     await expect(ctx.connectors.connect('notion', 'oauth')).rejects.toThrow(/supports no oauth auth/)
   })
 
-  it('tracks byoApp configuration: clientId plus clientSecret', async () => {
+  it('refuses an oauth connect that has no stored bundle yet', async () => {
+    const { ctx } = await boot({ withOAuthFlow: true })
+    await expect(ctx.connectors.connect('google', 'oauth')).rejects.toThrow(ConnectorAuthPendingError)
+  })
+
+  it('mounts an oauth connector through its stored bundle, keeping it fresh', async () => {
+    const { ctx } = await boot({ withOAuthFlow: true })
+    const now = Date.now()
+    await ctx.oauthTokens.put('google', {
+      accessToken: 'at',
+      expiresAt: now + 3_600_000,
+      tokenEndpoint: 'https://example.com/token',
+      createdAt: now,
+      updatedAt: now,
+    })
+    await ctx.connectors.connect('google', 'oauth')
+    const flow = ctx.oauthFlow as FakeOAuthFlow
+    expect(flow.ensured).toContain('google')
+    await poll(async () => (await stateOf(ctx, 'google')) === 'connected', 'google connected')
+  })
+
+  it('fails the oauth connect when the refresh refuses', async () => {
+    const { ctx } = await boot({ withOAuthFlow: true })
+    const now = Date.now()
+    await ctx.oauthTokens.put('google', {
+      accessToken: 'at',
+      expiresAt: now + 3_600_000,
+      tokenEndpoint: 'https://example.com/token',
+      createdAt: now,
+      updatedAt: now,
+    })
+    sdk.flowControl.ensureFreshImpl = async () => { throw new Error('refresh refused') }
+    await expect(ctx.connectors.connect('google', 'oauth')).rejects.toThrow('refresh refused')
+    expect(await stateOf(ctx, 'google')).toBe('needs-auth')
+  })
+
+  it('records a flow failure as the connector error state and republishes a repeat failure', async () => {
+    const { ctx } = await boot()
+    const events: string[] = []
+    ctx.on('connector/state', (_id, state) => { events.push(state) })
+    await ctx.connectors.recordFlowFailure('google', 'the sign-in was canceled')
+    expect(await stateOf(ctx, 'google')).toBe('error')
+    expect((await ctx.connectors.get('google'))?.lastError).toBe('the sign-in was canceled')
+    await ctx.connectors.recordFlowFailure('google', 'the callback state did not match the flow')
+    expect((await ctx.connectors.get('google'))?.lastError).toBe('the callback state did not match the flow')
+    expect(events).toEqual(['error', 'error'])
+    expect(ctx.connectors.overrideClientId('google')).toBeUndefined()
+    await ctx.connectors.configure('google', { clientId: 'abc.apps.googleusercontent.com' })
+    expect(ctx.connectors.overrideClientId('google')).toBe('abc.apps.googleusercontent.com')
+    // configure does not mount an oauth connector, so the recorded failure
+    // persists through it and clears with the next settled operation.
+    expect(await stateOf(ctx, 'google')).toBe('error')
+    await ctx.connectors.disconnect('google')
+    expect((await ctx.connectors.get('google'))?.lastError).toBeUndefined()
+    expect(await stateOf(ctx, 'google')).toBe('unconfigured')
+  })
+
+  it('tracks byoApp configuration: the client id is the requirement, the secret optional', async () => {
     const { ctx, root } = await boot()
     await ctx.connectors.configure('google', { clientId: 'abc.apps.googleusercontent.com' })
-    expect(await stateOf(ctx, 'google')).toBe('unconfigured')
+    expect(await stateOf(ctx, 'google')).toBe('needs-auth')
 
     await ctx.connectors.configure('google', { clientSecret: 'shh' })
     expect(await stateOf(ctx, 'google')).toBe('needs-auth')
@@ -868,7 +982,8 @@ describe('multi-server mount', () => {
     expect(docA).toContain('cwd')
     const docB = await readFile(join(root, '.mcp', 'duo-b.cordis.yml'), 'utf8')
     expect(docB).toContain('literal')
-    expect(docB).toContain('duo-secret')
+    expect(docB).toContain('$cred: DUO_TOKEN')
+    expect(docB).not.toContain('duo-secret')
   })
 
   it('unmounts the servers it added when a later mount is refused', async () => {

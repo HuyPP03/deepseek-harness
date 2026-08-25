@@ -81,6 +81,31 @@ manifest(id: string): ConnectorManifest | undefined
 setAuthorizing(id: string, inFlight: boolean): void
 
 /**
+ * The byoApp client id the user configured through `configure`, while
+ * configured; the flow engine reads it at registration.
+ * @param id - the connector id.
+ * @returns the configured client id, or `undefined` while unconfigured.
+ */
+overrideClientId(id: string): string | undefined
+
+/**
+ * Record an auth-flow failure for one connector and republish its state:
+ * the failure surfaces as the connector's `error` state with the message
+ * as `lastError`, until the next successful operation clears it.
+ * @param id - the connector id.
+ * @param message - the failure to surface.
+ */
+async recordFlowFailure(id: string, message: string): Promise<void>
+
+/**
+ * Settle an auth flow that completed without a stored credential (a
+ * device login): clear the authorizing flag, drop any recorded failure,
+ * and republish the connector's view.
+ * @param id - the connector the flow settled for.
+ */
+async settleAuthFlow(id: string): Promise<void>
+
+/**
  * Configure one connector: store the provided credential values through
  * the credentials seam, persist the non-secret fields in its override
  * document, and — for a token method that is fully configured for the
@@ -93,13 +118,18 @@ async configure(id: string, fields: ConnectorConfigureFields): Promise<void>
 
 /**
  * Connect one connector: mount its servers with every slot resolved.
- * `token` mode resolves now; `oauth` and `device` modes need their flow
- * engines, which a deployment opts into separately, and refuse until then.
+ * `token` mode resolves now; `oauth` mode mounts through the stored token
+ * bundle (refreshing it through the flow engine when one is composed);
+ * `device` mode mounts first, then hands the mount to the device-code flow
+ * engine, which drives the provider's login tool and settles the state in
+ * the background.
  *
  * @param id - the connector id.
  * @param mode - the auth mode to connect through.
+ * @throws {@link ConnectorAuthPendingError} when an oauth connector has no stored bundle yet.
+ * @returns the device flow's start facts for a `device` connect; `undefined` otherwise.
  */
-async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<void>
+async connect(id: string, mode: 'token' | 'oauth' | 'device'): Promise<DeviceFlowStart | undefined>
 
 /**
  * Disconnect one connector: unmount its servers, remove its stored
@@ -127,7 +157,7 @@ async addCustom(spec: AddCustomSpec): Promise<string>
 async removeCustom(id: string): Promise<void>
 ```
 
-Source: [`packages/connectors/connectors/src/index.ts:224`](../../packages/connectors/connectors/src/index.ts)
+Source: [`packages/connectors/connectors/src/index.ts:244`](../../packages/connectors/connectors/src/index.ts)
 
 <a id="ctxoauthtokens--oauthtokenstore"></a>
 
@@ -194,7 +224,7 @@ A connector's derived state changed as the result of a connector operation (conf
 'connector/state'(connectorId: string, state: ConnectorState): void
 ```
 
-Source: [`packages/connectors/connectors/src/types.ts:225`](../../packages/connectors/connectors/src/types.ts)
+Source: [`packages/connectors/connectors/src/types.ts:305`](../../packages/connectors/connectors/src/types.ts)
 
 <a id="oauth-tokens-events"></a>
 

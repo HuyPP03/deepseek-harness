@@ -47,15 +47,35 @@ export function SidebarRoot({
   startSession,
   startChat,
   toggleSidebar,
+  setCenterView,
   t,
   useStore,
   actions,
   renderSlot,
 }: SidebarRootComponentProps) {
   const tab = useStore(state => state.tab)
-  const startNew = tab === 'chats' ? startChat : () => { startSession() }
-  const newLabel = tab === 'chats' ? t('chat.new') : t('session.new')
-  const newLabelFull = tab === 'chats' ? t('chat.new.label') : t('session.new.label')
+  // The browsing tab drives the center column's full-column view: the
+  // connectors tab shows the directory overlay over the conversation, the
+  // other tabs the conversation. An effect (not the click handler) so the
+  // persisted tab restored on mount syncs too.
+  useEffect(() => {
+    setCenterView(tab === 'connectors' ? 'connectors' : 'conversation')
+  }, [tab, setCenterView])
+  // A tab click re-asserts the center view even when the tab is already
+  // active: opening a provider chat from the directory switches the center
+  // view back to the conversation while the tab stays on connectors, so the
+  // next click on that tab must bring the directory back.
+  const selectTab = (candidate: 'chats' | 'workspaces' | 'connectors'): void => {
+    if (tab !== candidate) actions.setTab(candidate)
+    setCenterView(candidate === 'connectors' ? 'connectors' : 'conversation')
+  }
+  // The New control follows the active tab: Chats mints the ungrouped blank
+  // chat (a chat is what the Chats tab lists), Workspaces starts a session.
+  // The connectors tab has no New control at all: the region's own
+  // "New connector" mints its entries.
+  const startNew = tab === 'workspaces' ? () => { startSession() } : startChat
+  const newLabel = tab === 'workspaces' ? t('session.new') : t('chat.new')
+  const newLabelFull = tab === 'workspaces' ? t('session.new.label') : t('chat.new.label')
   // Wide content stays mounted while the collapse animates (fading via
   // .collapsed .wide), unmounts at settle, and remounts right away on expand.
   const [settled, setSettled] = useState(collapsed)
@@ -141,8 +161,8 @@ export function SidebarRoot({
           <button
             type="button"
             className={clsx(css.brand, css.wide)}
-            aria-label={newLabelFull}
-            onClick={() => { startNew() }}
+            aria-label={tab === 'connectors' ? t('tabs.label') : newLabelFull}
+            onClick={() => { if (tab !== 'connectors') startNew() }}
           >
             <BrandWordmark />
           </button>
@@ -163,47 +183,57 @@ export function SidebarRoot({
         </Tooltip>
       </div>
 
-      {/* The browsing tabs: the ungrouped chat rows vs the workspace tree.
-          Wide only — the rail has no room, and its New icon follows the
-          persisted tab. */}
+      {/* The browsing tabs: the ungrouped chat rows, the workspace tree,
+          or the external connections roster. Wide only — the rail has no
+          room, and its New icon follows the persisted tab. */}
       {wide && (
         <div className={css.tabs} role="tablist" aria-label={t('tabs.label')}>
-          {(['chats', 'workspaces'] as const).map(candidate => (
+          {(['chats', 'workspaces', 'connectors'] as const).map(candidate => (
             <button
               key={candidate}
               type="button"
               role="tab"
               aria-selected={tab === candidate}
               className={clsx(css.tab, tab === candidate && css.tabActive)}
-              onClick={() => { if (tab !== candidate) actions.setTab(candidate) }}
+              onClick={() => { selectTab(candidate) }}
             >
-              {t(candidate === 'chats' ? 'tab.chats' : 'tab.workspaces')}
+              {t(`tab.${candidate}` as const)}
             </button>
           ))}
         </div>
       )}
 
-      {/* Expanded, the button carries its own label — tooltip only on the rail. */}
-      <Tooltip label={newLabelFull} delayMs={500} disabled={wide}>
-        <button
-          type="button"
-          className={css.newSession}
-          aria-label={newLabelFull}
-          onClick={() => { startNew() }}
-        >
-          <IconNewChatOutline16 size={wide ? 14 : 18} />
-          {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{newLabel}</span>}
-        </button>
-      </Tooltip>
+      {/* Expanded, the button carries its own label — tooltip only on the rail.
+          The connectors tab has no blank session to start: its New control is
+          the region's own "New connector". */}
+      {tab !== 'connectors' && (
+        <Tooltip label={newLabelFull} delayMs={500} disabled={wide}>
+          <button
+            type="button"
+            className={css.newSession}
+            aria-label={newLabelFull}
+            onClick={() => { startNew() }}
+          >
+            <IconNewChatOutline16 size={wide ? 14 : 18} />
+            {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{newLabel}</span>}
+          </button>
+        </Tooltip>
+      )}
 
       {/* The browsing region fills the column between the controls and the
-          foot in both states; its rail icon column rides the same slot. */}
+          foot in both states; its rail icon column rides the same slot. The
+          connectors tab swaps the region for its own registrant. */}
       <div className={css.regionArea}>
-        {renderSlot('sidebar.workspaces', {
-          wide,
-          expandSidebar: () => { if (collapsed) toggleSidebar() },
-          tab,
-        })}
+        {tab === 'connectors'
+          ? renderSlot('sidebar.connectors', {
+            wide,
+            expandSidebar: () => { if (collapsed) toggleSidebar() },
+          })
+          : renderSlot('sidebar.workspaces', {
+            wide,
+            expandSidebar: () => { if (collapsed) toggleSidebar() },
+            tab,
+          })}
       </div>
 
       {/* Footer actions stack above Settings in both sidebar widths. */}

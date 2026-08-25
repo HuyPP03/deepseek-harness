@@ -60,6 +60,7 @@ function mountFrame() {
     slotCalls.push({ key, props: owner })
     if (key === 'sidebar') return <div data-testid="sidebar-content" />
     if (key === 'conversation') return <div data-testid="center-content" />
+    if (key === 'main.connectors') return <div data-testid="center-connectors-content" />
     if (key === 'details') return <div data-testid="details-content" />
     if (key === 'conversation.empty') return <div data-testid="empty-content" />
     return <div data-testid="other-content" />
@@ -152,6 +153,23 @@ describe('AppFrame', () => {
     expect(keys).not.toContain('conversation.empty')
     expect(slotCalls.find(c => c.key === 'conversation')!.props).toEqual({})
     expect(slotCalls.find(c => c.key === 'details')!.props).toEqual({})
+  })
+
+  it('renders the connectors overlay only while centerView is connectors; the conversation stays mounted', () => {
+    const { instance, getByTestId, queryByTestId, slotCalls } = mountFrame()
+    expect(queryByTestId('center-connectors-content')).toBeNull()
+    expect(slotCalls.map(c => c.key)).not.toContain('main.connectors')
+
+    act(() => { instance.actions.setCenterView('connectors') })
+    expect(getByTestId('center-connectors-content')).toBeTruthy()
+    // The conversation underneath is still mounted (state survives the view
+    // switch) and the overlay is rendered with an empty owner share.
+    expect(getByTestId('center-content')).toBeTruthy()
+    expect(slotCalls.find(c => c.key === 'main.connectors')!.props).toEqual({})
+
+    act(() => { instance.actions.setCenterView('conversation') })
+    expect(queryByTestId('center-connectors-content')).toBeNull()
+    expect(getByTestId('center-content')).toBeTruthy()
   })
 
   it('keeps the conversation slot mounted while no session is current', () => {

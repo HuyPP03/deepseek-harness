@@ -262,12 +262,14 @@ export function deriveGroups(
  * workspace — chat sessions and legacy ungrouped sessions alike — in the
  * browser-local order with the recency fallback. Blank sessions are excluded
  * except for the selected provisional New Chat row; archived sessions are
- * excluded everywhere. Content search lives outside this derivation
- * (see {@link deriveSearchResults}).
+ * excluded everywhere; sessions running a connector preset are excluded
+ * (their home is the provider detail). Content search lives outside this
+ * derivation (see {@link deriveSearchResults}).
  * @param list - sessions list snapshot.
  * @param workspaces - real workspaces (members are excluded from the list).
  * @param archivedSessionIds - registry-global archive set.
  * @param ungroupedOrder - stored browser-local order; recency applies when absent.
+ * @param connectorPresetIds - preset ids of connected connectors; their sessions are hidden here.
  * @returns flat rows in render order.
  */
 export function deriveChats(
@@ -275,6 +277,7 @@ export function deriveChats(
   workspaces: readonly WorkspaceView[],
   archivedSessionIds: readonly SessionId[],
   ungroupedOrder: readonly string[] | undefined,
+  connectorPresetIds: ReadonlySet<string>,
 ): SessionNode[] {
   const archived = new Set(archivedSessionIds)
   const accounted = new Set<SessionId>()
@@ -282,7 +285,10 @@ export function deriveChats(
   const stray = list.ids
     .map(id => list.byId[id])
     .filter((s): s is SessionSummary =>
-      s !== undefined && !accounted.has(s.id) && sessionVisible(s, list.current, archived))
+      s !== undefined
+      && !accounted.has(s.id)
+      && sessionVisible(s, list.current, archived)
+      && (s.agentPreset === undefined || !connectorPresetIds.has(s.agentPreset)))
   const ordered = ungroupedOrder === undefined
     ? [...stray].sort(byRecency)
     : orderedUngrouped(stray, ungroupedOrder)
@@ -307,6 +313,7 @@ export interface RelativeTime {
  * @param workspaces - Workspace membership and display labels.
  * @param query - caller text; surrounding whitespace is ignored.
  * @param archivedSessionIds - registry-global archive set (members never match).
+ * @param connectorPresetIds - preset ids of connected connectors; their sessions never match.
  * @param content - ranked Host content-search page.
  * @param limit - protocol-owned maximum merged row count.
  * @returns bounded deduplicated flat rows and a refine-query hint bit.
@@ -316,6 +323,7 @@ export function deriveSearchResults(
   workspaces: readonly WorkspaceView[],
   query: string,
   archivedSessionIds: readonly SessionId[],
+  connectorPresetIds: ReadonlySet<string>,
   content: { items: readonly SessionSearchResultItem[]; hasMore: boolean },
   limit: number,
 ): SearchResultSet {
@@ -338,12 +346,19 @@ export function deriveSearchResults(
     if (!contentBySession.has(item.sessionId)) contentBySession.set(item.sessionId, item)
   }
 
+  // Connector-preset sessions stay out of the chats tab's search, like its
+  // rows: the provider detail is their only home.
+  const notConnectorPreset = (summary: SessionSummary): boolean =>
+    summary.agentPreset === undefined || !connectorPresetIds.has(summary.agentPreset)
   const local: SessionSummary[] = []
   for (const id of list.ids) {
     const summary = list.byId[id]
     // Blank placeholders never match a query (their canonical title displays
     // localized, so matching it would tie search to one language).
-    if (summary === undefined || summary.blank || !sessionVisible(summary, list.current, archived)) continue
+    if (
+      summary === undefined || summary.blank || !notConnectorPreset(summary)
+      || !sessionVisible(summary, list.current, archived)
+    ) continue
     if (
       sessionTitle(summary).toLowerCase().includes(q)
       || labelOf(summary).toLowerCase().includes(q)
@@ -363,7 +378,10 @@ export function deriveSearchResults(
   for (const summary of local) include(summary)
   for (const item of content.items) {
     const summary = list.byId[item.sessionId]
-    if (summary !== undefined && !summary.blank && sessionVisible(summary, list.current, archived)) include(summary)
+    if (
+      summary !== undefined && !summary.blank && notConnectorPreset(summary)
+      && sessionVisible(summary, list.current, archived)
+    ) include(summary)
   }
 
   return {

@@ -194,12 +194,40 @@ describe('the shipped Web composition', () => {
     }
   })
 
-  it('supplies both shipped presets, and only those, from the system root', async () => {
+  it('supplies the shipped presets from the system root', async () => {
     const listed = await ctx.agentPresets.list()
 
-    expect(listed.map(preset => preset.id).sort()).toEqual(['code', 'cordis', 'minimal', 'standard'])
+    expect(listed.map(preset => preset.id).sort()).toEqual([
+      'atlas', 'chat', 'code', 'cordis', 'custom', 'github', 'google', 'm365', 'minimal', 'notion', 'slack', 'standard',
+    ])
     expect(listed.every(preset => preset.trust === 'system')).toBe(true)
     expect(ctx.agentPresets.defaultId).toBe('standard')
+  })
+
+  it('composes every connector preset with the persona its file declares', async () => {
+    for (const id of ['atlas', 'custom', 'github', 'google', 'm365', 'notion', 'slack']) {
+      const handle = await ctx.agents.create({
+        sessionId: SessionId(`preset-${id}`),
+        setup: agentCtx => ctx.agentPresets.mount(agentCtx, id).then(() => undefined),
+      })
+      try {
+        const file = await readFile(join(CONFIG_DIR, 'agent-presets', id, 'agent.cordis.yml'), 'utf8')
+        const declared = file.match(/^    text: >-\n      (.+)$/m)?.[1]
+        expect(declared, `persona line in ${id}`).toBeDefined()
+        // The section carries the template as declared; {{model}} interpolates
+        // at render against the session's route.
+        const assembly = await ctx.systemPrompt.assemble({ scope: handle.agent })
+        const persona = assembly.sections.find(section => section.name === 'deployment:persona')
+        expect(persona?.text).toBe(declared)
+        // The chat-style tool layer: a working-directory-free assistant.
+        const names = toolNames(ctx, handle.agent)
+        expect(names).toContain('ask_user_question')
+        expect(names).toContain('job_list')
+        expect(names.some(name => name === 'bash' || name === 'pwsh')).toBe(true)
+      } finally {
+        await handle.dispose()
+      }
+    }
   })
 
   it('composes the full agent from `standard`', async () => {
@@ -216,7 +244,7 @@ describe('the shipped Web composition', () => {
       expect(toolNames(ctx, handle.agent).filter(name => name !== 'glob' && name !== 'grep')).toEqual([
         'ask_user_question', 'bash', 'create_goal', 'edit', 'exit_plan_mode',
         'get_goal', 'interrupt_agent', 'job_kill', 'job_list', 'job_output', 'list_agents', 'ralph', 'read', 'read_image', 'send_message', 'skill',
-        'subagent', 'subagent_fork', 'todo_write', 'update_goal', 'web_search',
+        'subagent', 'subagent_fork', 'todo_write', 'update_goal', 'web_fetch', 'web_search',
         'workflow', 'write',
       ])
     } finally {

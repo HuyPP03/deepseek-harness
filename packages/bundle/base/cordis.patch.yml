@@ -318,6 +318,25 @@
     - id: connectors
       name: '@deepseek-ai/dsh-connectors'
 
+    # Token bundles for connectors that authenticate through a browser OAuth
+    # flow: one bundle per connector under `$DSH_HOME/.connectors/oauth-tokens.json`.
+    # The file is created lazily by the first bundle write; no file at boot
+    # means no stored bundles, which the connectors surface as unconfigured.
+    - id: oauth-tokens
+      name: '@deepseek-ai/dsh-credentials-oauth-tokens'
+
+    # The connector browser-flow engine: drives the RFC 9728/8414 discovery,
+    # dynamic client registration, PKCE, and the loopback callback exchange
+    # that stores a token bundle before the connectors service mounts.
+    - id: oauth-flow
+      name: '@deepseek-ai/dsh-connectors-oauth-flow'
+
+    # The connector device-code flow engine: drives the provider's
+    # server-side login and verify tools, parses the sign-in instruction,
+    # and polls until the sign-in settles or the window closes.
+    - id: device-flow
+      name: '@deepseek-ai/dsh-connectors-device-flow'
+
     - id: subagent
       name: '@deepseek-ai/dsh-subagent'
 

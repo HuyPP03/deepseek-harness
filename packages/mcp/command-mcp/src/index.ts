@@ -38,6 +38,9 @@ export function apply(ctx: Context): void {
     name: 'mcp',
     description: 'List the connected MCP servers and their tools',
     input: { hint: '[server]' },
+    // A provider chat surfaces its own provider tools; the MCP-server listing
+    // is a workspace-code concern, so keep the row out of its slash menu.
+    providerHidden: true,
     handler: (invocation: CommandInvocation): CommandResult => {
       const server = invocation.rawInput.trim()
       const views = ctx.mcpRegistry.servers()

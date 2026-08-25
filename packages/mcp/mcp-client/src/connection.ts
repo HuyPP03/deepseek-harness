@@ -21,6 +21,7 @@ import { ToolListChangedNotificationSchema } from '@modelcontextprotocol/sdk/typ
 import type { Context } from '@deepseek-ai/cordis'
 import type { McpServerStatus, McpServerView } from '@deepseek-ai/dsh-mcp-registry'
 import { MAX_TIMER_DELAY_MS } from '@deepseek-ai/dsh-timeout'
+import { resolveServerValues } from './credentials.ts'
 import { createTransport } from './transport.ts'
 import { syncTools } from './tools.ts'
 import type { SyncGeneration, ToolBridgeOptions } from './tools.ts'
@@ -304,7 +305,10 @@ export function startConnection(ctx: Context, config: Config, policy: ResolvedRe
       },
     )
     try {
-      await generation.connect(createTransport(config))
+      // References re-resolve on every attempt, so a stored or refreshed
+      // value reaches the next try without a restart.
+      const resolved = await resolveServerValues(ctx, config)
+      await generation.connect(createTransport(resolved))
       if (hasClosed()) {
         attemptSettled = true
         generationDown(generation)

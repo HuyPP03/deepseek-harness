@@ -41,6 +41,10 @@ interface BenchOptions {
   addressed?: SessionId
   /** Marks one session a chat preset (summary row), hiding /permission from its menu. */
   chatSession?: SessionId
+  /** Marks one session a provider chat (a connector preset), hiding providerHidden rows. */
+  providerSession?: SessionId
+  /** The connectors' published preset set (the provider-chat authority). */
+  connectorPresetIds?: ReadonlySet<string>
 }
 
 /**
@@ -104,11 +108,18 @@ async function bench(opts: BenchOptions = {}) {
   // summary rows the chat-preset menu filter reads.
   const scopes = new Map<SessionId, { ctx: Context; fiber: { dispose(): Promise<void> } }>()
   const chat = opts.chatSession
+  const provider = opts.providerSession
+  const byId: Record<string, { agentPreset: string }> = {}
+  if (chat !== undefined) byId[chat] = { agentPreset: 'chat' }
+  if (provider !== undefined) byId[provider] = { agentPreset: 'preset-github' }
   const listState = {
-    ids: chat === undefined ? [] : [chat],
-    byId: chat === undefined ? {} : { [chat]: { agentPreset: 'chat' } },
+    ids: Object.keys(byId),
+    byId,
     current: undefined, phase: 'ready' as const,
     subagentsByParent: {}, jobsBySession: {}, currentAddress: undefined,
+  }
+  if (opts.connectorPresetIds !== undefined) {
+    ctx.provide('connectorPresetIds', { getSnapshot: () => opts.connectorPresetIds })
   }
   ctx.provide('sessions', {
     scope: (id: SessionId) => scopes.get(id)?.ctx,
@@ -251,6 +262,23 @@ describe('candidates', () => {
     const plain = await bench({ commands })
     const plainNames = (await plain.source.candidates(proj('s1'), req(''))).map(c => c.name)
     expect(plainNames).toEqual(['plan', 'goal', 'permission'])
+  })
+
+  it('hides providerHidden commands from a provider chat menu but keeps them for ordinary sessions', async () => {
+    const commands: CommandDescriptor[] = [
+      { name: 'compact', description: 'compact the conversation' },
+      { name: 'goal', description: 'steer a long-running task', providerHidden: true },
+      { name: 'mcp', description: 'list the MCP servers', providerHidden: true },
+    ]
+    const provider = await bench({
+      commands: () => Promise.resolve({ commands }),
+      providerSession: sid('s1'),
+      connectorPresetIds: new Set(['preset-github']),
+    })
+    expect((await provider.source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['compact'])
+
+    const plain = await bench({ commands: () => Promise.resolve({ commands }) })
+    expect((await plain.source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['compact', 'goal', 'mcp'])
   })
 
   it('matches case-insensitive subsequences and ranks prefixes, boundaries, adjacency, gaps, then source order', async () => {

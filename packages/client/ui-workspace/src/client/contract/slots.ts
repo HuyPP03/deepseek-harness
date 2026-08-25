@@ -85,11 +85,31 @@ export type DirectoryPickingHooks = {
 }
 
 /**
+ * Connector-chats share: the connectors surface publishes the preset ids of
+ * every connector under the `connectorPresetIds` ctx service, and the Chats
+ * tab filters its rows (and search) by that set — provider chats belong to
+ * the provider detail only. The source reads lazily across activation
+ * order, so it stays an empty set while the connectors plugin is absent.
+ */
+export type ConnectorChatsInjected = {
+  hooks: {
+    /** The preset ids of every connector; empty while none are loaded or the connectors plugin is composed out. */
+    connectorPresetIds: HostObservable<ReadonlySet<string>>
+  }
+}
+
+/** Component-side view of the share: the bound preset-id selector hook. */
+export type ConnectorChatsHooks = {
+  /** Selector hook over the set of connector preset ids. */
+  useConnectorPresetIds: SnapshotSelectorHook<ReadonlySet<string>>
+}
+
+/**
  * Browser-private injected share (arrives via the register inject factory).
  * Data reads use the global framework hooks; these are the Host actions the
  * browsing region drives.
  */
-export type WorkspaceBrowserInjected = DirectoryPickingInjected & {
+export type WorkspaceBrowserInjected = DirectoryPickingInjected & ConnectorChatsInjected & {
   /**
    * Start a New Session in a Workspace: reuse-or-create its blank session and
    * open it; without an explicit workspace, inherit the current Session
@@ -144,6 +164,7 @@ export type WorkspaceBrowserProps =
   & PropsStore<ReturnType<typeof createWorkspaceViewStore>>
   & Omit<WorkspaceBrowserInjected, 'hooks'>
   & DirectoryPickingHooks
+  & ConnectorChatsHooks
   & PropsLocale<'workspace'>
 
 /**
@@ -151,7 +172,7 @@ export type WorkspaceBrowserProps =
  * callback; this callback creates only the real Host Workspace. A type alias
  * supplies the implicit index signature required by the registry.
  */
-export type WorkspacePickerInjected = DirectoryPickingInjected & {
+export type WorkspacePickerInjected = DirectoryPickingInjected & ConnectorChatsInjected & {
   /** Adopt a picked host directory as a real Workspace before targeting a Session. */
   createWorkspace: (input: { path: string }) => Promise<WorkspaceView>
 }
@@ -166,4 +187,5 @@ export type WorkspacePickerProps =
   & PropsRenderSlots<'conversation.hero.workspace.directoryFlow'>
   & Omit<WorkspacePickerInjected, 'hooks'>
   & DirectoryPickingHooks
+  & ConnectorChatsHooks
   & PropsLocale<'workspace'>

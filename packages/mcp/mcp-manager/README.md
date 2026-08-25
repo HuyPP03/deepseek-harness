@@ -27,7 +27,7 @@ One file per user server, holding a single `mcp-client` entry:
     url: http://192.168.161.79:8787/mcp
 ```
 
-Documents are written `0600` (headers and env may carry secrets); the directory is `0700`. An unparsable document fails the boot loud, like any other composition input; an `add` whose mount fails deletes the document it just wrote.
+Documents are written `0600` (headers and env may carry secrets); the directory is `0700`. An `env`/`headers` value may be a literal or a `{$cred: REF}` credential reference; the document keeps whatever the spec carried, and mcp-client resolves references at connection time. An unparsable document fails the boot loud, like any other composition input; an `add` whose mount fails deletes the document it just wrote.
 
 ### Service API
 

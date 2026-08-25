@@ -148,6 +148,76 @@ export interface ConnectorManifest {
   readonly suggestions?: readonly string[]
 }
 
+/**
+ * The contract the optional OAuth flow engine satisfies on the host plane.
+ * The connectors service reads it through the service store without importing
+ * the engine package, keeping the dependency one-way (engine imports
+ * connectors, never the reverse).
+ */
+export interface ConnectorAuthFlow {
+  /**
+   * Begin one connector's browser flow: discovery, client registration, PKCE,
+   * and the loopback listener.
+   * @param id - the connector id with an `oauth` auth method.
+   * @returns the authorization URL to open and the flow's expiry.
+   */
+  begin(id: string): Promise<{ authorizationUrl: string; expiresAt: number }>
+  /**
+   * Cancel one in-flight flow without recording an error.
+   * @param id - the connector id.
+   */
+  cancel(id: string): void
+  /**
+   * Make one stored bundle presentable: refresh it while its access token
+   * has expired or is close to expiring.
+   * @param id - the connector id owning the bundle.
+   */
+  ensureFresh(id: string): Promise<void>
+}
+
+/**
+ * The device-code flow's start result: what the client shows the user while
+ * the provider-side sign-in runs.
+ */
+export interface DeviceFlowStart {
+  /** The sign-in page to open, for a device-code start. */
+  verificationUri?: string
+  /** The one-time code to enter on the sign-in page, for a device-code start. */
+  userCode?: string
+  /** The provider's full sign-in instruction, for a device-code start. */
+  message?: string
+  /** When the in-flight flow settles on its own (timeout), epoch milliseconds. */
+  expiresAt: number
+  /** Whether the user must complete a sign-in, or the server was already authenticated. */
+  status: 'device-code' | 'ready'
+}
+
+/**
+ * The contract the optional device-code flow engine satisfies on the host
+ * plane, mirroring {@link ConnectorAuthFlow}: the connectors service mounts
+ * the connector's servers first, then the engine drives the provider's
+ * server-side login and verify tools and settles the connector's state.
+ * The dependency stays one-way (engine imports connectors, never the
+ * reverse).
+ */
+export interface ConnectorDeviceFlow {
+  /**
+   * Begin one connector's device-code flow over its mounted server: drive
+   * the login tool, parse the provider's sign-in instruction, and poll the
+   * verify tool in the background until it settles or the window closes.
+   * @param id - the connector id with a `device` auth method.
+   * @returns the start facts for the client to show, or `ready` when the
+   *   server was already authenticated.
+   */
+  begin(id: string): Promise<DeviceFlowStart>
+  /**
+   * Cancel one in-flight flow without recording an error: polling stops and
+   * the connector's servers unmount.
+   * @param id - the connector id.
+   */
+  cancel(id: string): void
+}
+
 /** Connection lifecycle state of one connector, derived at read time. */
 export type ConnectorState =
   | 'unconfigured'
@@ -167,6 +237,8 @@ export interface ConnectorServerView {
   readonly mounted: boolean
   /** The live registry status while mounted. */
   readonly status?: 'connecting' | 'connected' | 'reconnecting' | 'down'
+  /** The mounted server's tool names, in registry order; absent while unmounted. */
+  readonly tools?: readonly string[]
 }
 
 /** Wire view of one supported auth method: whether it is configured, never its values. */
@@ -175,8 +247,16 @@ export interface ConnectorAuthView {
   readonly mode: 'token' | 'oauth' | 'device'
   /** Whether this method currently has everything it needs. */
   readonly configured: boolean
+  /** The token method's credential reference names, one field per reference; the names are public manifest data. */
+  readonly credentialRefs?: readonly string[]
   /** User-facing instructions for obtaining the credential. */
   readonly howTo?: string
+  /**
+   * True for pre-registered-app OAuth: the provider offers no dynamic client
+   * registration, so the user must configure a client id (and, where the
+   * provider keeps one, a client secret) before the flow can start.
+   */
+  readonly byoApp?: boolean
   /** Setup instructions for pre-registered-app OAuth methods. */
   readonly setupGuide?: readonly string[]
   /** Re-authentication cadence, where the provider has one. */

@@ -9,8 +9,9 @@
  */
 import type { PropsLocale, PropsRenderSlots, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 // Type-only: pulls ui-layout's SlotMap merge (the 'sidebar' entry) into every
-// program that sees this contract, so PropsRuntime<'sidebar'> resolves.
-import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
+// program that sees this contract, so PropsRuntime<'sidebar'> resolves, and
+// the CenterView union the tab-sync action writes.
+import type { CenterView } from '@deepseek-ai/dsh-client-ui-layout/client'
 import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
 import type { createSidebarStore, SidebarTab } from '../stores.ts'
 
@@ -23,6 +24,12 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * registers the browser.
      */
     'sidebar.workspaces': { kind: 'single'; scope: 'root'; owner: SidebarSectionOwnerProps }
+    /**
+     * The predefined external connections browsing region, shown when the
+     * shell's active tab is 'connectors'. Declared by this package's 'sidebar'
+     * entry; ui-connectors registers the roster region.
+     */
+    'sidebar.connectors': { kind: 'single'; scope: 'root'; owner: SidebarConnectorsOwnerProps }
     /**
      * The settings seat at the sidebar foot. Declared by this package's
      * 'sidebar' entry; ui-settings registers its trigger row + modal panel.
@@ -49,6 +56,13 @@ export interface SidebarSectionOwnerProps {
   /** The shell's active browsing tab: the ungrouped chat rows or the workspace tree. */
   tab: SidebarTab
 }
+
+/**
+ * Owner share of the connectors hole: the same column state as the browser
+ * hole (this region never receives `tab` — the shell renders it only on the
+ * connectors tab).
+ */
+export type SidebarConnectorsOwnerProps = Pick<SidebarSectionOwnerProps, 'wide' | 'expandSidebar'>
 
 /**
  * Owner share of the sidebar settings seat: the column display state the
@@ -84,6 +98,12 @@ export type SidebarRootInjected = {
   startChat: () => void
   /** Toggle the sidebar column through the layout service. */
   toggleSidebar: () => void
+  /**
+   * Switch the center column's full-column view through the layout service:
+   * the shell mirrors its active browsing tab (the connectors tab shows the
+   * directory overlay, the others the conversation).
+   */
+  setCenterView: (view: CenterView) => void
 }
 
 /**
@@ -93,6 +113,6 @@ export type SidebarRootInjected = {
  */
 export type SidebarRootComponentProps =
   PropsRuntime<'sidebar'>
-  & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.settings' | 'sidebar.footer.action'>
+  & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.connectors' | 'sidebar.settings' | 'sidebar.footer.action'>
   & PropsStore<ReturnType<typeof createSidebarStore>>
   & SidebarRootInjected & PropsLocale<'sidebar'>

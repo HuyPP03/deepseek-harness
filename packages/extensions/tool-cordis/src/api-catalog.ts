@@ -531,14 +531,32 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'inFlight', description: 'whether a flow is in flight.' }],
       },
       {
+        signature: 'overrideClientId(id: string): string | undefined',
+        description: 'The byoApp client id the user configured through `configure`, while configured; the flow engine reads it at registration.',
+        parameters: [{ name: 'id', description: 'the connector id.' }],
+        returns: 'the configured client id, or `undefined` while unconfigured.',
+      },
+      {
+        signature: 'async recordFlowFailure(id: string, message: string): Promise<void>',
+        description: 'Record an auth-flow failure for one connector and republish its state: the failure surfaces as the connector\'s `error` state with the message as `lastError`, until the next successful operation clears it.',
+        parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'message', description: 'the failure to surface.' }],
+      },
+      {
+        signature: 'async settleAuthFlow(id: string): Promise<void>',
+        description: 'Settle an auth flow that completed without a stored credential (a device login): clear the authorizing flag, drop any recorded failure, and republish the connector\'s view.',
+        parameters: [{ name: 'id', description: 'the connector the flow settled for.' }],
+      },
+      {
         signature: 'async configure(id: string, fields: ConnectorConfigureFields): Promise<void>',
         description: 'Configure one connector: store the provided credential values through the credentials seam, persist the non-secret fields in its override document, and — for a token method that is fully configured for the first time — mount its servers.',
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'fields', description: 'the fields to set; absent fields are left untouched.' }],
       },
       {
-        signature: 'async connect(id: string, mode: \'token\' | \'oauth\' | \'device\'): Promise<void>',
-        description: 'Connect one connector: mount its servers with every slot resolved. `token` mode resolves now; `oauth` and `device` modes need their flow engines, which a deployment opts into separately, and refuse until then.',
+        signature: 'async connect(id: string, mode: \'token\' | \'oauth\' | \'device\'): Promise<DeviceFlowStart | undefined>',
+        description: 'Connect one connector: mount its servers with every slot resolved. `token` mode resolves now; `oauth` mode mounts through the stored token bundle (refreshing it through the flow engine when one is composed); `device` mode mounts first, then hands the mount to the device-code flow engine, which drives the provider\'s login tool and settles the state in the background.',
         parameters: [{ name: 'id', description: 'the connector id.' }, { name: 'mode', description: 'the auth mode to connect through.' }],
+        returns: 'the device flow\'s start facts for a `device` connect; `undefined` otherwise.',
+        throws: ['{@link ConnectorAuthPendingError} when an oauth connector has no stored bundle yet.'],
       },
       {
         signature: 'async disconnect(id: string): Promise<void>',
@@ -983,7 +1001,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
   {
     key: 'mcpRegistry',
     summary: 'Live MCP server registry over one app root.',
-    description: 'Live MCP server registry over one app root.',
+    description: 'Live MCP server registry over one app root. Besides the read face, the registry registers the model-facing MCP bridge (`mcp_list`, `mcp_describe`, `mcp_call`) once per app: the per-server tools the mcp clients register are unlisted, so a large MCP tool surface never enters the request `tools` array and the model reaches each tool on demand instead.',
     methods: [
       {
         signature: 'report(serverName: string, reporter: McpServerReporter): () => void',
@@ -3026,7 +3044,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ConnectorAuthView',
-    declaration: 'export interface ConnectorAuthView {\n    readonly mode: \'token\' | \'oauth\' | \'device\';\n    readonly configured: boolean;\n    readonly howTo?: string;\n    readonly setupGuide?: readonly string[];\n    readonly reauthHint?: string;\n}',
+    declaration: 'export interface ConnectorAuthView {\n    readonly mode: \'token\' | \'oauth\' | \'device\';\n    readonly configured: boolean;\n    readonly credentialRefs?: readonly string[];\n    readonly howTo?: string;\n    readonly byoApp?: boolean;\n    readonly setupGuide?: readonly string[];\n    readonly reauthHint?: string;\n}',
   },
   {
     name: 'ConnectorConfigureFields',
@@ -3042,7 +3060,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ConnectorServerView',
-    declaration: 'export interface ConnectorServerView {\n    readonly serverName: string;\n    readonly mounted: boolean;\n    readonly status?: \'connecting\' | \'connected\' | \'reconnecting\' | \'down\';\n}',
+    declaration: 'export interface ConnectorServerView {\n    readonly serverName: string;\n    readonly mounted: boolean;\n    readonly status?: \'connecting\' | \'connected\' | \'reconnecting\' | \'down\';\n    readonly tools?: readonly string[];\n}',
   },
   {
     name: 'ConnectorState',
@@ -3153,12 +3171,12 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export type CredentialRef = Branded<\'CredentialRef\'>;',
   },
   {
-    name: 'CredRefPlaceholder',
-    declaration: 'export interface CredRefPlaceholder {\n    readonly $cred: string;\n}',
-  },
-  {
     name: 'DeviceAuthMethod',
     declaration: 'export interface DeviceAuthMethod {\n    readonly mode: \'device\';\n    readonly howTo?: string;\n    readonly loginTool?: string;\n    readonly verifyTool?: string;\n}',
+  },
+  {
+    name: 'DeviceFlowStart',
+    declaration: 'export interface DeviceFlowStart {\n    verificationUri?: string;\n    userCode?: string;\n    message?: string;\n    expiresAt: number;\n    status: \'device-code\' | \'ready\';\n}',
   },
   {
     name: 'DiffCallView',
@@ -3737,10 +3755,6 @@ export const TYPE_API: readonly TypeApiEntry[] = [
     declaration: 'export interface OneShotSubagentDescriptorData extends SubagentDescriptorBase {\n    readonly mode: \'one-shot\';\n    readonly label?: string;\n}',
   },
   {
-    name: 'OverridePlaceholder',
-    declaration: 'export interface OverridePlaceholder {\n    readonly $override: string;\n}',
-  },
-  {
     name: 'PermissionSelect',
     declaration: 'export interface PermissionSelect {\n    options: PresetOption[];\n    currentValue: string;\n}',
   },
@@ -3991,10 +4005,6 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'ServerResponse',
     declaration: 'export interface ServerResponse {\n    type: \'server-response\';\n    rpcId: RpcId;\n    result: RpcResult<unknown>;\n}',
-  },
-  {
-    name: 'ServerValue',
-    declaration: 'export type ServerValue = string | CredRefPlaceholder | OverridePlaceholder;',
   },
   {
     name: 'SessionAvailability',
@@ -4630,7 +4640,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ToolDefinition',
-    declaration: 'export interface ToolDefinition extends ToolSchema {\n    readonly output: ToolOutputDefinition;\n    execute(args: unknown, exec: ToolRunContext): Promise<unknown>;\n    finalizeContent?(exec: Readonly<ToolExecution>, result: Readonly<ToolExecutionResult>): ContentBlock[] | undefined;\n    timeoutMs?: number;\n    isConcurrencySafe?(args: unknown): boolean;\n    presentCall?(args: unknown): ToolCallView | undefined;\n    presentResult?(args: unknown, result: ToolResult): ToolResultView | undefined;\n}',
+    declaration: 'export interface ToolDefinition extends ToolSchema {\n    readonly output: ToolOutputDefinition;\n    execute(args: unknown, exec: ToolRunContext): Promise<unknown>;\n    finalizeContent?(exec: Readonly<ToolExecution>, result: Readonly<ToolExecutionResult>): ContentBlock[] | undefined;\n    timeoutMs?: number;\n    unlisted?: boolean;\n    isConcurrencySafe?(args: unknown): boolean;\n    presentCall?(args: unknown): ToolCallView | undefined;\n    presentResult?(args: unknown, result: ToolResult): ToolResultView | undefined;\n}',
   },
   {
     name: 'ToolDispatchExecution',

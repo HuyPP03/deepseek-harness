@@ -68,6 +68,9 @@ export type { GoalsApi, GoalId, GoalRef } from './goals.ts'
 export type { SettingsApi, SettingsNamespaceView, SettingsPathOpView, SettingsSecretView } from './settings.ts'
 export type { CredentialsApi, CredentialView } from './credentials.ts'
 export type { ConnectorApi } from './connector.ts'
+export type {
+  AddCustomSpec, ConnectorAuthView, ConnectorConfigureFields, ConnectorServerView, ConnectorState, ConnectorView,
+} from '@deepseek-ai/dsh-connectors'
 export type { ConfigurableProviderView, DiscoveredModelView, LlmApi } from './llm.ts'
 export type { McpApi, McpServerRow, McpServerSpec, McpServerStatus, McpStdioServerSpec, McpStreamableHttpServerSpec, McpToolRow } from './mcp.ts'
 export type { DownloadsApi } from './downloads.ts'

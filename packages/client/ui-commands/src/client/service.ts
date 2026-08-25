@@ -13,7 +13,7 @@ import type { Context } from '@deepseek-ai/cordis'
 // (`commands/change` rides the allowlist) into this program.
 import type {} from '@deepseek-ai/dsh-api-remotes/client'
 import type { CommandResult } from '@deepseek-ai/dsh-commands/types'
-import type { ClientContext, ISessions, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ClientContext, ISessions, SessionId, SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 import { CHAT_PRESET_ID } from '@deepseek-ai/dsh-client-runtime/client'
 import type {
   CandidateRequest, ClientSessionContext, CommandClaim, PickOutcome, InputTriggerCandidate, InputTriggerPick,
@@ -260,11 +260,14 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
    */
   private async menuRowCandidates(session: ClientSessionContext, signal: AbortSignal): Promise<readonly InputTriggerCandidate[]> {
     const list = await this.directory.ensureReady(session.sessionId, signal)
-    const chatSession = this.sessions().list.getSnapshot().byId[session.sessionId]?.agentPreset === CHAT_PRESET_ID
+    const agentPreset = this.sessions().list.getSnapshot().byId[session.sessionId]?.agentPreset
+    const chatSession = agentPreset === CHAT_PRESET_ID
+    const providerChat = this.isProviderChat(agentPreset)
     const rows: InputTriggerCandidate[] = []
     const seen = new Set<string>()
     for (const c of list) {
       if (chatSession && c.name === 'permission') continue
+      if (providerChat && c.providerHidden === true) continue
       seen.add(c.name)
       rows.push({ name: c.name, description: c.description, ...(c.input !== undefined ? { hint: c.input.hint } : {}) })
     }
@@ -497,5 +500,17 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     const sessions = this.ctx.get('sessions')
     if (sessions === undefined) throw new Error('ui-commands: sessions service unavailable')
     return sessions
+  }
+
+  /**
+   * Whether a session runs a connector preset (a provider chat): such a chat
+   * carries no code workspace, so its slash menu drops `providerHidden` rows
+   * (a typed line still reaches the host). Reads the connectors' published
+   * preset set at call time (settled by the time a user opens the '/' source).
+   */
+  private isProviderChat(agentPreset: string | undefined): boolean {
+    if (agentPreset === undefined) return false
+    const provided = this.ctx.get('connectorPresetIds') as SnapshotStore<ReadonlySet<string>> | undefined
+    return provided !== undefined && provided.getSnapshot().has(agentPreset)
   }
 }

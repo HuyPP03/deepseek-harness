@@ -64,6 +64,8 @@ import {
 } from '../api/credentials.schema.ts'
 import {
   connectorAddValueSchema,
+  connectorAuthorizeValueSchema,
+  connectorDeviceLoginValueSchema,
   connectorCompleteValueSchema,
   connectorConfigureValueSchema,
   connectorConnectValueSchema,
@@ -180,6 +182,8 @@ export interface IApiClient {
     configure(payload: RequestPayload<'connector.configure'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'connector.configure'>>>
     connect(payload: RequestPayload<'connector.connect'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'connector.connect'>>>
     complete(payload: RequestPayload<'connector.complete'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'connector.complete'>>>
+    authorize(payload: RequestPayload<'connector.authorize'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'connector.authorize'>>>
+    deviceLogin(payload: RequestPayload<'connector.deviceLogin'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'connector.deviceLogin'>>>
     disconnect(payload: RequestPayload<'connector.disconnect'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'connector.disconnect'>>>
     add(payload: RequestPayload<'connector.add'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'connector.add'>>>
     remove(payload: RequestPayload<'connector.remove'>, signal?: AbortSignal): Promise<RpcResponse<ResponseValue<'connector.remove'>>>
@@ -260,6 +264,8 @@ const UNARY_VALUE_SCHEMAS: { [K in keyof RpcMethodMap]: z.ZodType<Wire<ResponseV
   'connector.configure': connectorConfigureValueSchema,
   'connector.connect': connectorConnectValueSchema,
   'connector.complete': connectorCompleteValueSchema,
+  'connector.authorize': connectorAuthorizeValueSchema,
+  'connector.deviceLogin': connectorDeviceLoginValueSchema,
   'connector.disconnect': connectorDisconnectValueSchema,
   'connector.add': connectorAddValueSchema,
   'connector.remove': connectorRemoveValueSchema,
@@ -553,6 +559,8 @@ export abstract class AbstractApiClient implements IApiClient {
     configure: (payload, signal) => this.callUnary('connector.configure', payload, signal),
     connect: (payload, signal) => this.callUnary('connector.connect', payload, signal),
     complete: (payload, signal) => this.callUnary('connector.complete', payload, signal),
+    authorize: (payload, signal) => this.callUnary('connector.authorize', payload, signal),
+    deviceLogin: (payload, signal) => this.callUnary('connector.deviceLogin', payload, signal),
     disconnect: (payload, signal) => this.callUnary('connector.disconnect', payload, signal),
     add: (payload, signal) => this.callUnary('connector.add', payload, signal),
     remove: (payload, signal) => this.callUnary('connector.remove', payload, signal),

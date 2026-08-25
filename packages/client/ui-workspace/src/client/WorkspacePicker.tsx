@@ -324,20 +324,31 @@ export function WorkspacePickFlow(props: WorkspacePickFlowProps) {
 /**
  * The conversation empty-state registration: adapts the owner share to the
  * multi-select flow (all state and semantics live in the flow / the owner).
+ * A provider chat's hero renders nothing: a connector-preset session has no
+ * workspace to choose — the provider detail is its home — so the picker stays
+ * out of the hero (the conversation's own "Choose workspace" chip is inert).
  * @param props - empty-state slot props (owner share + injected creation callback).
- * @returns the flow element.
+ * @returns the flow element, or null on a provider-preset session.
  */
 export function WorkspacePicker({
   open,
   anchorRef,
+  useSessions,
   useWorkspaces,
   selectedId,
   onConfirm,
   createWorkspace,
   useDirectoryFlow,
+  useConnectorPresetIds,
   renderSlot,
   t,
 }: WorkspacePickerProps) {
+  // The session the hero belongs to, when there is one; its preset, when the
+  // summary reports one. No session (cold start) keeps the picker — that is
+  // the workspace-choice flow it exists for.
+  const currentPreset = useSessions(s => s.current === undefined ? undefined : s.byId[s.current]?.agentPreset)
+  const connectorPresetIds = useConnectorPresetIds(ids => ids)
+  if (currentPreset !== undefined && connectorPresetIds.has(currentPreset)) return null
   return (
     <WorkspacePickFlow
       t={t}

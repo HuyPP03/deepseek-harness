@@ -8,7 +8,7 @@ import { createSidebarStore } from './stores.ts'
 import { en, vi, zh, type SidebarKey } from './locales.ts'
 
 export type {
-  SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarRootInjected,
+  SidebarConnectorsOwnerProps, SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarRootInjected,
   SidebarSectionOwnerProps, SidebarSettingsOwnerProps,
 } from './contract/slots.ts'
 export type { SidebarKey } from './locales.ts'
@@ -40,6 +40,10 @@ export function apply(ctx: ClientContext): void {
     startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
     startChat: () => { void ctx.workspaces.startChat().then((id) => { ctx.sessions.open(id) }) },
     toggleSidebar: () => { ctx.layout.toggleSidebar() },
+    // The shell mirrors its active browsing tab into the layout's center
+    // view (the connectors tab shows the directory overlay over the center
+    // column; the frame renders against the store value).
+    setCenterView: (view) => { ctx.layout.setCenterView(view) },
   })
   ctx.effect(
     () => ctx.slots.register({
@@ -51,6 +55,7 @@ export function apply(ctx: ClientContext): void {
       // registers the foot trigger + settings panel.
       children: {
         'sidebar.workspaces': { kind: 'single', scope: 'root' },
+        'sidebar.connectors': { kind: 'single', scope: 'root' },
         'sidebar.settings': { kind: 'single', scope: 'root' },
         'sidebar.footer.action': { kind: 'list', scope: 'root' },
       },

@@ -20,7 +20,7 @@ import css from './AppFrame.module.css'
 /** Full composed props: runtime share + child-slot render share + store share. */
 export type AppFrameProps =
   & PropsRuntime<'root'>
-  & PropsRenderSlots<'sidebar' | 'conversation' | 'details' | 'shell.overlay'>
+  & PropsRenderSlots<'sidebar' | 'conversation' | 'main.connectors' | 'details' | 'shell.overlay'>
   & PropsStore<ReturnType<typeof createLayoutStore>>
 
 /** Center column grid item (session-body building block). */
@@ -187,7 +187,23 @@ export function AppFrame({
             the shell's own pending rendering. The conversation
             is session-maybe; the strict details entry naturally renders
             empty while no session is current. */}
-        <CenterColumn>{renderSlot('conversation', {})}</CenterColumn>
+        <CenterColumn>
+          {/* The seat isolates the conversation's internal stacking context
+              (its sticky composer carries z-index 7, the context meter 100):
+              without the seat those values compete at frame level and paint
+              over the z-index 1 connectors overlay. */}
+          <div className={css.conversationSeat}>{renderSlot('conversation', {})}</div>
+          {/* The connectors directory rides the center column as a full-column
+              overlay: the conversation underneath stays mounted, so switching
+              the browsing tab back and forth keeps its state. The store's
+              centerView is the single show/hide decision (the sidebar's
+              browsing tab writes it through the layout face). */}
+          {panels.centerView === 'connectors' && (
+            <div className={css.centerOverlay} data-center-view="connectors">
+              {renderSlot('main.connectors', {})}
+            </div>
+          )}
+        </CenterColumn>
         <DetailsColumn>{renderSlot('details', {})}</DetailsColumn>
       </>
       <div className={css.overlayLayer} data-shell-overlay>

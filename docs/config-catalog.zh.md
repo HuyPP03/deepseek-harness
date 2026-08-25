@@ -579,6 +579,40 @@ export interface Config {
 
 来源：[`packages/connectors/connectors/src/index.ts:72`](../packages/connectors/connectors/src/index.ts)
 
+<a id="deepseek-aidsh-connectors-device-flow"></a>
+
+## `@deepseek-ai/dsh-connectors-device-flow`
+
+Requires: `tools`
+
+```ts config-catalog
+/** Plugin config: the flow window and the verify poll cadence. */
+export interface Config {
+  /** How long one flow may wait for the sign-in; defaults to 900000 (15 minutes). */
+  flowTimeoutMs?: number
+  /** How often the verify tool is polled; defaults to 5000 (5 seconds). */
+  pollIntervalMs?: number
+}
+```
+
+来源：[`packages/connectors/device-flow/src/index.ts:32`](../packages/connectors/device-flow/src/index.ts)
+
+<a id="deepseek-aidsh-connectors-oauth-flow"></a>
+
+## `@deepseek-ai/dsh-connectors-oauth-flow`
+
+```ts config-catalog
+/** Plugin config: the loopback listener and the flow budget. */
+export interface Config {
+  /** Loopback callback port; defaults to 8766. */
+  port?: number
+  /** How long one flow may wait for the browser redirect; defaults to 300000 (5 minutes). */
+  flowTimeoutMs?: number
+}
+```
+
+来源：[`packages/connectors/oauth-flow/src/index.ts:34`](../packages/connectors/oauth-flow/src/index.ts)
+
 <a id="deepseek-aidsh-cordis-host-runner"></a>
 
 ## `@deepseek-ai/dsh-cordis-host-runner`
@@ -1296,8 +1330,12 @@ export interface StdioConfig {
   command: string
   /** Arguments passed directly, without shell interpolation. */
   args: string[]
-  /** Extra env vars merged on top of scrubbed ambient env. */
-  env: Record<string, string>
+  /**
+   * Extra env vars merged on top of scrubbed ambient env. A value may be a
+   * `{$cred: REF}` credential reference, resolved at every connection attempt
+   * through the optional `credentials` and `oauthTokens` services.
+   */
+  env: Record<string, ServerValue>
   /** Working directory for the child process. */
   cwd: string
   /** Per-tool-call timeout in milliseconds. */
@@ -1320,8 +1358,13 @@ export interface StreamableHttpConfig {
   serverName: string
   /** MCP endpoint URL. */
   url: string
-  /** Additional headers attached to MCP requests. */
-  headers: Record<string, string>
+  /**
+   * Additional headers attached to MCP requests. A value may be a
+   * `{$cred: REF}` credential reference, resolved at every connection attempt
+   * through the optional `credentials` and `oauthTokens` services (a stored
+   * token bundle becomes a `Bearer` header value).
+   */
+  headers: Record<string, ServerValue>
   /** Per-tool-call timeout in milliseconds. */
   toolCallTimeoutMs: number
   /** Fail plugin activation when the initial connection or tool synchronization fails. */
@@ -1329,6 +1372,9 @@ export interface StreamableHttpConfig {
   /** Automatic reconnect policy after a lost connection; omission uses the defaults. */
   reconnect?: ReconnectConfig
 }
+
+/** A literal server value or a credential reference. */
+export type ServerValue = string | CredentialRefValue
 
 /** Automatic reconnect policy for one MCP server connection. */
 export interface ReconnectConfig {
@@ -1341,9 +1387,15 @@ export interface ReconnectConfig {
   /** Consecutive failed attempts per outage before giving up for good (default 10). */
   maxAttempts?: number
 }
+
+/** One `{$cred: REF}` reference carried by a server env or header value. */
+export interface CredentialRefValue {
+  /** The credential reference to resolve at connect time. */
+  readonly $cred: string
+}
 ```
 
-来源：[`packages/mcp/mcp-client/src/index.ts:99`](../packages/mcp/mcp-client/src/index.ts)
+来源：[`packages/mcp/mcp-client/src/index.ts:110`](../packages/mcp/mcp-client/src/index.ts)
 
 <a id="deepseek-aidsh-mcp-manager"></a>
 
@@ -2893,7 +2945,7 @@ export interface Config {
 export type ToolPresentationMode = 'native' | 'code' | 'both'
 ```
 
-来源：[`packages/core/tools/src/index.ts:654`](../packages/core/tools/src/index.ts)
+来源：[`packages/core/tools/src/index.ts:662`](../packages/core/tools/src/index.ts)
 
 <a id="deepseek-aidsh-typert-loader"></a>
 
@@ -3188,6 +3240,7 @@ export interface Config {
 - `@deepseek-ai/dsh-client-runtime`（[`packages/client/runtime/src/index.ts`](../packages/client/runtime/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-agent-preset`（[`packages/client/ui-agent-preset/src/index.ts`](../packages/client/ui-agent-preset/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-commands`（[`packages/client/ui-commands/src/index.ts`](../packages/client/ui-commands/src/index.ts)）
+- `@deepseek-ai/dsh-client-ui-connectors`（[`packages/client/ui-connectors/src/index.ts`](../packages/client/ui-connectors/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-conversation`（[`packages/client/ui-conversation/src/index.ts`](../packages/client/ui-conversation/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-cordis`（[`packages/extensions/ui-cordis/src/index.ts`](../packages/extensions/ui-cordis/src/index.ts)）
 - `@deepseek-ai/dsh-client-ui-deliverables` — 需要 `systemPrompt`（[`packages/client/ui-deliverables/src/index.ts`](../packages/client/ui-deliverables/src/index.ts)）
@@ -3234,7 +3287,7 @@ export interface Config {
 - `@deepseek-ai/dsh-host-plugin-inventory` — 需要 `loader`（[`packages/host/plugin-inventory/src/index.ts`](../packages/host/plugin-inventory/src/index.ts)）
 - `@deepseek-ai/dsh-llm`（[`packages/llm/llm/src/index.ts`](../packages/llm/llm/src/index.ts)）
 - `@deepseek-ai/dsh-lsp`（[`packages/lsp/lsp/src/index.ts`](../packages/lsp/lsp/src/index.ts)）
-- `@deepseek-ai/dsh-mcp-registry`（[`packages/mcp/mcp-registry/src/index.ts`](../packages/mcp/mcp-registry/src/index.ts)）
+- `@deepseek-ai/dsh-mcp-registry` — 需要 `tools`（[`packages/mcp/mcp-registry/src/index.ts`](../packages/mcp/mcp-registry/src/index.ts)）
 - `@deepseek-ai/dsh-schedule` — 需要 `agents` · `sessions` · `tools` · `sessionPersistence`（[`packages/schedule/schedule/src/index.ts`](../packages/schedule/schedule/src/index.ts)）
 - `@deepseek-ai/dsh-session`（[`packages/core/session/src/index.ts`](../packages/core/session/src/index.ts)）
 - `@deepseek-ai/dsh-session-checkpoint-policy` — 需要 `llm` · `sessionPersistence` · `sessions` · `tools`（[`packages/session/session-checkpoint-policy/src/index.ts`](../packages/session/session-checkpoint-policy/src/index.ts)）

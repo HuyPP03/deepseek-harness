@@ -50,6 +50,12 @@ export interface CommandDefinition {
    * that payload in the session log.
    */
   readonly recordInput?: boolean
+  /**
+   * Hide the command from a provider chat's slash menu (a session whose agent
+   * runs a connector preset carries no code workspace). Advertised on the
+   * descriptor; the host still executes a typed line.
+   */
+  readonly providerHidden?: boolean
   /** Execute against the receiving agent without sending the command to the model. */
   readonly handler: (invocation: CommandInvocation) => CommandResult | Promise<CommandResult>
 }
@@ -178,12 +184,14 @@ function normalizeDefinition(definition: CommandDefinition): RegisteredCommand {
     description: definition.description,
     ...input === undefined ? {} : { input },
     ...definition.recordInput === undefined ? {} : { recordInput: definition.recordInput },
+    ...definition.providerHidden === undefined ? {} : { providerHidden: definition.providerHidden },
     handler: definition.handler,
   })
   const descriptor = Object.freeze({
     name: normalized.name,
     description: normalized.description,
     ...normalized.input === undefined ? {} : { input: normalized.input },
+    ...normalized.providerHidden === undefined ? {} : { providerHidden: normalized.providerHidden },
   })
   return { definition: normalized, descriptor }
 }

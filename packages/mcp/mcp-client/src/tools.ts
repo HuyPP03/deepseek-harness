@@ -272,6 +272,11 @@ function createDefinition(
     name: publicName,
     description,
     parameters,
+    // Dispatch-only: a server's full tool surface stays out of the request
+    // `tools` array (a 200-tool MCP server would overflow the context window);
+    // the model reaches it through the mcp-registry bridge (`mcp_list` →
+    // `mcp_describe` → `mcp_call`).
+    unlisted: true,
     output: createOutput(rawName, structuredSchema),
     execute: createExecutor(client, ctx, rawName, taskRequired, opts, projections),
     finalizeContent(exec: Readonly<ToolExecution>, result: Readonly<ToolExecutionResult>) {

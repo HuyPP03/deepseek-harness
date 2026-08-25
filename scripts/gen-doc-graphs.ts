@@ -185,7 +185,7 @@ const SERVICE_ROLES: ServiceRole[] = [
     title: 'Credential seam',
     mode: 'seam',
     implementations: ['credentials-local'],
-    consumers: ['llm-deepseek', 'llm-pi-ai', 'apiproxy'],
+    consumers: ['llm-deepseek', 'llm-pi-ai', 'mcp-client', 'apiproxy'],
     note: 'Configuration carries references to secrets; providers own the values. Consumers resolve per operation, so a rotated credential reaches the very next request; the web gateway exposes value-free views and write-only storage.',
   },
   {
@@ -201,7 +201,7 @@ const SERVICE_ROLES: ServiceRole[] = [
     pkg: 'oauth-tokens',
     title: 'OAuth token bundle store',
     mode: 'core',
-    consumers: ['connectors'],
+    consumers: ['connectors', 'mcp-client'],
     note: 'A file-backed, owner-keyed store of OAuth token bundles at .connectors/oauth-tokens.json; the connector auth flow re-puts refreshed bundles or removes them, and consumers read the current bundle at each use.',
   },
   {
