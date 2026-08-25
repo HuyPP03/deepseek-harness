@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
+import { SlotRegistry, createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
 import { usePinnedBrowserLanguages } from '@deepseek-ai/dsh-client-test-runtime'
 import { apply, inject } from '@deepseek-ai/dsh-client-ui-workspace/client'
@@ -152,6 +152,33 @@ describe('ui-workspace apply', () => {
     const browser = (b.slots.entries('sidebar.workspaces')[0]!.inject as () => WorkspaceBrowserInjected)()
     await expect(browser.searchSessions('needle', new AbortController().signal))
       .rejects.toThrow('index unavailable')
+  })
+
+  it('keeps the Chats-tab connector-preset source empty and follows a late provider', async () => {
+    const b = await bench()
+    declare(b.slots, 'sidebar.workspaces')
+    const fiber = b.ctx.plugin({ inject: [...inject], apply })
+    await fiber.await()
+    const browser = (b.slots.entries('sidebar.workspaces')[0]!.inject as () => WorkspaceBrowserInjected)()
+    const source = browser.hooks.connectorPresetIds
+    // No connectors plugin composed: the source holds an empty set.
+    expect([...source.getSnapshot()]).toEqual([])
+    // A provider registering after apply binds into the same stable source.
+    const provider = createSnapshotStore<ReadonlySet<string>>(new Set(['preset-a']))
+    const providerFiber = b.ctx.plugin({ apply: (ctx: Context) => { ctx.provide('connectorPresetIds', provider) } })
+    await providerFiber.await()
+    expect([...source.getSnapshot()]).toEqual(['preset-a'])
+    // Roster moves republish through the same source reference.
+    const notified = vi.fn()
+    const unsubscribe = source.subscribe(notified)
+    provider.set(new Set(['preset-a', 'preset-b']))
+    await vi.waitFor(() => expect([...source.getSnapshot()]).toEqual(['preset-a', 'preset-b']))
+    expect(notified).toHaveBeenCalled()
+    unsubscribe()
+    // The provider disposing returns the source to the empty set.
+    await providerFiber.dispose()
+    expect([...source.getSnapshot()]).toEqual([])
+    await fiber.dispose()
   })
 
   it('unregisters every entry on teardown', async () => {

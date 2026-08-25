@@ -1,5 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
+import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
+import ToolRuntime from '@deepseek-ai/dsh-tools'
 import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
 import type { McpServerView } from '@deepseek-ai/dsh-mcp-registry'
 
@@ -17,6 +19,8 @@ function view(serverName: string, toolCount = 0): McpServerView {
 
 async function mount(): Promise<Context> {
   const ctx = new Context()
+  await ctx.plugin(SystemPrompt, {})
+  await ctx.plugin(ToolRuntime)
   await ctx.plugin(McpRegistry)
   return ctx
 }
@@ -91,6 +95,8 @@ describe('McpRegistry', () => {
 
   it('unregisters the service with its owning fiber (HMR reload path)', async () => {
     const ctx = new Context()
+    await ctx.plugin(SystemPrompt, {})
+    await ctx.plugin(ToolRuntime)
     const fiber = await ctx.plugin(McpRegistry)
     const dispose = ctx.mcpRegistry.report('github', { read: () => view('github', 1) })
     expect(ctx.mcpRegistry.servers()).toHaveLength(1)

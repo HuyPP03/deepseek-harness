@@ -583,6 +583,8 @@ export interface Config {
 
 ## `@deepseek-ai/dsh-connectors-device-flow`
 
+Requires: `tools`
+
 ```ts config-catalog
 /** Plugin config: the flow window and the verify poll cadence. */
 export interface Config {
@@ -2943,7 +2945,7 @@ export interface Config {
 export type ToolPresentationMode = 'native' | 'code' | 'both'
 ```
 
-来源：[`packages/core/tools/src/index.ts:654`](../packages/core/tools/src/index.ts)
+来源：[`packages/core/tools/src/index.ts:662`](../packages/core/tools/src/index.ts)
 
 <a id="deepseek-aidsh-typert-loader"></a>
 
@@ -3285,7 +3287,7 @@ export interface Config {
 - `@deepseek-ai/dsh-host-plugin-inventory` — 需要 `loader`（[`packages/host/plugin-inventory/src/index.ts`](../packages/host/plugin-inventory/src/index.ts)）
 - `@deepseek-ai/dsh-llm`（[`packages/llm/llm/src/index.ts`](../packages/llm/llm/src/index.ts)）
 - `@deepseek-ai/dsh-lsp`（[`packages/lsp/lsp/src/index.ts`](../packages/lsp/lsp/src/index.ts)）
-- `@deepseek-ai/dsh-mcp-registry`（[`packages/mcp/mcp-registry/src/index.ts`](../packages/mcp/mcp-registry/src/index.ts)）
+- `@deepseek-ai/dsh-mcp-registry` — 需要 `tools`（[`packages/mcp/mcp-registry/src/index.ts`](../packages/mcp/mcp-registry/src/index.ts)）
 - `@deepseek-ai/dsh-schedule` — 需要 `agents` · `sessions` · `tools` · `sessionPersistence`（[`packages/schedule/schedule/src/index.ts`](../packages/schedule/schedule/src/index.ts)）
 - `@deepseek-ai/dsh-session`（[`packages/core/session/src/index.ts`](../packages/core/session/src/index.ts)）
 - `@deepseek-ai/dsh-session-checkpoint-policy` — 需要 `llm` · `sessionPersistence` · `sessions` · `tools`（[`packages/session/session-checkpoint-policy/src/index.ts`](../packages/session/session-checkpoint-policy/src/index.ts)）

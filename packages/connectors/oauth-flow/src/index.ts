@@ -151,24 +151,15 @@ export class OAuthFlowEngine extends Service {
     const method = manifest.auth.find(entry => entry.mode === 'oauth')
     if (method === undefined) throw new Error(`oauth-flow: connector "${id}" supports no oauth auth`)
 
-    const redirectUri = `http://127.0.0.1:${this.spec.port}${CALLBACK_PATH}`
-    const endpoints = await this.discover(method.serverUrl)
-    const { clientId, clientSecret } = await this.registerClient(id, method, endpoints, redirectUri)
-    const { verifier, challenge } = pkcePair()
-    const state = randomBytes(24).toString('hex')
-
-    const authorizationUrl = new URL(endpoints.authorizationEndpoint)
-    authorizationUrl.searchParams.set('response_type', 'code')
-    authorizationUrl.searchParams.set('client_id', clientId)
-    authorizationUrl.searchParams.set('redirect_uri', redirectUri)
-    authorizationUrl.searchParams.set('state', state)
-    authorizationUrl.searchParams.set('code_challenge', challenge)
-    authorizationUrl.searchParams.set('code_challenge_method', 'S256')
-
+    // Bind the loopback listener before discovery: the redirect URI is
+    // registered with the authorization server, so the flow must know the
+    // port it will actually listen on — which may sit past the configured
+    // one when that port is taken by another flow or process.
+    let boundPort = 0
     // The server is created before the flow registers so the handler's
     // in-flight lookup already sees it when the first request lands.
     const server = createServer((request, response) => {
-      const url = new URL(request.url ?? '/', `http://127.0.0.1:${this.spec.port}`)
+      const url = new URL(request.url ?? '/', `http://127.0.0.1:${boundPort}`)
       if (request.method !== 'GET' || url.pathname !== CALLBACK_PATH) {
         response.writeHead(404, { 'Content-Type': 'text/plain' }).end('not found')
         return
@@ -182,6 +173,29 @@ export class OAuthFlowEngine extends Service {
       response.end('<!doctype html><meta charset="utf-8"><title>DeepSeek Harness</title><h1>Authorization complete</h1><p>You can close this tab and return to DeepSeek Harness.</p>')
       void this.handleCallback(id, active, url.searchParams)
     })
+    boundPort = await this.bindLoopback(server, method.byoApp === true)
+    const redirectUri = `http://127.0.0.1:${boundPort}${CALLBACK_PATH}`
+    let endpoints: AsEndpoints
+    let client: { clientId: string; clientSecret?: string }
+    try {
+      endpoints = await this.discover(method.serverUrl)
+      client = await this.registerClient(id, method, endpoints, redirectUri)
+    } catch (error) {
+      server.close()
+      throw error
+    }
+    const { clientId, clientSecret } = client
+    const { verifier, challenge } = pkcePair()
+    const state = randomBytes(24).toString('hex')
+
+    const authorizationUrl = new URL(endpoints.authorizationEndpoint)
+    authorizationUrl.searchParams.set('response_type', 'code')
+    authorizationUrl.searchParams.set('client_id', clientId)
+    authorizationUrl.searchParams.set('redirect_uri', redirectUri)
+    authorizationUrl.searchParams.set('state', state)
+    authorizationUrl.searchParams.set('code_challenge', challenge)
+    authorizationUrl.searchParams.set('code_challenge_method', 'S256')
+
     const flow: InFlight = {
       verifier, state, clientId,
       ...(clientSecret !== undefined ? { clientSecret } : {}),
@@ -194,19 +208,44 @@ export class OAuthFlowEngine extends Service {
     }
     this.inFlight.set(id, flow)
     connectors.setAuthorizing(id, true)
-    try {
-      await new Promise<void>((resolve, reject) => {
-        flow.server.once('error', reject)
-        flow.server.listen(this.spec.port, '127.0.0.1', () => { resolve() })
-      })
-    } catch (error) {
-      this.inFlight.delete(id)
-      clearTimeout(flow.timeout)
-      connectors.setAuthorizing(id, false)
-      throw new Error(`oauth-flow: the loopback callback port ${this.spec.port} is unavailable (${(error as NodeJS.ErrnoException).message})`)
-    }
     flow.server.on('error', (error: NodeJS.ErrnoException) => { this.fail(id, `the loopback callback listener failed (${error.message})`) })
     return { authorizationUrl: authorizationUrl.toString(), expiresAt: Date.now() + this.spec.flowTimeoutMs }
+  }
+
+  /**
+   * Bind the loopback callback listener: the configured port first, then —
+   * for a dynamically registered client, whose redirect URI is minted per
+   * flow — the following ports in a window while the configured one is
+   * taken. A `byoApp` flow is pinned to the configured port: the user's
+   * pre-registered app's redirect URI names exactly that port.
+   * @param server - the loopback server to listen.
+   * @param fixed - whether the configured port is the only usable one.
+   * @returns the port the server is listening on.
+   * @throws when no port in the window is bindable.
+   */
+  private async bindLoopback(server: Server, fixed: boolean): Promise<number> {
+    const window = fixed ? 1 : 32
+    for (let offset = 0; offset < window; offset++) {
+      const port = this.spec.port + offset
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const onError = (error: NodeJS.ErrnoException): void => { reject(error) }
+          server.once('error', onError)
+          server.listen(port, '127.0.0.1', () => {
+            server.removeListener('error', onError)
+            resolve()
+          })
+        })
+        return port
+      } catch (error) {
+        // The window is always at least one attempt, so a failed last
+        // attempt is the flow's port failure; earlier attempts step on.
+        if (offset + 1 < window) continue
+        throw new Error(`oauth-flow: the loopback callback port ${this.spec.port} is unavailable (${(error as NodeJS.ErrnoException).message})`)
+      }
+    }
+    /* v8 ignore next -- the window is always at least one attempt, so the loop returns or throws on its last one */
+    throw new Error(`oauth-flow: the loopback callback port ${this.spec.port} is unavailable`)
   }
 
   /**
@@ -315,16 +354,15 @@ export class OAuthFlowEngine extends Service {
   /**
    * Endpoint discovery: an unauthenticated probe of the MCP endpoint, its
    * 401 challenge (RFC 9728), and the authorization server metadata (RFC 8414).
+   * Some stateless servers answer 200 to `initialize` and `tools/list` and
+   * only challenge on a real `tools/call`, so a missing challenge on the
+   * `initialize` probe falls back to a tool-level probe before giving up.
    * @param serverUrl - the provider MCP endpoint.
    * @returns the resolved endpoints the flow drives against.
    */
   private async discover(serverUrl: string): Promise<AsEndpoints> {
-    const probe = await fetch(serverUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream' },
-      body: JSON.stringify({ jsonrpc: '2.0', id: 0, method: 'initialize', params: {} }),
-    })
-    const challenge = probe.headers.get('www-authenticate')
+    let challenge = await this.probeChallenge(serverUrl, { jsonrpc: '2.0', id: 0, method: 'initialize', params: {} })
+    if (challenge === null) challenge = await this.probeToolChallenge(serverUrl)
     if (challenge === null) {
       throw new Error(`oauth-flow: ${serverUrl} answered without an authentication challenge; the endpoint is not an OAuth-protected MCP server`)
     }
@@ -352,6 +390,55 @@ export class OAuthFlowEngine extends Service {
       throw new Error(`oauth-flow: the resource metadata at ${resourceMetadata} names no authorization server`)
     }
     return servers[0]
+  }
+
+  /**
+   * Probe the MCP endpoint with one JSON-RPC body and read its
+   * `WWW-Authenticate` challenge (RFC 9728). A probe transport failure
+   * propagates to the caller, which surfaces the network diagnosis.
+   * @param serverUrl - the provider MCP endpoint.
+   * @param body - the JSON-RPC probe request.
+   * @returns the challenge header, or `null` when the probe answers without one.
+   */
+  private async probeChallenge(serverUrl: string, body: unknown): Promise<string | null> {
+    const probe = await fetch(serverUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream' },
+      body: JSON.stringify(body),
+    })
+    return probe.headers.get('www-authenticate')
+  }
+
+  /**
+   * Tool-level challenge probe: `tools/list` (which some stateless servers
+   * answer without a challenge and which names a real tool), then an
+   * unauthenticated `tools/call` of that tool — the request a protected
+   * tool-level server answers with the RFC 9728 401 challenge.
+   * @param serverUrl - the provider MCP endpoint.
+   * @returns the challenge header, or `null` when no probe step carries one.
+   */
+  private async probeToolChallenge(serverUrl: string): Promise<string | null> {
+    try {
+      const headers = { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream' }
+      const list = await fetch(serverUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'tools/list', params: {} }),
+      })
+      const listChallenge = list.headers.get('www-authenticate')
+      if (listChallenge !== null) return listChallenge
+      const body = await list.json() as { result?: { tools?: readonly { name?: string }[] } }
+      const toolName = body.result?.tools?.find(entry => typeof entry.name === 'string' && entry.name.length > 0)?.name
+      if (toolName === undefined) return null
+      const call = await fetch(serverUrl, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: toolName, arguments: {} } }),
+      })
+      return call.headers.get('www-authenticate')
+    } catch {
+      return null
+    }
   }
 
   /**

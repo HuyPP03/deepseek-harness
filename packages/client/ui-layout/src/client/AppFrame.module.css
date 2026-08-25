@@ -37,6 +37,18 @@
   position: relative; /* anchors the connectors overlay */
 }
 
+/* The conversation's internal stacking context (its sticky composer runs
+   z-index 7, the context meter 100) is trapped by this seat's own context,
+   so it can never paint above the z-index 1 connectors overlay. */
+.conversationSeat {
+  position: relative;
+  z-index: 0;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* The connectors directory overlay: covers the center column while the
    layout store's centerView is 'connectors'. Below the drag handles
    (z-index 2) and the frame overlay layer (z-index 20); the conversation

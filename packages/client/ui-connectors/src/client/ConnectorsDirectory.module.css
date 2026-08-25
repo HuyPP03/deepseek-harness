@@ -1,0 +1,294 @@
+/* The connectors directory (the frame's main.connectors overlay): a full-
+   column browse view. The header carries the title and the New connector
+   button; the body is either the card grid (one big card per connectable
+   provider with its risk notes) or the selected provider's detail. */
+
+.root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px 14px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--dsw-alias-label-primary);
+}
+
+/* Centered full-height message (loading / read failure / empty roster). */
+.message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 20px;
+  text-align: center;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 13px;
+}
+
+.message.error {
+  color: var(--dsw-alias-state-error-primary);
+}
+
+/* The browse grid: cards reflow to as many columns as fit (one per card on
+   a narrow frame, two or more when the frame is wide), scrolling with the
+   body. The 14px gap is the card separation. */
+.grid {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 20px 20px;
+  box-sizing: border-box;
+  /* Elevated surface: the cards paint the l1 rung (above the base), so the
+     grid's own scrollport takes the l2 pair (scrollbar.css rebind contract). */
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.cards {
+  display: grid;
+  /* min(100%, 320px) keeps a single card from overflowing a narrow frame
+     while the auto-fill tracks give two+ columns in a wide one. */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+  gap: 14px;
+  align-content: start;
+}
+
+/* The clickable cell is the grid item. The grid stretches it to the row
+   height, so the card (a flex child) fills it with flex: 1 — equal-height
+   cards in a row, without a height: 100% that the grid cannot resolve while
+   it is still sizing the auto row. The radius matches the card so the focus
+   ring follows the card's corner. */
+.cardWrapper {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  min-width: 0;
+  border-radius: 12px;
+  outline: none;
+}
+
+.cardWrapper:focus-visible {
+  outline: 1px solid var(--dsw-alias-accent-primary);
+  outline-offset: 2px;
+}
+
+/* One directory card: the row anatomy (dot + name + state, description)
+   scaled up, with the risk notes and the action cluster. The card fills
+   its stretched grid cell, so cards in one row share a height whatever
+   their text runs; the action cluster pins to the shared bottom. */
+/* flex: 1 fills the stretched cardWrapper (equal-height row cards) without a
+   percentage height the grid cannot resolve while sizing the auto row. */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  box-sizing: border-box;
+  min-width: 0;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  background: var(--dsw-alias-bg-layer-1);
+  cursor: pointer;
+  transition:
+    border-color var(--ds-transition-duration-slow) var(--ds-ease-in-out),
+    background-color var(--ds-transition-duration-slow) var(--ds-ease-in-out);
+}
+
+.cardWrapper:hover .card {
+  border-color: var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-2);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cardName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--dsw-alias-label-primary);
+}
+
+.customBadge {
+  flex: none;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--dsw-alias-label-secondary) 12%, transparent);
+  color: var(--dsw-alias-label-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.cardState {
+  flex: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.cardDescription {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--dsw-alias-label-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* The possible failure modes: small warning lines under the description. */
+.riskList {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--dsw-alias-state-warning-primary) 8%, transparent);
+}
+
+.risk {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary);
+}
+
+.cardError {
+  font-size: 11px;
+  color: var(--dsw-alias-state-error-primary);
+  overflow-wrap: anywhere;
+}
+
+/* The action cluster aligns with the card content (left) and pins to the
+   shared bottom of the stretched cell, so a row of cards shares one action
+   baseline whatever each card's text runs. */
+.cardActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+}
+
+/* Provider detail: the header's New chat sits after the name (Back and
+   name keep their left column). */
+.detail {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 20px 20px;
+  box-sizing: border-box;
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.detailHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  position: sticky;
+  top: 0;
+  background: var(--dsw-alias-bg-base);
+}
+
+.detailName {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  color: var(--dsw-alias-label-primary);
+}
+
+.newChatButton {
+  margin-left: auto;
+}
+
+/* The provider chat list scrolls with the detail; the rows are flat,
+   hoverable entries. */
+.sessionList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sessionRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.sessionRow:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.sessionTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--dsw-alias-label-primary);
+}
+
+.toolsSection {
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.toolsLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--dsw-alias-label-tertiary);
+  margin-bottom: 4px;
+}
+
+.toolRow {
+  font-size: 12px;
+  font-family: var(--dsw-font-mono);
+  color: var(--dsw-alias-label-primary);
+  padding: 2px 0;
+}

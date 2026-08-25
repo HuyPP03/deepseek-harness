@@ -29,6 +29,24 @@ export interface ConnectTokenDialog {
   error: string | null
 }
 
+/** The OAuth app dialog: the byoApp client id (plus the optional client secret) the user pre-registered with the provider. */
+export interface ConnectOauthDialog {
+  /** The connector id the draft belongs to. */
+  id: string
+  /** Display name for the dialog title. */
+  name: string
+  /** The method's setup steps (how to register the app), absent when it has none. */
+  setupGuide: readonly string[]
+  /** The draft client id. */
+  clientId: string
+  /** The draft client secret; empty when the provider's client is public. */
+  clientSecret: string
+  /** Whether the save is in flight. */
+  saving: boolean
+  /** The last save failure, cleared by the next edit. */
+  error: string | null
+}
+
 /** The one row-level operation failure; cleared by the next operation on it. */
 export interface RowOpError {
   /** The failed connector id. */
@@ -37,10 +55,21 @@ export interface RowOpError {
   message: string
 }
 
-/** The custom connector dialog: the AddCustomSpec draft, one string per field. */
+/** The AddCustomSpec draft: every field is initialized by openCustomDialog, so the renderer and the save read it as plain strings. */
+export interface CustomDraft {
+  name: string
+  id: string
+  transport: string
+  command: string
+  args: string
+  url: string
+  tokenVar: string
+  tokenVarIsHeader: string
+}
+
+/** The custom connector dialog: the AddCustomSpec draft plus its operation facts. */
 export interface CustomConnectorDialog {
-  /** The draft per form field: name, id, transport, command, args, url, tokenVar, tokenVarIsHeader. */
-  drafts: Record<string, string>
+  drafts: CustomDraft
   /** Whether the save is in flight. */
   saving: boolean
   /** The last save failure, cleared by the next edit. */
@@ -57,14 +86,16 @@ export interface ConnectorsSectionState {
   connectors: readonly ConnectorView[]
   /** The selected provider (connector id); null shows the provider list. */
   selectedProvider: string | null
-  /** The MCP server names the selected provider mounts (for the tool list). */
-  providerServerNames: readonly string[]
+  /** The tool names the selected provider's mounted servers expose (for the tool list). */
+  providerTools: readonly string[]
   /** The row with an operation in flight, absent when none. */
   busyId: string | null
   /** The row-level operation failure, absent when none. */
   opError: RowOpError | null
   /** The open token dialog, absent when closed. */
   dialog: ConnectTokenDialog | null
+  /** The open OAuth app (byoApp) dialog, absent when closed. */
+  oauthDialog: ConnectOauthDialog | null
   /** The open custom connector dialog, absent when closed. */
   customDialog: CustomConnectorDialog | null
 }
@@ -74,10 +105,11 @@ const INITIAL: ConnectorsSectionState = {
   error: null,
   connectors: [],
   selectedProvider: null,
-  providerServerNames: [],
+  providerTools: [],
   busyId: null,
   opError: null,
   dialog: null,
+  oauthDialog: null,
   customDialog: null,
 }
 
@@ -113,19 +145,32 @@ export class ConnectorsSectionController {
     this.set({ connectors: this.state.connectors.map(c => (c.id === view.id ? view : c)) })
   }
 
+  /** The in-flight roster read (single-flight: both surfaces read on mount). */
+  #loading: Promise<void> | null = null
+
   /**
    * Read the roster. A deployment composing no connectors answers an empty
-   * roster, which is a valid deployment rather than a failure — the region
-   * then shows its empty state.
+   * roster, which is a valid deployment rather than a failure — the directory
+   * then shows its empty state. A second read while one is in flight joins it
+   * instead of racing the host.
    * @returns once the snapshot reflects the host.
    */
-  async load(): Promise<void> {
-    const response = await this.api.connectors.list({})
-    if (!response.result.ok) {
-      this.set({ status: 'error', error: response.result.error.message })
-      return
-    }
-    this.set({ status: 'ready', error: null, connectors: [...response.result.value.connectors] })
+  load(): Promise<void> {
+    if (this.#loading !== null) return this.#loading
+    const run = (async (): Promise<void> => {
+      try {
+        const response = await this.api.connectors.list({})
+        if (!response.result.ok) {
+          this.set({ status: 'error', error: response.result.error.message })
+          return
+        }
+        this.set({ status: 'ready', error: null, connectors: [...response.result.value.connectors] })
+      } finally {
+        this.#loading = null
+      }
+    })()
+    this.#loading = run
+    return run
   }
 
   /**
@@ -185,7 +230,73 @@ export class ConnectorsSectionController {
     this.withView(response.result.value.connector)
     // The dialog belongs to its provider's view: close it and return to
     // the provider list so the adopted row is visible.
-    this.set({ dialog: null, selectedProvider: null, providerServerNames: [] })
+    this.set({ dialog: null, selectedProvider: null, providerTools: [] })
+  }
+
+  /**
+   * Open the OAuth app dialog over one connector's byoApp method: the
+   * provider offers no dynamic client registration, so the user must
+   * pre-register an app and supply its client id (and secret, where the
+   * provider keeps one) before the flow can start. Rows without an
+   * unconfigured byoApp method have no dialog.
+   * @param id - the connector to configure.
+   */
+  openOauthDialog(id: string): void {
+    const row = this.state.connectors.find(c => c.id === id)
+    const oauth = row === undefined ? undefined : row.auth.find(a => a.mode === 'oauth')
+    if (row === undefined || oauth === undefined || oauth.byoApp !== true || oauth.configured) return
+    this.set({
+      oauthDialog: {
+        id, name: row.name, setupGuide: [...(oauth.setupGuide ?? [])],
+        clientId: '', clientSecret: '', saving: false, error: null,
+      },
+    })
+  }
+
+  /**
+   * Name the draft one app field is typing; clears a previous save failure.
+   * @param field - the app field the value belongs to.
+   * @param value - the value so far.
+   */
+  setOauthDraft(field: 'clientId' | 'clientSecret', value: string): void {
+    const { oauthDialog } = this.state
+    if (oauthDialog === null) return
+    this.set({ oauthDialog: { ...oauthDialog, [field]: value, error: null } })
+  }
+
+  /** Close the OAuth app dialog, discarding the draft. */
+  closeOauthDialog(): void {
+    if (this.state.oauthDialog === null) return
+    this.set({ oauthDialog: null })
+  }
+
+  /**
+   * Store the dialog's client id (and secret, when drafted) and adopt the
+   * updated view. A failure keeps the dialog open over its draft.
+   * @returns once the store carries the host's answer.
+   */
+  async saveOauth(): Promise<void> {
+    const { oauthDialog } = this.state
+    if (oauthDialog === null || oauthDialog.saving) return
+    const clientId = oauthDialog.clientId.trim()
+    const clientSecret = oauthDialog.clientSecret.trim()
+    if (clientId === '') return
+    this.set({ oauthDialog: { ...oauthDialog, saving: true, error: null } })
+    const response = await this.api.connectors.configure({
+      id: oauthDialog.id,
+      fields: {
+        clientId,
+        ...(clientSecret === '' ? {} : { clientSecret }),
+      },
+    })
+    if (!response.result.ok) {
+      this.set({ oauthDialog: { ...oauthDialog, saving: false, error: response.result.error.message } })
+      return
+    }
+    this.withView(response.result.value.connector)
+    // Close the dialog and return to the provider list so the adopted row
+    // (now needs-auth, offering Connect) is visible.
+    this.set({ oauthDialog: null, selectedProvider: null, providerTools: [] })
   }
 
   /**
@@ -302,17 +413,17 @@ export class ConnectorsSectionController {
     if (customDialog === null || customDialog.saving) return
     const d = customDialog.drafts
     const transport = (d.transport === 'streamable-http' ? 'streamable-http' : 'stdio') as 'stdio' | 'streamable-http'
-    const args = (d.args ?? '').split(',').map(a => a.trim()).filter(a => a !== '')
-    const tokenVar = (d.tokenVar ?? '').trim()
+    const args = d.args.split(',').map(a => a.trim()).filter(a => a !== '')
+    const tokenVar = d.tokenVar.trim()
     this.set({ customDialog: { ...customDialog, saving: true, error: null } })
     const response = await this.api.connectors.add({
       spec: {
-        name: (d.name ?? '').trim(),
-        ...(d.id !== undefined && d.id.trim() !== '' ? { id: d.id.trim() } : {}),
+        name: d.name.trim(),
+        ...(d.id.trim() !== '' ? { id: d.id.trim() } : {}),
         transport,
         ...(transport === 'stdio'
-          ? { command: (d.command ?? '').trim(), ...(args.length > 0 ? { args } : {}) }
-          : { url: (d.url ?? '').trim() }),
+          ? { command: d.command.trim(), ...(args.length > 0 ? { args } : {}) }
+          : { url: d.url.trim() }),
         ...(tokenVar !== ''
           ? {
             tokenVar,
@@ -354,12 +465,13 @@ export class ConnectorsSectionController {
    */
   selectProvider(id: string | null): void {
     if (id === null) {
-      this.set({ selectedProvider: null, providerServerNames: [] })
+      this.set({ selectedProvider: null, providerTools: [] })
       return
     }
     const row = this.state.connectors.find(c => c.id === id)
-    const names = row === undefined ? [] : row.servers.map(s => s.serverName)
-    this.set({ selectedProvider: id, providerServerNames: names })
+    // The real tool list: the mounted servers' registered tools, deduped.
+    const tools = row === undefined ? [] : [...new Set(row.servers.flatMap(s => s.tools ?? []))]
+    this.set({ selectedProvider: id, providerTools: tools })
   }
 
   /**

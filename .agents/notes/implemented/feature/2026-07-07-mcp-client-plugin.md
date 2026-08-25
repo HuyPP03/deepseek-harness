@@ -79,7 +79,7 @@ Example `cordis.yml` usage:
       Authorization: !!js `Bearer ${process.env.MCP_TOKEN}`
 ```
 
-The model sees `mcp__github__create_issue`, `mcp__github__search_code`, `mcp__web__search`.
+The model reaches `mcp__github__create_issue`, `mcp__github__search_code`, and `mcp__web__search` through the [lazy MCP tool access bridge](2026-08-25-lazy-mcp-tool-bridge.md) (`mcp_list` → `mcp_describe` → `mcp_call`); the names themselves are the stable identities the bridge lists.
 
 ### Lifecycle
 
@@ -96,11 +96,11 @@ Every MCP tool has two names:
 
 This server-qualified shape is the de-facto standard among multi-server agent clients — every surveyed end-user product qualifies MCP tools by server ([Claude Code](https://code.claude.com/docs/en/agent-sdk/mcp#tool-naming-convention) `mcp__github__list_issues`, [Codex](https://openai.com/index/unrolling-the-codex-agent-loop/) `mcp__weather__get-forecast`, [Gemini CLI](https://geminicli.com/docs/tools/mcp-server/#3-tool-naming-and-namespaces), [VS Code](https://github.com/microsoft/vscode/blob/ab9ec62c6a61e429a9abd612ff220c3f4834c9ea/src/vs/workbench/contrib/mcp/common/mcpServer.ts#L217-L260), [Cline](https://github.com/cline/cline/blob/52fdbb1d72f7324a28142a7ba7678d4b53c902f4/sdk/packages/core/src/extensions/mcp/name-transform.ts#L20-L35), [Roo Code](https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/utils/mcp-name.ts#L117-L140), [Goose](https://github.com/block/goose/blob/b3a012cbdde854b0fe14f95b1c48543bf6517c0a/crates/goose/src/agents/extension_manager.rs#L1391-L1441), [OpenCode](https://github.com/anomalyco/opencode/blob/d199b1bff90282a4f9cd6251b5fc7b16875a52f6/packages/opencode/src/mcp/catalog.ts#L117-L120)); the exact `mcp__<server>__<tool>` spelling follows Claude Code and Codex. The `mcp__` marker keeps MCP registrations out of the native tools' namespace and gives permission/telemetry rules a stable shape (`mcp__*`, `mcp__github__*`).
 
-1. On connect: drain `client.listTools()` pagination, derive every tool's `publicName`, then register each as a raw `ToolDefinition` via `ctx.tools.register()`. The MCP JSON Schema and description pass through unchanged (no `defineTool` DSL conversion); only the model-facing `name` is replaced.
+1. On connect: drain `client.listTools()` pagination, derive every tool's `publicName`, then register each as a raw `ToolDefinition` via `ctx.tools.register()` with `unlisted: true` — dispatchable but absent from every model-facing projection ([lazy MCP tool access](2026-08-25-lazy-mcp-tool-bridge.md)). The MCP JSON Schema and description pass through unchanged (no `defineTool` DSL conversion); only the model-facing `name` is replaced.
 2. Listen for `notifications/tools/list_changed` → re-run the same sync (dispose previous generation, register new). Deterministic names mean unchanged tools keep their names across re-syncs.
 3. The executor closes over `rawName`; the public name is never sent to the server and never parsed to recover the raw name.
 4. No `presentCall`/`presentResult` — UI consumers use the provider-neutral generic-card fallback.
-5. Tools are transparent in the system prompt — no "[via MCP]" annotation beyond the name itself.
+5. Tools are `unlisted` — absent from the model's `tools` array and system prompt; the model reaches them by public name through the bridge, so no "[via MCP]" annotation is needed beyond the name itself.
 
 ### Public name normalization
 
@@ -211,7 +211,7 @@ Coverage is named per tier; each behavior lives at the cheapest tier that can ex
 
 ## Consequences
 
-- A `cordis.yml` entry per MCP server is the entire integration cost: `serverName: filesystem` + a stdio command (or a Streamable HTTP URL) puts `mcp__filesystem__read_file` in the model's tool list, callable, with the raw `read_file` on the wire.
+- A `cordis.yml` entry per MCP server is the entire integration cost: `serverName: filesystem` + a stdio command (or a Streamable HTTP URL) registers `mcp__filesystem__read_file`, dispatchable through the bridge with the raw `read_file` on the wire.
 - Public names are part of session history and permission/configuration APIs; the naming algorithm is a v1 contract pinned by tests, and changing it after release is a breaking change.
 - The `mcp__<serverName>__` qualifier costs tokens on every name. Accepted: descriptions and JSON schemas dominate tool-definition tokens, and the qualifier buys stable identity, collision isolation, and MCP-wide policy shapes (`mcp__*`, `mcp__github__*`).
 - **MCP SDK stability**: the `@modelcontextprotocol/sdk` is still evolving; breaking changes require updating the bridge. The version is pinned, and the SDK is widely adopted (Claude Desktop, Cursor, VS Code) so breaking changes are unlikely to be silent.

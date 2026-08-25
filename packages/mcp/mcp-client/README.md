@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-MCP client bridge plugin: connects to external [Model Context Protocol](https://modelcontextprotocol.io/) servers and registers their tools on `ctx.tools`, making them available to the model as native tools under server-qualified names (`mcp__<serverName>__<rawName>`).
+MCP client bridge plugin: connects to external [Model Context Protocol](https://modelcontextprotocol.io/) servers and registers their tools on `ctx.tools` under server-qualified names (`mcp__<serverName>__<rawName>`). The registered definitions carry `unlisted: true`: they stay dispatchable but never enter a model request's `tools` array, so a server with a large tool surface cannot overflow the context window. The model reaches each tool on demand through the [mcp-registry](../mcp-registry/README.md) bridge (`mcp_list` → `mcp_describe` → `mcp_call`).
 
 ## Usage
 
@@ -92,15 +92,15 @@ Every MCP tool has two names: the raw MCP name (sent on the wire in `tools/call`
 
 #### What the model sees
 
-After initial discovery succeeds, each advertised MCP tool appears as a native tool named `mcp__<serverName>__<rawName>` (or its deterministic normalized form), with the server-provided description and input schema. A successful re-sync — including the one after an automatic reconnect — replaces the generation; plugin disposal or an exhausted reconnect budget removes it.
+Nothing in the request `tools` array. Each advertised MCP tool is registered as an `unlisted: true` definition named `mcp__<serverName>__<rawName>` (or its deterministic normalized form); the model reaches it through the [mcp-registry](../mcp-registry/README.md) bridge — `mcp_list` (names and one-line descriptions per connected server), `mcp_describe` (one tool's full input schema on demand), then `mcp_call` (dispatch by public name). The session log still records each inner call under the public name with its exact arguments and result. A successful re-sync — including the one after an automatic reconnect — replaces the generation; plugin disposal or an exhausted reconnect budget removes it.
 
 #### Token effect
 
-Data-dependent schema cost is paid on every request while the tools are registered. Re-sync replaces rather than accumulates schemas, and the server-qualified name adds tokens to every tool definition and call.
+The per-tool JSON schemas contribute zero request tokens regardless of how many tools a server advertises — the bridge's three fixed schemas (small) replace what was previously a megabytes-scale, per-server variable cost. On-demand description is paid only when the model calls `mcp_describe`, and only for the tool it chooses.
 
 #### KV Cache effect
 
-Prefix-stable while the discovered tool set and schemas are unchanged. A re-sync that adds, removes, renames, or changes a tool replaces definitions and may invalidate reuse from the first changed schema token; a reconnect that recovers an unchanged list reproduces identical definitions and stays prefix-stable.
+Re-syncing the unlisted definitions cannot invalidate the prefix, because they occupy no prefix position; a reconnect that recovers an unchanged list stays prefix-stable, and the bridge's own schemas are registration-stable.
 
 ### Tool-call history and results
 

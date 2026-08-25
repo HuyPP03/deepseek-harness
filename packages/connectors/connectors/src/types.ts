@@ -237,6 +237,8 @@ export interface ConnectorServerView {
   readonly mounted: boolean
   /** The live registry status while mounted. */
   readonly status?: 'connecting' | 'connected' | 'reconnecting' | 'down'
+  /** The mounted server's tool names, in registry order; absent while unmounted. */
+  readonly tools?: readonly string[]
 }
 
 /** Wire view of one supported auth method: whether it is configured, never its values. */
@@ -249,6 +251,12 @@ export interface ConnectorAuthView {
   readonly credentialRefs?: readonly string[]
   /** User-facing instructions for obtaining the credential. */
   readonly howTo?: string
+  /**
+   * True for pre-registered-app OAuth: the provider offers no dynamic client
+   * registration, so the user must configure a client id (and, where the
+   * provider keeps one, a client secret) before the flow can start.
+   */
+  readonly byoApp?: boolean
   /** Setup instructions for pre-registered-app OAuth methods. */
   readonly setupGuide?: readonly string[]
   /** Re-authentication cadence, where the provider has one. */

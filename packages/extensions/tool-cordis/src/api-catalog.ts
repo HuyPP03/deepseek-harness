@@ -1001,7 +1001,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
   {
     key: 'mcpRegistry',
     summary: 'Live MCP server registry over one app root.',
-    description: 'Live MCP server registry over one app root.',
+    description: 'Live MCP server registry over one app root. Besides the read face, the registry registers the model-facing MCP bridge (`mcp_list`, `mcp_describe`, `mcp_call`) once per app: the per-server tools the mcp clients register are unlisted, so a large MCP tool surface never enters the request `tools` array and the model reaches each tool on demand instead.',
     methods: [
       {
         signature: 'report(serverName: string, reporter: McpServerReporter): () => void',
@@ -3044,7 +3044,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ConnectorAuthView',
-    declaration: 'export interface ConnectorAuthView {\n    readonly mode: \'token\' | \'oauth\' | \'device\';\n    readonly configured: boolean;\n    readonly credentialRefs?: readonly string[];\n    readonly howTo?: string;\n    readonly setupGuide?: readonly string[];\n    readonly reauthHint?: string;\n}',
+    declaration: 'export interface ConnectorAuthView {\n    readonly mode: \'token\' | \'oauth\' | \'device\';\n    readonly configured: boolean;\n    readonly credentialRefs?: readonly string[];\n    readonly howTo?: string;\n    readonly byoApp?: boolean;\n    readonly setupGuide?: readonly string[];\n    readonly reauthHint?: string;\n}',
   },
   {
     name: 'ConnectorConfigureFields',
@@ -3060,7 +3060,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ConnectorServerView',
-    declaration: 'export interface ConnectorServerView {\n    readonly serverName: string;\n    readonly mounted: boolean;\n    readonly status?: \'connecting\' | \'connected\' | \'reconnecting\' | \'down\';\n}',
+    declaration: 'export interface ConnectorServerView {\n    readonly serverName: string;\n    readonly mounted: boolean;\n    readonly status?: \'connecting\' | \'connected\' | \'reconnecting\' | \'down\';\n    readonly tools?: readonly string[];\n}',
   },
   {
     name: 'ConnectorState',
@@ -4640,7 +4640,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ToolDefinition',
-    declaration: 'export interface ToolDefinition extends ToolSchema {\n    readonly output: ToolOutputDefinition;\n    execute(args: unknown, exec: ToolRunContext): Promise<unknown>;\n    finalizeContent?(exec: Readonly<ToolExecution>, result: Readonly<ToolExecutionResult>): ContentBlock[] | undefined;\n    timeoutMs?: number;\n    isConcurrencySafe?(args: unknown): boolean;\n    presentCall?(args: unknown): ToolCallView | undefined;\n    presentResult?(args: unknown, result: ToolResult): ToolResultView | undefined;\n}',
+    declaration: 'export interface ToolDefinition extends ToolSchema {\n    readonly output: ToolOutputDefinition;\n    execute(args: unknown, exec: ToolRunContext): Promise<unknown>;\n    finalizeContent?(exec: Readonly<ToolExecution>, result: Readonly<ToolExecutionResult>): ContentBlock[] | undefined;\n    timeoutMs?: number;\n    unlisted?: boolean;\n    isConcurrencySafe?(args: unknown): boolean;\n    presentCall?(args: unknown): ToolCallView | undefined;\n    presentResult?(args: unknown, result: ToolResult): ToolResultView | undefined;\n}',
   },
   {
     name: 'ToolDispatchExecution',

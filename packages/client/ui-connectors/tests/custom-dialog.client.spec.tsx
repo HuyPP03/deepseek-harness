@@ -8,8 +8,8 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-li
 import type { ConnectorView, IApiClient, RpcId, RpcResponse } from '@deepseek-ai/dsh-api-remotes/client'
 import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
 import { ConnectorsSectionController } from '../src/client/controller.ts'
-import { ConnectorsRegion } from '../src/client/ConnectorsRegion.tsx'
-import type { ConnectorsRegionProps } from '../src/client/contract/slots.ts'
+import { ConnectorsDirectory } from '../src/client/ConnectorsDirectory.tsx'
+import type { ConnectorsDirectoryProps } from '../src/client/contract/slots.ts'
 import { en } from '../src/client/locales.ts'
 
 type ConnectorDouble = Pick<IApiClient['connectors'],
@@ -58,8 +58,6 @@ function baseWire(rows: readonly ConnectorView[]): ConnectorDouble {
 function mountRow(wire: ConnectorDouble) {
   const controller = new ConnectorsSectionController({ connectors: wire })
   const props = {
-    wide: true,
-    expandSidebar: vi.fn(),
     t: (key: string, params?: Record<string, unknown>) =>
       (en as Record<string, string>)[key]!.replace(
         /\{(\w+)}/g, (m, name: string) => (name in (params ?? {}) ? String(params?.[name]) : m),
@@ -84,7 +82,7 @@ function mountRow(wire: ConnectorDouble) {
     openSession: vi.fn(),
     newProviderChat: vi.fn(() => Promise.resolve()),
   }
-  render(<ConnectorsRegion {...(props as unknown as ConnectorsRegionProps)} />)
+  render(<ConnectorsDirectory {...(props as unknown as ConnectorsDirectoryProps)} />)
   return controller
 }
 
@@ -107,11 +105,12 @@ describe('custom connector dialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'Acme API' } })
+    fireEvent.change(within(dialog).getByPlaceholderText('my-service'), { target: { value: 'acme' } })
     fireEvent.change(within(dialog).getByPlaceholderText('npx'), { target: { value: 'npx' } })
     fireEvent.change(within(dialog).getByPlaceholderText('-y, @example/mcp-server'), { target: { value: '-y, @acme/mcp' } })
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
     await waitFor(() => expect(wire.add).toHaveBeenCalledWith({
-      spec: { name: 'Acme API', transport: 'stdio', command: 'npx', args: ['-y', '@acme/mcp'] },
+      spec: { name: 'Acme API', id: 'acme', transport: 'stdio', command: 'npx', args: ['-y', '@acme/mcp'] },
     }))
     await waitFor(() => expect((wire.list as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBeGreaterThanOrEqual(2))
   })
@@ -123,10 +122,19 @@ describe('custom connector dialog', () => {
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'Remote' } })
-    fireEvent.click(within(dialog).getByRole('radio', { name: /streamable-http/ }))
+    const httpRadio = within(dialog).getByRole('radio', { name: /streamable-http/ })
+    const stdioRadio = within(dialog).getByRole('radio', { name: /stdio/ })
+    fireEvent.click(httpRadio)
+    // A transport round-trip keeps the draft: back to stdio and to http.
+    fireEvent.click(stdioRadio)
+    fireEvent.click(httpRadio)
     fireEvent.change(within(dialog).getByPlaceholderText('https://example.com/mcp'), { target: { value: 'https://mcp.example.com' } })
     fireEvent.change(within(dialog).getByPlaceholderText('MY_SERVICE_TOKEN'), { target: { value: 'AUTHORIZATION' } })
-    fireEvent.click(within(dialog).getByRole('checkbox'))
+    const headerFlag = within(dialog).getByRole('checkbox')
+    fireEvent.click(headerFlag)
+    // Unchecking flips the draft back to false before the final check.
+    fireEvent.click(headerFlag)
+    fireEvent.click(headerFlag)
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
     await waitFor(() => expect(wire.add).toHaveBeenCalledWith({
       spec: {

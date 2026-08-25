@@ -9,6 +9,7 @@
  * packages/client/AGENTS.md.
  */
 import type { HostObservable } from '@deepseek-ai/dsh-client-ui-slots'
+import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
@@ -68,6 +69,37 @@ export function apply(ctx: ClientContext): void {
   })
   const browserFlowSource = flowSource('sidebar.workspaces.directoryFlow')
   const pickerFlowSource = flowSource('conversation.hero.workspace.directoryFlow')
+
+  // The connector preset ids as one stable source for the Chats tab: it
+  // keeps provider chats out of its rows and search — the provider detail is
+  // their only home. The connectors plugin publishes the roster under the
+  // `connectorPresetIds` ctx service, but its activation order relative to
+  // this one is unconstrained: this holder mirrors the service lazily, so it
+  // stays an empty set until the provider registers (and returns to it when
+  // the provider disposes).
+  const connectorPresetIds = createSnapshotStore<ReadonlySet<string>>(new Set())
+  ctx.effect(() => {
+    let offSource: (() => void) | undefined
+    const bind = (): void => {
+      offSource?.()
+      offSource = undefined
+      const provided = ctx.get('connectorPresetIds') as SnapshotStore<ReadonlySet<string>> | undefined
+      if (provided === undefined) {
+        connectorPresetIds.set(new Set())
+        return
+      }
+      connectorPresetIds.set(provided.getSnapshot())
+      offSource = provided.subscribe(() => connectorPresetIds.set(provided.getSnapshot()))
+    }
+    bind()
+    const offService = ctx.on('internal/service', (name) => {
+      if (name === 'connectorPresetIds') bind()
+    })
+    return () => {
+      offService()
+      offSource?.()
+    }
+  }, 'ui-workspace: connectorPresetIds')
   const browserInjected = (): WorkspaceBrowserInjected => ({
     // Explicit group actions keep their target; unscoped New Session inherits
     // the current Session Workspace before the recent-Workspace fallback.
@@ -100,11 +132,11 @@ export function apply(ctx: ClientContext): void {
       await ctx.workspaces.insertSessionBefore(workspaceId, sessionId, beforeSessionId)
     },
     createWorkspace: input => ctx.workspaces.create(input),
-    hooks: { directoryFlow: browserFlowSource },
+    hooks: { directoryFlow: browserFlowSource, connectorPresetIds },
   })
   const pickerInjected = (): WorkspacePickerInjected => ({
     createWorkspace: input => ctx.workspaces.create(input),
-    hooks: { directoryFlow: pickerFlowSource },
+    hooks: { directoryFlow: pickerFlowSource, connectorPresetIds },
   })
   // Each registration declares its directory-flow child in the same call;
   // slot injection follows both the owner and declaration HMR lifetimes.

@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-一个 app 内所有存活 [`mcp-client`](../mcp-client/README.md) 实例的共享注册表：每个客户端报告其服务器的连接状态与已注册工具，[`/mcp`](../command-mcp/README.md) 读取快照。注册表只是读取面——它不拥有连接、工具或任何生命周期。
+一个 app 内所有存活 [`mcp-client`](../mcp-client/README.md) 实例的共享注册表：每个客户端报告其服务器的连接状态与已注册工具，[`/mcp`](../command-mcp/README.md) 读取快照，注册表的模型桥接（`mcp_list` / `mcp_describe` / `mcp_call`）让模型按需访问所报告的工具。注册表不拥有连接，也不拥有任何服务器生命周期。
 
 ## 服务 API
 
@@ -26,6 +26,18 @@ interface McpServerView {
 
 拉取语义是有意为之。mcp-client 的 supervisor 在每次重连状态变化时都会修改其内部状态；若在每次转换时推送，会把两个包耦合到 supervisor 的事件顺序上。改为 `servers()` 在读取时拉取每个读取闭包，因此重同步期间的读取永远不会看到部分 generation，而上报者在 disposed 后返回空值时，该服务器只是不在快照中。
 
+## 模型桥接
+
+注册表在每个 app 中一次性在 `ctx.tools` 上注册三个 listed 工具（以 ctx effect 注册，销毁注册表即移除）。它们让模型按需访问 MCP 工具，而这些工具的 schema 永不进入请求的 `tools` 数组——mcp-client 把每个服务器工具注册为 `unlisted: true` 的定义（可调度、模型不可见），因此一个上报数百个工具的服务器也不会撑爆上下文窗口：
+
+| 工具 | 用途 |
+|---|---|
+| `mcp_list` | 列出所有已连接服务器及其工具的公开名称与一行描述；可选 `server` 参数收窄到单个服务器 |
+| `mcp_describe` | 按公开名称返回一个工具的描述与完整输入 schema |
+| `mcp_call` | 按公开名称调度一个工具，参数须匹配所描述的 schema，返回工具结果内容 |
+
+模型的流程是 list → describe → call。`mcp_call` 通过 ToolRuntime 以确切的公开名称（`mcp__<serverName>__<rawName>`）调度，并转发调用方的 agent、嵌套 `parent` token 与 signal——因此会话日志记录与直接工具调用相同的调用、参数与结果，Code Mode 的合法性也得以保持。指向未注册的 `unlisted` MCP 定义的 `mcp_call` 会被拒绝；内部失败会表现为桥接调用自身的错误。
+
 ## 组合
 
 基础 bundle 挂载注册表，使任意 preset 中的每个 `mcp-client` 实例都报告到同一个注册表。`mcp-client` 通过可选的 `ctx.get('mcpRegistry')` 读取注册表——未挂载时桥接行为不变，只是无处报告：
@@ -39,19 +51,19 @@ interface McpServerView {
 
 ## 模型体验
 
-### 无
+### 桥接工具
 
 #### 模型看到什么
 
-无。`ctx.mcpRegistry` 及其消费者（mcp-client 上报者、`/mcp` 命令）都在宿主侧：没有任何 prompt、工具 schema 或会话事件引用该注册表。
+三个固定的小工具 schema（`mcp_list`、`mcp_describe`、`mcp_call`），以及每次 `mcp_list` / `mcp_describe` 调用按需返回的服务器目录与单个工具的完整 schema。被调度的 MCP 工具本身不出现在请求的 `tools` 数组中，但其调用、参数与结果以公开名称记录在会话日志里。`ctx.mcpRegistry` 的读取面（mcp-client 上报者、`/mcp` 命令）仍在宿主侧。
 
 #### Token 影响
 
-零——注册表不产生任何模型 token。
+三个固定小 schema 取代了此前每个服务器随工具数线性增长的 schema 成本；工具数量本身不再产生请求 token。模型只为它选择描述的单个工具支付 `mcp_describe` 的按需成本。
 
 #### KV 缓存影响
 
-无——注册表不触及面向模型的 prefix。
+注册表销毁/重建时桥接 schema 才变化；报告内容（服务器与工具列表）只出现在按需的工具结果中，不影响前缀。
 
 ## 已知限制与延期工作
 

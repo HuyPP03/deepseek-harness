@@ -120,6 +120,7 @@ function deviceCodeFrom(message: string): { verificationUri: string; userCode: s
  * flow completes.
  */
 export class DeviceFlowEngine extends Service {
+  static inject = ['tools']
   static Config: z<Config> = z.object({
     flowTimeoutMs: z.number().min(1000).default(900_000),
     pollIntervalMs: z.number().min(100).default(5_000),

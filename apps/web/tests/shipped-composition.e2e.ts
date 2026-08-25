@@ -66,6 +66,14 @@ const EXPECTED_TOOLS = [
  */
 const RIPGREP_TOOLS = ['glob', 'grep']
 
+/**
+ * The lazy-MCP bridge rides the app scope: `dsh-mcp-registry` is a base-bundle
+ * service and registers its three discovery tools regardless of which MCP
+ * servers the deployment mounts, so the trio is a fixed member of every
+ * composition — asserted on its own, like the ripgrep pair.
+ */
+const MCP_BRIDGE_TOOLS = ['mcp_call', 'mcp_describe', 'mcp_list']
+
 let scaffold: WebScaffold | undefined
 
 afterEach(async () => {
@@ -78,20 +86,26 @@ it('assembles the shipped Web catalog, file-reference guidance, and confined acc
   const ctx = scaffold.ctx
   // The catalog belongs to an AGENT, not to the process: every model-facing row
   // now lives in a preset mounted under one session's scope, so the global
-  // layer holds nothing and a caller must name the agent to see anything. This
-  // composes from the deployment default — what a session that names no preset
-  // gets — which is the shape this test has always been about.
-  expect(ctx.tools.schemas().map(schema => schema.name)).toEqual([])
+  // layer holds nothing from a preset and a caller must name the agent to see
+  // it — the exception is the MCP bridge, whose three discovery tools ride
+  // the app scope with the registry itself. This composes from the deployment
+  // default — what a session that names no preset gets — which is the shape
+  // this test has always been about.
+  expect(ctx.tools.schemas().map(schema => schema.name).sort()).toEqual(MCP_BRIDGE_TOOLS)
   const handle = await ctx.agents.create({
     sessionId: SessionId('shipped-composition'),
     setup: agentCtx => ctx.agentPresets.mount(agentCtx).then(() => undefined),
   })
   try {
     const names = ctx.tools.schemas(handle.agent).map(schema => schema.name).sort()
-    expect(names.filter(name => !RIPGREP_TOOLS.includes(name))).toEqual(EXPECTED_TOOLS)
+    expect(
+      names.filter(name => !RIPGREP_TOOLS.includes(name) && !MCP_BRIDGE_TOOLS.includes(name)),
+    ).toEqual(EXPECTED_TOOLS)
     // The packaged ripgrep binary ships with the dependency, so the pair is a
     // fixed roster member on every host.
     expect(names.filter(name => RIPGREP_TOOLS.includes(name))).toEqual(RIPGREP_TOOLS)
+    // Same fixed membership for the bridge: present in every composition.
+    expect(names.filter(name => MCP_BRIDGE_TOOLS.includes(name))).toEqual(MCP_BRIDGE_TOOLS)
     const fileReferenceSection = (await ctx.systemPrompt.assemble({ scope: handle.agent })).sections
       .find(section => section.name === 'ui:deliverable-file-references')
     expect(fileReferenceSection?.text).toBe(readFileSync(FILE_REFERENCE_PROMPT, 'utf8').trimEnd())

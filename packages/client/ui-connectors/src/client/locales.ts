@@ -1,6 +1,6 @@
-/** Locale bundles for the connectors sidebar region and its token dialog. */
+/** Locale bundles for the connectors directory, the sidebar list, and the dialogs. */
 
-/** Locale keys the region renders. */
+/** Locale keys the surfaces render. */
 export type ConnectorsKey =
   | 'loading' | 'error' | 'retry' | 'empty'
   | 'state.unconfigured' | 'state.needs-auth' | 'state.authorizing' | 'state.connecting'
@@ -8,9 +8,15 @@ export type ConnectorsKey =
   | 'connect' | 'disconnect' | 'configure'
   | 'custom' | 'servers.one' | 'servers.many' | 'server.off'
   | 'rail.label'
+  | 'list.title' | 'list.empty'
+  | 'directory.title'
+  | 'risk.token' | 'risk.tokenStale' | 'risk.oauth' | 'risk.device' | 'risk.servers' | 'risk.custom'
   | 'back' | 'sessions.placeholder' | 'sessions.new' | 'sessions.empty' | 'tools.available'
   | 'dialog.title' | 'dialog.tokenPlaceholder'
   | 'dialog.cancel' | 'dialog.save' | 'dialog.saving'
+  | 'card.setupApp'
+  | 'dialog.setup.title' | 'dialog.setup.clientId' | 'dialog.setup.clientIdPlaceholder'
+  | 'dialog.setup.clientSecret' | 'dialog.setup.secretHint' | 'dialog.setup.save'
   | 'remove'
   | 'custom.new.button'
   | 'custom.new.title'
@@ -42,6 +48,15 @@ export const en: Record<ConnectorsKey, string> = {
   'servers.many': '{count} servers',
   'server.off': 'not mounted',
   'rail.label': 'Connectors',
+  'list.title': 'Connected',
+  'list.empty': 'No connected providers yet. The directory in the main area lists what you can connect.',
+  'directory.title': 'Connectors',
+  'risk.token': 'Requires {refs} — an invalid or revoked token fails the connect.',
+  'risk.tokenStale': 'Uses the stored {refs} — a revoked token drops the servers.',
+  'risk.oauth': 'Needs a browser sign-in — the grant can expire and needs re-authorization.',
+  'risk.device': 'Needs a manual code entry in the browser — the code expires quickly.',
+  'risk.servers': '{count} servers not mounted.',
+  'risk.custom': 'Custom connector — its server must stay reachable.',
   back: 'Back',
   'sessions.placeholder': 'Sessions for this provider will appear here once a connector session is created.',
   'sessions.new': 'New chat',
@@ -52,6 +67,13 @@ export const en: Record<ConnectorsKey, string> = {
   'dialog.cancel': 'Cancel',
   'dialog.save': 'Save & connect',
   'dialog.saving': 'Saving…',
+  'card.setupApp': 'Set up app',
+  'dialog.setup.title': 'Set up your {name} app',
+  'dialog.setup.clientId': 'Client ID',
+  'dialog.setup.clientIdPlaceholder': 'e.g. 1234567890-abc.apps.googleusercontent.com',
+  'dialog.setup.clientSecret': 'Client secret',
+  'dialog.setup.secretHint': 'Optional — leave empty when your provider gives you a public desktop client.',
+  'dialog.setup.save': 'Save',
   remove: 'Remove',
   'custom.new.button': 'New connector',
   'custom.new.title': 'New custom connector',
@@ -91,6 +113,15 @@ export const vi: Record<ConnectorsKey, string> = {
   'servers.many': '{count} máy chủ',
   'server.off': 'chưa bật',
   'rail.label': 'Kết nối',
+  'list.title': 'Đã kết nối',
+  'list.empty': 'Chưa có nhà cung cấp nào được kết nối. Danh mục ở khu chính liệt kê những gì bạn có thể kết nối.',
+  'directory.title': 'Kết nối',
+  'risk.token': 'Cần {refs} — token không hợp lệ hoặc bị thu hồi sẽ làm hỏng kết nối.',
+  'risk.tokenStale': 'Dùng {refs} đã lưu — token bị thu hồi sẽ làm mất các máy chủ.',
+  'risk.oauth': 'Cần đăng nhập qua trình duyệt — quyền có thể hết hạn và cần cấp lại.',
+  'risk.device': 'Cần nhập mã thủ công trong trình duyệt — mã hết hạn nhanh.',
+  'risk.servers': '{count} máy chủ chưa bật.',
+  'risk.custom': 'Kết nối tùy chỉnh — máy chủ của nó phải luôn khả dụng.',
   back: 'Quay lại',
   'sessions.placeholder': 'Các phiên của nhà cung cấp này sẽ hiển thị tại đây khi một phiên kết nối được tạo.',
   'sessions.new': 'Chat mới',
@@ -101,6 +132,13 @@ export const vi: Record<ConnectorsKey, string> = {
   'dialog.cancel': 'Hủy',
   'dialog.save': 'Lưu & kết nối',
   'dialog.saving': 'Đang lưu…',
+  'card.setupApp': 'Cấu hình ứng dụng',
+  'dialog.setup.title': 'Cấu hình ứng dụng {name} của bạn',
+  'dialog.setup.clientId': 'Client ID',
+  'dialog.setup.clientIdPlaceholder': 'vd. 1234567890-abc.apps.googleusercontent.com',
+  'dialog.setup.clientSecret': 'Client secret',
+  'dialog.setup.secretHint': 'Tuỳ chọn — bỏ trống nếu nhà cung cấp cấp cho bạn client desktop công khai.',
+  'dialog.setup.save': 'Lưu',
   remove: 'Xóa',
   'custom.new.button': 'Kết nối mới',
   'custom.new.title': 'Kết nối tùy chỉnh mới',
@@ -140,6 +178,15 @@ export const zh: Record<ConnectorsKey, string> = {
   'servers.many': '{count} 个服务器',
   'server.off': '未挂载',
   'rail.label': '连接器',
+  'list.title': '已连接',
+  'list.empty': '还没有已连接的提供商。主区域的名录列出了可连接的内容。',
+  'directory.title': '连接器',
+  'risk.token': '需要 {refs} —— 无效或已吊销的令牌会导致连接失败。',
+  'risk.tokenStale': '使用已存储的 {refs} —— 令牌被吊销会断开服务器。',
+  'risk.oauth': '需要通过浏览器登录 —— 授权可能过期并需要重新授权。',
+  'risk.device': '需要在浏览器中手动输入代码 —— 代码很快过期。',
+  'risk.servers': '{count} 个服务器未挂载。',
+  'risk.custom': '自定义连接器 —— 其服务器必须保持可达。',
   back: '返回',
   'sessions.placeholder': '此提供商的会话将在创建连接器会话后显示在此处。',
   'sessions.new': '新聊天',
@@ -150,6 +197,13 @@ export const zh: Record<ConnectorsKey, string> = {
   'dialog.cancel': '取消',
   'dialog.save': '保存并连接',
   'dialog.saving': '正在保存…',
+  'card.setupApp': '配置应用',
+  'dialog.setup.title': '配置你的 {name} 应用',
+  'dialog.setup.clientId': '客户端 ID',
+  'dialog.setup.clientIdPlaceholder': '例如 1234567890-abc.apps.googleusercontent.com',
+  'dialog.setup.clientSecret': '客户端密钥',
+  'dialog.setup.secretHint': '可选 —— 如果提供商给你的是公开桌面客户端，留空即可。',
+  'dialog.setup.save': '保存',
   remove: '移除',
   'custom.new.button': '新建连接器',
   'custom.new.title': '新建自定义连接器',

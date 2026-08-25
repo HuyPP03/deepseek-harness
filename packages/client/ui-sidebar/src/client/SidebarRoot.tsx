@@ -61,6 +61,14 @@ export function SidebarRoot({
   useEffect(() => {
     setCenterView(tab === 'connectors' ? 'connectors' : 'conversation')
   }, [tab, setCenterView])
+  // A tab click re-asserts the center view even when the tab is already
+  // active: opening a provider chat from the directory switches the center
+  // view back to the conversation while the tab stays on connectors, so the
+  // next click on that tab must bring the directory back.
+  const selectTab = (candidate: 'chats' | 'workspaces' | 'connectors'): void => {
+    if (tab !== candidate) actions.setTab(candidate)
+    setCenterView(candidate === 'connectors' ? 'connectors' : 'conversation')
+  }
   // The New control follows the active tab: Chats mints the ungrouped blank
   // chat (a chat is what the Chats tab lists), Workspaces starts a session.
   // The connectors tab has no New control at all: the region's own
@@ -187,7 +195,7 @@ export function SidebarRoot({
               role="tab"
               aria-selected={tab === candidate}
               className={clsx(css.tab, tab === candidate && css.tabActive)}
-              onClick={() => { if (tab !== candidate) actions.setTab(candidate) }}
+              onClick={() => { selectTab(candidate) }}
             >
               {t(`tab.${candidate}` as const)}
             </button>

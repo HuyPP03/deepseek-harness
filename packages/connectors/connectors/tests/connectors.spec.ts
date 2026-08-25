@@ -558,10 +558,10 @@ describe('oauth and device modes', () => {
     expect(await stateOf(ctx, 'google')).toBe('unconfigured')
   })
 
-  it('tracks byoApp configuration: clientId plus clientSecret', async () => {
+  it('tracks byoApp configuration: the client id is the requirement, the secret optional', async () => {
     const { ctx, root } = await boot()
     await ctx.connectors.configure('google', { clientId: 'abc.apps.googleusercontent.com' })
-    expect(await stateOf(ctx, 'google')).toBe('unconfigured')
+    expect(await stateOf(ctx, 'google')).toBe('needs-auth')
 
     await ctx.connectors.configure('google', { clientSecret: 'shh' })
     expect(await stateOf(ctx, 'google')).toBe('needs-auth')

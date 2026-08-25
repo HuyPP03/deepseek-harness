@@ -1,0 +1,126 @@
+/* Connected-providers list (fills the sidebar shell's connectors hole):
+   section header plus a compact row per connected provider. Wide/rail
+   variants ride the shell's fold state through the `wide` owner prop — the
+   rail renders one link icon that requests expansion. */
+
+.root {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.root.rail {
+  align-items: center;
+  padding-top: 8px;
+}
+
+.railIcon {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  color: var(--dsw-alias-label-secondary);
+}
+
+.railIcon:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.sectionHeader {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding-left: 12px;
+  margin-bottom: 4px;
+  box-sizing: border-box;
+  color: var(--dsw-alias-label-tertiary);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Centered full-height message (loading / read failure / nothing connected). */
+.message {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 20px;
+  text-align: center;
+  color: var(--dsw-alias-label-secondary);
+  font-size: 13px;
+}
+
+.message.error {
+  color: var(--dsw-alias-state-error-primary);
+}
+
+.list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 8px 8px 4px;
+  /* Elevated surface: the rows paint the l1 rung on hover (above the base),
+     so the list's own scrollport takes the l2 pair (scrollbar.css rebind). */
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+/* One connected-provider row: dot + name, hoverable, selects on click. */
+.row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.row:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.row:focus-visible {
+  outline: 1px solid var(--dsw-alias-accent-primary);
+  outline-offset: -1px;
+}
+
+.rowName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dsw-alias-label-primary);
+}
+
+/* The list scrolls, so the badge tints from the label family instead of
+   naming an elevated surface token. */
+.customBadge {
+  flex: none;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--dsw-alias-label-secondary) 12%, transparent);
+  color: var(--dsw-alias-label-secondary);
+  font-size: 10px;
+  font-weight: 500;
+}

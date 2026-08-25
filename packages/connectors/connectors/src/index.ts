@@ -599,9 +599,12 @@ export class Connectors extends Service {
     const overrides = this.overrides.get(manifest.id) ?? {}
     const registry = this.ctx.mcpManager.servers()
     const servers: ConnectorServerView[] = manifest.servers.map((server) => {
-      const status = registry.find(entry => entry.serverName === server.serverName)?.status
-      const view: Writable<ConnectorServerView> = { serverName: server.serverName, mounted: status !== undefined }
-      if (status !== undefined) view.status = status
+      const entry = registry.find(candidate => candidate.serverName === server.serverName)
+      const view: Writable<ConnectorServerView> = { serverName: server.serverName, mounted: entry !== undefined }
+      if (entry !== undefined) {
+        view.status = entry.status
+        view.tools = entry.tools.map(tool => tool.name)
+      }
       return view
     })
     const auth: ConnectorAuthView[] = await Promise.all(manifest.auth.map(async (method) => {
@@ -614,6 +617,7 @@ export class Connectors extends Service {
         if (method.howTo !== undefined) view.howTo = method.howTo
       }
       if (method.mode === 'oauth') {
+        view.byoApp = method.byoApp === true
         if (method.setupGuide !== undefined) view.setupGuide = [...method.setupGuide]
         if (method.reauthHint !== undefined) view.reauthHint = method.reauthHint
       }
@@ -707,11 +711,10 @@ export class Connectors extends Service {
     const tokens = this.ctx.get('oauthTokens')
     if (tokens !== undefined && tokens.get(id) !== undefined) return true
     if (method.mode === 'oauth' && method.byoApp) {
-      const credentials = this.ctx.get('credentials')
-      const secret = credentials !== undefined && overrides.clientId !== undefined
-        ? await credentials.resolve(credentialRef(clientSecretRef(id)))
-        : undefined
-      return overrides.clientId !== undefined && secret !== undefined
+      // The client id alone starts the flow: the secret is optional (public
+      // desktop clients, e.g. Google's, keep none) and the flow presents it
+      // only when one is stored.
+      return overrides.clientId !== undefined
     }
     return false
   }

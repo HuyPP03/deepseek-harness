@@ -46,6 +46,13 @@ export interface CommandDescriptor {
   readonly description: string
   /** Optional free-form input hint advertised to capable clients. */
   readonly input?: CommandInputDescriptor
+  /**
+   * Whether the command is hidden from a provider chat's slash menu: a session
+   * whose agent runs a connector preset carries no code workspace, so
+   * workspace-oriented commands stay out of its menu (a typed line still
+   * reaches the host). Absent = shown everywhere.
+   */
+  readonly providerHidden?: boolean
 }
 
 /**

@@ -165,6 +165,9 @@ export function apply(ctx: Context): void {
     name: 'goal',
     description: 'set or view the goal for a long-running task',
     input: { hint: '[<objective>|clear|edit <objective>|pause|resume]' },
+    // A provider chat has no long-running code task to steer; keep the row
+    // out of its slash menu.
+    providerHidden: true,
     handler: invocation => executeGoalCommand(ctx, invocation),
   })
 }

@@ -254,6 +254,14 @@ export interface ToolDefinition extends ToolSchema {
    */
   timeoutMs?: number
   /**
+   * Omitted or `false`: the tool is advertised in every model-facing schema
+   * projection. Exact `true`: the definition stays registered and dispatchable
+   * (`get`, `execute`, restrictions, `knownNames`) but is excluded from the
+   * request `tools` array and the Code Mode SDK list — the model reaches it
+   * only through a tool that names it (the MCP bridge's `mcp_call`).
+   */
+  unlisted?: boolean
+  /**
    * Pure synchronous classifier for overlap with sibling tool calls. Only
    * `true` opts in; omission, exceptions, non-`true` returns, and invalid
    * `defineTool` arguments are exclusive. This metadata is never model-visible.
@@ -981,7 +989,7 @@ export class ToolRuntime extends Service {
     const view = this.view(scope)
     const mode = this.modeFor(scope)
     if (mode === 'native') {
-      const schemas = [...view.visible.values()].map(definition => this.schemaOf(definition, false))
+      const schemas = [...this.modelListed(view).values()].map(definition => this.schemaOf(definition, false))
       return { schemas, knownNames: [...view.knownNames] }
     }
     // Validate the runtime language BEFORE projecting schemas: schemaOf reads
@@ -990,7 +998,7 @@ export class ToolRuntime extends Service {
     // renderer-table rejection the canonical assembly-time error for a
     // language with no SDK renderer.
     this.requireCodeRuntime(mode)
-    const schemas = [...view.visible.values()].map(definition => this.schemaOf(definition, false))
+    const schemas = [...this.modelListed(view).values()].map(definition => this.schemaOf(definition, false))
     if (mode === 'code') {
       return {
         schemas: schemas.filter(schema => schema.name === RUN_CODE_NAME),
@@ -1193,6 +1201,21 @@ export class ToolRuntime extends Service {
   }
 
   /**
+   * The model-facing subset of one scope's visible tools: everything
+   * dispatchable except the unlisted definitions, which stay out of the
+   * request `tools` array and the Code Mode SDK list.
+   * @param view - the scope's complete registry view.
+   * @returns the advertised definitions, in the view's registration order.
+   */
+  private modelListed(view: ToolView): ReadonlyMap<string, ToolDefinition> {
+    const listed = new Map<string, ToolDefinition>()
+    for (const [name, definition] of view.visible) {
+      if (definition.unlisted !== true) listed.set(name, definition)
+    }
+    return listed
+  }
+
+  /**
    * Look up a tool as one scope sees it (scoped
    * shadows global; a restricted-away global reads as absent). Presenters pass
    * the calling agent so the rendered card matches the definition that
@@ -1232,12 +1255,12 @@ export class ToolRuntime extends Service {
    * @returns one deep-cloned schema per visible tool.
    */
   schemas(scope?: ScopeKey): ToolSchema[] {
-    return [...this.view(scope).visible.values()].map(definition => this.schemaOf(definition, true))
+    return [...this.modelListed(this.view(scope)).values()].map(definition => this.schemaOf(definition, true))
   }
 
-  /** Project visible callable tools onto the generated Code Mode SDK contract. */
+  /** Project listed callable tools onto the generated Code Mode SDK contract. */
   private sdkSchemas(scope?: ScopeKey): ToolSdkSchema[] {
-    return [...this.view(scope).visible.values()]
+    return [...this.modelListed(this.view(scope)).values()]
       .filter(definition => definition.name !== RUN_CODE_NAME)
       .map((definition): ToolSdkSchema => {
         const output = snapshotJsonValue(definition.output.schema)

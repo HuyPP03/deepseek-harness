@@ -188,7 +188,11 @@ export function AppFrame({
             is session-maybe; the strict details entry naturally renders
             empty while no session is current. */}
         <CenterColumn>
-          {renderSlot('conversation', {})}
+          {/* The seat isolates the conversation's internal stacking context
+              (its sticky composer carries z-index 7, the context meter 100):
+              without the seat those values compete at frame level and paint
+              over the z-index 1 connectors overlay. */}
+          <div className={css.conversationSeat}>{renderSlot('conversation', {})}</div>
           {/* The connectors directory rides the center column as a full-column
               overlay: the conversation underneath stays mounted, so switching
               the browsing tab back and forth keeps its state. The store's

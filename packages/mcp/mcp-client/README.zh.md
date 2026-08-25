@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-MCP 客户端桥接插件：连接外部 [Model Context Protocol](https://modelcontextprotocol.io/) 服务器，把它们的工具注册到 `ctx.tools`，使模型能够通过服务器限定名称（`mcp__<serverName>__<rawName>`）将其作为原生工具使用。
+MCP 客户端桥接插件：连接外部 [Model Context Protocol](https://modelcontextprotocol.io/) 服务器，把它们的工具注册到 `ctx.tools`，使用服务器限定名称（`mcp__<serverName>__<rawName>`）。注册的定义携带 `unlisted: true`：它们保持可调度，但从不进入模型请求的 `tools` 数组，因此工具数量庞大的服务器不会撑爆上下文窗口。模型通过 [mcp-registry](../mcp-registry/README.md) 的桥接（`mcp_list` → `mcp_describe` → `mcp_call`）按需访问每个工具。
 
 ## 用法
 
@@ -92,15 +92,15 @@ MCP 客户端桥接插件：连接外部 [Model Context Protocol](https://modelc
 
 #### 模型看到的内容
 
-初始发现成功后，每个已声明的 MCP 工具都会显示为名为 `mcp__<serverName>__<rawName>`（或其确定性规范化形式）的原生工具，并携带服务器提供的描述和输入 schema。成功的重新同步——包括自动重连后的同步——会替换整个世代；对插件执行 dispose（资源释放）或重连预算耗尽会移除该世代。
+请求的 `tools` 数组中没有任何内容。每个已声明的 MCP 工具都注册为名为 `mcp__<serverName>__<rawName>`（或其确定性规范化形式）的 `unlisted: true` 定义；模型通过 [mcp-registry](../mcp-registry/README.md) 的桥接访问它们——`mcp_list`（各已连接服务器的名称与一行描述）、`mcp_describe`（按需返回单个工具的完整输入 schema）、然后 `mcp_call`（按公开名称调度）。会话日志仍以公开名称记录每次内部调用的确切参数与结果。成功的重新同步——包括自动重连后的同步——会替换整个世代；对插件执行 dispose（资源释放）或重连预算耗尽会移除该世代。
 
 #### Token 影响
 
-工具注册期间，每次请求都会承担数据相关的 schema 成本。重新同步会替换而非累积 schema，服务器限定名称也会为每个工具定义和调用增加 token。
+无论服务器声明了多少工具，每个工具的 JSON schema 都零请求 token——桥接的三个固定小 schema 取代了此前随服务器线性增长的、可能达到 MB 级的可变成本。模型只为它选择描述的那个工具按需支付 `mcp_describe` 的成本。
 
 #### KV Cache 影响
 
-只要已发现工具集合及其 schema 不变，前缀就保持稳定。增加、移除、重命名或更改工具的重新同步会替换定义，并可能使从第一个变化的 schema token 起的复用失效；恢复了未变列表的重连会生成完全相同的定义，前缀保持稳定。
+unlisted 定义占据不了前缀位置，因此重新同步它们不会使前缀失效；恢复了未变列表的重连保持前缀稳定，桥接自身的 schema 在注册期内稳定。
 
 ### 工具调用历史与结果
 

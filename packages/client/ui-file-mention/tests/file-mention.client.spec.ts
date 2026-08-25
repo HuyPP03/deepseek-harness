@@ -49,7 +49,16 @@ function hostFilter(rows: readonly FileEntry[], query: string | undefined): File
   return scored.map(x => x.row)
 }
 
-async function bench(list: ListFn, addressed?: SessionId) {
+interface BenchOpts {
+  addressed?: SessionId
+  /** Summaries stamped into the list snapshot (session id → its agent preset). */
+  byId?: Record<string, { agentPreset?: string }>
+  /** The connectors' published preset set (the provider-chat authority). */
+  connectorPresetIds?: ReadonlySet<string>
+}
+
+async function bench(list: ListFn, opts: BenchOpts = {}) {
+  const { addressed, byId = {}, connectorPresetIds } = opts
   const ctx = new Context()
   let captured: InputTriggerSource | undefined
   ctx.provide('inputTriggers', { registerSource: (src: InputTriggerSource) => { captured = src; return () => {} } })
@@ -58,7 +67,11 @@ async function bench(list: ListFn, addressed?: SessionId) {
     subagentAddress: (id: SessionId) => id === addressed
       ? { parentSessionId: sid('parent'), childSessionId: id, mode: 'continuable' as const }
       : undefined,
+    list: { getSnapshot: () => ({ byId }), subscribe: () => () => undefined },
   })
+  if (connectorPresetIds !== undefined) {
+    ctx.provide('connectorPresetIds', { getSnapshot: () => connectorPresetIds })
+  }
   await ctx.plugin({ inject: [...inject], apply }).await()
   return { ctx, source: captured! }
 }
@@ -197,10 +210,29 @@ describe('candidates: sessionId addressing and the host query pass-through', () 
 
   it('does not fetch for an addressed subagent session', async () => {
     const { list, payloads } = countingList()
-    const { source } = await bench(list, sid('child'))
+    const { source } = await bench(list, { addressed: sid('child') })
     await expect(source.candidates(proj('child'), req(''))).resolves.toEqual([])
     source.warm!(proj('child'))
     expect(payloads).toEqual([])
+  })
+
+  it('lists nothing for a provider chat (a connector-preset session carries no project)', async () => {
+    const { list, payloads } = countingList()
+    const { source } = await bench(list, {
+      byId: { prov: { agentPreset: 'preset-github' } },
+      connectorPresetIds: new Set(['preset-github']),
+    })
+    await expect(source.candidates(proj('prov'), req(''))).resolves.toEqual([])
+    source.warm!(proj('prov'))
+    expect(payloads).toEqual([])
+  })
+
+  it('keeps listing for a session whose preset is not a connector preset', async () => {
+    const { source } = await bench(listOk(), {
+      byId: { s1: { agentPreset: 'preset-default' } },
+      connectorPresetIds: new Set(['preset-github']),
+    })
+    expect(await source.candidates(proj('s1'), req(''))).toHaveLength(ROWS.length)
   })
 })
 

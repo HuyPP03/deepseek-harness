@@ -159,6 +159,10 @@ interface FakeState {
   seenRegistration: Record<string, unknown>
   seenToken: URLSearchParams[]
   challenge: 'resource-metadata' | 'plain-401'
+  /** Answer 200 to initialize/tools/list and challenge only on tools/call. */
+  deferredChallenge: boolean
+  /** With deferredChallenge: the tools/list probe response. */
+  toolList: 'tools' | 'no-tools' | 'challenge' | 'garbage' | 'drop'
   metadataOk: boolean
   asMissingEndpoints: boolean
   noRegistration: boolean
@@ -190,7 +194,42 @@ async function startFakeAs(overrides: Partial<FakeState> = {}): Promise<FakeAs> 
         response.writeHead(401, { 'WWW-Authenticate': 'Bearer' }).end()
         return
       }
-      json(401, { error: 'unauthorized' }, { 'WWW-Authenticate': `Bearer resource_metadata="http://127.0.0.1:${address.port}/meta"` })
+      if (!state.deferredChallenge) {
+        json(401, { error: 'unauthorized' }, { 'WWW-Authenticate': `Bearer resource_metadata="http://127.0.0.1:${address.port}/meta"` })
+        return
+      }
+      // A stateless provider: 200 to initialize and tools/list, and the RFC
+      // 9728 challenge only on a real tools/call.
+      let body = ''
+      request.on('data', (chunk: string) => { body += chunk })
+      request.on('end', () => {
+        let method: string | undefined
+        try { method = (JSON.parse(body) as { method?: string }).method } catch { method = undefined }
+        if (method === 'tools/call') {
+          json(401, { error: 'unauthorized' }, { 'WWW-Authenticate': `Bearer resource_metadata="http://127.0.0.1:${address.port}/meta"` })
+          return
+        }
+        if (method === 'tools/list') {
+          switch (state.toolList) {
+            case 'no-tools':
+              json(200, { jsonrpc: '2.0', id: 0, result: { tools: [{ name: 42 }, { name: '' }] } })
+              return
+            case 'challenge':
+              json(401, { error: 'unauthorized' }, { 'WWW-Authenticate': `Bearer resource_metadata="http://127.0.0.1:${address.port}/meta"` })
+              return
+            case 'garbage':
+              response.writeHead(200, { 'Content-Type': 'text/plain' }).end('not json')
+              return
+            case 'drop':
+              request.socket.destroy()
+              return
+            default:
+              json(200, { jsonrpc: '2.0', id: 0, result: { tools: [{ name: 'list_labels', inputSchema: { type: 'object' } }] } })
+              return
+          }
+        }
+        json(200, { jsonrpc: '2.0', id: 0, result: { serverInfo: { name: 'stateless', version: '1' } } })
+      })
       return
     }
     if (request.method === 'GET' && url.pathname === '/meta') {
@@ -239,6 +278,8 @@ async function startFakeAs(overrides: Partial<FakeState> = {}): Promise<FakeAs> 
     seenRegistration: {},
     seenToken: [],
     challenge: 'resource-metadata',
+    deferredChallenge: false,
+    toolList: 'tools',
     metadataOk: true,
     asMissingEndpoints: false,
     noRegistration: false,
@@ -481,6 +522,48 @@ describe('begin: discovery and registration', () => {
     await expect(engine.begin('bare')).rejects.toThrow('not an OAuth-protected MCP server')
   })
 
+  it('elicits the challenge from a tool-level probe when initialize answers 200', async () => {
+    const fake = await startFakeAs({ deferredChallenge: true })
+    cleanups.push(() => fake.close())
+    const port = await freePort()
+    const { ctx, engine } = await boot(fake, { port })
+    const start = await engine.begin('atlas')
+    const url = new URL(start.authorizationUrl)
+    expect(url.searchParams.get('client_id')).toBe('dc-client-1')
+    expect(url.searchParams.get('redirect_uri')).toBe(`http://127.0.0.1:${port}/callback`)
+    expect((await viewOf(ctx, 'atlas')).state).toBe('authorizing')
+    engine.cancel('atlas')
+  })
+
+  it('still rejects when tools/list names no usable tool', async () => {
+    const fake = await startFakeAs({ deferredChallenge: true, toolList: 'no-tools' })
+    cleanups.push(() => fake.close())
+    const port = await freePort()
+    const { engine } = await boot(fake, { port })
+    await expect(engine.begin('atlas')).rejects.toThrow('not an OAuth-protected MCP server')
+  })
+
+  it('takes the challenge from tools/list itself when it challenges', async () => {
+    const fake = await startFakeAs({ deferredChallenge: true, toolList: 'challenge' })
+    cleanups.push(() => fake.close())
+    const port = await freePort()
+    const { engine } = await boot(fake, { port })
+    const start = await engine.begin('atlas')
+    expect(new URL(start.authorizationUrl).searchParams.get('client_id')).toBe('dc-client-1')
+    engine.cancel('atlas')
+  })
+
+  it.each([
+    ['a non-JSON tools/list', 'garbage'],
+    ['a dropped tools/list connection', 'drop'],
+  ] as const)('still rejects when %s', async (_, toolList) => {
+    const fake = await startFakeAs({ deferredChallenge: true, toolList })
+    cleanups.push(() => fake.close())
+    const port = await freePort()
+    const { engine } = await boot(fake, { port })
+    await expect(engine.begin('atlas')).rejects.toThrow('not an OAuth-protected MCP server')
+  })
+
   it('fails when the resource metadata names no authorization server, in each malformed shape', async () => {
     const fake = await startFakeAs()
     cleanups.push(() => fake.close())
@@ -622,7 +705,7 @@ describe('begin: guards', () => {
     await expect(engine.begin('byo')).rejects.toThrow('composes no credentials service')
   })
 
-  it('records a failure when the loopback port is taken', async () => {
+  it('steps to the next free loopback port when the configured one is taken', async () => {
     const fake = await startFakeAs()
     cleanups.push(() => fake.close())
     const port = await freePort()
@@ -636,8 +719,34 @@ describe('begin: guards', () => {
       })
     }))
     const { ctx, engine } = await boot(fake, { port })
-    await expect(engine.begin('atlas')).rejects.toThrow('loopback callback port')
-    expect((await viewOf(ctx, 'atlas')).state).toBe('unconfigured')
+    // A dynamically registered client's redirect is minted per flow, so a
+    // taken configured port steps forward instead of failing the begin.
+    const start = await engine.begin('atlas')
+    const boundPort = Number(new URL(new URL(start.authorizationUrl).searchParams.get('redirect_uri')!).port)
+    expect(boundPort).toBeGreaterThanOrEqual(port)
+    expect(boundPort).not.toBe(port)
+    expect((await viewOf(ctx, 'atlas')).state).toBe('authorizing')
+    engine.cancel('atlas')
+  })
+
+  it('pins a byoApp flow to the configured loopback port', async () => {
+    const fake = await startFakeAs()
+    cleanups.push(() => fake.close())
+    const port = await freePort()
+    const blocker = createServer()
+    await new Promise<void>((resolveListen) => {
+      blocker.listen(port, '127.0.0.1', () => { resolveListen() })
+    })
+    cleanups.push(() => new Promise<void>((resolveClose, rejectClose) => {
+      blocker.close((error?: unknown) => {
+        if (error instanceof Error) rejectClose(error); else resolveClose()
+      })
+    }))
+    const { ctx, engine } = await boot(fake, { port })
+    // The pre-registered app's redirect names exactly the configured port,
+    // so a collision there is a configuration conflict, not a step-forward.
+    await expect(engine.begin('byo')).rejects.toThrow('loopback callback port')
+    expect((await viewOf(ctx, 'byo')).state).toBe('unconfigured')
   })
 
   it('throws on a second begin while a flow is in flight', async () => {

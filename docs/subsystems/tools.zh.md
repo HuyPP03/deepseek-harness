@@ -59,6 +59,14 @@ interface ToolDefinition extends ToolSchema {
    */
   timeoutMs?: number
   /**
+   * Omitted or `false`: the tool is advertised in every model-facing schema
+   * projection. Exact `true`: the definition stays registered and dispatchable
+   * (`get`, `execute`, restrictions, `knownNames`) but is excluded from the
+   * request `tools` array and the Code Mode SDK list — the model reaches it
+   * only through a tool that names it (the MCP bridge's `mcp_call`).
+   */
+  unlisted?: boolean
+  /**
    * Pure synchronous classifier for overlap with sibling tool calls. Only
    * `true` opts in; omission, exceptions, non-`true` returns, and invalid
    * `defineTool` arguments are exclusive. This metadata is never model-visible.
@@ -527,7 +535,7 @@ Source: [`packages/mcp/mcp-manager/src/index.ts:125`](../../packages/mcp/mcp-man
 
 ### `ctx.mcpRegistry` — `McpRegistry`
 
-Live MCP server registry over one app root.
+Live MCP server registry over one app root. Besides the read face, the registry registers the model-facing MCP bridge (`mcp_list`, `mcp_describe`, `mcp_call`) once per app: the per-server tools the mcp clients register are unlisted, so a large MCP tool surface never enters the request `tools` array and the model reaches each tool on demand instead.
 
 ```ts cordis-catalog
 /**
@@ -557,7 +565,7 @@ servers(): readonly McpServerView[]
 async reconnect(serverName: string): Promise<void>
 ```
 
-Source: [`packages/mcp/mcp-registry/src/index.ts:58`](../../packages/mcp/mcp-registry/src/index.ts)
+Source: [`packages/mcp/mcp-registry/src/index.ts:64`](../../packages/mcp/mcp-registry/src/index.ts)
 
 <a id="ctxtools--toolruntime"></a>
 
@@ -655,7 +663,7 @@ async execute(exec: ToolExecutionInput): Promise<ToolExecutionResult>
 
 Types: [ScopeKey](scope.md)
 
-Source: [`packages/core/tools/src/index.ts:787`](../../packages/core/tools/src/index.ts)
+Source: [`packages/core/tools/src/index.ts:795`](../../packages/core/tools/src/index.ts)
 
 <a id="tools-events"></a>
 

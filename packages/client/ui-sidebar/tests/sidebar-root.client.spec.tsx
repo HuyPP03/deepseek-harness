@@ -125,6 +125,16 @@ describe('SidebarRoot shell', () => {
     expect(c.startChat).toHaveBeenCalledTimes(2)
     expect(c.startSession).not.toHaveBeenCalled()
     cleanup()
+
+    // The connectors tab: the wordmark is not a New shortcut — its label
+    // switches to the browse-tabs a11y name and clicking it starts nothing
+    // (the region's own "New connector" owns minting there).
+    const d = mountShell({ tab: 'connectors' })
+    const wordmark = screen.getByRole('button', { name: 'Browse tabs' })
+    fireEvent.click(wordmark)
+    expect(d.startChat).not.toHaveBeenCalled()
+    expect(d.startSession).not.toHaveBeenCalled()
+    cleanup()
   })
 
   it('switches tabs through the tablist and hands the tab to the region', () => {
@@ -158,11 +168,14 @@ describe('SidebarRoot shell', () => {
     expect(b.setCenterView).toHaveBeenCalledTimes(1)
     expect(b.setCenterView).toHaveBeenCalledWith('conversation')
 
+    // Each tab change writes twice: the click re-asserts immediately, the
+    // effect confirms after the tab store settles.
     fireEvent.click(screen.getByRole('tab', { name: 'Connectors' }))
     expect(b.setCenterView).toHaveBeenLastCalledWith('connectors')
+    expect(b.setCenterView).toHaveBeenCalledTimes(3)
     fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
     expect(b.setCenterView).toHaveBeenLastCalledWith('conversation')
-    expect(b.setCenterView).toHaveBeenCalledTimes(3)
+    expect(b.setCenterView).toHaveBeenCalledTimes(5)
     cleanup()
 
     // A cold mount on the connectors tab syncs the directory view too.

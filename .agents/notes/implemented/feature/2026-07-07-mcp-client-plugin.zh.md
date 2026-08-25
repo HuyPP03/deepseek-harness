@@ -79,7 +79,7 @@ type Config = StdioConfig | StreamableHttpConfig
       Authorization: !!js `Bearer ${process.env.MCP_TOKEN}`
 ```
 
-模型看到的是 `mcp__github__create_issue`、`mcp__github__search_code`、`mcp__web__search`。
+模型通过[懒加载 MCP 工具访问桥接](2026-08-25-lazy-mcp-tool-bridge.md)（`mcp_list` → `mcp_describe` → `mcp_call`）访问 `mcp__github__create_issue`、`mcp__github__search_code` 与 `mcp__web__search`；这些名称本身就是桥接列出的稳定身份。
 
 ### 生命周期
 
@@ -96,11 +96,11 @@ type Config = StdioConfig | StreamableHttpConfig
 
 这种按服务器限定的形式是多服务器 agent 客户端事实上的标准——所有被调研的终端用户产品都按服务器限定 MCP 工具名（[Claude Code](https://code.claude.com/docs/en/agent-sdk/mcp#tool-naming-convention) `mcp__github__list_issues`、[Codex](https://openai.com/index/unrolling-the-codex-agent-loop/) `mcp__weather__get-forecast`、[Gemini CLI](https://geminicli.com/docs/tools/mcp-server/#3-tool-naming-and-namespaces)、[VS Code](https://github.com/microsoft/vscode/blob/ab9ec62c6a61e429a9abd612ff220c3f4834c9ea/src/vs/workbench/contrib/mcp/common/mcpServer.ts#L217-L260)、[Cline](https://github.com/cline/cline/blob/52fdbb1d72f7324a28142a7ba7678d4b53c902f4/sdk/packages/core/src/extensions/mcp/name-transform.ts#L20-L35)、[Roo Code](https://github.com/RooCodeInc/Roo-Code/blob/b867ec9145750d0ae1ff7f02d35406e9bf2a0b16/src/utils/mcp-name.ts#L117-L140)、[Goose](https://github.com/block/goose/blob/b3a012cbdde854b0fe14f95b1c48543bf6517c0a/crates/goose/src/agents/extension_manager.rs#L1391-L1441)、[OpenCode](https://github.com/anomalyco/opencode/blob/d199b1bff90282a4f9cd6251b5fc7b16875a52f6/packages/opencode/src/mcp/catalog.ts#L117-L120)）；`mcp__<server>__<tool>` 的拼写方式与 Claude Code 和 Codex 一致。`mcp__` 前缀将 MCP 注册与原生工具的命名空间隔离，并为权限/遥测规则提供稳定的匹配模式（`mcp__*`、`mcp__github__*`）。
 
-1. 连接时：遍历 `client.listTools()` 的分页结果，推导每个工具的 `publicName`，然后通过 `ctx.tools.register()` 将其注册为原始 `ToolDefinition`。MCP 的 JSON Schema 和描述原样透传（不做 `defineTool` DSL 转换）；仅替换模型可见的 `name`。
+1. 连接时：遍历 `client.listTools()` 的分页结果，推导每个工具的 `publicName`，然后通过 `ctx.tools.register()` 将其注册为原始 `ToolDefinition`，并带 `unlisted: true`——可调度但不进入任何面向模型的投影（[懒加载 MCP 工具访问](2026-08-25-lazy-mcp-tool-bridge.md)）。MCP 的 JSON Schema 和描述原样透传（不做 `defineTool` DSL 转换）；仅替换模型可见的 `name`。
 2. 监听 `notifications/tools/list_changed` → 重新执行同步（dispose 上一代、注册新一代）。确定性命名意味着未变化的工具在重新同步后保持原名。
 3. 执行器闭包持有 `rawName`；公开名称永远不发送给服务器，也永远不被解析以还原原始名称。
 4. 无 `presentCall`/`presentResult`——UI 消费方使用提供方无关的通用卡片兜底。
-5. 工具在系统提示词中是透明的——除名称本身外不附加「[via MCP]」标注。
+5. 工具是 `unlisted` 的——不在模型的 `tools` 数组与系统提示词中；模型通过桥接按公开名称访问它们，因此除名称本身外无需「[via MCP]」标注。
 
 ### 公开名称规范化
 
@@ -211,7 +211,7 @@ v1 否决。它能防止跨服务器冲突，但无法将 MCP 注册与原生 ha
 
 ## 后果
 
-- 每个 MCP 服务器只需 `cordis.yml` 中的一条配置即完成集成：`serverName: filesystem` 加一条 stdio 命令（或一个 Streamable HTTP URL），就能将 `mcp__filesystem__read_file` 放入模型的工具列表，可调用，协议上使用原始的 `read_file`。
+- 每个 MCP 服务器只需 `cordis.yml` 中的一条配置即完成集成：`serverName: filesystem` 加一条 stdio 命令（或一个 Streamable HTTP URL）即注册 `mcp__filesystem__read_file`，可经桥接调度，协议上使用原始的 `read_file`。
 - 公开名称是会话历史和权限/配置 API 的一部分；命名算法是由测试固定的 v1 约定，发布后变更即为破坏性变更。
 - `mcp__<serverName>__` 限定符在每个名称上消耗 token。已接受：描述和 JSON Schema 在工具定义 token 中占主导，而限定符换来了稳定标识、冲突隔离和 MCP 全局策略匹配模式（`mcp__*`、`mcp__github__*`）。
 - **MCP SDK 稳定性**：`@modelcontextprotocol/sdk` 仍在演进中；破坏性变更需要更新桥接。版本已固定，且该 SDK 被广泛采用（Claude Desktop、Cursor、VS Code），因此破坏性变更不太可能悄然发生。

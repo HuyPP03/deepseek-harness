@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import type { SessionListState, WorkspaceId, WorkspaceListState, WorkspaceView } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SessionId, SessionListState, WorkspaceId, WorkspaceListState, WorkspaceView } from '@deepseek-ai/dsh-client-runtime/client'
 import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
 import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
 import type { DirectoryFlowOwnerProps, WorkspacePickerProps } from '../src/client/contract/slots.ts'
@@ -103,6 +103,10 @@ interface FlowMountOptions {
   noAnchor?: boolean
   /** Single mode only: offer the add action, hide existing workspaces. */
   addOnly?: boolean
+  /** The session the hero belongs to (multi: drives the provider-chat hide). */
+  sessions?: SessionListState
+  /** The connector preset ids (multi: a member current preset hides the picker). */
+  connectorPresetIds?: ReadonlySet<string>
 }
 
 /**
@@ -117,22 +121,31 @@ function mountFlow(kind: 'single' | 'multi', options: FlowMountOptions = {}) {
   const occupancy = options.occupancy ?? occupancySource()
   const createWorkspace = options.createWorkspace ?? vi.fn()
   const { probe, renderSlot } = flowProbe()
+  // Stable preset-id source for the provider-chat guard; the default is empty
+  // (no connectors composed), so the picker renders as before.
+  const presetIds = options.connectorPresetIds ?? new Set<string>()
+  const useConnectorPresetIds = bindSnapshotSelector({
+    getSnapshot: () => presetIds,
+    subscribe: () => () => undefined,
+  })
   const renderFrame = (next: FlowMountOptions) => {
     const items = next.items ?? options.items ?? [workspace('alpha', 'Alpha')]
     const phase = next.phase ?? options.phase ?? 'ready'
     const open = next.open ?? options.open ?? true
     const anchorRef = next.noAnchor ?? options.noAnchor ? undefined : anchor()
+    const sessionList = next.sessions ?? options.sessions ?? sessions
     return kind === 'multi'
       ? (
         <WorkspacePicker
           open={open}
           anchorRef={anchorRef}
-          useSessions={hook(sessions)}
+          useSessions={hook(sessionList)}
           useWorkspaces={hook(workspaceState(items, phase))}
           selectedId={next.selectedId ?? options.selectedId}
           onConfirm={onConfirm}
           createWorkspace={createWorkspace}
           useDirectoryFlow={occupancy.useDirectoryFlow}
+          useConnectorPresetIds={useConnectorPresetIds}
           renderSlot={renderSlot}
           t={t}
         />
@@ -349,6 +362,34 @@ describe('WorkspacePicker (multi-select New-Session flow)', () => {
     // The cancelled check set did not survive: the seeded pick is main again.
     expect(screen.getByRole('menuitem', { name: /^Alpha/ }).textContent).toContain('主项目')
     expect(screen.getByRole('menuitem', { name: /^Beta/ }).textContent).not.toContain('主项目')
+  })
+
+  it('renders nothing when the hero session runs a connector preset (a provider chat has no workspace to choose)', () => {
+    const sid = 'sess-github' as SessionId
+    const providerSessions: SessionListState = {
+      ...sessions,
+      current: sid,
+      byId: { [sid]: { id: sid, displayTitle: 'GitHub chat', running: false, blank: true, updatedAt: 0, agentPreset: 'preset-github' } },
+    }
+    mountFlow('multi', { items: [workspace('alpha', 'Alpha')], sessions: providerSessions, connectorPresetIds: new Set(['preset-github']) })
+    expect(screen.queryByRole('menu')).toBeNull()
+  })
+
+  it('keeps the picker for a session that is not a provider chat (preset outside the connector set)', () => {
+    const sid = 'sess-plain' as SessionId
+    const plainSessions: SessionListState = {
+      ...sessions,
+      current: sid,
+      byId: { [sid]: { id: sid, displayTitle: 'Plain chat', running: false, blank: true, updatedAt: 0, agentPreset: 'preset-default' } },
+    }
+    mountFlow('multi', { items: [workspace('alpha', 'Alpha')], sessions: plainSessions, connectorPresetIds: new Set(['preset-github']) })
+    expect(screen.getByRole('menuitem', { name: PLAIN })).toBeTruthy()
+  })
+
+  it('keeps the picker when no session is current (the cold-start workspace-choice flow)', () => {
+    // The module-level `sessions` snapshot has current: undefined.
+    mountFlow('multi', { items: [workspace('alpha', 'Alpha')], connectorPresetIds: new Set(['preset-github']) })
+    expect(screen.getByRole('menuitem', { name: PLAIN })).toBeTruthy()
   })
 })
 describe('WorkspacePickFlow (single/add flow)', () => {
