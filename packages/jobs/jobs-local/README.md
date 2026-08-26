@@ -10,6 +10,10 @@ Process-local implementation of the [`@deepseek-ai/dsh-jobs`](../jobs/README.md)
 
 At capacity, `start()` fails before producer execution and id allocation with an error that names the limit and tells the model to use `job_kill`, wait for the job to finish stopping, and retry. The registry does not queue, preempt, or maintain a second mutable counter.
 
+## Log retention
+
+`jobLogRetainChars` is a positive safe integer, defaulting to `2_097_152` (2 MiB in UTF-16 code units). Every drained producer delta accumulates into the job's human-view log, and once the tail bound is exceeded the head bytes drop. The model's read cursor rides the same window: a head-drop that swallowed bytes the model had not yet consumed resets the cursor to the retained head and the model's next `read()` carries a one-shot `[job log head dropped]` marker, while a drop wholly behind the cursor only shifts it. `log()` never consumes, and `read()` text is byte-identical to the prior unbounded stream behavior except for that one marker.
+
 ## Lifecycle
 
 Jobs belong to their owner and backend, not the producer tool fiber, so producer and controller reloads do not stop them. The first job for an owner attaches one awaited effect to the exact `Agent` scope. Owner disposal cancels that object's jobs, awaits producer quiescence, and removes their snapshots; reused agent or session ids cannot redirect an old cleanup.

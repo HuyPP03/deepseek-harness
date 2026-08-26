@@ -16,6 +16,7 @@ import type { CredentialsApi } from './credentials.ts'
 import type { ConnectorApi } from './connector.ts'
 import type { LlmApi } from './llm.ts'
 import type { SubagentsApi } from './subagents.ts'
+import type { JobsApi } from './jobs.ts'
 import type { McpApi } from './mcp.ts'
 import type { RpcResponse } from './rpc.ts'
 
@@ -42,6 +43,7 @@ export interface RpcMethodMap {
   'subagent.history': SubagentsApi['history']
   'subagent.prompt': SubagentsApi['prompt']
   'subagent.interrupt': SubagentsApi['interrupt']
+  'jobs.log': JobsApi['log']
   'host.describe': HostApi['describe']
   'host.pickDirectory': HostApi['pickDirectory']
   'host.listDirectory': HostApi['listDirectory']

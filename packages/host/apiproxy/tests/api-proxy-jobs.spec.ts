@@ -15,6 +15,7 @@ import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
 import type { Session } from '@deepseek-ai/dsh-session'
 import UserQuestionService from '@deepseek-ai/dsh-user-questions'
 import LocalJobRegistry from '@deepseek-ai/dsh-jobs-local'
+import { JobId } from '@deepseek-ai/dsh-jobs'
 import type { JobOutcome } from '@deepseek-ai/dsh-jobs'
 import type { MuxFrame, RpcRequest } from '@deepseek-ai/dsh-host-apiproxy/api'
 import { RpcId } from '@deepseek-ai/dsh-host-apiproxy/api/rpc'
@@ -241,6 +242,144 @@ describe('session/jobs never consumes model output', () => {
 
     expect(baseline?.jobs).toHaveLength(1)
     expect(p.reads.count).toBe(0)
+  })
+})
+
+describe('jobs.log', () => {
+  const tick = () => new Promise<void>(resolve => setTimeout(resolve, 0))
+
+  function streamingProducer(chunks: string[]) {
+    let settle!: (outcome: JobOutcome) => void
+    const reads = { count: 0 }
+    const spec = {
+      kind: 'bash' as const,
+      label: 'stream',
+      run: () => ({
+        cancel: () => {},
+        done: new Promise<JobOutcome>((resolve) => { settle = resolve }),
+        // Batched like the shell collectors: one drained call returns everything queued.
+        readOutput: () => { reads.count += 1; return chunks.splice(0).join('') },
+      }),
+    }
+    return { spec, reads, settle: (outcome: JobOutcome) => { settle(outcome) } }
+  }
+
+  it('serves the retained tail without consuming the model read or claiming the report', async () => {
+    const { ctx, session, agent } = await harness(true)
+    const p = streamingProducer(['alpha', 'beta'])
+    const id = ctx.jobs.start({ ...p.spec, owner: agent })
+
+    const response = await api(ctx).jobs.log({
+      rpcId: RpcId('t-log-1'),
+      payload: { sessionId: session.id, jobId: id },
+    })
+    expect(response.result).toEqual({ ok: true, value: { text: 'alphabeta', truncated: false } })
+    // The model's single consuming cursor is untouched: its read still gets
+    // everything, and the human read claimed no report.
+    expect(ctx.jobs.read(id, agent).text).toBe('alphabeta')
+    expect(ctx.jobs.read(id, agent).text).toBe('')
+    // One drain from the human log plus one per model read.
+    expect(p.reads.count).toBe(3)
+  })
+
+  it('answers job-not-found for an id the registry does not hold', async () => {
+    const { ctx, session } = await harness(true)
+    const response = await api(ctx).jobs.log({
+      rpcId: RpcId('t-log-404'),
+      payload: { sessionId: session.id, jobId: JobId('bash-99') },
+    })
+    expect(response.result).toMatchObject({
+      ok: false,
+      error: { code: 'job-not-found', details: { sessionId: session.id, jobId: 'bash-99' } },
+    })
+  })
+
+  it('answers job-unauthorized when the fence rejects the session', async () => {
+    const { ctx, agent } = await harness(true)
+    const strangerSession = ctx.sessions.create()
+    ctx.agents.register({
+      id: strangerSession.id,
+      session: strangerSession,
+      inbox: new Inbox(strangerSession, { inserted: () => {}, discarded: () => {}, claimed: () => {} }),
+      status: 'idle',
+      ctx,
+    } as Agent)
+    const id = ctx.jobs.start({ ...streamingProducer(['owned']).spec, owner: agent })
+
+    const response = await api(ctx).jobs.log({
+      rpcId: RpcId('t-log-forbidden'),
+      payload: { sessionId: strangerSession.id, jobId: id },
+    })
+    expect(response.result).toMatchObject({
+      ok: false,
+      error: { code: 'job-unauthorized', details: { jobId: id } },
+    })
+  })
+
+  it('answers internal when the deployment composes no job registry', async () => {
+    const { ctx, session } = await harness(false)
+    const response = await api(ctx).jobs.log({
+      rpcId: RpcId('t-log-noregistry'),
+      payload: { sessionId: session.id, jobId: JobId('bash-1') },
+    })
+    expect(response.result).toMatchObject({ ok: false, error: { code: 'internal' } })
+  })
+
+  it('tail-bounds the wire value at the UTF-8 budget without splitting a character', async () => {
+    const { ctx, session, agent } = await harness(true)
+    const big = 'é'.repeat(150_000) // 300_000 UTF-8 bytes, over the 256 KiB bound
+    const id = ctx.jobs.start({ ...streamingProducer([big]).spec, owner: agent })
+
+    const response = await api(ctx).jobs.log({
+      rpcId: RpcId('t-log-bound'),
+      payload: { sessionId: session.id, jobId: id },
+    })
+    expect(response.result.ok).toBe(true)
+    if (response.result.ok) {
+      const { text, truncated } = response.result.value
+      expect(truncated).toBe(true)
+      expect(new TextEncoder().encode(text).length).toBeLessThanOrEqual(262_144)
+      // The tail ends exactly where the log ends and never on a split character.
+      expect(text).toBe('é'.repeat(131_072))
+    }
+  })
+
+  it('serves a final-output job empty while live and the settled output after', async () => {
+    const { ctx, session, agent } = await harness(true)
+    const proxy = api(ctx)
+    let settle!: (outcome: JobOutcome) => void
+    const id = ctx.jobs.start({
+      kind: 'subagent',
+      label: 'child task',
+      owner: agent,
+      run: () => ({ cancel: () => {}, done: new Promise<JobOutcome>((resolve) => { settle = resolve }) }),
+    })
+
+    const live = await proxy.jobs.log({ rpcId: RpcId('t-log-final-1'), payload: { sessionId: session.id, jobId: id } })
+    expect(live.result).toEqual({ ok: true, value: { text: '', truncated: false } })
+
+    settle({ status: 'completed', output: 'child answer' })
+    await tick()
+
+    const settled = await proxy.jobs.log({ rpcId: RpcId('t-log-final-2'), payload: { sessionId: session.id, jobId: id } })
+    expect(settled.result).toEqual({ ok: true, value: { text: 'child answer', truncated: false } })
+  })
+
+  it('lets a cold session read an unowned job without resuming it', async () => {
+    const { ctx } = await harness(true)
+    const coldId = SessionId('session-cold-log')
+    let loaded = false
+    ctx.provide('sessionPersistence', {
+      list: async () => [{ version: 0, id: coldId, createdAt: 5, cwd: '/tmp' }],
+      locate: () => undefined,
+      load: () => { loaded = true; throw new Error('a log read must not load a cold log') },
+    } as never)
+    const id = ctx.jobs.start(streamingProducer(['open output']).spec)
+
+    const response = await api(ctx).jobs.log({ rpcId: RpcId('t-log-cold'), payload: { sessionId: coldId, jobId: id } })
+    expect(response.result).toEqual({ ok: true, value: { text: 'open output', truncated: false } })
+    expect(loaded).toBe(false)
+    expect(ctx.agents.get(coldId)).toBeUndefined()
   })
 })
 

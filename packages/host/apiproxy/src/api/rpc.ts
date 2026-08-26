@@ -8,6 +8,7 @@
 import type { z as zCore } from 'zod'
 type ZodIssue = zCore.core.$ZodIssue
 import type { Branded } from '@deepseek-ai/dsh-brand'
+import type { JobId } from '@deepseek-ai/dsh-jobs/brand'
 import type { MessageId } from '@deepseek-ai/dsh-llm/brand'
 import type { SessionId } from '@deepseek-ai/dsh-session/types'
 
@@ -88,6 +89,10 @@ export interface RpcErrorDetailsMap {
   'fork-unavailable': { sessionId: SessionId }
   'subagent-parent-unavailable': { parentSessionId: SessionId }
   'subagent-not-found': { parentSessionId: SessionId; childSessionId: SessionId }
+  /** The registry holds no job under this id (never started, or already evicted). */
+  'job-not-found': { sessionId: SessionId; jobId: JobId }
+  /** The registry fence refused the read: the job belongs to another session. */
+  'job-unauthorized': { jobId: JobId }
   'subagent-catalog-diagnostic': {
     parentSessionId: SessionId
     childSessionId: SessionId

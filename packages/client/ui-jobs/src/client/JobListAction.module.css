@@ -63,13 +63,9 @@
 }
 
 .row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   box-sizing: border-box;
   width: 100%;
   min-height: 32px;
-  padding: 6px 8px;
   border-radius: 8px;
   color: var(--dsw-alias-label-primary);
   font-size: 13px;
@@ -78,6 +74,29 @@
 
 .rowSettled {
   color: var(--dsw-alias-label-tertiary);
+}
+
+/* The whole row is the click target for the details panel. */
+.rowButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rowButton:hover,
+.rowButton:focus-visible {
+  background: var(--dsw-alias-fill-l2);
 }
 
 .rowDot {

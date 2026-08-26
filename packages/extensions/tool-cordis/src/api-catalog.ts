@@ -832,6 +832,12 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         returns: 'output text and the post-read snapshot.',
       },
       {
+        signature: 'abstract log(id: JobId, caller?: Agent): JobLogRead',
+        description: 'Read the job\'s retained output for human surfaces (the browser\'s job details panel) without touching model-facing state: the read cursor of read does not advance and the job is not marked reported. A reading that drains new producer output keeps the model\'s next read complete — the implementation owns the accumulation. Stream kinds return the retained tail (bounded by the implementation\'s retention); final-output kinds return empty while live and the terminal output once settled. Throws for an unknown or foreign job.',
+        parameters: [{ name: 'id', description: 'job to read.' }, { name: 'caller', description: 'reading agent checked against the owner.' }],
+        returns: 'retained output text and the post-read snapshot.',
+      },
+      {
         signature: 'abstract kill(id: JobId, caller?: Agent, reason?: string): \'requested\' | \'already-finished\'',
         description: 'Request cancellation, then mark the job stopping and reported. A producer throw propagates without changing job state. Throws for an unknown or foreign job.',
         parameters: [{ name: 'id', description: 'job to cancel.' }, { name: 'caller', description: 'killing agent checked against the owner.' }, { name: 'reason', description: 'logged reason forwarded to the producer.' }],
@@ -2988,11 +2994,11 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'CommandDefinition',
-    declaration: 'export interface CommandDefinition {\n    readonly name: string;\n    readonly description: string;\n    readonly input?: CommandInputDescriptor;\n    readonly recordInput?: boolean;\n    readonly handler: (invocation: CommandInvocation) => CommandResult | Promise<CommandResult>;\n}',
+    declaration: 'export interface CommandDefinition {\n    readonly name: string;\n    readonly description: string;\n    readonly input?: CommandInputDescriptor;\n    readonly recordInput?: boolean;\n    readonly providerHidden?: boolean;\n    readonly handler: (invocation: CommandInvocation) => CommandResult | Promise<CommandResult>;\n}',
   },
   {
     name: 'CommandDescriptor',
-    declaration: 'export interface CommandDescriptor {\n    readonly name: string;\n    readonly description: string;\n    readonly input?: CommandInputDescriptor;\n}',
+    declaration: 'export interface CommandDescriptor {\n    readonly name: string;\n    readonly description: string;\n    readonly input?: CommandInputDescriptor;\n    readonly providerHidden?: boolean;\n}',
   },
   {
     name: 'CommandExecution',
@@ -3457,6 +3463,10 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   {
     name: 'JobKindMap',
     declaration: 'export interface JobKindMap {\n    bash: \'bash\';\n    subagent: \'subagent\';\n}',
+  },
+  {
+    name: 'JobLogRead',
+    declaration: 'export interface JobLogRead {\n    text: string;\n    snapshot: JobSnapshot;\n}',
   },
   {
     name: 'JobOutcome',

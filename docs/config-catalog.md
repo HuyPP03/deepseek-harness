@@ -931,10 +931,16 @@ export interface Config {
    * omission defaults to 10.
    */
   maxConcurrentJobsPerOwner?: number
+  /**
+   * Retained characters (UTF-16 code units) of one job's human-view log,
+   * which the model read cursor rides: beyond the cap the head is dropped and
+   * the model's next read announces the loss once. Omission defaults to 2 Mi.
+   */
+  jobLogRetainChars?: number
 }
 ```
 
-Source: [`packages/jobs/jobs-local/src/index.ts:31`](../packages/jobs/jobs-local/src/index.ts)
+Source: [`packages/jobs/jobs-local/src/index.ts:41`](../packages/jobs/jobs-local/src/index.ts)
 
 <a id="deepseek-aidsh-llm-deepseek"></a>
 

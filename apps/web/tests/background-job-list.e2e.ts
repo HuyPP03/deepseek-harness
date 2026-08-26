@@ -1,8 +1,9 @@
-// Web e2e scenario: the session-header background-job list over the real
-// host. No model call is involved — a genuine `run_in_background` bash call
-// registers with `ctx.jobs`, and the assertion chain is the whole delivery
-// path: registry change feed → api-proxy `session/jobs` frame → the client's
-// `jobsBySession` mirror → the header action.
+// Web e2e scenario: the session-header background-job list and the job log
+// details seat over the real host. No model call is involved — a genuine
+// `run_in_background` bash call registers with `ctx.jobs`, and the assertion
+// chain is the whole delivery path: registry change feed → api-proxy
+// `session/jobs` frame → the client's `jobsBySession` mirror → the header
+// action, then a row click → the `jobs.log` unary → the details panel seat.
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
@@ -22,12 +23,19 @@ import { newEnglishPage, saveFailureShot } from './support.ts'
 const FIXTURE = fileURLToPath(new URL('./snapshots/fresh-round-trip/session.jsonl', import.meta.url))
 const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/background-job-list', import.meta.url))
 const RUNNING_EXPECTED = join(SNAPSHOT_DIR, 'running.expected.md')
+const DETAILS_EXPECTED = join(SNAPSHOT_DIR, 'details.expected.md')
 const SETTLED_EXPECTED = join(SNAPSHOT_DIR, 'settled.expected.md')
 const MODE = webSnapshotMode()
 const SEED_ID = 'background-job-list-web-e2e'
-// Long enough that the running assertions never race the process exiting on
-// their own; the test kills it explicitly to reach the settled state.
-const COMMAND = 'sleep 45'
+// Prints 50 lines before holding, so the details-panel capture has log bytes
+// to show; the sleep is long enough that the running assertions never race
+// the process exiting on its own — the test kills it explicitly to reach the
+// settled state.
+const COMMAND = 'for i in $(seq 1 50); do echo "line $i"; done; sleep 45'
+// The host's sandbox wrapper self-reports partial Landlock enforcement on
+// kernels below the requested ABI, on the job's captured stderr. The report
+// is kernel-dependent, so the details golden strips it from the retained log.
+const LANDLOCK_REPORT = ' [stderr] landlock-run: partial enforcement (older Landlock ABI)'
 
 /**
  * Wait for the Host to publish the live Agent that opening a session resumes.
@@ -63,7 +71,8 @@ describe.skipIf(MODE === 'record')('web e2e: background job list', () => {
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
 
     // The seeded session is workspace-less, so it is a flat row on the chats
-    // tab (the shell's default); there is no group to open.
+    // tab; the shell opens on the workspaces tab, so select chats explicitly.
+    await page.getByRole('tab', { name: 'Chats' }).click()
     const sessionRow = page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first()
     await sessionRow.waitFor({ timeout: 15_000 })
     await sessionRow.click()
@@ -111,6 +120,25 @@ describe.skipIf(MODE === 'record')('web e2e: background job list', () => {
     expect(tripwire.warnings).toEqual([])
   }, 60_000)
 
+  it('opens the job log in the details panel when a row is clicked', async () => {
+    onTestFailed(() => saveFailureShot(page, 'web-e2e-background-job-details'))
+    const row = page.getByRole('list', { name: 'Background jobs' }).getByRole('button').first()
+    await row.click()
+    // The popover closes with the gesture; the details panel takes over.
+    expect(await page.getByRole('list', { name: 'Background jobs' }).count()).toBe(0)
+
+    // The panel polls the retained log; wait for the last printed line so the
+    // capture sees the complete 50-line output, not a mid-print slice.
+    const panel = page.locator('[class*="detailsCol"]')
+    await expect.poll(async () => (await panel.textContent()) ?? '', { timeout: 15_000 }).toContain('line 50')
+
+    const snapshot = (await captureStableAria(page, '[class*="detailsCol"]', scaffold.workspaceCwd))
+      .replace(LANDLOCK_REPORT, '')
+    await compareOrRefreshGolden(DETAILS_EXPECTED, snapshot, MODE)
+    expect(tripwire.pageErrors).toEqual([])
+    expect(tripwire.warnings).toEqual([])
+  }, 60_000)
+
   it('flips the open list to the cancelled outcome when the registry settles it', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-background-job-settled'))
     expect(scaffold.ctx.jobs.kill(jobId, agent, 'web e2e cancellation')).toBe('requested')
@@ -119,6 +147,8 @@ describe.skipIf(MODE === 'record')('web e2e: background job list', () => {
     // which is also the proof that settlement reached the browser unprompted.
     const idle = page.getByRole('button', { name: '1 background job' })
     await idle.waitFor({ timeout: 20_000 })
+    // The row click closed the popover; reopen the list for the capture.
+    await idle.click()
 
     const snapshot = await captureStableAria(page, '[class*="menu"]', scaffold.workspaceCwd)
     await compareOrRefreshGolden(SETTLED_EXPECTED, snapshot, MODE)
@@ -127,6 +157,6 @@ describe.skipIf(MODE === 'record')('web e2e: background job list', () => {
   }, 60_000)
 
   it('keeps its snapshot inventory closed', async () => {
-    await assertFixtureInventory(SNAPSHOT_DIR, ['running.expected.md', 'settled.expected.md'])
+    await assertFixtureInventory(SNAPSHOT_DIR, ['running.expected.md', 'details.expected.md', 'settled.expected.md'])
   })
 })

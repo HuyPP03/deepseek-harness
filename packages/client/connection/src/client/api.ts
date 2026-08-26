@@ -20,7 +20,7 @@ export type {
   ConnectorAuthView, ConnectorConfigureFields, ConnectorServerView, ConnectorState, ConnectorView,
   McpApi, McpServerRow, McpServerSpec, McpServerStatus, McpStdioServerSpec, McpStreamableHttpServerSpec, McpToolRow,
   SubagentsApi, SubagentAddress, SubagentCatalog, SubagentListEntry, SubagentPromptReceipt,
-  JobView,
+  JobsApi, JobLogView, JobView,
 } from '@deepseek-ai/dsh-host-apiproxy/api'
 export type { ToolCallView, ToolResultView } from '@deepseek-ai/dsh-tools/presentation'
 export type {
@@ -31,6 +31,7 @@ export type {
 // subject); re-exported here so connection consumers keep one contract
 // entry point.
 export {
+  JOB_LOG_WIRE_TAIL_BYTES,
   RpcId,
   SESSION_SEARCH_RESULT_LIMIT,
   transportError,

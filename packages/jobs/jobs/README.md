@@ -9,6 +9,7 @@ The background job registry contract (`ctx.jobs`). The abstract `JobRegistry` an
 - `start(spec): JobId` validates the attached controller, spec, exact live owner, optional positive `outputLimitBytes`, and any provider-owned admission policy before calling the producer's `run()` once. A preflight rejection or starter throw leaves no job id or registered work; successful return commits without another failable step.
 - `get(id, caller?)` and `list(caller?)` return non-consuming snapshots. Listing includes only caller-owned and unowned jobs.
 - `read(id, caller?)` consumes the single cursor for stream jobs and reads terminal output idempotently for final-output jobs.
+- `log(id, caller?)` is the human-surface read (the browser's job details panel): it returns the retained output without advancing `read`'s cursor or marking the job reported, so the model's next read stays complete. Stream kinds return the retained tail (bounded by the implementation's retention); final-output kinds return empty while live and the terminal output once settled.
 - `kill(id, caller?, reason?)` invokes producer cancellation before changing status. A cancellation throw leaves the job running; success changes it to `stopping` and marks terminal delivery reported.
 - `wait(id, timeoutMs, caller?, signal?)` returns a terminal snapshot or the live snapshot at timeout. Aborting stops only the wait; settlement wins once it has committed terminal delivery to that waiter.
 - `onJobDone(listener)` observes each terminal record with the exact owner. Listener throws and rejections are contained; listener work is not awaited.
@@ -35,6 +36,6 @@ No direct invalidation; the named consumer owns any request-prefix changes.
 
 ## Known Limitations and Deferred Work
 
-- **Stream output has one consuming cursor** — independent observers need a cursor or snapshot API.
+- **Stream output has one consuming cursor** — `log()` serves a non-consuming human tail, but other independent observers still need a cursor or snapshot API.
 - **Foreground work cannot be promoted** — producers choose foreground or background before starting.
 - **The contract is in-process** — `JobStart.run()` passes callbacks and exact `Agent` objects; a durable or cross-process backend must reshape identity, restart, ownership, and observation semantics before it can implement this seam.

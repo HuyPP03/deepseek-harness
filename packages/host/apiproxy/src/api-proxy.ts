@@ -68,6 +68,7 @@ import type {
   QueuedInboxItem, SessionSummary, SettingsNamespaceView, SubagentAddress, JobView, ToolEventView,
   WorkspaceId, WorkspaceView,
 } from './api/index.ts'
+import { JOB_LOG_WIRE_TAIL_BYTES } from './api/index.ts'
 import {
   DEFAULT_SESSION_LOG_COMPRESSION_LEVEL,
   flushLiveSessionLog,
@@ -495,6 +496,37 @@ function jobViews(snapshots: readonly JobSnapshot[]): JobView[] {
     startedAt: job.startedAt,
     ...job.finishedAt === undefined ? {} : { finishedAt: job.finishedAt },
   }))
+}
+
+/**
+ * Tail-bound a retained log to a UTF-8 byte budget without splitting a
+ * character. The scan walks code units from the end, so the cost is the
+ * dropped head, not the retained tail.
+ * @param text - the full retained text.
+ * @param maxBytes - the wire budget in UTF-8 bytes.
+ * @returns the tail that fits and whether anything was dropped.
+ */
+function utf8Tail(text: string, maxBytes: number): { text: string; truncated: boolean } {
+  if (new TextEncoder().encode(text).length <= maxBytes) return { text, truncated: false }
+  let bytes = 0
+  let i = text.length
+  while (i > 0) {
+    const unit = text.charCodeAt(i - 1)
+    let charBytes: number
+    let span: number
+    if (unit >= 0xdc00 && unit <= 0xdfff && i >= 2
+      && text.charCodeAt(i - 2) >= 0xd800 && text.charCodeAt(i - 2) <= 0xdbff) {
+      charBytes = 4
+      span = 2
+    } else {
+      charBytes = unit < 0x80 ? 1 : unit < 0x800 ? 2 : 3
+      span = 1
+    }
+    if (bytes + charBytes > maxBytes) break
+    bytes += charBytes
+    i -= span
+  }
+  return { text: text.slice(i), truncated: true }
 }
 
 /**
@@ -3197,6 +3229,45 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
           })
         }
         return ok(request, { archivedSessionIds: [...ctx.workspaceRegistry.archivedSessionIds] })
+      },
+    },
+
+    jobs: {
+      log(request) {
+        const { sessionId, jobId } = request.payload
+        const jobs = ctx.get('jobs')
+        if (jobs === undefined) {
+          return Promise.resolve(err(request, {
+            code: 'internal',
+            message: 'the deployment composes no background-job registry (load @deepseek-ai/dsh-jobs-local)',
+            details: {},
+          }))
+        }
+        // Same caller resolution as the session/jobs frames: the registry fence
+        // rejects a foreign session the way job_output rejects a foreign read.
+        const caller = ctx.agents.get(sessionId)
+        let text: string
+        try {
+          text = jobs.log(jobId, caller).text
+        } catch (error: unknown) {
+          if (error instanceof Error && error.message === `unknown job ${jobId}`) {
+            return Promise.resolve(err(request, {
+              code: 'job-not-found',
+              message: `session "${sessionId}" has no background job under id "${jobId}"`,
+              details: { sessionId, jobId },
+            }))
+          }
+          if (error instanceof Error && error.message === `job ${jobId} belongs to another session`) {
+            return Promise.resolve(err(request, {
+              code: 'job-unauthorized',
+              message: `job "${jobId}" belongs to another session`,
+              details: { jobId },
+            }))
+          }
+          return Promise.resolve(err(request, { code: 'internal', message: 'job log read failed', details: {} }))
+        }
+        const tail = utf8Tail(text, JOB_LOG_WIRE_TAIL_BYTES)
+        return Promise.resolve(ok(request, { text: tail.text, truncated: tail.truncated }))
       },
     },
 

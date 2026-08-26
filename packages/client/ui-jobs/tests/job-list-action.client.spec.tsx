@@ -10,6 +10,7 @@ import { zh } from '../src/client/locales.ts'
 beforeEach(() => {
   vi.useFakeTimers()
   vi.setSystemTime(START)
+  openJob = vi.fn()
 })
 
 afterEach(() => {
@@ -21,6 +22,9 @@ afterEach(() => {
 const SESSION = 'session' as SessionId
 const START = 1_700_000_000_000
 const t: JobListActionProps['t'] = makeTranslate(zh)
+
+/** The injected open gesture; every fixture row click calls this mock. */
+let openJob: (jobId: string) => void
 
 function job(over: Partial<JobView> = {}): JobView {
   return {
@@ -46,18 +50,23 @@ function props(jobs: readonly JobView[] | undefined): JobListActionProps {
   function useSessions<T>(select: (snapshot: SessionListState) => T): T {
     return select(state)
   }
-  return { sessionId: SESSION, useSessions, t } as unknown as JobListActionProps
+  return {
+    sessionId: SESSION,
+    useSessions,
+    openJob,
+    t,
+  } as unknown as JobListActionProps
 }
 
 /**
- * Rows in render order as `[kind, label, status, duration]`. Adjacent spans
- * carry no whitespace between them, so the cells are read one element at a
- * time rather than split out of a flattened string.
+ * Rows in render order as `[kind, label, status, duration]`. The whole row is
+ * one button, so the cells are read off its children one element at a time
+ * rather than split out of a flattened string.
  */
 function rowCells(): string[][] {
   return within(screen.getByRole('list', { name: zh['list.aria'] }))
     .getAllByRole('listitem')
-    .map(row => [...row.children]
+    .map(row => [...row.querySelector('button')!.children]
       .map(cell => cell.textContent ?? '')
       .filter(text => text !== ''))
 }
@@ -131,6 +140,33 @@ describe('JobListAction rows', () => {
     fireEvent.click(screen.getByRole('button'))
     const words = rowCells().map(cells => cells[2])
     expect(new Set(words)).toEqual(new Set(['运行中', '正在停止', '已完成', '已取消', '已失败']))
+  })
+})
+
+describe('JobListAction row click', () => {
+  it('opens the details panel on the clicked job and closes the list', () => {
+    render(<JobListAction {...props([job({ id: 'bash-7' as JobView['id'], label: 'pnpm test' })])} />)
+    fireEvent.click(screen.getByRole('button'))
+    const row = screen.getByRole('button', { name: zh['row.aria'].replace('{label}', 'pnpm test').replace('{status}', zh['status.running']) })
+    fireEvent.click(row)
+    expect(openJob).toHaveBeenCalledWith('bash-7')
+    // The popover closed with the gesture: the list unmounted.
+    expect(screen.queryByRole('list', { name: zh['list.aria'] })).toBeNull()
+  })
+
+  it('addresses the clicked row, not the first one', () => {
+    render(<JobListAction {...props([
+      job({ id: 'bash-1' as JobView['id'], label: 'first' }),
+      job({ id: 'bash-2' as JobView['id'], label: 'second', status: 'completed', finishedAt: START + 1_000 }),
+    ])} />)
+    fireEvent.click(screen.getByRole('button'))
+    // Live rows sort first: the settled row is the second row button.
+    const rows = screen.getAllByRole('listitem')
+    fireEvent.click(rows[1]!.querySelector('button')!)
+    expect(openJob).toHaveBeenCalledTimes(1)
+    expect(openJob).toHaveBeenCalledWith('bash-2')
+    // The popover closed with the gesture: the list unmounted.
+    expect(screen.queryByRole('list', { name: zh['list.aria'] })).toBeNull()
   })
 })
 

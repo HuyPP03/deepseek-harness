@@ -70,9 +70,11 @@ export function DetailsPanel({ useSession, useSessions, sessionId, useStore, ren
   const sessionCwd = useSessions(list => list.byId[sessionId]?.cwd)
   const filePath = selection?.filePath
   const browseDir = selection?.browse
+  const jobId = selection?.jobId
   const isFileSelection = filePath !== undefined
   const isBrowseSelection = !isFileSelection && browseDir !== undefined
-  const callId = isFileSelection || isBrowseSelection ? undefined : selection?.callId
+  const isJobSelection = !isFileSelection && !isBrowseSelection && jobId !== undefined
+  const callId = isFileSelection || isBrowseSelection || isJobSelection ? undefined : selection?.callId
   // materialFor builds a fresh wrapper; shallowEqual short-circuits on its
   // stable members (result node reference rides the snapshot's structural sharing).
   const material = useSession(
@@ -84,7 +86,9 @@ export function DetailsPanel({ useSession, useSessions, sessionId, useStore, ren
       ? basenameOf(filePath)
       : isBrowseSelection
         ? t('details.filesTitle')
-        : material?.name ?? selection.toolName ?? t('details.title')
+        : isJobSelection
+          ? t('details.jobTitle')
+          : material?.name ?? selection.toolName ?? t('details.title')
 
   return (
     <div className={css.root}>
@@ -126,38 +130,49 @@ export function DetailsPanel({ useSession, useSessions, sessionId, useStore, ren
                   })}
                 </Fragment>
               )
-              : callId === undefined
-                ? <div className={css.empty}>{t('details.empty')}</div>
-                : material === null
-                  ? <div className={css.empty}>{t('details.notInWindow')}</div>
-                  : (
-                    <>
-                      {material.argsRaw !== null && (
+              : isJobSelection
+                ? (
+                  // Keyed by the selected job: the log seat owns per-job
+                  // polling and scroll state, which React would otherwise
+                  // carry into the next selection.
+                  <Fragment key={jobId}>
+                    {renderSlot('conversation.details.job', { jobId }, {
+                      fallback: <div className={css.empty}>{t('details.jobUnavailable')}</div>,
+                    })}
+                  </Fragment>
+                )
+                : callId === undefined
+                  ? <div className={css.empty}>{t('details.empty')}</div>
+                  : material === null
+                    ? <div className={css.empty}>{t('details.notInWindow')}</div>
+                    : (
+                      <>
+                        {material.argsRaw !== null && (
+                          <section className={css.section}>
+                            <div className={css.sectionLabel}>{t('details.input')}</div>
+                            <CodeBlock code={pretty(material.argsRaw)} lang="json" copyLabel={t('copy')} copiedLabel={t('copied')} />
+                          </section>
+                        )}
                         <section className={css.section}>
-                          <div className={css.sectionLabel}>{t('details.input')}</div>
-                          <CodeBlock code={pretty(material.argsRaw)} lang="json" copyLabel={t('copy')} copiedLabel={t('copied')} />
+                          <div className={css.sectionLabel}>{t('details.output')}</div>
+                          {/* Keyed by the selected call: the body owns per-call view
+                              state (the terminal card's expand and copy), which React
+                              would otherwise carry into the next selection because the
+                              panel does not unmount between calls. */}
+                          <Fragment key={callId}>
+                            {renderSlot('conversation.details.tool', { block: material.block, cwd: sessionCwd }, {
+                              fallback: 'kind' in material.block
+                                ? (
+                                  <pre className={css.code} data-error={material.block.isError || undefined}>
+                                    {rawResultText(material.block)}
+                                  </pre>
+                                )
+                                : <div className={css.empty}>{t('details.running')}</div>,
+                            })}
+                          </Fragment>
                         </section>
-                      )}
-                      <section className={css.section}>
-                        <div className={css.sectionLabel}>{t('details.output')}</div>
-                        {/* Keyed by the selected call: the body owns per-call view
-                            state (the terminal card's expand and copy), which React
-                            would otherwise carry into the next selection because the
-                            panel does not unmount between calls. */}
-                        <Fragment key={callId}>
-                          {renderSlot('conversation.details.tool', { block: material.block, cwd: sessionCwd }, {
-                            fallback: 'kind' in material.block
-                              ? (
-                                <pre className={css.code} data-error={material.block.isError || undefined}>
-                                  {rawResultText(material.block)}
-                                </pre>
-                              )
-                              : <div className={css.empty}>{t('details.running')}</div>,
-                          })}
-                        </Fragment>
-                      </section>
-                    </>
-                  )}
+                      </>
+                    )}
       </div>
     </div>
   )

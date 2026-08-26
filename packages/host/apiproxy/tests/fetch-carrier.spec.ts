@@ -140,6 +140,11 @@ function fakeApi(overrides: Partial<{ muxFrames: MuxFrame[]; hostFrames: HostFra
         return { rpcId: request.rpcId, result: { ok: true, value: { accepted: true as const } } }
       },
     },
+    jobs: {
+      async log(request) {
+        return { rpcId: request.rpcId, result: { ok: true, value: { text: 'scripted log', truncated: false } } }
+      },
+    },
     host: {
       async describe(request) {
         return {
@@ -533,6 +538,12 @@ describe('unary round trip (handler ⇄ client, no network)', () => {
         truncated: false,
       },
     })
+  })
+
+  it('round-trips jobs.log through the wire form', async () => {
+    const c = client()
+    const log = await c.jobs.log({ sessionId: 's' as never, jobId: 'bash-1' as never })
+    expect(log.result).toEqual({ ok: true, value: { text: 'scripted log', truncated: false } })
   })
 
   it('lets host.pickDirectory finish after the 30-second default unary deadline', async () => {

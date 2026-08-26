@@ -22,6 +22,8 @@ Think 行默认保持折叠，并在不展开思维链的情况下暴露实时�
 
 聊天视图保留工具的消息流位置，但委托其展示。每个已排序的 `tool-call` Conversation Node 都通过 `conversation.chat.node` 的同名 key 分发；详情壳层则通过 `conversation.details.tool` 传递当前选中的调用。组装后的 Web bundle 为该 Chat Node key 注册 [`ui-tool`](../ui-tool/README.md)，由后者渲染运行时已投影的递归 root/child 树，并负责按名称分发、通用展示和 render-intent 卡片；只有详情席位会在该 renderer 缺席时保留 raw-result fallback。
 
+详情面板从每会话聊天存储读取其 `SelectionTarget`，并对每个选择恰好渲染一个席位，以被选中的 id 为键，使占位者自身的状态在目标之间重置：一个工具调用（`conversation.details.tool`）、一个文件（`conversation.details.file`）、一次浏览（`conversation.details.files`），或一个后台任务——一个不带 `callId`、携带注册表签发 `jobId` 的目标，坐在 `conversation.details.job` 上，由 [`ui-jobs`](../ui-jobs/README.md) 占据，后者通过连接的 `jobs.log` 单射自行读取日志。面板自身不持有任何任务数据；早于某个席位字段而持久化的目标会就该字段重新水化为一个空操作选择。
+
 聊天流会将跨重试轮次连续出现的模型重试节点投影为一个稳定的弱化状态行，并用最新一次尝试更新该行；每个重试事件仍保留在运行时快照与会话日志中。前端倒计时以客户端收到事件的时刻为计划延迟的起点，避免 Host 与浏览器的时钟偏差；剩余时间向上取整到秒，且下限为 1 秒。最近一次尚未完成的重试会显示从左到右的文字渐变动画。后续轮次事实用于区分已开始的尝试与在退避期间取消的尝试，Host 的 running 位只控制实时动画；随后该行会显示静态的已完成或已取消标签。normal 策略行显示有限重试上限；always 策略行显示 `∞`。激活该行会显示最近一次重试的精确延迟和失败消息。客户端运行时会在相应重试节点到达前移除每个失败步骤的流式输出尾部；后续某次尝试成功后，该状态仍保持可见。未进入重试的终态失败会在其轮次边界渲染为持久的内联状态，展示适合显示的持久消息与可选错误码，但不会提供 Host 无法兑现的操作；AUTH 文案绝不会回显提供方给出的凭据片段。
 
 审批通过本包声明的链条接管编辑器：`ApprovalPanel` 注册为按选择器路由的 `'conversation.composer'` 配置项（ui-user-questions 模式），在审批等待未决期间取代 InputBar 占据编辑器（琥珀色条、理由标题、来自运行中调用参数的配对命令行、一次性的拒绝／允许）。`contract/slots.ts` 中的 `PendingApproval` 领域面在运行时 `PendingWait` 载体之上拥有 wire 编码——带审计关联的 `ApprovalResponsePayload` 值；广播的 `approval/resolved` 帧使等待落定并恢复编辑器。运行时 manager 会将所有审批或问题等待通过 `SessionSummary.pendingInteraction` 投影出来，未实例化的会话也不例外；`ui-workspace` 负责其侧边栏呈现。未决等待完全离开消息流：问题（ui-user-questions）与审批（ApprovalPanel）都经编辑器接管作答，不再保留只读占位卡。编辑器底行的 Access 席位挂载 `PermissionSelect`，由 host 计算的 `permissions` 投影经标准工具包 `useProjection` 供数（key 缺席即隐藏 chip）；chip 打开 Menu 原语下拉，其中 kebab-case 预设名渲染为 Title Case 标签。聊天会话（`agentPreset: 'chat'`）运行固定的 read-only 预设，该席位对其不渲染——host 同样会拒绝切换。普通安全预设会立即经输入栏注入的 `command` 回调提交 `/permission <preset>`，而 `danger-full-access` 在界面中显示为 `Full access`，选择后先打开页面内的 Modal 风险确认。用户勾选确认项前启用按钮始终不可用；取消、Escape、关闭按钮与点击遮罩都不会提交命令。
@@ -57,7 +59,7 @@ Host 带 placement 的 `session/queue` 快照也会携带待处理 steering。Qu
 ## 已知限制与暂缓事项
 
 - **统计行的回退折算只覆盖窗口内消息流**：未组合 `sessionStats` 投影单元的装配中，所有数字由快照的 assistant `timing` 与工具 call/result 配对折算，落在已加载事件窗口之外的节点（更早的历史）不计入，数字随加载页数增长。
-- **详情面板是只读投影**：可从聊天中的工具调用行或产物文件行（`openDetails`）打开，也可从会话标题栏的“会话文件”动作（浏览模式）打开，后者经由本包提供的 `detailsPanel` 服务跨插件抵达——这是认可的跨插件手势通道。工具席位没有 Input/Output/Metadata 切换、Prev/Next 步进，也没有 trajectory 深链接。
+- **详情面板是只读投影**：可从聊天中的工具调用行或产物文件行（`openDetails`）、会话标题栏的“会话文件”动作（浏览模式）以及后台任务行（任务模式）打开，后两者经由本包提供的 `detailsPanel` 服务跨插件抵达——这是认可的跨插件手势通道。工具席位没有 Input/Output/Metadata 切换、Prev/Next 步进，也没有 trajectory 深链接。
 - **assistant 逐消息分页是预留 slot**：设计中已有图稿，尚未实现。已定稿的内容 IconActions 行（复制／时钟／分支）只挂在每个已结束轮次中最后一条带 text 内容的 assistant 下；轮次中间的叙述、纯 Think 节点，以及仍在产出步骤的轮次里的所有节点都不带 chrome。除非该消息同时也是已完成轮次的最后一个 transcript 节点，否则分支保持禁用；启用后，它会 fork 到该轮次末尾，在 client 端递增继承标题并打开子会话。fork 或改名失败时源会话保持选中（[决策](../../../.agents/notes/implemented/bug-fix/2026-08-02-message-fork-actions-require-completed-turn-tail.md)）。
 - **已发送的 user 消息无法编辑**：user 气泡保留时钟和复制；分支只存在于 assistant 回答之下（[决策](../../../.agents/notes/implemented/simplification/2026-08-06-user-bubbles-drop-the-branch-action.md)）。编辑功能要与其背后的能力一起回归：既需要针对已定稿 user 消息的 client 变更，也需要 host 侧对已经消费过它的轮次给出行为（[决策](../../../.agents/notes/implemented/simplification/2026-07-31-drop-user-message-edit-stub.md)）。
 - **others 工具行的闪光图标是手绘近似版本**：无法在本地导出设计字形的矢量几何；等到存在精确导出后再将其提升到 ui-primitives。

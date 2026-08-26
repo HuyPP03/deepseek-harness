@@ -37,6 +37,12 @@ interface CommandDefinition {
    * that payload in the session log.
    */
   readonly recordInput?: boolean
+  /**
+   * Hide the command from a provider chat's slash menu (a session whose agent
+   * runs a connector preset carries no code workspace). Advertised on the
+   * descriptor; the host still executes a typed line.
+   */
+  readonly providerHidden?: boolean
   /** Execute against the receiving agent without sending the command to the model. */
   readonly handler: (invocation: CommandInvocation) => CommandResult | Promise<CommandResult>
 }
@@ -87,6 +93,13 @@ interface CommandDescriptor {
   readonly description: string
   /** Optional free-form input hint advertised to capable clients. */
   readonly input?: CommandInputDescriptor
+  /**
+   * Whether the command is hidden from a provider chat's slash menu: a session
+   * whose agent runs a connector preset carries no code workspace, so
+   * workspace-oriented commands stay out of its menu (a typed line still
+   * reaches the host). Absent = shown everywhere.
+   */
+  readonly providerHidden?: boolean
 }
 ```
 
@@ -161,7 +174,7 @@ find(agent: Agent, name: string): CommandDefinition | undefined
 
 Types: [Agent](core.md)
 
-Source: [`packages/interaction/commands/src/index.ts:225`](../../packages/interaction/commands/src/index.ts)
+Source: [`packages/interaction/commands/src/index.ts:233`](../../packages/interaction/commands/src/index.ts)
 
 <a id="commands-events"></a>
 
@@ -183,5 +196,5 @@ A command was registered or unregistered. This is an unfiltered registry notific
 'commands/change'(): void
 ```
 
-Source: [`packages/interaction/commands/src/types.ts:72`](../../packages/interaction/commands/src/types.ts)
+Source: [`packages/interaction/commands/src/types.ts:79`](../../packages/interaction/commands/src/types.ts)
 <!-- END GENERATED cordis-surface -->
