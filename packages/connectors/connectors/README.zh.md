@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-连接器目录与状态机：预定义连接（Notion、GitHub、Atlassian、Slack、Google、Microsoft 365 等）与用户自定义连接器，每个都通过 [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md) 挂载一个或多个 MCP 服务器。
+连接器目录与状态机：预定义连接（Notion、GitHub、Figma、Atlassian、Slack、Google、Microsoft 365 等）与用户自定义连接器，每个都通过 [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md) 挂载一个或多个 MCP 服务器。
 
 一个连接器是一份清单：它要挂载的 MCP 服务器、如何为它们认证，以及带它的会话要组合的 agent 预设。状态**在读取时派生**，来源是权威 seam——凭据存储、OAuth 令牌存储、实时 MCP 注册表——因此连接器不可能声称 seam 没有显示的状态。
 

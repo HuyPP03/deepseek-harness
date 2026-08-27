@@ -12,4 +12,5 @@
   - menuitem "Slack mode Read and post Slack messages and search the workspace through the connected Slack MCP tools."
   - menuitem "Atlassian mode Work with Jira issues and Confluence pages through the connected Atlassian MCP tools."
   - menuitem "Microsoft 365 mode Work with Outlook, OneDrive, and Teams through the connected Microsoft 365 MCP tools."
+  - menuitem "Figma mode Read Figma design files, node layout, components, and assets through the connected Figma MCP tools."
   - menuitem "Custom connection mode Work with a user-defined external service through its connected MCP tools."

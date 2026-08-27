@@ -135,6 +135,16 @@
         - img
         - text: 复制
     - listitem:
+      - 'button "设为默认: Figma mode"':
+        - text: Figma mode 内置 Read Figma design files, node layout, components, and assets through the connected Figma MCP tools.
+        - code: figma
+      - 'button "查看: Figma mode"':
+        - img
+        - text: 查看
+      - 'button "复制: Figma mode"':
+        - img
+        - text: 复制
+    - listitem:
       - 'button "设为默认: Custom connection mode"':
         - text: Custom connection mode 内置 Work with a user-defined external service through its connected MCP tools.
         - code: custom

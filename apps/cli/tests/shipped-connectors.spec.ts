@@ -51,7 +51,7 @@ describe('shipped connector catalog', () => {
       const connectors = ctx.get('connectors')
       if (connectors === undefined) throw new Error('web profile did not compose the connectors service')
       const views = await connectors.list()
-      expect(views.map(view => view.id)).toEqual(['atlas', 'github', 'google', 'm365', 'notion', 'slack'])
+      expect(views.map(view => view.id)).toEqual(['atlas', 'figma', 'github', 'google', 'm365', 'notion', 'slack'])
       for (const view of views) expect(view.state).toBe('unconfigured')
       // The token methods expose their reference names (public manifest data);
       // the multi-reference slack pair is the live case for the per-ref dialog.

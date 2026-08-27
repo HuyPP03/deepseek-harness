@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-The connector catalog and state machine: predefined connections (Notion, GitHub, Atlassian, Slack, Google, Microsoft 365, …) and user-authored custom connectors, each mounting one or more MCP servers through [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md).
+The connector catalog and state machine: predefined connections (Notion, GitHub, Figma, Atlassian, Slack, Google, Microsoft 365, …) and user-authored custom connectors, each mounting one or more MCP servers through [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md).
 
 A connector is a manifest: the MCP server(s) it mounts, how it authenticates them, and the agent preset a session with it composes with. State is **derived at read time** from the authoritative seams — the credential store, the OAuth token store, the live MCP registry — so a connector can never claim a state the seams do not show.
 
