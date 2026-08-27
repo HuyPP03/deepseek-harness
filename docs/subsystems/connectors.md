@@ -157,7 +157,7 @@ async addCustom(spec: AddCustomSpec): Promise<string>
 async removeCustom(id: string): Promise<void>
 ```
 
-Source: [`packages/connectors/connectors/src/index.ts:244`](../../packages/connectors/connectors/src/index.ts)
+Source: [`packages/connectors/connectors/src/index.ts:246`](../../packages/connectors/connectors/src/index.ts)
 
 <a id="ctxoauthtokens--oauthtokenstore"></a>
 
@@ -224,7 +224,7 @@ A connector's derived state changed as the result of a connector operation (conf
 'connector/state'(connectorId: string, state: ConnectorState): void
 ```
 
-Source: [`packages/connectors/connectors/src/types.ts:305`](../../packages/connectors/connectors/src/types.ts)
+Source: [`packages/connectors/connectors/src/types.ts:349`](../../packages/connectors/connectors/src/types.ts)
 
 <a id="oauth-tokens-events"></a>
 

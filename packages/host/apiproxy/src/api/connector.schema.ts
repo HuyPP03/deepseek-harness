@@ -16,7 +16,7 @@ import type {
   ConnectorConfigureFields,
   ConnectorServerView,
   ConnectorView,
-} from '@deepseek-ai/dsh-connectors'
+} from '@deepseek-ai/dsh-connectors/types'
 
 /** ConnectorView.servers entry: the live state of one declared server. */
 export const connectorServerViewSchema = z.object({

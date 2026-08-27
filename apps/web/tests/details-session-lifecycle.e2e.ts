@@ -12,7 +12,7 @@ import {
   fixtureUserPrompts, launchWebScaffold, seedSession, watchConsole, webSnapshotMode,
   type WebScaffold,
 } from './scaffold.ts'
-import { connectFreshWorkspace, newEnglishPage, saveFailureShot } from './support.ts'
+import { connectFreshWorkspace, newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/details-session-lifecycle', import.meta.url))
 const HANDLES_EXPECTED = join(SNAPSHOT_DIR, 'handles.expected.md')
@@ -81,6 +81,7 @@ describe.skipIf(MODE === 'record')('web e2e: details panel follows the current S
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await appFrame(page).waitFor({ timeout: 30_000 })
     await connectFreshWorkspace(page, scaffold.workspaceCwd)
+    await openChatsTab(page)
   }, 120_000)
 
   afterAll(async () => {

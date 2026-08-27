@@ -15,7 +15,7 @@ import {
   webSnapshotMode,
   type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/markdown-cjk-strong', import.meta.url))
 const UI_EXPECTED = fileURLToPath(new URL('./snapshots/markdown-cjk-strong/ui.expected.md', import.meta.url))
@@ -98,6 +98,7 @@ describe('web e2e: CJK-adjacent Markdown strong emphasis', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
   }, 120_000)
 
   afterAll(async () => {

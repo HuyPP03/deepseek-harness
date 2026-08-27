@@ -31,6 +31,19 @@ export async function newEnglishPage(browser: Browser, height = 1000): Promise<P
   return await browser.newPage({ viewport: { width: 1680, height }, locale: 'en-US' })
 }
 
+/**
+ * Select the sidebar's Chats tab so the flat, workspace-less session list is
+ * visible; the shell now opens on the workspaces tab.
+ * @param page - A loaded web page.
+ */
+export async function openChatsTab(page: Page): Promise<void> {
+  const tab = page.getByRole('tab', { name: 'Chats' })
+  if ((await tab.getAttribute('aria-selected')) !== 'true') {
+    await tab.click()
+  }
+  await page.getByRole('tree', { name: 'Chats' }).waitFor({ timeout: 15_000 })
+}
+
 /** Fail loud on a stale checkout instead of testing yesterday's bundle. */
 export function requireDist(): void {
   if (!existsSync(DIST_INDEX)) {

@@ -89,7 +89,7 @@ export function apply(ctx: ClientContext): void {
         return
       }
       connectorPresetIds.set(provided.getSnapshot())
-      offSource = provided.subscribe(() => connectorPresetIds.set(provided.getSnapshot()))
+      offSource = provided.subscribe(() => { connectorPresetIds.set(provided.getSnapshot()) })
     }
     bind()
     const offService = ctx.on('internal/service', (name) => {

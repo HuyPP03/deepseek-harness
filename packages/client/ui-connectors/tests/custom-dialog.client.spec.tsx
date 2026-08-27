@@ -89,7 +89,7 @@ function mountRow(wire: ConnectorDouble) {
 describe('custom connector dialog', () => {
   it('opens from the New connector control over an empty stdio draft', async () => {
     const controller = mountRow(baseWire([view()]))
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByText('New custom connector')).toBeTruthy()
@@ -101,7 +101,7 @@ describe('custom connector dialog', () => {
   it('saves a stdio draft through connector.add and re-lists', async () => {
     const wire = baseWire([view()])
     const controller = mountRow(wire)
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'Acme API' } })
@@ -109,16 +109,16 @@ describe('custom connector dialog', () => {
     fireEvent.change(within(dialog).getByPlaceholderText('npx'), { target: { value: 'npx' } })
     fireEvent.change(within(dialog).getByPlaceholderText('-y, @example/mcp-server'), { target: { value: '-y, @acme/mcp' } })
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
-    await waitFor(() => expect(wire.add).toHaveBeenCalledWith({
+    await waitFor(() => { expect(wire.add).toHaveBeenCalledWith({
       spec: { name: 'Acme API', id: 'acme', transport: 'stdio', command: 'npx', args: ['-y', '@acme/mcp'] },
-    }))
-    await waitFor(() => expect((wire.list as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBeGreaterThanOrEqual(2))
+    }) })
+    await waitFor(() => { expect((wire.list as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBeGreaterThanOrEqual(2) })
   })
 
   it('switches to streamable-http and saves the url with the header flag', async () => {
     const wire = baseWire([view()])
     const controller = mountRow(wire)
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'Remote' } })
@@ -136,40 +136,40 @@ describe('custom connector dialog', () => {
     fireEvent.click(headerFlag)
     fireEvent.click(headerFlag)
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
-    await waitFor(() => expect(wire.add).toHaveBeenCalledWith({
+    await waitFor(() => { expect(wire.add).toHaveBeenCalledWith({
       spec: {
         name: 'Remote', transport: 'streamable-http', url: 'https://mcp.example.com',
         tokenVar: 'AUTHORIZATION', tokenVarIsHeader: true,
       },
-    }))
+    }) })
   })
 
   it('keeps the draft and shows the failure when the host rejects the add', async () => {
     const wire = baseWire([view()])
-    wire.add = vi.fn(async () => err('name required')) as unknown as typeof wire.add
+    wire.add = vi.fn(async () => err('name required'))
     const controller = mountRow(wire)
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'X' } })
     fireEvent.change(within(dialog).getByPlaceholderText('npx'), { target: { value: 'npx' } })
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
-    await waitFor(() => expect(within(dialog).getByText('name required')).toBeTruthy())
+    await waitFor(() => { expect(within(dialog).getByText('name required')).toBeTruthy() })
     expect(controller.store.getSnapshot().customDialog).not.toBeNull()
   })
 
   it('removes a custom row through the Remove button and re-lists', async () => {
     const wire = baseWire([view()])
     const controller = mountRow(wire)
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
-    await waitFor(() => expect(wire.remove).toHaveBeenCalledWith({ id: 'my-svc' }))
-    await waitFor(() => expect((wire.list as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBeGreaterThanOrEqual(2))
+    await waitFor(() => { expect(wire.remove).toHaveBeenCalledWith({ id: 'my-svc' }) })
+    await waitFor(() => { expect((wire.list as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBeGreaterThanOrEqual(2) })
   })
 
   it('offers Remove only on custom rows', async () => {
     const controller = mountRow(baseWire([view(), view({ id: 'github', name: 'GitHub', custom: false })]))
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     expect(screen.getAllByRole('button', { name: 'Remove' })).toHaveLength(1)
   })
 })

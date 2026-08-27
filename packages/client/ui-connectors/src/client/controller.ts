@@ -412,7 +412,7 @@ export class ConnectorsSectionController {
     const { customDialog } = this.state
     if (customDialog === null || customDialog.saving) return
     const d = customDialog.drafts
-    const transport = (d.transport === 'streamable-http' ? 'streamable-http' : 'stdio') as 'stdio' | 'streamable-http'
+    const transport: 'stdio' | 'streamable-http' = d.transport === 'streamable-http' ? 'streamable-http' : 'stdio'
     const args = d.args.split(',').map(a => a.trim()).filter(a => a !== '')
     const tokenVar = d.tokenVar.trim()
     this.set({ customDialog: { ...customDialog, saving: true, error: null } })

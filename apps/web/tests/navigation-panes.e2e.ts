@@ -19,7 +19,7 @@ import {
   assertFixtureInventory, captureStableAria, compareOrRefreshGolden, fixtureUserPrompts,
   launchWebScaffold, recordFixture, seedSession, watchConsole, webSnapshotMode, type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/navigation-panes', import.meta.url))
 const SEED = join(SNAPSHOT_DIR, 'seed.jsonl')
@@ -125,6 +125,7 @@ describe('web e2e: navigation & panes over a rich seeded session', () => {
       assertBaselineSucceeded(workspaceResponse, 'workspace.list'),
     ])
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
     // The frame mounts before the asynchronous session-list baseline lands.
     // Search must target the settled seeded row, not the startup input that
     // the ready projection replaces (the compact layout dropped group session
@@ -342,6 +343,7 @@ describe('web e2e: navigation & panes over a rich seeded session', () => {
       assertBaselineSucceeded(observerSessionResponse, 'observer session.list'),
       assertBaselineSucceeded(observerWorkspaceResponse, 'observer workspace.list'),
     ])
+    await openChatsTab(observer)
     await observer.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first().waitFor({ timeout: 30_000 })
     await ensureSeedOpen(observer)
 

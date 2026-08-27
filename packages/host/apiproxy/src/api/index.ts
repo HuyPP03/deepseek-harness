@@ -73,7 +73,7 @@ export type { CredentialsApi, CredentialView } from './credentials.ts'
 export type { ConnectorApi } from './connector.ts'
 export type {
   AddCustomSpec, ConnectorAuthView, ConnectorConfigureFields, ConnectorServerView, ConnectorState, ConnectorView,
-} from '@deepseek-ai/dsh-connectors'
+} from '@deepseek-ai/dsh-connectors/types'
 export type { ConfigurableProviderView, DiscoveredModelView, LlmApi } from './llm.ts'
 export type { McpApi, McpServerRow, McpServerSpec, McpServerStatus, McpStdioServerSpec, McpStreamableHttpServerSpec, McpToolRow } from './mcp.ts'
 export type { DownloadsApi } from './downloads.ts'

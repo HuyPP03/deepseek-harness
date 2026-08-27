@@ -74,6 +74,76 @@
       - 'button "复制: 创造模式"':
         - img
         - text: 复制
+    - listitem:
+      - 'button "设为默认: Notion mode"':
+        - text: Notion mode 内置 Read and write Notion pages, databases, and comments through the connected Notion MCP tools.
+        - code: notion
+      - 'button "查看: Notion mode"':
+        - img
+        - text: 查看
+      - 'button "复制: Notion mode"':
+        - img
+        - text: 复制
+    - listitem:
+      - 'button "设为默认: GitHub mode"':
+        - text: GitHub mode 内置 Work with repositories, issues, pull requests, and code search through the connected GitHub MCP tools.
+        - code: github
+      - 'button "查看: GitHub mode"':
+        - img
+        - text: 查看
+      - 'button "复制: GitHub mode"':
+        - img
+        - text: 复制
+    - listitem:
+      - 'button "设为默认: Google Workspace mode"':
+        - text: Google Workspace mode 内置 Read Gmail and Google Drive through the connected Google MCP tools.
+        - code: google
+      - 'button "查看: Google Workspace mode"':
+        - img
+        - text: 查看
+      - 'button "复制: Google Workspace mode"':
+        - img
+        - text: 复制
+    - listitem:
+      - 'button "设为默认: Slack mode"':
+        - text: Slack mode 内置 Read and post Slack messages and search the workspace through the connected Slack MCP tools.
+        - code: slack
+      - 'button "查看: Slack mode"':
+        - img
+        - text: 查看
+      - 'button "复制: Slack mode"':
+        - img
+        - text: 复制
+    - listitem:
+      - 'button "设为默认: Atlassian mode"':
+        - text: Atlassian mode 内置 Work with Jira issues and Confluence pages through the connected Atlassian MCP tools.
+        - code: atlas
+      - 'button "查看: Atlassian mode"':
+        - img
+        - text: 查看
+      - 'button "复制: Atlassian mode"':
+        - img
+        - text: 复制
+    - listitem:
+      - 'button "设为默认: Microsoft 365 mode"':
+        - text: Microsoft 365 mode 内置 Work with Outlook, OneDrive, and Teams through the connected Microsoft 365 MCP tools.
+        - code: m365
+      - 'button "查看: Microsoft 365 mode"':
+        - img
+        - text: 查看
+      - 'button "复制: Microsoft 365 mode"':
+        - img
+        - text: 复制
+    - listitem:
+      - 'button "设为默认: Custom connection mode"':
+        - text: Custom connection mode 内置 Work with a user-defined external service through its connected MCP tools.
+        - code: custom
+      - 'button "查看: Custom connection mode"':
+        - img
+        - text: 查看
+      - 'button "复制: Custom connection mode"':
+        - img
+        - text: 复制
   - heading "自定义" [level=3]
   - button "用「创造模式」创作自定义预设":
     - img

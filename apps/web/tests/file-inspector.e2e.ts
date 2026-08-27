@@ -19,7 +19,7 @@ import {
   chatCwdFor, launchWebScaffold, seedSession, watchConsole, webSnapshotMode,
   type WebScaffold,
 } from './scaffold.ts'
-import { connectFreshWorkspace, newEnglishPage, saveFailureShot } from './support.ts'
+import { connectFreshWorkspace, newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const CODE_FIXTURE = fileURLToPath(new URL('./snapshots/seeded-history/seed.jsonl', import.meta.url))
 const PREVIEW_FIXTURE = fileURLToPath(new URL('./snapshots/file-inspector-preview/seed.jsonl', import.meta.url))
@@ -56,6 +56,7 @@ async function bootSeeded(fixture: string, id: string, seedWorkspace: (cwd: stri
   await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
   await appFrame(page).waitFor({ timeout: 30_000 })
   await connectFreshWorkspace(page, scaffold.workspaceCwd)
+  await openChatsTab(page)
   return { scaffold, browser, page, tripwire }
 }
 
@@ -234,6 +235,7 @@ describe.skipIf(MODE === 'record')('web e2e: chat session artifacts', () => {
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await appFrame(page).waitFor({ timeout: 30_000 })
     await connectFreshWorkspace(page, scaffold.workspaceCwd)
+    await openChatsTab(page)
   }, 120_000)
 
   afterAll(async () => {

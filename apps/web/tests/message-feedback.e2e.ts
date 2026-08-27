@@ -11,7 +11,7 @@ import {
   acknowledgeReloadConnectionLoss, launchWebScaffold,
   seedSession, watchConsole, webSnapshotMode, type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 // Borrowed read-only: this scenario needs any settled assistant message to
 // address, not a new recording (message-actions / sidebar-scrollbar pattern).
@@ -34,6 +34,7 @@ describe('web e2e: durable per-message feedback', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
   }, 120_000)
 
   afterAll(async () => {
@@ -86,6 +87,7 @@ describe('web e2e: durable per-message feedback', () => {
     await page.reload({ waitUntil: 'load' })
     acknowledgeReloadConnectionLoss(tripwire, warningStart)
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
     await openSeededSession()
     await page.getByText('DONE', { exact: true }).waitFor({ timeout: 30_000 })
 

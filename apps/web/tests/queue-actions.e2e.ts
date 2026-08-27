@@ -39,6 +39,40 @@ function turnEndReasons(events: readonly SessionEvent[]): string[] {
   return events.flatMap(event => event.type === 'turn/end' ? [event.data.reason.kind] : [])
 }
 
+/**
+ * A viewport resize animates the column layout (sidebar collapse plus the
+ * dock cards re-centering), so the boxes keep moving for a couple of hundred
+ * milliseconds after setViewportSize resolves. Sample until every selector
+ * reports the same box on two consecutive reads before asserting.
+ * @param page - the loaded scenario page.
+ * @param selectors - boxes to settle, in assertion order.
+ * @returns the settled [x, y, width, height] tuple per selector, in order.
+ */
+async function settleBoxes<S extends readonly [string, ...string[]]>(
+  page: Page,
+  selectors: S,
+): Promise<{ readonly [K in keyof S]: readonly [number, number, number, number] }> {
+  const sample = async () => Promise.all(selectors.map(async (selector) => {
+    const box = await page.locator(selector).boundingBox()
+    if (box === null) throw new Error(`element ${selector} vanished while settling`)
+    return [box.x, box.y, box.width, box.height] as const
+  }))
+  let previous = await sample()
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    const next = await sample()
+    const settled = next.every((values, index) => {
+      const before = previous[index]
+      return before !== undefined && values.every((value, i) => before[i] === value)
+    })
+    if (settled) {
+      return next as { readonly [K in keyof S]: readonly [number, number, number, number] }
+    }
+    previous = next
+    await new Promise(resolveWait => setTimeout(resolveWait, 25))
+  }
+  throw new Error('dock panel geometry never settled after the viewport resize')
+}
+
 describe('web e2e: queue row actions', () => {
   let scaffold: WebScaffold | undefined
   let browser: Browser | undefined
@@ -112,15 +146,12 @@ describe('web e2e: queue row actions', () => {
     ).toBe(2)
 
     await page.setViewportSize({ width: 640, height: 1000 })
-    const queueBox = await page.locator('[data-queue-dock]').boundingBox()
-    const composerBox = await page.locator('[data-composer-card]').boundingBox()
-    expect(queueBox).not.toBeNull()
-    expect(composerBox).not.toBeNull()
-    expect(queueBox!.x).toBeGreaterThanOrEqual(composerBox!.x)
-    expect(queueBox!.x + queueBox!.width)
-      .toBeLessThanOrEqual(composerBox!.x + composerBox!.width)
-    const queueLeftInset = queueBox!.x - composerBox!.x
-    const queueRightInset = composerBox!.x + composerBox!.width - queueBox!.x - queueBox!.width
+    const [[queueX, , queueWidth], [composerX, , composerWidth]] =
+      await settleBoxes(page, ['[data-queue-dock]', '[data-composer-card]'])
+    expect(queueX).toBeGreaterThanOrEqual(composerX)
+    expect(queueX + queueWidth).toBeLessThanOrEqual(composerX + composerWidth)
+    const queueLeftInset = queueX - composerX
+    const queueRightInset = composerX + composerWidth - queueX - queueWidth
     const composerMetrics = await page.locator('[data-composer-card]').evaluate((element) => {
       const style = getComputedStyle(element)
       return {
@@ -228,19 +259,16 @@ describe('web e2e: queue row actions', () => {
     )
     await compareOrRefreshGolden(LAYOUT_EXPECTED, layoutSnapshot, MODE)
 
+    const PANEL_SELECTORS = ['[data-queue-dock] > div', '[data-testid="todo-panel"]', '[data-goal-bar] > div'] as const
+
     const expectAlignedContextPanels = async () => {
-      const queuePanelBox = await page.locator('[data-queue-dock] > div').boundingBox()
-      const todoBox = await page.locator('[data-testid="todo-panel"]').boundingBox()
-      const goalBox = await page.locator('[data-goal-bar] > div').boundingBox()
-      expect(queuePanelBox).not.toBeNull()
-      expect(todoBox).not.toBeNull()
-      expect(goalBox).not.toBeNull()
-      expect(todoBox!.y).toBeLessThan(goalBox!.y)
-      expect(goalBox!.y).toBeLessThan(queuePanelBox!.y)
-      expect(todoBox!.x).toBeCloseTo(goalBox!.x, 1)
-      expect(todoBox!.x).toBeCloseTo(queuePanelBox!.x, 1)
-      expect(todoBox!.width).toBeCloseTo(goalBox!.width, 1)
-      expect(todoBox!.width).toBeCloseTo(queuePanelBox!.width, 1)
+      const [queuePanelBox, todoBox, goalBox] = await settleBoxes(page, PANEL_SELECTORS)
+      expect(todoBox[1]).toBeLessThan(goalBox[1])
+      expect(goalBox[1]).toBeLessThan(queuePanelBox[1])
+      expect(todoBox[0]).toBeCloseTo(goalBox[0], 1)
+      expect(todoBox[0]).toBeCloseTo(queuePanelBox[0], 1)
+      expect(todoBox[2]).toBeCloseTo(goalBox[2], 1)
+      expect(todoBox[2]).toBeCloseTo(queuePanelBox[2], 1)
     }
     await expectAlignedContextPanels()
     await page.setViewportSize({ width: 640, height: 1000 })

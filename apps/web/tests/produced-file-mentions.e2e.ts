@@ -15,7 +15,7 @@ import type {} from '@deepseek-ai/dsh-session-title'
 import {
   launchWebScaffold, seedSession, watchConsole, webSnapshotMode, type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const MODE = webSnapshotMode()
 const SEED_ID = 'produced-file-mentions-web-e2e'
@@ -129,6 +129,7 @@ describe('web e2e: inline-code mentions of produced files', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
   }, 120_000)
 
   afterAll(async () => {

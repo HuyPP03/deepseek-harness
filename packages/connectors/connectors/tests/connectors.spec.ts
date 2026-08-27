@@ -358,6 +358,7 @@ describe('catalog and list', () => {
     expect(google?.auth).toEqual([
       {
         mode: 'oauth',
+        byoApp: true,
         configured: false,
         setupGuide: ['Create an OAuth client in Google Cloud.'],
         reauthHint: 'Personal accounts re-authenticate every 7 days.',
@@ -371,6 +372,8 @@ describe('catalog and list', () => {
     await mkdir(join(root, 'catalog'), { recursive: true })
     await writeFile(join(root, 'catalog', 'bad.yml'), 'id: Bad Id\nname: X\ndescription: X\npresetId: x\nworkspaceDirName: x\nservers: []\nauth: []\n')
     const ctx = new Context()
+    await ctx.plugin(SystemPrompt)
+    await ctx.plugin(ToolRuntime)
     const fiber = ctx.plugin(McpRegistry)
     fibers.push(fiber)
     await fiber
@@ -919,7 +922,9 @@ describe('override document validation', () => {
     const { ctx } = await boot({
       userDirFiles: [['google.json', JSON.stringify({ clientId: 'app.example', products: ['gmail'], orgMode: true, readOnly: false })]],
     })
-    expect(await stateOf(ctx, 'google')).toBe('unconfigured')
+    // The byoApp client id alone configures the OAuth method (P9), so the
+    // connector is configured and waiting on the auth flow, not unconfigured.
+    expect(await stateOf(ctx, 'google')).toBe('needs-auth')
   })
 })
 
@@ -1013,6 +1018,8 @@ describe('boot configuration edges', () => {
     const home = await tempDir('home')
     vi.stubEnv('DSH_HOME', home)
     const ctx = new Context()
+    await track(ctx.plugin(SystemPrompt))
+    await track(ctx.plugin(ToolRuntime))
     await track(ctx.plugin(McpRegistry))
     await track(ctx.plugin(McpManager, { mcpDir: join(home, '.mcp') }))
     await track(ctx.plugin(Connectors))
@@ -1020,6 +1027,8 @@ describe('boot configuration edges', () => {
 
     const root = await tempDir('no-catalog')
     const ctx2 = new Context()
+    await track(ctx2.plugin(SystemPrompt))
+    await track(ctx2.plugin(ToolRuntime))
     await track(ctx2.plugin(McpRegistry))
     await track(ctx2.plugin(McpManager, { mcpDir: join(root, '.mcp') }))
     await track(ctx2.plugin(Connectors, { catalogDir: join(root, 'missing'), userDir: join(root, 'user') }))
@@ -1031,6 +1040,8 @@ describe('boot configuration edges', () => {
     const catalog = join(root, 'catalog')
     await writeFile(catalog, 'not a dir')
     const ctx = new Context()
+    await track(ctx.plugin(SystemPrompt))
+    await track(ctx.plugin(ToolRuntime))
     await track(ctx.plugin(McpRegistry))
     await track(ctx.plugin(McpManager, { mcpDir: join(root, '.mcp') }))
     const fiber = ctx.plugin(Connectors, { catalogDir: catalog, userDir: join(root, 'user') })
@@ -1044,6 +1055,8 @@ describe('boot configuration edges', () => {
     const user = join(root, 'user')
     await writeFile(user, 'not a dir')
     const ctx = new Context()
+    await track(ctx.plugin(SystemPrompt))
+    await track(ctx.plugin(ToolRuntime))
     await track(ctx.plugin(McpRegistry))
     await track(ctx.plugin(McpManager, { mcpDir: join(root, '.mcp') }))
     const fiber = ctx.plugin(Connectors, { catalogDir: join(root, 'catalog'), userDir: user })
@@ -1184,6 +1197,8 @@ describe('user directory at boot', () => {
     await mkdir(userDir, { recursive: true, mode: 0o700 })
     await writeFile(join(userDir, 'custom-file.json'), custom, { mode: 0o600 })
     const ctx = new Context()
+    await ctx.plugin(SystemPrompt)
+    await ctx.plugin(ToolRuntime)
     const f1 = ctx.plugin(McpRegistry)
     fibers.push(f1)
     await f1

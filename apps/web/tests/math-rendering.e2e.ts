@@ -15,7 +15,7 @@ import {
   webSnapshotMode,
   type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/math-rendering', import.meta.url))
 const UI_EXPECTED = fileURLToPath(new URL('./snapshots/math-rendering/ui.expected.md', import.meta.url))
@@ -99,6 +99,7 @@ describe('web e2e: settled Markdown math rendering', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
   }, 120_000)
 
   afterAll(async () => {

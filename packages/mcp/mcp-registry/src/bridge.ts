@@ -165,7 +165,7 @@ export function createBridgeTools(faces: BridgeFaces): BridgeTools {
         return [{ type: 'text', text: text.length > 0 ? text : 'No MCP servers are connected.' }]
       },
     },
-    async execute(args: unknown, _exec: ToolRunContext): Promise<unknown> {
+    execute(args: unknown, _exec: ToolRunContext): Promise<unknown> {
       const server = isRecord(args) && typeof args.server === 'string' ? args.server : undefined
       const servers: ListServerEntry[] = faces.servers()
         .filter(view => server === undefined || view.serverName === server)
@@ -178,7 +178,7 @@ export function createBridgeTools(faces: BridgeFaces): BridgeTools {
           `unknown MCP server "${server}": the connected servers are ${faces.servers().map(view => view.serverName).join(', ') || '(none)'}`,
         )
       }
-      return { servers } satisfies ListValue
+      return Promise.resolve({ servers } satisfies ListValue)
     },
   }
 
@@ -217,18 +217,18 @@ export function createBridgeTools(faces: BridgeFaces): BridgeTools {
         }]
       },
     },
-    async execute(args: unknown, _exec: ToolRunContext): Promise<unknown> {
+    execute(args: unknown, _exec: ToolRunContext): Promise<unknown> {
       const name = isRecord(args) && typeof args.name === 'string' ? args.name : undefined
       if (name === undefined) throw new Error('mcp_describe: `name` is required')
       const definition = faces.target(name)
       if (definition === undefined) {
         throw new Error(`unknown tool "${name}": use mcp_list to see the registered MCP tools`)
       }
-      return {
+      return Promise.resolve({
         name: definition.name,
         description: definition.description,
         parameters: definition.parameters,
-      } satisfies DescribeValue
+      } satisfies DescribeValue)
     },
   }
 
@@ -282,7 +282,7 @@ export function createBridgeTools(faces: BridgeFaces): BridgeTools {
       if (!isRecord(value) || !Array.isArray(value.content)) {
         throw new Error(`${name} returned no model-visible content`)
       }
-      return value as unknown as CallValue
+      return value
     },
   }
 

@@ -73,10 +73,10 @@ interface InFlight {
  * success status, a device-code instruction, or an error.
  */
 interface LoginResult {
-  readonly success?: boolean
-  readonly status?: string
-  readonly error?: string
-  readonly message?: string
+  success?: boolean
+  status?: string
+  error?: string
+  message?: string
 }
 
 /**
@@ -89,12 +89,12 @@ interface LoginResult {
 function parseLoginResult(text: string): LoginResult {
   try {
     const parsed = JSON.parse(text) as Record<string, unknown>
-    const result: Record<string, unknown> = {}
+    const result: LoginResult = {}
     if (typeof parsed.success === 'boolean') result.success = parsed.success
     if (typeof parsed.status === 'string') result.status = parsed.status
     if (typeof parsed.error === 'string') result.error = parsed.error
     if (typeof parsed.message === 'string') result.message = parsed.message
-    return result as LoginResult
+    return result
   } catch {
     throw new Error(`device-flow: the login tool returned no parseable JSON (${text.slice(0, 80)})`)
   }
@@ -197,7 +197,7 @@ export class DeviceFlowEngine extends Service {
       started = {
         status: 'device-code',
         verificationUri: code.verificationUri,
-        ...(code.userCode !== undefined ? { userCode: code.userCode } : {}),
+        userCode: code.userCode,
         ...(parsed.message !== undefined ? { message: parsed.message } : {}),
         expiresAt: Date.now() + this.spec.flowTimeoutMs,
       }
@@ -214,7 +214,6 @@ export class DeviceFlowEngine extends Service {
     }
     this.inFlight.set(id, flow)
     void this.pollOnce(id, flow)
-    if (started === undefined) throw new Error('device-flow: invariant — started is undefined')
     return started
   }
 
@@ -242,7 +241,9 @@ export class DeviceFlowEngine extends Service {
       this.teardown(id, `the verify tool call failed (${errorMessage(error)})`)
       return
     }
-    if (flow.settled) return
+    // The call above yields: a settle (success or teardown) removes this flow
+    // from the registry, so identity against it doubles as the settled guard.
+    if (this.inFlight.get(id) !== flow) return
     const text = result.content.find(block => block.type === 'text')?.text
     const parsed = text !== undefined ? safeParse(text) : undefined
     const success = parsed !== undefined && (parsed.success === true || parsed.status === 'Already logged in' || parsed.status === 'Login successful')

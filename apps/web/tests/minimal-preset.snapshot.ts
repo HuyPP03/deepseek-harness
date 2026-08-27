@@ -111,6 +111,9 @@ describe('minimal agent preset', () => {
         "prompt": "You are a helpful software engineer assistant.",
         "tools": [
           "bash",
+          "mcp_call",
+          "mcp_describe",
+          "mcp_list",
           "str_replace_editor",
         ],
       }

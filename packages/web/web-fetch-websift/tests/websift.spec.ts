@@ -401,14 +401,14 @@ describe('web-fetch-websift plugin registration', () => {
 
   it('fails loud at load on a non-positive or fractional timeout', () => {
     const ctx = new Context()
-    expect(() => apply(ctx, { timeoutMs: 0 })).toThrow('timeoutMs must be a positive finite number')
-    expect(() => apply(ctx, { timeoutMs: -1 })).toThrow('timeoutMs must be a positive finite number')
-    expect(() => apply(ctx, { timeoutMs: Number.NaN })).toThrow('timeoutMs must be a positive finite number')
+    expect(() => { apply(ctx, { timeoutMs: 0 }) }).toThrow('timeoutMs must be a positive finite number')
+    expect(() => { apply(ctx, { timeoutMs: -1 }) }).toThrow('timeoutMs must be a positive finite number')
+    expect(() => { apply(ctx, { timeoutMs: Number.NaN }) }).toThrow('timeoutMs must be a positive finite number')
   })
 
   it('fails loud at load on a non-positive or fractional page cap', () => {
     const ctx = new Context()
-    expect(() => apply(ctx, { maxPageChars: 0 })).toThrow('maxPageChars must be a positive integer')
-    expect(() => apply(ctx, { maxPageChars: 12.5 })).toThrow('maxPageChars must be a positive integer')
+    expect(() => { apply(ctx, { maxPageChars: 0 }) }).toThrow('maxPageChars must be a positive integer')
+    expect(() => { apply(ctx, { maxPageChars: 12.5 }) }).toThrow('maxPageChars must be a positive integer')
   })
 })

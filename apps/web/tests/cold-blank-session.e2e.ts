@@ -10,7 +10,7 @@ import {
   captureStableAria, compareOrRefreshGolden, launchWebScaffold, seedBlankSession,
   watchConsole, webSnapshotMode, type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/cold-blank-session', import.meta.url))
 const SIDEBAR_EXPECTED = join(SNAPSHOT_DIR, 'sidebar.expected.md')
@@ -41,6 +41,7 @@ describe('web e2e: cold blank Session visibility', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
   }, 120_000)
 
   afterAll(async () => {

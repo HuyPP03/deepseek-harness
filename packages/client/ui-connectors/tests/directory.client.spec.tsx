@@ -177,7 +177,7 @@ function okView() {
  * read by their type attribute.
  */
 function dialogInputs(dialog: HTMLElement): [HTMLInputElement, HTMLInputElement | undefined] {
-  const inputs = Array.from(dialog.querySelectorAll('input')) as HTMLInputElement[]
+  const inputs = Array.from(dialog.querySelectorAll('input'))
   return [inputs.find(input => input.type === 'text')!, inputs.find(input => input.type === 'password')]
 }
 
@@ -233,7 +233,7 @@ async function renderDriven(
     selectProvider: (id: string | null) => { controller.selectProvider(id) },
     openCustomDialog: () => { controller.openCustomDialog() },
     setCustomDraft: (field: string, value: string) => { controller.setCustomDraft(field, value) },
-    closeCustomDialog: () => controller.closeCustomDialog(),
+    closeCustomDialog: () => { controller.closeCustomDialog() },
     saveCustom: () => controller.saveCustom(),
     removeCustom: (id: string) => controller.removeCustom(id),
     openSession: vi.fn(),

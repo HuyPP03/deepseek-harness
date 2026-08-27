@@ -13,7 +13,7 @@ import type {} from '@deepseek-ai/dsh-session-title'
 import {
   launchWebScaffold, seedSession, watchConsole, webSnapshotMode, type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const MODE = webSnapshotMode()
 const OVERLAY = fileURLToPath(new URL('./produced-files.overlay.yml', import.meta.url))
@@ -120,6 +120,7 @@ describe('web e2e: a finished turn ends with the files it produced', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
   }, 120_000)
 
   afterAll(async () => {

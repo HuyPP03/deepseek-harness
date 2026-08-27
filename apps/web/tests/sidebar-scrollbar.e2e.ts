@@ -72,7 +72,7 @@ import {
   assertFixtureInventory, compareOrRefreshGolden, launchWebScaffold, seedSession, watchConsole,
   webSnapshotMode, type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const SEED = fileURLToPath(new URL('./snapshots/seeded-history/seed.jsonl', import.meta.url))
 const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/sidebar-scrollbar', import.meta.url))
@@ -420,6 +420,7 @@ describe('web e2e: sidebar session list scrollbar (reserved gutter / themed thum
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
     await waitSeededSessions(page)
     // Every assertion about a thumb colour needs a drawn thumb, and the column
     // only draws one under the pointer; the quiet state is asserted where it is

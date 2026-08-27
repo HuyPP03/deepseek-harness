@@ -3617,6 +3617,9 @@ importers:
       '@deepseek-ai/dsh-mcp-registry':
         specifier: workspace:^
         version: link:../../mcp/mcp-registry
+      '@modelcontextprotocol/sdk':
+        specifier: 1.29.0
+        version: 1.29.0(zod@4.4.3)
 
   packages/connectors/device-flow:
     dependencies:
@@ -16483,7 +16486,7 @@ snapshots:
 
   '@modelcontextprotocol/server-everything@2026.7.4':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.30.0(zod@4.4.3)
+      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
       cors: 2.8.6
       express: 5.2.1
       jszip: 3.10.1
@@ -16494,7 +16497,7 @@ snapshots:
 
   '@modelcontextprotocol/server-filesystem@2026.7.10(zod@4.4.3)':
     dependencies:
-      '@modelcontextprotocol/sdk': 1.30.0(zod@4.4.3)
+      '@modelcontextprotocol/sdk': 1.29.0(zod@4.4.3)
       diff: 8.0.4
       glob: 10.5.0
       minimatch: 10.2.5
