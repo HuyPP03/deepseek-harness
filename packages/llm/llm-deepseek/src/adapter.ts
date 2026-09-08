@@ -8,7 +8,7 @@
  * @module dsh-llm-deepseek/adapter
  */
 
-import { attributionHeaders, CONTEXT_WINDOW_EXCEEDED_CODE, isContextWindowExceededError, isQuotaExceededError, LlmAdapter, LlmError, ProviderRequestId, QUOTA_EXCEEDED_CODE, ReasoningEffortId } from '@deepseek-ai/dsh-llm'
+import { attributionHeaders, CONTEXT_WINDOW_EXCEEDED_CODE, isContextWindowExceededError, isQuotaExceededError, LlmAdapter, LlmError, ProviderRequestId, QUOTA_EXCEEDED_CODE, ReasoningEffortId, toolCallPhaseAfter } from '@deepseek-ai/dsh-llm'
 import type {
   GenerateOptions,
   LlmModelInfo,
@@ -66,6 +66,8 @@ export interface DeepSeekConnectionOptions {
   models: readonly DeepSeekCatalogModel[]
   /** Maximum provider idle time while one stream read is outstanding. */
   streamIdleTimeoutMs: number
+  /** Maximum provider idle time while a tool call is still streaming. */
+  toolCallStreamIdleTimeoutMs: number
   /** Provider-owned model-request retry policy, already resolved. */
   retryPolicy: ResolvedRetryPolicy
 }
@@ -238,6 +240,7 @@ export class DeepSeekAdapter extends LlmAdapter {
       () => { watchdog.pulse() },
     )[Symbol.asyncIterator]()
     let exhausted = false
+    let inToolCall = false
     try {
       while (true) {
         const result = await watchdog.next(iterator)
@@ -245,12 +248,23 @@ export class DeepSeekAdapter extends LlmAdapter {
           exhausted = true
           return
         }
-        yield result.value
+        const chunk = result.value
+        const phase = toolCallPhaseAfter(chunk, inToolCall)
+        if (phase !== inToolCall) {
+          inToolCall = phase
+          watchdog.setIdleTimeout(phase
+            ? connection.toolCallStreamIdleTimeoutMs
+            : connection.streamIdleTimeoutMs)
+        }
+        yield chunk
       }
     } catch (error: unknown) {
-      if (timeoutOf(watchdog.signal, STREAM_IDLE_TIMEOUT_CODE) !== undefined) {
+      const idle = timeoutOf(watchdog.signal, STREAM_IDLE_TIMEOUT_CODE)
+      if (idle !== undefined) {
+        // idle.timeoutMs is the window in force when the timer fired, which
+        // differs from streamIdleTimeoutMs during the tool-call phase.
         throw new LlmError(
-          `DeepSeek stream idle timeout after ${connection.streamIdleTimeoutMs}ms`,
+          `DeepSeek stream idle timeout after ${idle.timeoutMs}ms`,
           'TIMEOUT',
           { cause: error },
         )

@@ -37,6 +37,7 @@ import {
   LlmAdapter,
   LlmError,
   ReasoningEffortId,
+  toolCallPhaseAfter,
 } from '@deepseek-ai/dsh-llm'
 import type {
   GenerateOptions,
@@ -301,6 +302,7 @@ export class PiAiAdapter extends LlmAdapter {
       ? consumer.signal
       : AbortSignal.any([options.signal, consumer.signal])
     const streamIdleTimeoutMs = profile.streamIdleTimeoutMs
+    const toolCallStreamIdleTimeoutMs = profile.toolCallStreamIdleTimeoutMs
     using watchdog = idleWatchdog(upstream, streamIdleTimeoutMs, 'LLM_STREAM_IDLE_TIMEOUT')
 
     try {
@@ -330,6 +332,7 @@ export class PiAiAdapter extends LlmAdapter {
       })
       const iterator = toStreamChunks(events, model.contextWindow)[Symbol.asyncIterator]()
       let exhausted = false
+      let inToolCall = false
       try {
         while (true) {
           const result = await watchdog.next(iterator)
@@ -339,7 +342,13 @@ export class PiAiAdapter extends LlmAdapter {
             exhausted = true
             return
           }
-          yield result.value
+          const chunk = result.value
+          const phase = toolCallPhaseAfter(chunk, inToolCall)
+          if (phase !== inToolCall) {
+            inToolCall = phase
+            watchdog.setIdleTimeout(phase ? toolCallStreamIdleTimeoutMs : streamIdleTimeoutMs)
+          }
+          yield chunk
         }
       } finally {
         if (!exhausted) {
@@ -352,8 +361,11 @@ export class PiAiAdapter extends LlmAdapter {
         }
       }
     } catch (error: unknown) {
-      if (timeoutOf(watchdog.signal, 'LLM_STREAM_IDLE_TIMEOUT') !== undefined) {
-        throw new LlmError(`pi-ai stream idle timeout after ${streamIdleTimeoutMs}ms`, 'TIMEOUT', { cause: error })
+      // idle.timeoutMs is the window in force when the timer fired, which
+      // differs from streamIdleTimeoutMs during the tool-call phase.
+      const idle = timeoutOf(watchdog.signal, 'LLM_STREAM_IDLE_TIMEOUT')
+      if (idle !== undefined) {
+        throw new LlmError(`pi-ai stream idle timeout after ${idle.timeoutMs}ms`, 'TIMEOUT', { cause: error })
       }
       if (options.signal?.aborted) {
         throw new LlmError('pi-ai request aborted by caller', 'ABORTED', { cause: error })

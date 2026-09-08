@@ -76,6 +76,13 @@ export interface Config {
   models?: DeepSeekCatalogModel[]
   /** Maximum provider idle time while one stream read is outstanding (default five minutes). */
   streamIdleTimeoutMs?: number
+  /**
+   * Maximum provider idle time while a tool call is still streaming; omission
+   * keeps {@link streamIdleTimeoutMs} for the whole stream. Servers that batch
+   * tool-call arguments (vLLM tool parsers) emit a long file write as one late
+   * event, so the tool phase needs its own, wider window.
+   */
+  toolCallStreamIdleTimeoutMs?: number
   /** Provider-owned model-request retry policy; omission uses normal defaults. */
   retryPolicy?: RetryPolicyConfig
 }
@@ -97,6 +104,7 @@ export const Config: z<Config> = z.object({
   defaultContextWindow: z.number().step(1).min(1).default(DEFAULT_CONTEXT_WINDOW),
   models: z.array(catalogModel).default(DEFAULT_MODELS),
   streamIdleTimeoutMs: z.number().min(Number.MIN_VALUE).max(MAX_TIMER_DELAY_MS).default(DEFAULT_STREAM_IDLE_TIMEOUT_MS),
+  toolCallStreamIdleTimeoutMs: z.number().min(Number.MIN_VALUE).max(MAX_TIMER_DELAY_MS),
   retryPolicy: RetryPolicySchema,
 })
 
@@ -180,6 +188,15 @@ export function resolveAdapterOptions(config: Config, environment?: LaunchEnviro
       `llm-deepseek: streamIdleTimeoutMs must be a positive finite number no greater than ${MAX_TIMER_DELAY_MS}`,
     )
   }
+  const toolCallStreamIdleTimeoutMs = config.toolCallStreamIdleTimeoutMs ?? streamIdleTimeoutMs
+  if (config.toolCallStreamIdleTimeoutMs !== undefined
+    && (!Number.isFinite(config.toolCallStreamIdleTimeoutMs)
+      || config.toolCallStreamIdleTimeoutMs <= 0
+      || config.toolCallStreamIdleTimeoutMs > MAX_TIMER_DELAY_MS)) {
+    throw new Error(
+      `llm-deepseek: toolCallStreamIdleTimeoutMs must be a positive finite number no greater than ${MAX_TIMER_DELAY_MS}`,
+    )
+  }
   return {
     apiKeyEnv: credentialRef(config.apiKeyEnv ?? DEFAULT_API_KEY_ENV),
     baseURL: config.baseURL
@@ -193,6 +210,7 @@ export function resolveAdapterOptions(config: Config, environment?: LaunchEnviro
     defaultContextWindow: config.defaultContextWindow ?? DEFAULT_CONTEXT_WINDOW,
     models: resolveModels(config.models),
     streamIdleTimeoutMs,
+    toolCallStreamIdleTimeoutMs,
     retryPolicy: resolveRetryPolicy(config.retryPolicy, 'llm-deepseek: retryPolicy'),
   }
 }

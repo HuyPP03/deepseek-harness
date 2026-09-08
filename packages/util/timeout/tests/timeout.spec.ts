@@ -288,4 +288,58 @@ describe('idleWatchdog', () => {
     await expect(watchdog.next(iterator)).rejects.toThrow(/already outstanding/)
     pending.resolve({ done: true, value: undefined })
   })
+
+  it('setIdleTimeout between arms governs the next arm and the fired reason', async () => {
+    vi.useFakeTimers()
+    const first = Promise.withResolvers<IteratorResult<number>>()
+    const second = Promise.withResolvers<IteratorResult<number>>()
+    const iterator = {
+      next: vi.fn()
+        .mockImplementationOnce(() => first.promise)
+        .mockImplementationOnce(() => second.promise),
+    }
+    using watchdog = idleWatchdog(undefined, 100, 'IDLE')
+    const firstNext = watchdog.next(iterator)
+    first.resolve({ done: false, value: 1 })
+    await expect(firstNext).resolves.toEqual({ done: false, value: 1 })
+
+    // The arm following the switch uses the new interval: it fires 50ms
+    // after the arm, not at the original 100ms.
+    watchdog.setIdleTimeout(50)
+    const secondNext = watchdog.next(iterator)
+    await vi.advanceTimersByTimeAsync(49)
+    expect(watchdog.signal.aborted).toBe(false)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(timeoutOf(watchdog.signal, 'IDLE')).toMatchObject({ timeoutMs: 50 })
+    second.reject(watchdog.signal.reason)
+    await expect(secondNext).rejects.toBe(watchdog.signal.reason)
+  })
+
+  it('an already outstanding demand keeps its original deadline but reports the interval in force at fire', async () => {
+    vi.useFakeTimers()
+    const pending = Promise.withResolvers<IteratorResult<number>>()
+    using watchdog = idleWatchdog(undefined, 100, 'IDLE')
+    const next = watchdog.next({ next: () => pending.promise })
+    await vi.advanceTimersByTimeAsync(99)
+    watchdog.setIdleTimeout(50)
+    await vi.advanceTimersByTimeAsync(1)
+    expect(timeoutOf(watchdog.signal, 'IDLE')).toMatchObject({ timeoutMs: 50 })
+    pending.reject(watchdog.signal.reason)
+    await expect(next).rejects.toBe(watchdog.signal.reason)
+  })
+
+  it('setIdleTimeout rejects invalid values and leaves the interval unchanged', async () => {
+    vi.useFakeTimers()
+    const pending = Promise.withResolvers<IteratorResult<number>>()
+    using watchdog = idleWatchdog(undefined, 100, 'IDLE')
+    expect(() => { watchdog.setIdleTimeout(0) }).toThrow(/positive finite/)
+    expect(() => { watchdog.setIdleTimeout(Number.NaN) }).toThrow(/positive finite/)
+    expect(() => { watchdog.setIdleTimeout(MAX_TIMER_DELAY_MS + 1) })
+      .toThrow(`no greater than ${MAX_TIMER_DELAY_MS}`)
+    const next = watchdog.next({ next: () => pending.promise })
+    vi.advanceTimersByTime(100)
+    expect(timeoutOf(watchdog.signal, 'IDLE')).toMatchObject({ timeoutMs: 100 })
+    pending.reject(watchdog.signal.reason)
+    await expect(next).rejects.toBe(watchdog.signal.reason)
+  })
 })

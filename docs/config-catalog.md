@@ -575,7 +575,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/connectors/connectors/src/index.ts:81`](../packages/connectors/connectors/src/index.ts)
+Source: [`packages/connectors/connectors/src/index.ts:83`](../packages/connectors/connectors/src/index.ts)
 
 <a id="deepseek-aidsh-connectors-device-flow"></a>
 
@@ -974,6 +974,13 @@ export interface Config {
   models?: DeepSeekCatalogModel[]
   /** Maximum provider idle time while one stream read is outstanding (default five minutes). */
   streamIdleTimeoutMs?: number
+  /**
+   * Maximum provider idle time while a tool call is still streaming; omission
+   * keeps {@link streamIdleTimeoutMs} for the whole stream. Servers that batch
+   * tool-call arguments (vLLM tool parsers) emit a long file write as one late
+   * event, so the tool phase needs its own, wider window.
+   */
+  toolCallStreamIdleTimeoutMs?: number
   /** Provider-owned model-request retry policy; omission uses normal defaults. */
   retryPolicy?: RetryPolicyConfig
 }
@@ -1089,6 +1096,13 @@ export interface PiAiProviderProfile {
   websocketConnectTimeoutMs?: number
   /** Maximum provider idle time while one stream read is outstanding. */
   streamIdleTimeoutMs?: number
+  /**
+   * Maximum provider idle time while a tool call is still streaming; omission
+   * keeps {@link streamIdleTimeoutMs} for the whole stream. Servers that batch
+   * tool-call arguments (vLLM tool parsers) emit a long file write as one late
+   * event, so the tool phase needs its own, wider window.
+   */
+  toolCallStreamIdleTimeoutMs?: number
   /** Provider-owned model-request retry policy; omission uses normal defaults. */
   retryPolicy?: RetryPolicyConfig
 }
@@ -1185,7 +1199,7 @@ type WithheldThinkingFormat = 'chat-template' | 'qwen-chat-template'
 
 Depends on: `Api` (`@earendil-works/pi-ai`) · `CacheRetention` (`@earendil-works/pi-ai`) · `Model` (`@earendil-works/pi-ai`) · `ModelThinkingLevel` (`@earendil-works/pi-ai`) · `OpenAICompletionsCompat` (`@earendil-works/pi-ai`) · [`RetryPolicyConfig`](../packages/llm/llm/src/index.ts) · `ThinkingBudgets` (`@earendil-works/pi-ai`) · `Transport` (`@earendil-works/pi-ai`)
 
-Source: [`packages/llm/llm-pi-ai/src/config.ts:172`](../packages/llm/llm-pi-ai/src/config.ts)
+Source: [`packages/llm/llm-pi-ai/src/config.ts:181`](../packages/llm/llm-pi-ai/src/config.ts)
 
 <a id="deepseek-aidsh-llm-replay"></a>
 

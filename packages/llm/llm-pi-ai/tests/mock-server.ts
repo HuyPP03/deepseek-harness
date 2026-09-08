@@ -31,6 +31,8 @@ export async function mockServer(script: {
   events?: string[]
   body?: string
   delayMs?: number
+  /** Per-event gap after `events[i]`; wins over `delayMs`. */
+  gapsMs?: number[]
   headers?: Record<string, string>
 }[]): Promise<MockServer> {
   const paths: string[] = []
@@ -61,8 +63,9 @@ export async function mockServer(script: {
         const event = behavior.events?.[index++]
         if (event === undefined) { response.end(); return }
         response.write(`data: ${event}\n\n`)
-        if (behavior.delayMs === undefined) writeNext()
-        else setTimeout(writeNext, behavior.delayMs)
+        const gap = behavior.gapsMs?.[index - 1] ?? behavior.delayMs
+        if (gap === undefined) writeNext()
+        else setTimeout(writeNext, gap)
       }
       writeNext()
     })

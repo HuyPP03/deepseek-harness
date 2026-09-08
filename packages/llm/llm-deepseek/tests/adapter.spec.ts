@@ -600,6 +600,167 @@ describe('DeepSeekAdapter against a mock server', () => {
   })
 })
 
+/** A tool-call generation: the arguments arrive, the server stays silent, then finishes. */
+const toolCallDelta = '{"choices":[{"delta":{"role":"assistant","tool_calls":[{"index":0,"id":"call_1","type":"function","function":{"name":"write","arguments":"{\\"path\\":\\"/tmp/a\\"}"}}]},"finish_reason":null}]}'
+const toolCallFinish = '{"choices":[{"delta":{},"finish_reason":"tool_calls"}],"usage":{"prompt_tokens":3,"completion_tokens":5}}'
+const toolCallTail = [toolCallFinish, '[DONE]']
+
+describe('tool-call idle window', () => {
+  /** Like the real transport: a watchdog abort errors the body read. */
+  function scriptedBody(encoder: TextEncoder, first: string[], rest: string[], restAtMs: number, signal: AbortSignal) {
+    return new ReadableStream<Uint8Array>({
+      start(controller) {
+        signal.addEventListener('abort', () => { controller.error(signal.reason) }, { once: true })
+        controller.enqueue(encoder.encode(first.map(event => `data: ${event}\n\n`).join('')))
+        setTimeout(() => {
+          controller.enqueue(encoder.encode(rest.map(event => `data: ${event}\n\n`).join('')))
+          controller.close()
+        }, restAtMs)
+      },
+    })
+  }
+
+  function scriptedFetch(encoder: TextEncoder, first: string[], rest: string[], restAtMs: number) {
+    return vi.spyOn(globalThis, 'fetch').mockImplementation((_input, init) => {
+      const signal = init?.signal ?? new AbortController().signal
+      const body = scriptedBody(encoder, first, rest, restAtMs, signal)
+      return Promise.resolve(new Response(body, { status: 200 }))
+    })
+  }
+
+  it('holds the tool-call window across a wire gap inside a tool call', async () => {
+    vi.useFakeTimers()
+    const encoder = new TextEncoder()
+    const fetchSpy = scriptedFetch(encoder, [toolCallDelta], toolCallTail, 400)
+    const adapter = adapterOf({
+      baseURL: 'https://example.invalid',
+      streamIdleTimeoutMs: 100,
+      toolCallStreamIdleTimeoutMs: 1_000,
+    })
+    try {
+      const chunks: string[] = []
+      const drain = (async () => {
+        for await (const chunk of adapter.stream({ provider: 'deepseek-official', model: 'm', messages: [] })) {
+          chunks.push(chunk.type)
+        }
+      })()
+      await vi.advanceTimersByTimeAsync(400)
+      await vi.advanceTimersByTimeAsync(10)
+      await expect(drain).resolves.toBeUndefined()
+      expect(chunks).toEqual(['block-start', 'tool-call-delta', 'block-end', 'usage', 'finish'])
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+
+  it('times out after the tool-call window and reports that window', async () => {
+    vi.useFakeTimers()
+    const encoder = new TextEncoder()
+    const fetchSpy = scriptedFetch(encoder, [toolCallDelta], toolCallTail, 500)
+    const adapter = adapterOf({
+      baseURL: 'https://example.invalid',
+      streamIdleTimeoutMs: 100,
+      toolCallStreamIdleTimeoutMs: 300,
+    })
+    try {
+      const drain = (async () => {
+        for await (const _chunk of adapter.stream({ provider: 'deepseek-official', model: 'm', messages: [] })) { /* drain */ }
+      })()
+      const rejected = expect(drain).rejects.toMatchObject({
+        code: 'TIMEOUT',
+        message: 'DeepSeek stream idle timeout after 300ms',
+      })
+      await vi.advanceTimersByTimeAsync(300)
+      await rejected
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+
+  it('keeps the base window for text even when a tool-call window is configured', async () => {
+    vi.useFakeTimers()
+    const encoder = new TextEncoder()
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation((_input, init) => {
+      const signal = init?.signal ?? new AbortController().signal
+      const body = new ReadableStream<Uint8Array>({
+        start(controller) {
+          signal.addEventListener('abort', () => { controller.error(signal.reason) }, { once: true })
+          controller.enqueue(encoder.encode('data: {"choices":[{"delta":{"content":"hel"}}]}\n\n'))
+          setTimeout(() => {
+            controller.enqueue(encoder.encode(
+              'data: {"choices":[{"delta":{"content":"lo"},"finish_reason":"stop"}],"usage":{"prompt_tokens":3,"completion_tokens":1}}\n\n'
+              + 'data: [DONE]\n\n',
+            ))
+            controller.close()
+          }, 400)
+        },
+      })
+      return Promise.resolve(new Response(body, { status: 200 }))
+    })
+    const adapter = adapterOf({
+      baseURL: 'https://example.invalid',
+      streamIdleTimeoutMs: 100,
+      toolCallStreamIdleTimeoutMs: 5_000,
+    })
+    try {
+      const drain = (async () => {
+        for await (const _chunk of adapter.stream({ provider: 'deepseek-official', model: 'm', messages: [] })) { /* drain */ }
+      })()
+      const rejected = expect(drain).rejects.toMatchObject({
+        code: 'TIMEOUT',
+        message: 'DeepSeek stream idle timeout after 100ms',
+      })
+      await vi.advanceTimersByTimeAsync(100)
+      await rejected
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+
+  it('restores the base window when the stream leaves the tool-call phase', async () => {
+    vi.useFakeTimers()
+    const encoder = new TextEncoder()
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation((_input, init) => {
+      const signal = init?.signal ?? new AbortController().signal
+      const body = new ReadableStream<Uint8Array>({
+        start(controller) {
+          signal.addEventListener('abort', () => { controller.error(signal.reason) }, { once: true })
+          controller.enqueue(encoder.encode(`data: ${toolCallDelta}\n\n`))
+          setTimeout(() => {
+            controller.enqueue(encoder.encode('data: {"choices":[{"delta":{"content":"after"}}]}\n\n'))
+          }, 400)
+          setTimeout(() => {
+            controller.enqueue(encoder.encode('data: {"choices":[{"delta":{},"finish_reason":"stop"}],"usage":{"prompt_tokens":3,"completion_tokens":5}}\n\n'
+              + 'data: [DONE]\n\n'))
+            controller.close()
+          }, 800)
+        },
+      })
+      return Promise.resolve(new Response(body, { status: 200 }))
+    })
+    const adapter = adapterOf({
+      baseURL: 'https://example.invalid',
+      streamIdleTimeoutMs: 100,
+      toolCallStreamIdleTimeoutMs: 5_000,
+    })
+    try {
+      const drain = (async () => {
+        for await (const _chunk of adapter.stream({ provider: 'deepseek-official', model: 'm', messages: [] })) { /* drain */ }
+      })()
+      // The gap between the text delta (t=400) and the finish (t=800) is a
+      // text-phase gap, so the base window, not the tool window, applies.
+      const rejected = expect(drain).rejects.toMatchObject({
+        code: 'TIMEOUT',
+        message: 'DeepSeek stream idle timeout after 100ms',
+      })
+      await vi.advanceTimersByTimeAsync(500)
+      await rejected
+    } finally {
+      fetchSpy.mockRestore()
+    }
+  })
+})
+
 describe('plugin registration and config', () => {
   it('keeps wire helpers off the package root', () => {
     for (const helper of [
@@ -1031,6 +1192,10 @@ describe('plugin registration and config', () => {
       .toThrow(/streamIdleTimeoutMs.*positive finite/)
     expect(() => resolveAdapterOptions({ streamIdleTimeoutMs: MAX_TIMER_DELAY_MS + 1 }))
       .toThrow(/streamIdleTimeoutMs.*no greater/)
+    expect(() => resolveAdapterOptions({ toolCallStreamIdleTimeoutMs: Number.POSITIVE_INFINITY }))
+      .toThrow(/toolCallStreamIdleTimeoutMs.*positive finite/)
+    expect(() => resolveAdapterOptions({ toolCallStreamIdleTimeoutMs: MAX_TIMER_DELAY_MS + 1 }))
+      .toThrow(/toolCallStreamIdleTimeoutMs.*no greater/)
 
     const ctx = new Context()
     await ctx.plugin(LlmRuntime)
@@ -1042,6 +1207,18 @@ describe('plugin registration and config', () => {
       baseURL: 'http://127.0.0.1:1',
       streamIdleTimeoutMs: MAX_TIMER_DELAY_MS + 1,
     })).rejects.toThrow(/streamIdleTimeoutMs/)
+    await expect(ctx.plugin(LlmDeepSeek, {
+      baseURL: 'http://127.0.0.1:1',
+      toolCallStreamIdleTimeoutMs: 0,
+    })).rejects.toThrow(/toolCallStreamIdleTimeoutMs/)
+  })
+
+  it('defaults the tool-call window to the base window', () => {
+    expect(resolveAdapterOptions({}).toolCallStreamIdleTimeoutMs)
+      .toBe(resolveAdapterOptions({}).streamIdleTimeoutMs)
+    expect(resolveAdapterOptions({ streamIdleTimeoutMs: 123 }).toolCallStreamIdleTimeoutMs).toBe(123)
+    expect(resolveAdapterOptions({ streamIdleTimeoutMs: 123, toolCallStreamIdleTimeoutMs: 456 })
+      .toolCallStreamIdleTimeoutMs).toBe(456)
   })
 
   it('rejects invalid nested retryPolicy before registering the provider', async () => {

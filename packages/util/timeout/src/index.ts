@@ -74,6 +74,13 @@ export interface IdleWatchdog {
   next<T>(iterator: AsyncIterator<T>): Promise<IteratorResult<T>>
   /** Rearm an outstanding demand after transport activity that yields no iterator value; otherwise a no-op. */
   pulse(): void
+  /**
+   * Change the idle interval for every arm after this call; an already
+   * outstanding demand keeps its original deadline. The timeout reason
+   * reports the interval in force when its timer fires.
+   * @param ms - new idle interval; must be a positive finite number no greater than {@link MAX_TIMER_DELAY_MS}.
+   */
+  setIdleTimeout(ms: number): void
   /** Clear an armed timer; safe to call once at the owning stream's exit. */
   [Symbol.dispose](): void
 }
@@ -115,8 +122,9 @@ export function deadline(
 /**
  * Create a rearmable idle watchdog for an async iterator. The timer exists only
  * while {@link IdleWatchdog.next} is outstanding, so consumer think time does
- * not count as provider idle time. The returned signal is stable for the whole
- * call and only notifies; the iterator must observe it to terminate its work.
+ * not count as provider idle time. {@link IdleWatchdog.setIdleTimeout} changes
+ * the interval before every later arm. The returned signal is stable for the
+ * whole call and only notifies; the iterator must observe it to terminate its work.
  *
  * @param upstream - caller cancellation fused into the stable signal.
  * @param timeoutMs - positive finite idle interval in milliseconds.
@@ -133,6 +141,7 @@ export function idleWatchdog(
   const signal = upstream === undefined
     ? timeout.signal
     : AbortSignal.any([upstream, timeout.signal])
+  let intervalMs = timeoutMs
   let timer: ReturnType<typeof setTimeout> | undefined
   let outstanding = false
   let disposed = false
@@ -140,8 +149,8 @@ export function idleWatchdog(
   const arm = (): void => {
     if (timer !== undefined) clearTimeout(timer)
     timer = setTimeout(() => {
-      timeout.abort(new TimeoutReason(code, timeoutMs))
-    }, timeoutMs)
+      timeout.abort(new TimeoutReason(code, intervalMs))
+    }, intervalMs)
   }
 
   return {
@@ -162,6 +171,10 @@ export function idleWatchdog(
     pulse(): void {
       if (disposed || !outstanding) return
       arm()
+    },
+    setIdleTimeout(ms: number): void {
+      assertTimerDelay(ms, 'idleWatchdog setIdleTimeout ms')
+      intervalMs = ms
     },
     [Symbol.dispose](): void {
       if (disposed) return
