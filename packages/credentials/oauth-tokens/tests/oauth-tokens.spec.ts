@@ -53,12 +53,12 @@ function updates(ctx: Context): string[] {
 
 describe('resolveSpec', () => {
   it('defaults to .connectors/oauth-tokens.json under the harness home with watching on', () => {
-    const spec = resolveSpec({ dshHome: '/custom/home' })
+    const spec = resolveSpec({ ohHome: '/custom/home' })
     expect(spec).toEqual({ filename: resolve('/custom/home/.connectors/oauth-tokens.json'), watch: true, debounceMs: 100 })
   })
 
   it('lets an explicit path win over the home', () => {
-    const spec = resolveSpec({ path: '/etc/dsh/tokens.json', dshHome: '/ignored', watch: false, debounceMs: 5 })
+    const spec = resolveSpec({ path: '/etc/dsh/tokens.json', ohHome: '/ignored', watch: false, debounceMs: 5 })
     expect(spec).toEqual({ filename: resolve('/etc/dsh/tokens.json'), watch: false, debounceMs: 5 })
   })
 })

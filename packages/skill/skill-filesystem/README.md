@@ -16,7 +16,7 @@ Requires `ctx.skills` (`inject: ['skills']`).
 |---|---|---|
 | `providerName` | `filesystem` | Unique name used to register this provider on `ctx.skills`. |
 | `includeDefaultRoots` | `true` | Include project and user roots around `customSkillDirs`; set false for an isolated custom-root provider. |
-| `dshHome` | `$OH_HOME` or `~/.oh` | Open Harness config root resolved by [`@open-harness/oh-home-paths`](../../util/home-paths/README.md); scans `skills` under this directory. |
+| `ohHome` | `$OH_HOME` or `~/.oh` | Open Harness config root resolved by [`@open-harness/oh-home-paths`](../../util/home-paths/README.md); scans `skills` under this directory. |
 | `agentsHome` | `$OH_AGENTS_HOME` or `~/.agents` | Shared agent config root scanned for compatible skills. |
 | `customSkillDirs` | `[]` | Additional local skill roots scanned after project roots and before user roots. |
 | `watch` | `true` | Watch host-local roots and invalidate the local provider when catalog membership or frontmatter may have changed. |
@@ -35,7 +35,7 @@ Default roots are resolved in this provider's rank order:
 | 100 | `project-dsh` | `<projectRoot>/.oh/skills` |
 | 200 | `project-agents` | `<projectRoot>/.agents/skills` |
 | 300 | `custom` | `Config.customSkillDirs` |
-| 400 | `user-dsh` | `<dshHome>/skills` |
+| 400 | `user-dsh` | `<ohHome>/skills` |
 | 500 | `user-agents` | `<agentsHome>/skills` |
 
 The project root is the nearest ancestor containing `.git`; without one, the current cwd is used. The user Open Harness root skips its `.system` child so system-owned directories are not treated as normal user skills. `includeDefaultRoots: false` omits the project and user rows and the `$OH_BUNDLED_SKILL_DIR` environment default while retaining explicitly configured custom and bundled roots, allowing several uniquely named isolated providers to see only their own roots. This provider supplies project and user skills; another provider may supply built-in system skills.

@@ -9,7 +9,7 @@ This file is GENERATED from source (`scripts/gen-config-catalog.ts`) and verifie
 
 A `Requires:` line lists the service keys the plugin `inject`s: its `cordis.yml` tree must also load providers for those services. Scope is the harness tier (`packages/`); the vendored cordis plugins a config tree may also load (`hmr`, the console logger, …) are pinned upstream source ([vendoring policy](../vendor/README.md)) and not catalogued here.
 
-<a id="deepseek-aidsh-acp"></a>
+<a id="open-harnessoh-acp"></a>
 
 ## `@open-harness/oh-acp`
 
@@ -31,7 +31,7 @@ Depends on: `Stream` (`@agentclientprotocol/sdk`)
 
 Source: [`packages/acp/acp/src/index.ts:75`](../packages/acp/acp/src/index.ts)
 
-<a id="deepseek-aidsh-acp-demo"></a>
+<a id="open-harnessoh-acp-demo"></a>
 
 ## `@open-harness/oh-acp-demo`
 
@@ -58,7 +58,7 @@ export interface Config {
   /** Tool-registry config — its presentation `mode` (forwarded through agent-spine-demo; see dsh-tools). */
   tools?: ToolsConfig
   /** Open Harness home directory exposed to bash and used for local skill discovery. */
-  dshHome?: string
+  ohHome?: string
   /** Fallback session-title limits forwarded through agent-spine-demo. */
   sessionTitle?: NonNullable<agentCore.Config['sessionTitle']>
   /** Directory for JSONL sessions and the derived query index. Defaults to `./.sessions`. */
@@ -82,11 +82,11 @@ export interface Config {
 }
 ```
 
-Depends on: [`agentCore`](../packages/examples/agent-spine-demo/src/index.ts) · [`JsonlCompression`](../packages/session/session-persistence-jsonl/src/index.ts) · [`ToolsConfig`](#deepseek-aidsh-tools)
+Depends on: [`agentCore`](../packages/examples/agent-spine-demo/src/index.ts) · [`JsonlCompression`](../packages/session/session-persistence-jsonl/src/index.ts) · [`ToolsConfig`](#open-harnessoh-tools)
 
 Source: [`packages/examples/acp-demo/src/index.ts:39`](../packages/examples/acp-demo/src/index.ts)
 
-<a id="deepseek-aidsh-agent-default-model"></a>
+<a id="open-harnessoh-agent-default-model"></a>
 
 ## `@open-harness/oh-agent-default-model`
 
@@ -102,7 +102,7 @@ export interface Config {
 
 Source: [`packages/core/agent-default-model/src/index.ts:41`](../packages/core/agent-default-model/src/index.ts)
 
-<a id="deepseek-aidsh-agent-instructions"></a>
+<a id="open-harnessoh-agent-instructions"></a>
 
 ## `@open-harness/oh-agent-instructions`
 
@@ -110,7 +110,7 @@ Source: [`packages/core/agent-default-model/src/index.ts:41`](../packages/core/a
 /** User-facing workspace instruction loader configuration. */
 export interface Config {
   /** Harness home containing the fixed user-global `AGENTS.md`; defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
   /** Directory entries that identify the project root while walking upward from the session cwd. */
   projectRootMarkers?: string[]
   /** UTF-8 byte cap for one rendered baseline or dynamic batch; non-positive or non-finite disables loading. */
@@ -132,7 +132,7 @@ export interface Config {
 
 Source: [`packages/context/agent-instructions/src/config.ts:18`](../packages/context/agent-instructions/src/config.ts)
 
-<a id="deepseek-aidsh-agent-loop"></a>
+<a id="open-harnessoh-agent-loop"></a>
 
 ## `@open-harness/oh-agent-loop`
 
@@ -164,7 +164,7 @@ Depends on: [`AgentOptions`](subsystems/core.md) · [`SessionId`](subsystems/cor
 
 Source: [`packages/core/agent-loop/src/index.ts:255`](../packages/core/agent-loop/src/index.ts)
 
-<a id="deepseek-aidsh-agent-presets"></a>
+<a id="open-harnessoh-agent-presets"></a>
 
 ## `@open-harness/oh-agent-presets`
 
@@ -208,7 +208,7 @@ export type PresetTrust = 'system' | 'user'
 
 Source: [`packages/preset/agent-presets/src/preset.ts:52`](../packages/preset/agent-presets/src/preset.ts)
 
-<a id="deepseek-aidsh-agent-spine-demo"></a>
+<a id="open-harnessoh-agent-spine-demo"></a>
 
 ## `@open-harness/oh-agent-spine-demo`
 
@@ -220,7 +220,7 @@ Source: [`packages/preset/agent-presets/src/preset.ts:52`](../packages/preset/ag
  * `persona`, and `toolOrder` to the system-prompt plugin (the fixed opener,
  * dynamic-context policy, deployment persona, and explicit model-facing tool
  * order), the `tools` object to the tool registry (its presentation `mode`),
- * `dshHome` to bash environment and local skill discovery, `sessionTitle` to
+ * `ohHome` to bash environment and local skill discovery, `sessionTitle` to
  * the fallback title service, `skills` to the
  * skill registry/local provider/tool consumer, `workspaceContext` to the
  * agent-instructions loader, `jobs` to the process-local job provider, and
@@ -252,7 +252,7 @@ export interface Config {
   /** The tool registry's config — its presentation `mode` (see dsh-tools' `Config`). */
   tools?: ToolsConfig
   /** Open Harness home directory shared by shell context and local skill discovery. */
-  dshHome?: string
+  ohHome?: string
   /** Deterministic fallback and accepted-title limits; omission uses the bundle's example policy. */
   sessionTitle?: SessionTitleConfig
   /** Workspace-context loader controls with an explicit byte budget; set `false` for hermetic prompts. */
@@ -296,11 +296,11 @@ export interface GoalConfig {
 }
 ```
 
-Depends on: [`AgentLoopConfig`](#deepseek-aidsh-agent-loop) · [`GoalDomainConfig`](#deepseek-aidsh-goal) · [`InvariantConfig`](#deepseek-aidsh-invariants) · [`JobsConfig`](#deepseek-aidsh-jobs-local) · [`SessionTitleConfig`](#deepseek-aidsh-session-title) · [`SkillFileSystem`](../packages/skill/skill-filesystem/src/index.ts) · [`SkillRegistryConfig`](#deepseek-aidsh-skill) · [`SystemPromptConfig`](#deepseek-aidsh-system-prompt) · [`toolBash`](../packages/shell/tool-bash/src/index.ts) · [`toolGoal`](../packages/goal/tool-goal/src/index.ts) · [`toolJobs`](../packages/jobs/tool-jobs/src/index.ts) · [`ToolsConfig`](#deepseek-aidsh-tools) · [`toolSkill`](../packages/skill/tool-skill/src/index.ts) · [`workspaceContext`](../packages/context/agent-instructions/src/index.ts)
+Depends on: [`AgentLoopConfig`](#open-harnessoh-agent-loop) · [`GoalDomainConfig`](#open-harnessoh-goal) · [`InvariantConfig`](#open-harnessoh-invariants) · [`JobsConfig`](#open-harnessoh-jobs-local) · [`SessionTitleConfig`](#open-harnessoh-session-title) · [`SkillFileSystem`](../packages/skill/skill-filesystem/src/index.ts) · [`SkillRegistryConfig`](#open-harnessoh-skill) · [`SystemPromptConfig`](#open-harnessoh-system-prompt) · [`toolBash`](../packages/shell/tool-bash/src/index.ts) · [`toolGoal`](../packages/goal/tool-goal/src/index.ts) · [`toolJobs`](../packages/jobs/tool-jobs/src/index.ts) · [`ToolsConfig`](#open-harnessoh-tools) · [`toolSkill`](../packages/skill/tool-skill/src/index.ts) · [`workspaceContext`](../packages/context/agent-instructions/src/index.ts)
 
 Source: [`packages/examples/agent-spine-demo/src/index.ts:92`](../packages/examples/agent-spine-demo/src/index.ts)
 
-<a id="deepseek-aidsh-agent-tool-presentation"></a>
+<a id="open-harnessoh-agent-tool-presentation"></a>
 
 ## `@open-harness/oh-agent-tool-presentation`
 
@@ -324,7 +324,7 @@ Depends on: [`ToolPresentationMode`](subsystems/tools.md)
 
 Source: [`packages/core/agent-tool-presentation/src/index.ts:38`](../packages/core/agent-tool-presentation/src/index.ts)
 
-<a id="deepseek-aidsh-attachment-local"></a>
+<a id="open-harnessoh-attachment-local"></a>
 
 ## `@open-harness/oh-attachment-local`
 
@@ -332,7 +332,7 @@ Source: [`packages/core/agent-tool-presentation/src/index.ts:38`](../packages/co
 /** Local attachment backend configuration. */
 export interface Config {
   /** Explicit harness home; omitted follows `OH_HOME`, then `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
   /** Maximum encoded bytes accepted for one image. */
   maxImageBytes?: number
   /** Maximum image count accepted in one submitted message. */
@@ -346,7 +346,7 @@ export interface Config {
 
 Source: [`packages/attachment/attachment-local/src/index.ts:24`](../packages/attachment/attachment-local/src/index.ts)
 
-<a id="deepseek-aidsh-bash-local"></a>
+<a id="open-harnessoh-bash-local"></a>
 
 ## `@open-harness/oh-bash-local`
 
@@ -372,7 +372,7 @@ export interface Config {
 
 Source: [`packages/shell/bash-local/src/index.ts:41`](../packages/shell/bash-local/src/index.ts)
 
-<a id="deepseek-aidsh-bash-sandbox"></a>
+<a id="open-harnessoh-bash-sandbox"></a>
 
 ## `@open-harness/oh-bash-sandbox`
 
@@ -389,11 +389,11 @@ Requires: `subprocess` · `sandbox` · `sandboxPolicy`
 export type Config = LocalConfig
 ```
 
-Depends on: [`LocalConfig`](#deepseek-aidsh-bash-local)
+Depends on: [`LocalConfig`](#open-harnessoh-bash-local)
 
 Source: [`packages/shell/bash-sandbox/src/index.ts:35`](../packages/shell/bash-sandbox/src/index.ts)
 
-<a id="deepseek-aidsh-client-connection"></a>
+<a id="open-harnessoh-client-connection"></a>
 
 ## `@open-harness/oh-client-connection`
 
@@ -407,7 +407,7 @@ export interface ConnectionConfig {
    * port-less `host` matching any port. The /api trust fence refuses any
    * request whose Host is neither loopback nor listed here, so a
    * non-loopback (`0.0.0.0`) deployment must declare the names it is reached
-   * by (the oh CLI derives the machine's LAN IP literals itself). An entry
+   * by (the dsh CLI derives the machine's LAN IP literals itself). An entry
    * that is not a bare, canonical authority fails the plugin load.
    */
   trustedHosts?: string[]
@@ -418,7 +418,7 @@ export interface ConnectionConfig {
 
 Source: [`packages/client/connection/src/index.ts:50`](../packages/client/connection/src/index.ts)
 
-<a id="deepseek-aidsh-client-hmr"></a>
+<a id="open-harnessoh-client-hmr"></a>
 
 ## `@open-harness/oh-client-hmr`
 
@@ -434,7 +434,7 @@ export interface Config {
 
 Source: [`packages/client/hmr/src/index.ts:31`](../packages/client/hmr/src/index.ts)
 
-<a id="deepseek-aidsh-code-runtime-worker-thread"></a>
+<a id="open-harnessoh-code-runtime-worker-thread"></a>
 
 ## `@open-harness/oh-code-runtime-worker-thread`
 
@@ -471,7 +471,7 @@ export interface Config {
 
 Source: [`packages/code-runtime/code-runtime-worker-thread/src/index.ts:25`](../packages/code-runtime/code-runtime-worker-thread/src/index.ts)
 
-<a id="deepseek-aidsh-command-agent-actions"></a>
+<a id="open-harnessoh-command-agent-actions"></a>
 
 ## `@open-harness/oh-command-agent-actions`
 
@@ -491,7 +491,7 @@ export interface Config {
 
 Source: [`packages/interaction/command-agent-actions/src/index.ts:17`](../packages/interaction/command-agent-actions/src/index.ts)
 
-<a id="deepseek-aidsh-compaction-basic"></a>
+<a id="open-harnessoh-compaction-basic"></a>
 
 ## `@open-harness/oh-compaction-basic`
 
@@ -537,7 +537,7 @@ export interface ModelCompactPolicyConfig extends CompactionPolicyConfig {
 
 Source: [`packages/compaction/compaction-basic/src/types.ts:38`](../packages/compaction/compaction-basic/src/types.ts)
 
-<a id="deepseek-aidsh-compaction-tool-result-pruner"></a>
+<a id="open-harnessoh-compaction-tool-result-pruner"></a>
 
 ## `@open-harness/oh-compaction-tool-result-pruner`
 
@@ -557,7 +557,7 @@ export interface ToolResultPruneConfig {
 
 Source: [`packages/compaction/compaction-tool-result-pruner/src/types.ts:4`](../packages/compaction/compaction-tool-result-pruner/src/types.ts)
 
-<a id="deepseek-aidsh-connectors"></a>
+<a id="open-harnessoh-connectors"></a>
 
 ## `@open-harness/oh-connectors`
 
@@ -571,13 +571,13 @@ export interface Config {
   /** Directory holding user override documents and custom connector manifests; defaults to `.connectors` under the harness home. */
   readonly userDir?: string
   /** Harness home used when `userDir` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
-  readonly dshHome?: string
+  readonly ohHome?: string
 }
 ```
 
 Source: [`packages/connectors/connectors/src/index.ts:83`](../packages/connectors/connectors/src/index.ts)
 
-<a id="deepseek-aidsh-connectors-device-flow"></a>
+<a id="open-harnessoh-connectors-device-flow"></a>
 
 ## `@open-harness/oh-connectors-device-flow`
 
@@ -595,7 +595,7 @@ export interface Config {
 
 Source: [`packages/connectors/device-flow/src/index.ts:32`](../packages/connectors/device-flow/src/index.ts)
 
-<a id="deepseek-aidsh-connectors-oauth-flow"></a>
+<a id="open-harnessoh-connectors-oauth-flow"></a>
 
 ## `@open-harness/oh-connectors-oauth-flow`
 
@@ -611,7 +611,7 @@ export interface Config {
 
 Source: [`packages/connectors/oauth-flow/src/index.ts:34`](../packages/connectors/oauth-flow/src/index.ts)
 
-<a id="deepseek-aidsh-cordis-host-runner"></a>
+<a id="open-harnessoh-cordis-host-runner"></a>
 
 ## `@open-harness/oh-cordis-host-runner`
 
@@ -627,7 +627,7 @@ export interface Config {
 
 Source: [`packages/extensions/cordis-host-runner/src/index.ts:88`](../packages/extensions/cordis-host-runner/src/index.ts)
 
-<a id="deepseek-aidsh-credentials-local"></a>
+<a id="open-harnessoh-credentials-local"></a>
 
 ## `@open-harness/oh-credentials-local`
 
@@ -637,7 +637,7 @@ export interface Config {
   /** Credentials document path; defaults to `.credentials.yaml` under the harness home. */
   path?: string
   /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean
   /** Watcher write-settle window in milliseconds; defaults to 100. */
@@ -647,7 +647,7 @@ export interface Config {
 
 Source: [`packages/credentials/credentials-local/src/index.ts:55`](../packages/credentials/credentials-local/src/index.ts)
 
-<a id="deepseek-aidsh-credentials-oauth-tokens"></a>
+<a id="open-harnessoh-credentials-oauth-tokens"></a>
 
 ## `@open-harness/oh-credentials-oauth-tokens`
 
@@ -657,7 +657,7 @@ export interface Config {
   /** Token document path; defaults to `.connectors/oauth-tokens.json` under the harness home. */
   path?: string
   /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean
   /** Watcher write-settle window in milliseconds; defaults to 100. */
@@ -667,7 +667,7 @@ export interface Config {
 
 Source: [`packages/credentials/oauth-tokens/src/index.ts:45`](../packages/credentials/oauth-tokens/src/index.ts)
 
-<a id="deepseek-aidsh-e2b"></a>
+<a id="open-harnessoh-e2b"></a>
 
 ## `@open-harness/oh-e2b`
 
@@ -685,7 +685,7 @@ export interface Config {
 
 Source: [`packages/e2b/e2b/src/index.ts:43`](../packages/e2b/e2b/src/index.ts)
 
-<a id="deepseek-aidsh-fs-local"></a>
+<a id="open-harnessoh-fs-local"></a>
 
 ## `@open-harness/oh-fs-local`
 
@@ -704,7 +704,7 @@ export interface Config {
 
 Source: [`packages/fs/fs-local/src/index.ts:41`](../packages/fs/fs-local/src/index.ts)
 
-<a id="deepseek-aidsh-fs-sandbox"></a>
+<a id="open-harnessoh-fs-sandbox"></a>
 
 ## `@open-harness/oh-fs-sandbox`
 
@@ -720,11 +720,11 @@ Requires: `sandboxPolicy`
 export type Config = LocalConfig
 ```
 
-Depends on: [`LocalConfig`](#deepseek-aidsh-fs-local)
+Depends on: [`LocalConfig`](#open-harnessoh-fs-local)
 
 Source: [`packages/fs/fs-sandbox/src/index.ts:51`](../packages/fs/fs-sandbox/src/index.ts)
 
-<a id="deepseek-aidsh-goal"></a>
+<a id="open-harnessoh-goal"></a>
 
 ## `@open-harness/oh-goal`
 
@@ -740,7 +740,7 @@ export interface Config {
 
 Source: [`packages/goal/goal/src/index.ts:116`](../packages/goal/goal/src/index.ts)
 
-<a id="deepseek-aidsh-headless"></a>
+<a id="open-harnessoh-headless"></a>
 
 ## `@open-harness/oh-headless`
 
@@ -756,7 +756,7 @@ export interface Config {
 
 Source: [`packages/bundle/headless/src/index.ts:31`](../packages/bundle/headless/src/index.ts)
 
-<a id="deepseek-aidsh-hooks-claude-code"></a>
+<a id="open-harnessoh-hooks-claude-code"></a>
 
 ## `@open-harness/oh-hooks-claude-code`
 
@@ -794,7 +794,7 @@ export interface Config {
 
 Source: [`packages/hooks/hooks-claude-code/src/index.ts:45`](../packages/hooks/hooks-claude-code/src/index.ts)
 
-<a id="deepseek-aidsh-hooks-codex"></a>
+<a id="open-harnessoh-hooks-codex"></a>
 
 ## `@open-harness/oh-hooks-codex`
 
@@ -821,7 +821,7 @@ export interface Config {
 
 Source: [`packages/hooks/hooks-codex/src/index.ts:44`](../packages/hooks/hooks-codex/src/index.ts)
 
-<a id="deepseek-aidsh-host-apiproxy"></a>
+<a id="open-harnessoh-host-apiproxy"></a>
 
 ## `@open-harness/oh-host-apiproxy`
 
@@ -855,7 +855,7 @@ export interface Config {
 
 Source: [`packages/host/apiproxy/src/index.ts:42`](../packages/host/apiproxy/src/index.ts)
 
-<a id="deepseek-aidsh-host-directory-picker-browse"></a>
+<a id="open-harnessoh-host-directory-picker-browse"></a>
 
 ## `@open-harness/oh-host-directory-picker-browse`
 
@@ -869,7 +869,7 @@ export interface Config {
 
 Source: [`packages/host/directory-picker-browse/src/index.ts:181`](../packages/host/directory-picker-browse/src/index.ts)
 
-<a id="deepseek-aidsh-host-frontend-static"></a>
+<a id="open-harnessoh-host-frontend-static"></a>
 
 ## `@open-harness/oh-host-frontend-static`
 
@@ -885,7 +885,7 @@ export interface Config {
 
 Source: [`packages/host/frontend-static/src/index.ts:28`](../packages/host/frontend-static/src/index.ts)
 
-<a id="deepseek-aidsh-host-webserver"></a>
+<a id="open-harnessoh-host-webserver"></a>
 
 ## `@open-harness/oh-host-webserver`
 
@@ -901,7 +901,7 @@ export interface Config {
 
 Source: [`packages/host/webserver/src/index.ts:45`](../packages/host/webserver/src/index.ts)
 
-<a id="deepseek-aidsh-invariants"></a>
+<a id="open-harnessoh-invariants"></a>
 
 ## `@open-harness/oh-invariants`
 
@@ -919,7 +919,7 @@ export interface Config {
 
 Source: [`packages/runtime-diagnostics/invariants/src/index.ts:15`](../packages/runtime-diagnostics/invariants/src/index.ts)
 
-<a id="deepseek-aidsh-jobs-local"></a>
+<a id="open-harnessoh-jobs-local"></a>
 
 ## `@open-harness/oh-jobs-local`
 
@@ -942,7 +942,7 @@ export interface Config {
 
 Source: [`packages/jobs/jobs-local/src/index.ts:41`](../packages/jobs/jobs-local/src/index.ts)
 
-<a id="deepseek-aidsh-llm-deepseek"></a>
+<a id="open-harnessoh-llm-deepseek"></a>
 
 ## `@open-harness/oh-llm-deepseek`
 
@@ -1004,7 +1004,7 @@ Depends on: [`RetryPolicyConfig`](../packages/llm/llm/src/index.ts)
 
 Source: [`packages/llm/llm-deepseek/src/index.ts:62`](../packages/llm/llm-deepseek/src/index.ts)
 
-<a id="deepseek-aidsh-llm-pi-ai"></a>
+<a id="open-harnessoh-llm-pi-ai"></a>
 
 ## `@open-harness/oh-llm-pi-ai`
 
@@ -1201,7 +1201,7 @@ Depends on: `Api` (`@earendil-works/pi-ai`) · `CacheRetention` (`@earendil-work
 
 Source: [`packages/llm/llm-pi-ai/src/config.ts:181`](../packages/llm/llm-pi-ai/src/config.ts)
 
-<a id="deepseek-aidsh-llm-replay"></a>
+<a id="open-harnessoh-llm-replay"></a>
 
 ## `@open-harness/oh-llm-replay`
 
@@ -1269,7 +1269,7 @@ Depends on: [`ModelModality`](../packages/llm/llm/src/index.ts) · [`RetryPolicy
 
 Source: [`packages/test-support/llm-replay/src/index.ts:776`](../packages/test-support/llm-replay/src/index.ts)
 
-<a id="deepseek-aidsh-llm-retry"></a>
+<a id="open-harnessoh-llm-retry"></a>
 
 ## `@open-harness/oh-llm-retry`
 
@@ -1282,7 +1282,7 @@ export type Config = Readonly<Record<string, never>>
 
 Source: [`packages/llm/llm-retry/src/index.ts:24`](../packages/llm/llm-retry/src/index.ts)
 
-<a id="deepseek-aidsh-lsp-stdio"></a>
+<a id="open-harnessoh-lsp-stdio"></a>
 
 ## `@open-harness/oh-lsp-stdio`
 
@@ -1324,7 +1324,7 @@ export interface LspLocalServerConfig {
 
 Source: [`packages/lsp/lsp-stdio/src/index.ts:82`](../packages/lsp/lsp-stdio/src/index.ts)
 
-<a id="deepseek-aidsh-mcp-client"></a>
+<a id="open-harnessoh-mcp-client"></a>
 
 ## `@open-harness/oh-mcp-client`
 
@@ -1415,7 +1415,7 @@ export interface CredentialRefValue {
 
 Source: [`packages/mcp/mcp-client/src/index.ts:110`](../packages/mcp/mcp-client/src/index.ts)
 
-<a id="deepseek-aidsh-mcp-manager"></a>
+<a id="open-harnessoh-mcp-manager"></a>
 
 ## `@open-harness/oh-mcp-manager`
 
@@ -1431,7 +1431,7 @@ export interface Config {
 
 Source: [`packages/mcp/mcp-manager/src/index.ts:41`](../packages/mcp/mcp-manager/src/index.ts)
 
-<a id="deepseek-aidsh-message-feedback"></a>
+<a id="open-harnessoh-message-feedback"></a>
 
 ## `@open-harness/oh-message-feedback`
 
@@ -1447,7 +1447,7 @@ export interface Config {
 
 Source: [`packages/feedback/message-feedback/src/index.ts:49`](../packages/feedback/message-feedback/src/index.ts)
 
-<a id="deepseek-aidsh-permission-presets"></a>
+<a id="open-harnessoh-permission-presets"></a>
 
 ## `@open-harness/oh-permission-presets`
 
@@ -1501,7 +1501,7 @@ Depends on: [`ApprovalPolicy`](subsystems/approval.md) · [`SandboxMode`](subsys
 
 Source: [`packages/interaction/permission-presets/src/index.ts:146`](../packages/interaction/permission-presets/src/index.ts)
 
-<a id="deepseek-aidsh-persona"></a>
+<a id="open-harnessoh-persona"></a>
 
 ## `@open-harness/oh-persona`
 
@@ -1525,7 +1525,7 @@ export interface Config {
 
 Source: [`packages/preset/persona/src/index.ts:34`](../packages/preset/persona/src/index.ts)
 
-<a id="deepseek-aidsh-plan-mode"></a>
+<a id="open-harnessoh-plan-mode"></a>
 
 ## `@open-harness/oh-plan-mode`
 
@@ -1541,7 +1541,7 @@ export interface PlanModeConfig {
 
 Source: [`packages/plan/plan-mode/src/index.ts:70`](../packages/plan/plan-mode/src/index.ts)
 
-<a id="deepseek-aidsh-pwsh-local"></a>
+<a id="open-harnessoh-pwsh-local"></a>
 
 ## `@open-harness/oh-pwsh-local`
 
@@ -1574,7 +1574,7 @@ export interface Config {
 
 Source: [`packages/shell/pwsh-local/src/index.ts:58`](../packages/shell/pwsh-local/src/index.ts)
 
-<a id="deepseek-aidsh-pwsh-sandbox"></a>
+<a id="open-harnessoh-pwsh-sandbox"></a>
 
 ## `@open-harness/oh-pwsh-sandbox`
 
@@ -1592,11 +1592,11 @@ Requires: `subprocess` · `sandbox` · `sandboxPolicy`
 export type Config = LocalConfig
 ```
 
-Depends on: [`LocalConfig`](#deepseek-aidsh-pwsh-local)
+Depends on: [`LocalConfig`](#open-harnessoh-pwsh-local)
 
 Source: [`packages/shell/pwsh-sandbox/src/index.ts:40`](../packages/shell/pwsh-sandbox/src/index.ts)
 
-<a id="deepseek-aidsh-repeat-tool-reminder"></a>
+<a id="open-harnessoh-repeat-tool-reminder"></a>
 
 ## `@open-harness/oh-repeat-tool-reminder`
 
@@ -1630,7 +1630,7 @@ export interface Config {
 
 Source: [`packages/guard/repeat-tool-reminder/src/index.ts:28`](../packages/guard/repeat-tool-reminder/src/index.ts)
 
-<a id="deepseek-aidsh-sandbox-local"></a>
+<a id="open-harnessoh-sandbox-local"></a>
 
 ## `@open-harness/oh-sandbox-local`
 
@@ -1662,7 +1662,7 @@ export interface Config {
 
 Source: [`packages/sandbox/sandbox-local/src/index.ts:47`](../packages/sandbox/sandbox-local/src/index.ts)
 
-<a id="deepseek-aidsh-sandbox-policy"></a>
+<a id="open-harnessoh-sandbox-policy"></a>
 
 ## `@open-harness/oh-sandbox-policy`
 
@@ -1689,7 +1689,7 @@ Depends on: [`SandboxMode`](subsystems/sandbox.md)
 
 Source: [`packages/sandbox/sandbox-policy/src/index.ts:70`](../packages/sandbox/sandbox-policy/src/index.ts)
 
-<a id="deepseek-aidsh-sdk-jsonrpc-server"></a>
+<a id="open-harnessoh-sdk-jsonrpc-server"></a>
 
 ## `@open-harness/oh-sdk-jsonrpc-server`
 
@@ -1713,7 +1713,7 @@ Depends on: `Readable` (`node:stream`) · `Writable` (`node:stream`)
 
 Source: [`packages/sdk/server/src/index.ts:25`](../packages/sdk/server/src/index.ts)
 
-<a id="deepseek-aidsh-session-persistence-jsonl"></a>
+<a id="open-harnessoh-session-persistence-jsonl"></a>
 
 ## `@open-harness/oh-session-persistence-jsonl`
 
@@ -1752,7 +1752,7 @@ export type JsonlCompression = 'zstd' | 'none'
 
 Source: [`packages/session/session-persistence-jsonl/src/index.ts:60`](../packages/session/session-persistence-jsonl/src/index.ts)
 
-<a id="deepseek-aidsh-session-persistence-sqlite"></a>
+<a id="open-harnessoh-session-persistence-sqlite"></a>
 
 ## `@open-harness/oh-session-persistence-sqlite`
 
@@ -1797,7 +1797,7 @@ export type JournalMode = 'wal' | 'delete' | 'truncate' | 'persist'
 
 Source: [`packages/session/session-persistence-sqlite/src/index.ts:70`](../packages/session/session-persistence-sqlite/src/index.ts)
 
-<a id="deepseek-aidsh-session-projection-cache"></a>
+<a id="open-harnessoh-session-projection-cache"></a>
 
 ## `@open-harness/oh-session-projection-cache`
 
@@ -1820,7 +1820,7 @@ export interface Config {
 
 Source: [`packages/session/session-projection-cache/src/index.ts:42`](../packages/session/session-projection-cache/src/index.ts)
 
-<a id="deepseek-aidsh-session-query-sqlite"></a>
+<a id="open-harnessoh-session-query-sqlite"></a>
 
 ## `@open-harness/oh-session-query-sqlite`
 
@@ -1866,7 +1866,7 @@ Depends on: [`SessionQueryConfig`](../packages/session-query/session-query/src/i
 
 Source: [`packages/session-query/session-query-sqlite/src/index.ts:89`](../packages/session-query/session-query-sqlite/src/index.ts)
 
-<a id="deepseek-aidsh-session-reference"></a>
+<a id="open-harnessoh-session-reference"></a>
 
 ## `@open-harness/oh-session-reference`
 
@@ -1886,7 +1886,7 @@ export interface Config {
 
 Source: [`packages/context/session-reference/src/config.ts:11`](../packages/context/session-reference/src/config.ts)
 
-<a id="deepseek-aidsh-session-telemetry-otel"></a>
+<a id="open-harnessoh-session-telemetry-otel"></a>
 
 ## `@open-harness/oh-session-telemetry-otel`
 
@@ -1932,7 +1932,7 @@ Depends on: `BatchLogRecordProcessorOptions` (`@opentelemetry/sdk-logs`) · `OTL
 
 Source: [`packages/session/session-telemetry-otel/src/index.ts:91`](../packages/session/session-telemetry-otel/src/index.ts)
 
-<a id="deepseek-aidsh-session-title"></a>
+<a id="open-harnessoh-session-title"></a>
 
 ## `@open-harness/oh-session-title`
 
@@ -1952,7 +1952,7 @@ export interface Config {
 
 Source: [`packages/session/session-title/src/index.ts:79`](../packages/session/session-title/src/index.ts)
 
-<a id="deepseek-aidsh-session-title-all-prompts-llm"></a>
+<a id="open-harnessoh-session-title-all-prompts-llm"></a>
 
 ## `@open-harness/oh-session-title-all-prompts-llm`
 
@@ -1967,7 +1967,7 @@ Depends on: [`SessionTitleLlmConfig`](../packages/session/session-title-llm/src/
 
 Source: [`packages/session/session-title-all-prompts-llm/src/index.ts:15`](../packages/session/session-title-all-prompts-llm/src/index.ts)
 
-<a id="deepseek-aidsh-session-title-first-prompt-llm"></a>
+<a id="open-harnessoh-session-title-first-prompt-llm"></a>
 
 ## `@open-harness/oh-session-title-first-prompt-llm`
 
@@ -1982,7 +1982,7 @@ Depends on: [`SessionTitleLlmConfig`](../packages/session/session-title-llm/src/
 
 Source: [`packages/session/session-title-first-prompt-llm/src/index.ts:15`](../packages/session/session-title-first-prompt-llm/src/index.ts)
 
-<a id="deepseek-aidsh-settings-file"></a>
+<a id="open-harnessoh-settings-file"></a>
 
 ## `@open-harness/oh-settings-file`
 
@@ -1992,7 +1992,7 @@ export interface Config {
   /** Settings document path; defaults to `settings.yaml` under the harness home. */
   path?: string
   /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean
   /** Watcher write-settle window in milliseconds; defaults to 100. */
@@ -2002,7 +2002,7 @@ export interface Config {
 
 Source: [`packages/settings/settings-file/src/index.ts:21`](../packages/settings/settings-file/src/index.ts)
 
-<a id="deepseek-aidsh-shell-env"></a>
+<a id="open-harnessoh-shell-env"></a>
 
 ## `@open-harness/oh-shell-env`
 
@@ -2010,13 +2010,13 @@ Source: [`packages/settings/settings-file/src/index.ts:21`](../packages/settings
 /** Plugin config (all optional — the built-in facts resolve without defaults). */
 export interface Config {
   /** Open Harness home directory exposed as `OH_HOME`; defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
 }
 ```
 
 Source: [`packages/shell/shell-env/src/index.ts:29`](../packages/shell/shell-env/src/index.ts)
 
-<a id="deepseek-aidsh-skill"></a>
+<a id="open-harnessoh-skill"></a>
 
 ## `@open-harness/oh-skill`
 
@@ -2030,7 +2030,7 @@ export interface Config {
 
 Source: [`packages/skill/skill/src/index.ts:279`](../packages/skill/skill/src/index.ts)
 
-<a id="deepseek-aidsh-skill-filesystem"></a>
+<a id="open-harnessoh-skill-filesystem"></a>
 
 ## `@open-harness/oh-skill-filesystem`
 
@@ -2044,7 +2044,7 @@ export interface Config {
   /** Whether project and user roots are included around custom roots. */
   includeDefaultRoots?: boolean
   /** Open Harness config root. Defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
   /** Shared agent config root. Defaults to `$OH_AGENTS_HOME` or `~/.agents`. */
   agentsHome?: string
   /** Additional skill roots scanned after project roots and before user roots. */
@@ -2068,7 +2068,7 @@ export interface Config {
 
 Source: [`packages/skill/skill-filesystem/src/index.ts:49`](../packages/skill/skill-filesystem/src/index.ts)
 
-<a id="deepseek-aidsh-spill-local"></a>
+<a id="open-harnessoh-spill-local"></a>
 
 ## `@open-harness/oh-spill-local`
 
@@ -2086,7 +2086,7 @@ export interface Config {
 
 Source: [`packages/spill/spill-local/src/index.ts:22`](../packages/spill/spill-local/src/index.ts)
 
-<a id="deepseek-aidsh-spill-policy"></a>
+<a id="open-harnessoh-spill-policy"></a>
 
 ## `@open-harness/oh-spill-policy`
 
@@ -2106,7 +2106,7 @@ export interface Config {
 
 Source: [`packages/spill/spill-policy/src/index.ts:60`](../packages/spill/spill-policy/src/index.ts)
 
-<a id="deepseek-aidsh-storage-domain"></a>
+<a id="open-harnessoh-storage-domain"></a>
 
 ## `@open-harness/oh-storage-domain`
 
@@ -2129,7 +2129,7 @@ export interface Config {
 
 Source: [`packages/storage/storage-domain/src/index.ts:52`](../packages/storage/storage-domain/src/index.ts)
 
-<a id="deepseek-aidsh-storage-json"></a>
+<a id="open-harnessoh-storage-json"></a>
 
 ## `@open-harness/oh-storage-json`
 
@@ -2150,7 +2150,7 @@ export interface Config {
 
 Source: [`packages/storage/storage-json/src/index.ts:27`](../packages/storage/storage-json/src/index.ts)
 
-<a id="deepseek-aidsh-storage-sqlite"></a>
+<a id="open-harnessoh-storage-sqlite"></a>
 
 ## `@open-harness/oh-storage-sqlite`
 
@@ -2190,7 +2190,7 @@ export type JournalMode = 'wal' | 'delete' | 'truncate' | 'persist'
 
 Source: [`packages/storage/storage-sqlite/src/index.ts:24`](../packages/storage/storage-sqlite/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-acp"></a>
+<a id="open-harnessoh-subagent-acp"></a>
 
 ## `@open-harness/oh-subagent-acp`
 
@@ -2243,7 +2243,7 @@ export type PermissionPolicy = 'allow' | 'reject'
 
 Source: [`packages/subagent/subagent-acp/src/index.ts:27`](../packages/subagent/subagent-acp/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-claude-code"></a>
+<a id="open-harnessoh-subagent-claude-code"></a>
 
 ## `@open-harness/oh-subagent-claude-code`
 
@@ -2264,7 +2264,7 @@ export interface Config {
 
 Source: [`packages/subagent/subagent-claude-code/src/index.ts:32`](../packages/subagent/subagent-claude-code/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-codex"></a>
+<a id="open-harnessoh-subagent-codex"></a>
 
 ## `@open-harness/oh-subagent-codex`
 
@@ -2285,7 +2285,7 @@ export interface Config {
 
 Source: [`packages/subagent/subagent-codex/src/index.ts:30`](../packages/subagent/subagent-codex/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-dsh-sdk"></a>
+<a id="open-harnessoh-subagent-dsh-sdk"></a>
 
 ## `@open-harness/oh-subagent-dsh-sdk`
 
@@ -2338,7 +2338,7 @@ export interface Config {
 
 Source: [`packages/subagent/subagent-dsh-sdk/src/index.ts:29`](../packages/subagent/subagent-dsh-sdk/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-fork-in-process"></a>
+<a id="open-harnessoh-subagent-fork-in-process"></a>
 
 ## `@open-harness/oh-subagent-fork-in-process`
 
@@ -2354,7 +2354,7 @@ export interface Config {
 
 Source: [`packages/subagent/subagent-fork-in-process/src/index.ts:31`](../packages/subagent/subagent-fork-in-process/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-spawn-in-process"></a>
+<a id="open-harnessoh-subagent-spawn-in-process"></a>
 
 ## `@open-harness/oh-subagent-spawn-in-process`
 
@@ -2370,7 +2370,7 @@ export interface Config {
 
 Source: [`packages/subagent/subagent-spawn-in-process/src/index.ts:25`](../packages/subagent/subagent-spawn-in-process/src/index.ts)
 
-<a id="deepseek-aidsh-subprocess-e2b"></a>
+<a id="open-harnessoh-subprocess-e2b"></a>
 
 ## `@open-harness/oh-subprocess-e2b`
 
@@ -2386,7 +2386,7 @@ export interface Config {
 
 Source: [`packages/e2b/subprocess-e2b/src/index.ts:25`](../packages/e2b/subprocess-e2b/src/index.ts)
 
-<a id="deepseek-aidsh-system-prompt"></a>
+<a id="open-harnessoh-system-prompt"></a>
 
 ## `@open-harness/oh-system-prompt`
 
@@ -2413,7 +2413,7 @@ export interface Config {
 
 Source: [`packages/core/system-prompt/src/index.ts:186`](../packages/core/system-prompt/src/index.ts)
 
-<a id="deepseek-aidsh-terminal-bash"></a>
+<a id="open-harnessoh-terminal-bash"></a>
 
 ## `@open-harness/oh-terminal-bash`
 
@@ -2458,7 +2458,7 @@ export interface Config {
 
 Source: [`packages/terminal/terminal-bash/src/config.ts:6`](../packages/terminal/terminal-bash/src/config.ts)
 
-<a id="deepseek-aidsh-time-context"></a>
+<a id="open-harnessoh-time-context"></a>
 
 ## `@open-harness/oh-time-context`
 
@@ -2476,7 +2476,7 @@ export interface Config {
 
 Source: [`packages/context/time-context/src/index.ts:27`](../packages/context/time-context/src/index.ts)
 
-<a id="deepseek-aidsh-tmux-context"></a>
+<a id="open-harnessoh-tmux-context"></a>
 
 ## `@open-harness/oh-tmux-context`
 
@@ -2492,7 +2492,7 @@ export interface Config {
 
 Source: [`packages/context/tmux-context/src/index.ts:34`](../packages/context/tmux-context/src/index.ts)
 
-<a id="deepseek-aidsh-token-meter"></a>
+<a id="open-harnessoh-token-meter"></a>
 
 ## `@open-harness/oh-token-meter`
 
@@ -2503,7 +2503,7 @@ export type TokenMeterConfig = Record<string, never>
 
 Source: [`packages/llm/token-meter/src/types.ts:12`](../packages/llm/token-meter/src/types.ts)
 
-<a id="deepseek-aidsh-tool-bash"></a>
+<a id="open-harnessoh-tool-bash"></a>
 
 ## `@open-harness/oh-tool-bash`
 
@@ -2519,7 +2519,7 @@ export interface Config {
 
 Source: [`packages/shell/tool-bash/src/index.ts:34`](../packages/shell/tool-bash/src/index.ts)
 
-<a id="deepseek-aidsh-tool-bash-persistent"></a>
+<a id="open-harnessoh-tool-bash-persistent"></a>
 
 ## `@open-harness/oh-tool-bash-persistent`
 
@@ -2541,7 +2541,7 @@ export interface Config {
 
 Source: [`packages/shell/tool-bash-persistent/src/index.ts:400`](../packages/shell/tool-bash-persistent/src/index.ts)
 
-<a id="deepseek-aidsh-tool-fs"></a>
+<a id="open-harnessoh-tool-fs"></a>
 
 ## `@open-harness/oh-tool-fs`
 
@@ -2563,7 +2563,7 @@ export interface Config {
 
 Source: [`packages/fs/tool-fs/src/index.ts:25`](../packages/fs/tool-fs/src/index.ts)
 
-<a id="deepseek-aidsh-tool-fs-search"></a>
+<a id="open-harnessoh-tool-fs-search"></a>
 
 ## `@open-harness/oh-tool-fs-search`
 
@@ -2598,7 +2598,7 @@ export interface Config {
 
 Source: [`packages/fs/tool-fs-search/src/index.ts:73`](../packages/fs/tool-fs-search/src/index.ts)
 
-<a id="deepseek-aidsh-tool-goal"></a>
+<a id="open-harnessoh-tool-goal"></a>
 
 ## `@open-harness/oh-tool-goal`
 
@@ -2614,7 +2614,7 @@ export interface Config {
 
 Source: [`packages/goal/tool-goal/src/index.ts:26`](../packages/goal/tool-goal/src/index.ts)
 
-<a id="deepseek-aidsh-tool-jobs"></a>
+<a id="open-harnessoh-tool-jobs"></a>
 
 ## `@open-harness/oh-tool-jobs`
 
@@ -2648,7 +2648,7 @@ export type CompletionDelivery = 'quiet' | 'wakeup'
 
 Source: [`packages/jobs/tool-jobs/src/index.ts:32`](../packages/jobs/tool-jobs/src/index.ts)
 
-<a id="deepseek-aidsh-tool-lsp"></a>
+<a id="open-harnessoh-tool-lsp"></a>
 
 ## `@open-harness/oh-tool-lsp`
 
@@ -2668,7 +2668,7 @@ export interface Config {
 
 Source: [`packages/lsp/tool-lsp/src/index.ts:58`](../packages/lsp/tool-lsp/src/index.ts)
 
-<a id="deepseek-aidsh-tool-pwsh"></a>
+<a id="open-harnessoh-tool-pwsh"></a>
 
 ## `@open-harness/oh-tool-pwsh`
 
@@ -2684,7 +2684,7 @@ export interface Config {
 
 Source: [`packages/shell/tool-pwsh/src/index.ts:52`](../packages/shell/tool-pwsh/src/index.ts)
 
-<a id="deepseek-aidsh-tool-ralph"></a>
+<a id="open-harnessoh-tool-ralph"></a>
 
 ## `@open-harness/oh-tool-ralph`
 
@@ -2706,7 +2706,7 @@ export interface Config {
 
 Source: [`packages/workflow/tool-ralph/src/index.ts:23`](../packages/workflow/tool-ralph/src/index.ts)
 
-<a id="deepseek-aidsh-tool-session-query"></a>
+<a id="open-harnessoh-tool-session-query"></a>
 
 ## `@open-harness/oh-tool-session-query`
 
@@ -2724,7 +2724,7 @@ export interface Config {
 
 Source: [`packages/session-query/tool-session-query/src/index.ts:29`](../packages/session-query/tool-session-query/src/index.ts)
 
-<a id="deepseek-aidsh-tool-skill"></a>
+<a id="open-harnessoh-tool-skill"></a>
 
 ## `@open-harness/oh-tool-skill`
 
@@ -2740,7 +2740,7 @@ export interface Config {
 
 Source: [`packages/skill/tool-skill/src/index.ts:61`](../packages/skill/tool-skill/src/index.ts)
 
-<a id="deepseek-aidsh-tool-str-replace-editor"></a>
+<a id="open-harnessoh-tool-str-replace-editor"></a>
 
 ## `@open-harness/oh-tool-str-replace-editor`
 
@@ -2758,7 +2758,7 @@ export interface Config {
 
 Source: [`packages/fs/tool-str-replace-editor/src/index.ts:497`](../packages/fs/tool-str-replace-editor/src/index.ts)
 
-<a id="deepseek-aidsh-tool-subagent"></a>
+<a id="open-harnessoh-tool-subagent"></a>
 
 ## `@open-harness/oh-tool-subagent`
 
@@ -2823,7 +2823,7 @@ Depends on: [`AgentOptions`](subsystems/core.md)
 
 Source: [`packages/subagent/tool-subagent/src/index.ts:29`](../packages/subagent/tool-subagent/src/index.ts)
 
-<a id="deepseek-aidsh-tool-subagent-report"></a>
+<a id="open-harnessoh-tool-subagent-report"></a>
 
 ## `@open-harness/oh-tool-subagent-report`
 
@@ -2845,7 +2845,7 @@ Depends on: [`SubagentReportDelivery`](subsystems/subagent.md)
 
 Source: [`packages/subagent/tool-subagent-report/src/index.ts:27`](../packages/subagent/tool-subagent-report/src/index.ts)
 
-<a id="deepseek-aidsh-tool-terminal"></a>
+<a id="open-harnessoh-tool-terminal"></a>
 
 ## `@open-harness/oh-tool-terminal`
 
@@ -2863,7 +2863,7 @@ export interface Config {
 
 Source: [`packages/terminal/tool-terminal/src/index.ts:35`](../packages/terminal/tool-terminal/src/index.ts)
 
-<a id="deepseek-aidsh-tool-todo"></a>
+<a id="open-harnessoh-tool-todo"></a>
 
 ## `@open-harness/oh-tool-todo`
 
@@ -2885,7 +2885,7 @@ export interface Config {
 
 Source: [`packages/todo/tool-todo/src/index.ts:29`](../packages/todo/tool-todo/src/index.ts)
 
-<a id="deepseek-aidsh-tool-web"></a>
+<a id="open-harnessoh-tool-web"></a>
 
 ## `@open-harness/oh-tool-web`
 
@@ -2911,7 +2911,7 @@ export interface Config {
 
 Source: [`packages/web/tool-web/src/index.ts:37`](../packages/web/tool-web/src/index.ts)
 
-<a id="deepseek-aidsh-tool-workflow"></a>
+<a id="open-harnessoh-tool-workflow"></a>
 
 ## `@open-harness/oh-tool-workflow`
 
@@ -2929,7 +2929,7 @@ export interface Config {
 
 Source: [`packages/workflow/tool-workflow/src/index.ts:33`](../packages/workflow/tool-workflow/src/index.ts)
 
-<a id="deepseek-aidsh-tools"></a>
+<a id="open-harnessoh-tools"></a>
 
 ## `@open-harness/oh-tools`
 
@@ -2965,7 +2965,7 @@ export type ToolPresentationMode = 'native' | 'code' | 'both'
 
 Source: [`packages/core/tools/src/index.ts:662`](../packages/core/tools/src/index.ts)
 
-<a id="deepseek-aidsh-typert-loader"></a>
+<a id="open-harnessoh-typert-loader"></a>
 
 ## `@open-harness/oh-typert-loader`
 
@@ -2981,7 +2981,7 @@ export interface Config {
 
 Source: [`packages/typert/loader/src/index.ts:47`](../packages/typert/loader/src/index.ts)
 
-<a id="deepseek-aidsh-user-approval"></a>
+<a id="open-harnessoh-user-approval"></a>
 
 ## `@open-harness/oh-user-approval`
 
@@ -3012,7 +3012,7 @@ export type ApprovalPolicy = 'ask' | 'never'
 
 Source: [`packages/interaction/user-approval/src/index.ts:177`](../packages/interaction/user-approval/src/index.ts)
 
-<a id="deepseek-aidsh-web"></a>
+<a id="open-harnessoh-web"></a>
 
 ## `@open-harness/oh-web`
 
@@ -3033,7 +3033,7 @@ export interface WebRuntimeConfig {
 
 Source: [`packages/web/web/src/index.ts:55`](../packages/web/web/src/index.ts)
 
-<a id="deepseek-aidsh-web-app"></a>
+<a id="open-harnessoh-web-app"></a>
 
 ## `@open-harness/oh-web-app`
 
@@ -3058,7 +3058,7 @@ export interface Config {
 
 Source: [`packages/bundle/web-app/src/index.ts:41`](../packages/bundle/web-app/src/index.ts)
 
-<a id="deepseek-aidsh-web-fetch-http"></a>
+<a id="open-harnessoh-web-fetch-http"></a>
 
 ## `@open-harness/oh-web-fetch-http`
 
@@ -3084,7 +3084,7 @@ export interface Config {
 
 Source: [`packages/web/web-fetch-http/src/index.ts:34`](../packages/web/web-fetch-http/src/index.ts)
 
-<a id="deepseek-aidsh-web-fetch-websift"></a>
+<a id="open-harnessoh-web-fetch-websift"></a>
 
 ## `@open-harness/oh-web-fetch-websift`
 
@@ -3104,7 +3104,7 @@ export interface Config {
 
 Source: [`packages/web/web-fetch-websift/src/index.ts:29`](../packages/web/web-fetch-websift/src/index.ts)
 
-<a id="deepseek-aidsh-web-search-deepseek"></a>
+<a id="open-harnessoh-web-search-deepseek"></a>
 
 ## `@open-harness/oh-web-search-deepseek`
 
@@ -3132,7 +3132,7 @@ export interface Config {
 
 Source: [`packages/web/web-search-deepseek/src/index.ts:46`](../packages/web/web-search-deepseek/src/index.ts)
 
-<a id="deepseek-aidsh-web-search-exa"></a>
+<a id="open-harnessoh-web-search-exa"></a>
 
 ## `@open-harness/oh-web-search-exa`
 
@@ -3156,7 +3156,7 @@ export interface Config {
 
 Source: [`packages/web/web-search-exa/src/index.ts:38`](../packages/web/web-search-exa/src/index.ts)
 
-<a id="deepseek-aidsh-web-search-perplexity"></a>
+<a id="open-harnessoh-web-search-perplexity"></a>
 
 ## `@open-harness/oh-web-search-perplexity`
 
@@ -3180,7 +3180,7 @@ export interface Config {
 
 Source: [`packages/web/web-search-perplexity/src/index.ts:32`](../packages/web/web-search-perplexity/src/index.ts)
 
-<a id="deepseek-aidsh-web-search-websift"></a>
+<a id="open-harnessoh-web-search-websift"></a>
 
 ## `@open-harness/oh-web-search-websift`
 
@@ -3200,7 +3200,7 @@ export interface Config {
 
 Source: [`packages/web/web-search-websift/src/index.ts:34`](../packages/web/web-search-websift/src/index.ts)
 
-<a id="deepseek-aidsh-workflow-worker-thread"></a>
+<a id="open-harnessoh-workflow-worker-thread"></a>
 
 ## `@open-harness/oh-workflow-worker-thread`
 
@@ -3230,7 +3230,7 @@ export interface Config {
 
 Source: [`packages/workflow/workflow-worker-thread/src/index.ts:32`](../packages/workflow/workflow-worker-thread/src/index.ts)
 
-<a id="deepseek-aidsh-workspace-references"></a>
+<a id="open-harnessoh-workspace-references"></a>
 
 ## `@open-harness/oh-workspace-references`
 

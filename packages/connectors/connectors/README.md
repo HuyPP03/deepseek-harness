@@ -68,7 +68,7 @@ The wire view is secret-free by construction: server entries carry `serverName`,
 |---|---|---|
 | `catalogDir` | none | Directory of shipped `.yml` manifests; without it the catalog is custom-only. |
 | `userDir` | `<harness home>/.connectors` | Custom manifests (`.json`, id-matched) and override documents. |
-| `dshHome` | `$OH_HOME` or `~/.oh` | Harness home for the `userDir` default. |
+| `ohHome` | `$OH_HOME` or `~/.oh` | Harness home for the `userDir` default. |
 
 Optional seams: `credentials`, `oauthTokens`, and `agentPresets` are consumed through `ctx.get`; an operation that needs a missing seam fails with `ConnectorSeamUnavailableError`, and reads still work without them.
 

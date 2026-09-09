@@ -58,7 +58,7 @@ These instructions apply to work under `packages/app`. Use them as guidance when
 
 ```ts
 export interface Config {
-  dshHome?: string
+  ohHome?: string
   projectRootMarkers?: string[]
   maxBytes: number
   maxSourceBytes?: number

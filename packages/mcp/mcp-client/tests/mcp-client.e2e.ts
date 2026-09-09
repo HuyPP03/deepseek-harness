@@ -56,9 +56,9 @@ class ImageAdapter extends LlmAdapter {
   }
 }
 
-async function mountImageRegistry(dshHome: string): Promise<Context> {
+async function mountImageRegistry(ohHome: string): Promise<Context> {
   const ctx = await mountRegistry()
-  await ctx.plugin(LocalAttachmentStore, { dshHome })
+  await ctx.plugin(LocalAttachmentStore, { ohHome })
   await ctx.plugin(LlmRuntime)
   ctx.llm.registerAdapter(['visual'], new ImageAdapter())
   return ctx

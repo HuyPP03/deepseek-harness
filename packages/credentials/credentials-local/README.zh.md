@@ -22,7 +22,7 @@
 | 字段 | 默认值 | 含义 |
 |---|---|---|
 | `path` | `<harness home>/.credentials.yaml` | 凭据文档位置。 |
-| `dshHome` | `$OH_HOME` 或 `~/.oh` | `path` 缺省时使用的 harness home。 |
+| `ohHome` | `$OH_HOME` 或 `~/.oh` | `path` 缺省时使用的 harness home。 |
 | `watch` | `true` | 热发布外部编辑。 |
 | `debounceMs` | `100` | watcher 写入稳定窗口。 |
 

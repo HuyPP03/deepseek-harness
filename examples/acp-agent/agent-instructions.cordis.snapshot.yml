@@ -18,7 +18,7 @@
           persistenceCompression: 'none'
           workspaceContext:
             maxBytes: 65536
-            dshHome: !!js process.cwd() + '/.oh'
+            ohHome: !!js process.cwd() + '/.oh'
             projectRootMarkers:
               - .oh-project
           persona: |

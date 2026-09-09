@@ -8,7 +8,7 @@ The **model-facing filesystem tools** — `read`, `read_image`, `write`, `edit` 
 // Default deployment: a ctx.fs provider, the policy plugin, then the tools.
 await ctx.plugin(LocalFileSystem, { cwd: process.cwd() }) // @open-harness/oh-fs-local
 await ctx.plugin(FsPolicy)                             // @open-harness/oh-fs-observation-policy (policy gate)
-await ctx.plugin(LocalAttachmentStore, { dshHome })       // optional — enables durable read_image results
+await ctx.plugin(LocalAttachmentStore, { ohHome })       // optional — enables durable read_image results
 await ctx.plugin(ToolFs)                                  // this package — read/write/edit, plus read_image with attachments
 ```
 

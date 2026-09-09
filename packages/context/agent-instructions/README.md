@@ -58,7 +58,7 @@ The initial baseline event itself is not rewritten. Its typed changes remain aut
 
 ```ts
 export interface Config {
-  dshHome?: string
+  ohHome?: string
   projectRootMarkers?: string[]
   maxBytes: number
   maxSourceBytes?: number

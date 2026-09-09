@@ -12,12 +12,12 @@ The package root exports the Cordis plugin contract (`name`, `inject`, `Config`,
 - id: shell-env
   name: '@open-harness/oh-shell-env'
   config:
-    dshHome: C:\Users\me\.oh   # default: $OH_HOME, then ~/.oh
+    ohHome: C:\Users\me\.oh   # default: $OH_HOME, then ~/.oh
 ```
 
 ## Managed environment
 
-Every foreground and background model shell call receives a newly collected trusted `OH_*` environment. `OH_HOME` is the absolute Harness home resolved by [`@open-harness/oh-home-paths`](../../util/home-paths/README.md) (`dshHome` config, then ambient `$OH_HOME`, then `~/.oh`) and `OH_SHELL=1` identifies the managed child. Agent calls additionally receive `OH_SESSION_ID=agent.session.header.id`; when the active persistence seam locates a JSONL artifact they also receive `OH_SESSION_JSONL=<absolute target path>`. The JSONL path is a location hint: it may not exist before the first flush or contain the current buffered turn, and it is not an authorization credential.
+Every foreground and background model shell call receives a newly collected trusted `OH_*` environment. `OH_HOME` is the absolute Harness home resolved by [`@open-harness/oh-home-paths`](../../util/home-paths/README.md) (`ohHome` config, then ambient `$OH_HOME`, then `~/.oh`) and `OH_SHELL=1` identifies the managed child. Agent calls additionally receive `OH_SESSION_ID=agent.session.header.id`; when the active persistence seam locates a JSONL artifact they also receive `OH_SESSION_JSONL=<absolute target path>`. The JSONL path is a location hint: it may not exist before the first flush or contain the current buffered turn, and it is not an authorization credential.
 
 `ctx.shellEnv` owns collection. Other plugins can register an effect-scoped contributor with a stable name, declared keys/descriptions, and `resolve(execution: ToolExecution)`; duplicate ownership and undeclared runtime keys fail loudly, while `list()` enumerates declarations without executing providers. Harness built-ins reserve `OH_HOME`, `OH_SHELL`, and `OH_SESSION_ID`; this plugin's persistence translator owns `OH_SESSION_JSONL` by reading the backend-neutral `sessionPersistence.locate()` seam.
 

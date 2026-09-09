@@ -86,7 +86,7 @@ export interface Config {
   /** Directory holding user override documents and custom connector manifests; defaults to `.connectors` under the harness home. */
   readonly userDir?: string
   /** Harness home used when `userDir` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
-  readonly dshHome?: string
+  readonly ohHome?: string
 }
 
 /** One user override document: the non-secret, user-specific fields a connector can be configured with. */
@@ -248,7 +248,7 @@ export class Connectors extends Service {
   static Config: z<Config> = z.object({
     catalogDir: z.string(),
     userDir: z.string(),
-    dshHome: z.string(),
+    ohHome: z.string(),
   })
 
   private readonly catalogDir: string | undefined

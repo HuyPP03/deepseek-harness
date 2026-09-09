@@ -28,12 +28,12 @@ export const inject: string[] = []
 /** Plugin config (all optional — the built-in facts resolve without defaults). */
 export interface Config {
   /** Open Harness home directory exposed as `OH_HOME`; defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
 }
 
 /** Runtime configuration schema for the shell-env plugin. */
 export const Config: z<Config> = z.object({
-  dshHome: z.string(),
+  ohHome: z.string(),
 })
 
 /** Model-visible metadata for one managed `OH_*` environment variable. */
@@ -89,7 +89,7 @@ const BASH_ENV_KEY_SUFFIX = /^[A-Z][A-Z0-9_]*$/
 export class ShellEnvRegistry extends Service {
   private readonly contributors = new Map<string, BashEnvContributor>()
   private readonly keyOwners = new Map<OhEnvironmentKey, string>()
-  private readonly dshHome: string
+  private readonly ohHome: string
 
   /**
    * Create and install the `ctx.shellEnv` service.
@@ -98,7 +98,7 @@ export class ShellEnvRegistry extends Service {
    */
   constructor(ctx: Context, config: Config = {}) {
     super(ctx, 'shellEnv')
-    this.dshHome = resolveOhHome(config.dshHome)
+    this.ohHome = resolveOhHome(config.ohHome)
   }
 
   /**
@@ -151,7 +151,7 @@ export class ShellEnvRegistry extends Service {
    */
   collect(execution: ToolExecution): OhEnvironment {
     const values: Record<OhEnvironmentKey, string> = {
-      [OH_HOME_ENV]: this.dshHome,
+      [OH_HOME_ENV]: this.ohHome,
       [OH_SHELL_KEY]: '1',
     }
     if (execution.agent !== undefined) {

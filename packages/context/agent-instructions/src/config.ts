@@ -17,7 +17,7 @@ const RESERVED_PATH_SEGMENTS = new Set(['', '.', '..'])
 /** User-facing workspace instruction loader configuration. */
 export interface Config {
   /** Harness home containing the fixed user-global `AGENTS.md`; defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
   /** Directory entries that identify the project root while walking upward from the session cwd. */
   projectRootMarkers?: string[]
   /** UTF-8 byte cap for one rendered baseline or dynamic batch; non-positive or non-finite disables loading. */
@@ -37,7 +37,7 @@ export interface Config {
 }
 
 export const Config: z<Config> = z.object({
-  dshHome: z.string(),
+  ohHome: z.string(),
   projectRootMarkers: z.array(z.string()).default([...DEFAULT_PROJECT_ROOT_MARKERS]),
   maxBytes: z.number().required(),
   maxSourceBytes: z.number().step(1).min(1).default(DEFAULT_MAX_SOURCE_BYTES),
@@ -47,7 +47,7 @@ export const Config: z<Config> = z.object({
 
 /** Normalized instruction discovery configuration. */
 export interface ResolvedDiscoveryConfig {
-  dshHome: string
+  ohHome: string
   projectRootMarkers: string[]
   instructionFileCandidates: string[]
   localInstructionFileCandidates: string[]
@@ -100,10 +100,10 @@ export function resolveConfig(config: Config): ResolvedConfig {
  * @returns normalized home, root markers, and instruction candidates.
  */
 export function resolveDiscoveryConfig(
-  config: Pick<Config, 'dshHome' | 'projectRootMarkers' | 'instructionFileCandidates' | 'localInstructionFileCandidates'>,
+  config: Pick<Config, 'ohHome' | 'projectRootMarkers' | 'instructionFileCandidates' | 'localInstructionFileCandidates'>,
 ): ResolvedDiscoveryConfig {
   return {
-    dshHome: resolveOhHome(config.dshHome),
+    ohHome: resolveOhHome(config.ohHome),
     projectRootMarkers: config.projectRootMarkers ?? [...DEFAULT_PROJECT_ROOT_MARKERS],
     instructionFileCandidates: resolveInstructionFileCandidates(
       config.instructionFileCandidates,

@@ -8,7 +8,7 @@ process.stdin.on('end', () => {
     configPath: process.argv[2],
     args: process.argv.slice(2),
     cwd: process.cwd(),
-    dshHome: process.env.OH_HOME,
+    ohHome: process.env.OH_HOME,
     agentsHome: process.env.OH_AGENTS_HOME,
     marker: process.env.LOADER_SMOKE_MARKER,
     input,

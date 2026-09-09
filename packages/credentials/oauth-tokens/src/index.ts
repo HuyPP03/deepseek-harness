@@ -46,7 +46,7 @@ export interface Config {
   /** Token document path; defaults to `.connectors/oauth-tokens.json` under the harness home. */
   path?: string
   /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
-  dshHome?: string
+  ohHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean
   /** Watcher write-settle window in milliseconds; defaults to 100. */
@@ -69,7 +69,7 @@ interface ResolvedSpec {
  */
 export function resolveSpec(config: Config): ResolvedSpec {
   return {
-    filename: resolve(config.path ?? join(resolveOhHome(config.dshHome), '.connectors', TOKENS_FILENAME)),
+    filename: resolve(config.path ?? join(resolveOhHome(config.ohHome), '.connectors', TOKENS_FILENAME)),
     watch: config.watch ?? true,
     debounceMs: config.debounceMs ?? 100,
   }
@@ -198,7 +198,7 @@ export function assertOwnerId(ownerId: string): void {
 export class OAuthTokenStore extends Service {
   static Config: z<Config> = z.object({
     path: z.string(),
-    dshHome: z.string(),
+    ohHome: z.string(),
     watch: z.boolean().default(true),
     debounceMs: z.number().min(0).default(100),
   })

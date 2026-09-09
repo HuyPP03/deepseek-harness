@@ -127,12 +127,12 @@ function killableProcess(): ShellProcess {
   return proc
 }
 
-async function setup(toolConfig: Partial<ToolPwsh.Config> = {}, dshHome?: string) {
+async function setup(toolConfig: Partial<ToolPwsh.Config> = {}, ohHome?: string) {
   const ctx = new Context()
   await ctx.plugin(SystemPrompt)
   await ctx.plugin(ToolRuntime)
   await ctx.plugin(AgentRegistry)
-  await ctx.plugin(BashEnvPlugin, dshHome === undefined ? {} : { dshHome })
+  await ctx.plugin(BashEnvPlugin, ohHome === undefined ? {} : { ohHome })
   await ctx.plugin(FakeBash)
   await ctx.plugin(ToolPwsh, toolConfig)
   const bash = ctx.shell as FakeBash
@@ -140,14 +140,14 @@ async function setup(toolConfig: Partial<ToolPwsh.Config> = {}, dshHome?: string
 }
 
 /** Full harness: the generic job runtime + its controller, then the pwsh tool. */
-async function setupWithTasks(toolConfig: Partial<ToolPwsh.Config> = {}, dshHome?: string) {
+async function setupWithTasks(toolConfig: Partial<ToolPwsh.Config> = {}, ohHome?: string) {
   const ctx = new Context()
   await ctx.plugin(SystemPrompt)
   await ctx.plugin(ToolRuntime)
   await ctx.plugin(AgentRegistry)
   await ctx.plugin(LocalJobRegistry)
   await ctx.plugin(ToolTasks)
-  await ctx.plugin(BashEnvPlugin, dshHome === undefined ? {} : { dshHome })
+  await ctx.plugin(BashEnvPlugin, ohHome === undefined ? {} : { ohHome })
   await ctx.plugin(FakeBash)
   await ctx.plugin(ToolPwsh, toolConfig)
   const bash = ctx.shell as FakeBash
@@ -351,8 +351,8 @@ describe('argument validation', () => {
 
 describe('execution through the bash seam', () => {
   it('forwards command, session cwd, timeout, and managed OH_* environment', async () => {
-    const dshHome = mkdtempSync(join(tmpdir(), 'dsh-tool-pwsh-home-'))
-    const { ctx, bash } = await setup({}, dshHome)
+    const ohHome = mkdtempSync(join(tmpdir(), 'dsh-tool-pwsh-home-'))
+    const { ctx, bash } = await setup({}, ohHome)
     bash.handler = () => runResult('hi\n')
     const agent = registerFakeAgent(ctx, 'session-1')
     Object.assign(agent.session.header, { cwd: '/sessions/s1' })
@@ -367,7 +367,7 @@ describe('execution through the bash seam', () => {
     expect(request?.workdir).toBe('/sessions/s1')
     expect(request?.timeoutMs).toBe(1234)
     expect(request?.ohEnv).toEqual({
-      OH_HOME: dshHome,
+      OH_HOME: ohHome,
       OH_SHELL: '1',
       OH_SESSION_ID: 'session-1',
     })
