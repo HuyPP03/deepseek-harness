@@ -66,8 +66,8 @@
   font: var(--dsw-font-markdown-code-block);
   overflow-x: auto;
   overflow-y: auto;
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .body::-webkit-scrollbar-thumb {

@@ -2,7 +2,7 @@
  * not this 450) — component-level var pinned to the static scale instead. */
 .dot,
 .matrix {
-  --dsh-state-ongoing: var(--dsw-static-brand-450);
+  --oh-state-ongoing: var(--dsw-static-brand-450);
 }
 
 /* Solid states: same-color halo via a 0.10-opacity outer layer (::before)
@@ -48,7 +48,7 @@
  * animation-delay (index * -125ms) set inline by the component. */
 .matrix {
   flex: none;
-  color: var(--dsh-state-ongoing);
+  color: var(--oh-state-ongoing);
 }
 
 .cell {

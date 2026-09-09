@@ -51,8 +51,8 @@
      the output off screen. */
   max-height: 150px;
   overflow-y: auto;
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 /* Banner scrollbar floats off the card edge like the output's. */
@@ -166,8 +166,8 @@
   font: var(--dsl-terminal-font);
   overflow-x: auto;
   overflow-y: auto;
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 /* Both output scrollbars float 2px off the card edge. */

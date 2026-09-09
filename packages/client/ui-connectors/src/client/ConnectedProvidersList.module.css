@@ -82,8 +82,8 @@
   padding: 0 8px 8px 4px;
   /* Elevated surface: the rows paint the l1 rung on hover (above the base),
      so the list's own scrollport takes the l2 pair (scrollbar.css rebind). */
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 /* One connected-provider row: dot + name, hoverable, selects on click. */

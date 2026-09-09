@@ -87,8 +87,8 @@
   font-size: 12px;
   line-height: var(--insp-line-height);
   background: var(--dsw-alias-markdown-code-block);
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .spacer {
@@ -138,8 +138,8 @@
   overflow: auto;
   padding: 16px 18px;
   background: var(--dsw-alias-bg-base);
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .img {
@@ -167,8 +167,8 @@
   overflow: auto;
   padding: 12px 16px;
   background: var(--dsw-alias-bg-base);
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .gridTable {
@@ -241,8 +241,8 @@
   margin: 0;
   padding: 0 8px 12px;
   list-style: none;
-  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .browserRow {
