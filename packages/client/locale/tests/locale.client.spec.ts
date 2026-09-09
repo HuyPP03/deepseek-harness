@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Context } from '@open-harness/cordis'
 import { stubSettingsScope, type StubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import type { LocaleSettings, LocaleSnapshot } from '@open-harness/oh-client-locale/client'
@@ -17,28 +17,21 @@ const make = (host?: StubSettingsScope<LocaleSettings>): {
 }
 
 /**
- * Pin the browser environment a fresh service reads its initial locale from.
- * This package's own specs stub the globals directly instead of using
- * `usePinnedBrowserLanguages` (oh-client-test-runtime): they need the shapes
- * that helper deliberately cannot express — a missing `languages` list, a
- * list decoupled from `language`, and a non-browser run with no `window`.
+ * Stub the browser language the product deliberately ignores: specs use it to
+ * prove the English default is navigator-independent (zh/vi browsers included).
  */
 const stubLanguages = (...tags: string[]): void => {
   vi.stubGlobal('navigator', { languages: tags, language: tags[0] ?? '' })
 }
 
 describe('LocaleRuntime', () => {
-  beforeEach(() => {
-    // A Chinese browser is the baseline these specs assert their zh state on.
-    stubLanguages('zh-CN')
-  })
-
   afterEach(() => {
     vi.unstubAllGlobals()
   })
 
   it('translates through the active-locale -> en -> key chain', () => {
     const { svc } = make()
+    svc.setLocale('zh')
     svc.register('ns', 'zh', { hello: '你好', onlyZh: '仅中文' })
     svc.register('ns', 'en', { hello: 'Hello', onlyEn: 'Only en' })
     const t = svc.bind('ns')
@@ -53,6 +46,7 @@ describe('LocaleRuntime', () => {
 
   it('falls through to the common vocabulary after the namespace misses (production keys)', () => {
     const { svc } = make()
+    svc.setLocale('zh')
     // The shipped common set is registered by apply; the bench registers it
     // directly to pin the production chain: ns -> common -> en -> key.
     svc.register('common', 'zh', { retry: '重试' })
@@ -73,6 +67,7 @@ describe('LocaleRuntime', () => {
 
   it('interpolates {name} params and leaves unknown placeholders intact', () => {
     const { svc } = make()
+    svc.setLocale('zh')
     svc.register('ns', 'zh', { greet: '你好，{name}！第 {n} 次', partial: '{known} 与 {unknown}' })
     const t = svc.bind('ns')
     expect(t('greet', { name: '世界', n: 2 })).toBe('你好，世界！第 2 次')
@@ -87,6 +82,7 @@ describe('LocaleRuntime', () => {
 
   it('rejects duplicate (ns, locale) and disposer only removes its own dict', () => {
     const { svc } = make()
+    svc.setLocale('zh')
     const dispose = svc.register('ns', 'zh', { k: 'v1' })
     expect(() => svc.register('ns', 'zh', { k: 'v2' })).toThrow('already has locale')
     dispose()
@@ -106,10 +102,10 @@ describe('LocaleRuntime', () => {
     const r0 = svc.getSnapshot().revision
     svc.register('ns', 'zh', { k: 'v' })
     expect(svc.getSnapshot().revision).toBe(r0 + 1)
-    svc.setLocale('en')
+    svc.setLocale('zh')
     expect(seen).toEqual([r0 + 1, r0 + 2])
     off()
-    svc.setLocale('zh')
+    svc.setLocale('en')
     expect(seen).toHaveLength(2)
   })
 
@@ -120,7 +116,7 @@ describe('LocaleRuntime', () => {
       const seen: number[] = []
       svc.subscribe(() => { throw new Error('boom') })
       svc.subscribe(() => { seen.push(svc.getSnapshot().revision) })
-      svc.setLocale('en')
+      svc.setLocale('zh')
       expect(seen).toEqual([1])
       expect(spy).toHaveBeenCalledOnce()
     } finally {
@@ -142,21 +138,21 @@ describe('LocaleRuntime', () => {
   it('setLocale writes through the scope, republishes an immutable snapshot, and no-ops on same value', () => {
     const host = stubSettingsScope<LocaleSettings>()
     const { svc, events } = make(host)
-    svc.setLocale('en')
-    expect(svc.getLocale().active).toBe('en')
-    expect(host.set).toHaveBeenCalledWith('preference', 'en')
+    svc.setLocale('vi')
+    expect(svc.getLocale().active).toBe('vi')
+    expect(host.set).toHaveBeenCalledWith('preference', 'vi')
     expect(events).toHaveLength(1)
     expect(events[0]).toBe(svc.getLocale())
     expect(events[0]!.revision).toBe(1)
-    svc.setLocale('en')
+    svc.setLocale('vi')
     expect(events).toHaveLength(1)
     expect(host.set).toHaveBeenCalledOnce()
   })
 
   it('setLocale without a host scope stays process-local', () => {
     const { svc, events } = make()
-    svc.setLocale('en')
-    expect(svc.getLocale().active).toBe('en')
+    svc.setLocale('zh')
+    expect(svc.getLocale().active).toBe('zh')
     expect(events).toHaveLength(1)
   })
 
@@ -165,62 +161,52 @@ describe('LocaleRuntime', () => {
     expect(() => { svc.setLocale('fr') }).toThrow('not registered')
   })
 
-  it('adopts a Host preference over the browser language without writing it back', () => {
+  it('adopts a Host preference over the English default without writing it back', () => {
     const host = stubSettingsScope<LocaleSettings>()
     const { svc, events } = make(host)
-    host.publish({ status: 'ready', value: { preference: 'en' }, revision: 1, writable: true })
-    expect(svc.getLocale().active).toBe('en')
+    host.publish({ status: 'ready', value: { preference: 'zh' }, revision: 1, writable: true })
+    expect(svc.getLocale().active).toBe('zh')
     expect(events).toHaveLength(1)
     expect(host.set).not.toHaveBeenCalled()
-    host.publish({ value: { preference: 'en' }, revision: 2 })
+    host.publish({ value: { preference: 'zh' }, revision: 2 })
     expect(events).toHaveLength(1)
   })
 
-  it('an absent Host preference returns to the browser-derived locale', () => {
+  it('an absent Host preference returns to the English default', () => {
     const host = stubSettingsScope<LocaleSettings>()
     const { svc } = make(host)
-    host.publish({ status: 'ready', value: { preference: 'en' }, revision: 1, writable: true })
-    expect(svc.getLocale().active).toBe('en')
+    host.publish({ status: 'ready', value: { preference: 'vi' }, revision: 1, writable: true })
+    expect(svc.getLocale().active).toBe('vi')
     host.publish({ value: {}, revision: 2 })
-    expect(svc.getLocale().active).toBe('zh')
+    expect(svc.getLocale().active).toBe('en')
   })
 
   it('adopts a section already standing at construction and releases its subscription on dispose', async () => {
     const host = stubSettingsScope<LocaleSettings>()
-    host.publish({ status: 'ready', value: { preference: 'en' }, revision: 1, writable: true })
+    host.publish({ status: 'ready', value: { preference: 'zh' }, revision: 1, writable: true })
     const { ctx, svc } = make(host)
-    expect(svc.getLocale().active).toBe('en')
+    expect(svc.getLocale().active).toBe('zh')
     expect(host.listenerCount()).toBe(1)
     await ctx.fiber.dispose()
     expect(host.listenerCount()).toBe(0)
   })
 
-  it('opens provisionally in the browser language, matching regional variants on their primary subtag', () => {
+  it('opens in the English default regardless of the browser language', () => {
+    // Regional variants and unshipped languages alike: the product default
+    // is en, and the navigator is never consulted.
     stubLanguages('en-GB', 'zh-CN')
     expect(make().svc.getLocale().active).toBe('en')
-    stubLanguages('zh-Hant-TW')
-    expect(make().svc.getLocale().active).toBe('zh')
-    stubLanguages('vi-VN')
-    expect(make().svc.getLocale().active).toBe('vi')
-    // An unshipped language walks the list to the first one this app ships.
-    stubLanguages('fr-FR', 'en-US')
+    stubLanguages('zh-Hans-CN')
     expect(make().svc.getLocale().active).toBe('en')
-    // Only `language` populated: an empty ordered list, and a host that
-    // exposes no `languages` property at all.
-    vi.stubGlobal('navigator', { languages: [], language: 'vi-VN' })
-    expect(make().svc.getLocale().active).toBe('vi')
-    vi.stubGlobal('navigator', { language: 'vi-VN' })
-    expect(make().svc.getLocale().active).toBe('vi')
-    // No shipped language anywhere in the browser's preferences: en remains
-    // the product default rather than an arbitrary near-match.
+    stubLanguages('vi-VN')
+    expect(make().svc.getLocale().active).toBe('en')
     stubLanguages('fr-FR', 'de')
     expect(make().svc.getLocale().active).toBe('en')
   })
 
-  it('runs outside a browser (node boots): the fallback decides and the machine language does not', () => {
+  it('runs outside a browser (node boots): the same default, machine navigator never consulted', () => {
     vi.stubGlobal('window', undefined)
-    // Node exposes its own global navigator; without a window it must not
-    // reach the resolution at all.
+    // Node exposes its own global navigator; it must not decide the locale.
     stubLanguages('vi-VN')
     const { svc } = make()
     expect(svc.getLocale().active).toBe('en')
@@ -228,8 +214,8 @@ describe('LocaleRuntime', () => {
     expect(svc.getLocale().active).toBe('zh')
   })
 
-  it('lets an explicit in-process preference replace the browser-derived value', () => {
-    stubLanguages('en-US')
+  it('lets an explicit in-process preference replace the default', () => {
+    stubLanguages('zh-CN')
     const { svc } = make()
     svc.setLocale('vi')
     expect(svc.getLocale().active).toBe('vi')

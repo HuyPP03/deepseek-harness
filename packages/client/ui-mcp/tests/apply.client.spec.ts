@@ -10,19 +10,17 @@ import { describe, expect, it, vi } from 'vitest'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import { resolveSlotLabel } from '@open-harness/oh-client-ui-slots'
-import { usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
 import type { CommandDecoration } from '@open-harness/oh-client-ui-commands/client'
 import { apply, inject } from '../src/client/index.ts'
 import { McpSection } from '../src/client/McpSection.tsx'
 import type { McpSectionState } from '../src/client/section-store.ts'
 
-// The section nav label is asserted in Chinese; state the browser assumed.
-usePinnedBrowserLanguages('zh-CN')
-
 async function bench() {
   const ctx = new Context()
   await ctx.plugin(SlotRegistry).await()
-  ctx.provide('locale', new LocaleRuntime(ctx))
+  const locale = new LocaleRuntime(ctx)
+  locale.setLocale('zh')
+  ctx.provide('locale', locale)
   ctx.provide('connection', {
     api: {
       mcp: {

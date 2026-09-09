@@ -5,20 +5,17 @@ import { describe, expect, it, vi } from 'vitest'
 import { resolveSlotLabel } from '@open-harness/oh-client-ui-slots'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
-import { TestRemote, usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { TestRemote } from '@open-harness/oh-client-test-runtime'
 import { apply, inject, refreshIfLoaded } from '@open-harness/oh-client-ui-settings-models/client'
 import { ModelsSection } from '../src/client/ModelsSection.tsx'
 import { DeepSeekOnboardingDialog } from '../src/client/DeepSeekOnboardingDialog.tsx'
 import { WelcomeNotice } from '../src/client/WelcomeNotice.tsx'
 
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
-
 async function bench(isLoopback = true) {
   const ctx = new Context()
   await ctx.plugin(SlotRegistry).await()
   const locale = new LocaleRuntime(ctx)
+  locale.setLocale('zh')
   ctx.provide('locale', locale)
   // The plugins inject `remote`; forwarded events reach them through the
   // same `$dispatch` handoff the connection sink makes.

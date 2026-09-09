@@ -10,27 +10,22 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, waitFor } from '@testing-library/react'
-import { SlotTestRuntime, usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { SlotTestRuntime } from '@open-harness/oh-client-test-runtime'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import { apply, inject } from '@open-harness/oh-client-ui-sidebar/client'
-
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
 
 afterEach(cleanup)
 
 /**
- * Boot the package over the slot test runtime. The default bench stays on
- * the service's default locale (zh — the fallback chain's base), pinning
- * what an untouched client shows; `locale: 'en'` pins the en copy instead.
- * The installed face backs the entry's standard `t` seat either way.
+ * Boot the package over the slot test runtime. The default bench pins the
+ * shipped Chinese copy; `locale: 'en'` pins the en copy instead. The
+ * installed face backs the entry's standard `t` seat either way.
  */
 async function bench(options: { locale?: 'en' } = {}) {
   const runtime = await SlotTestRuntime.create()
   runtime.provide('layout', { toggleSidebar: vi.fn(), setCenterView: vi.fn() })
   const locale = new LocaleRuntime(runtime.ctx)
-  if (options.locale === 'en') locale.setLocale('en')
+  locale.setLocale(options.locale === 'en' ? 'en' : 'zh')
   runtime.provide('locale', locale)
   runtime.slots.installLocale(locale)
   await runtime.declare({ 'sidebar': { kind: 'single', scope: 'root' } })

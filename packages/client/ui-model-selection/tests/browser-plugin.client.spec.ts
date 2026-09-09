@@ -14,16 +14,12 @@ import { describe, expect, it } from 'vitest'
 import { createScope } from '@open-harness/oh-client-runtime/client'
 import type { SessionId } from '@open-harness/oh-client-runtime/client'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
-import { TestRemote, usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { TestRemote } from '@open-harness/oh-client-test-runtime'
 import type { ModelProviderGroup, ModelSelection } from '@open-harness/oh-api-remotes/client'
 import type { CommandContribution, CommandDecoration, CommandPopupSelectSpec, SelectOption } from '@open-harness/oh-client-ui-commands/client'
 import type { ModelSelectInjected } from '../src/client/slots.ts'
 import { apply, inject } from '../src/client/index.ts'
 import { zh } from '../src/client/locales.ts'
-
-// The composer-block assertions read zh copy from the initial locale, so the
-// spec states the browser it assumes.
-usePinnedBrowserLanguages('zh-CN')
 
 const sid = (k: string): SessionId => k as SessionId
 
@@ -115,7 +111,9 @@ async function bench() {
       return () => { seats.delete(options.name) }
     },
   })
-  ctx.provide('locale', new LocaleRuntime(ctx))
+  const locale = new LocaleRuntime(ctx)
+  locale.setLocale('zh')
+  ctx.provide('locale', locale)
   const scopes = new Map<SessionId, Context>()
   const addressed = new Set<SessionId>()
   ctx.provide('sessions', {

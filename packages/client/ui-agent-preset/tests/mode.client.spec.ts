@@ -15,12 +15,8 @@ import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import { CHAT_PRESET_ID } from '@open-harness/oh-client-runtime/client'
 import type { CommandDecoration, CommandPopupSelectSpec } from '@open-harness/oh-client-ui-commands/client'
-import { usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
 import type { SessionId } from '@open-harness/oh-api-remotes/client'
 import { apply, inject } from '@open-harness/oh-client-ui-agent-preset/client'
-
-// These specs assert the shipped English copy; state the browser they assume.
-usePinnedBrowserLanguages('en-US')
 
 const sid = (key: string): SessionId => key as SessionId
 

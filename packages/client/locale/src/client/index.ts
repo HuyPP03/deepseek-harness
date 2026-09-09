@@ -119,7 +119,7 @@ export class LocaleRuntime {
   private listeners = new Set<() => void>()
   private readonly ctx: Context
   private readonly host: SettingsScope<LocaleSettings> | undefined
-  /** Browser-derived locale standing wherever no explicit Host selection does. */
+  /** English default standing wherever no explicit Host selection does. */
   private readonly provisional: LocaleId
 
   /**
@@ -131,7 +131,7 @@ export class LocaleRuntime {
   constructor(ctx: Context, host?: SettingsScope<LocaleSettings>) {
     this.ctx = ctx
     this.host = host
-    this.provisional = resolveInitialLocale()
+    this.provisional = FALLBACK_LOCALE
     this.snapshot = Object.freeze({ active: this.provisional, locales: LOCALES, revision: 0 })
     if (host !== undefined) {
       ctx.effect(() => host.subscribe(() => { this.adopt(host) }), 'locale: settings scope adoption')
@@ -182,7 +182,7 @@ export class LocaleRuntime {
 
   /**
    * Adopt the scope's accepted durable selection without writing it back; an
-   * absent selection returns to the browser-derived locale.
+   * absent selection returns to the English default.
    * @param host - the constructor-narrowed scope driving this adoption.
    */
   private adopt(host: SettingsScope<LocaleSettings>): void {
@@ -311,37 +311,6 @@ export class LocaleRuntime {
       }
     }
   }
-}
-
-/**
- * The browser's own language wins over {@link FALLBACK_LOCALE}; an explicit
- * Host preference may replace this provisional value after plugin activation.
- */
-function resolveInitialLocale(): LocaleId {
-  return detectBrowserLocale() ?? FALLBACK_LOCALE
-}
-
-/**
- * The first shipped locale the browser asks for, matched on the primary
- * subtag so every regional variant lands on its language (`zh-Hans-CN` -> zh,
- * `en-GB` -> en). `window` is the browser test, not `navigator`: Node exposes
- * a global `navigator` reporting the machine's own language, which would
- * otherwise decide the locale for non-browser runs (node e2e booting the
- * client tree). `navigator.language` trails the ordered `languages` list and
- * covers its absence on hosts that expose only the single tag.
- */
-function detectBrowserLocale(): LocaleId | undefined {
-  if (typeof window === 'undefined') return undefined
-  /* oxlint-disable-next-line typescript/no-unnecessary-condition --
-   * The DOM lib types `languages` as always present; embedders and older
-   * WebViews ship a Navigator without it, and spreading undefined would
-   * throw at boot. */
-  for (const tag of [...(navigator.languages ?? []), navigator.language]) {
-    const primary = tag.toLowerCase().split('-')[0]
-    const match = LOCALES.find(locale => locale.id === primary)
-    if (match) return match.id
-  }
-  return undefined
 }
 
 /** Required services: slot registration plus the settings transport. */

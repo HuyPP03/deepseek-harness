@@ -5,12 +5,10 @@ import { cleanup } from '@testing-library/react'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import { resolveSlotLabel } from '@open-harness/oh-client-ui-slots'
-import { usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
 import { apply, inject, NS } from '../src/client/index.ts'
 import { PluginInventorySettingsTab } from '../src/client/PluginInventorySettingsTab.tsx'
 import type { PluginInventorySettingsTabInjected } from '../src/client/PluginInventorySettingsTab.tsx'
 
-usePinnedBrowserLanguages('zh-CN')
 afterEach(cleanup)
 
 const EMPTY = { entries: [] }
@@ -22,6 +20,7 @@ async function bench() {
   const ctx = new Context()
   await ctx.plugin(SlotRegistry).await()
   const locale = new LocaleRuntime(ctx)
+  locale.setLocale('zh')
   ctx.provide('locale', locale)
   class RemoteService extends Service {
     constructor(serviceCtx: Context) {

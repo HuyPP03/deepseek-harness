@@ -6,15 +6,11 @@
 // entries. Tool composition belongs to ui-tool and its machinery spec.
 
 import { describe, expect, it, vi } from 'vitest'
-import { SlotTestRuntime, usePinnedBrowserLanguages, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
+import { SlotTestRuntime, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import { resolveSlotLabel } from '@open-harness/oh-client-ui-slots'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import type { SessionId } from '@open-harness/oh-client-runtime/client'
 import { apply, inject } from '@open-harness/oh-client-ui-conversation/client'
-
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
 
 const ROOT = 'root-1' as SessionId
 const CHILD = 'child-1' as SessionId
@@ -30,6 +26,7 @@ async function bench() {
     { id: CHILD, summary: { title: 'C', displayTitle: 'C', parentId: ROOT } }, { current: false })
   runtime.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn() })
   const locale = new LocaleRuntime(runtime.ctx)
+  locale.setLocale('zh')
   runtime.provide('locale', locale)
   runtime.slots.installLocale(locale)
 

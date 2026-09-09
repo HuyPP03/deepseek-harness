@@ -6,10 +6,8 @@ import { useState } from 'react'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import type { ISession, SessionId } from '@open-harness/oh-client-runtime/client'
 import type { PropsRenderSlots } from '@open-harness/oh-client-ui-slots'
-import { SlotTestRuntime, usePinnedBrowserLanguages, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
+import { SlotTestRuntime, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import { apply, inject, type EmptyWorkspaceOwnerProps } from '@open-harness/oh-client-ui-conversation/client'
-
-usePinnedBrowserLanguages('zh-CN')
 
 const SID = 's1' as SessionId
 
@@ -56,6 +54,7 @@ async function bench(opts?: { blank?: boolean }) {
   runtime.provide('settingsScope', { bind: () => stubSettingsScope().scope } as never)
   runtime.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn() })
   const locale = new LocaleRuntime(runtime.ctx)
+  locale.setLocale('zh')
   runtime.provide('locale', locale)
   runtime.slots.installLocale(locale)
   await runtime.sessions.add({
@@ -84,6 +83,7 @@ describe('resident composer', () => {
     runtime.provide('settingsScope', { bind: () => stubSettingsScope().scope } as never)
     runtime.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn() })
     const locale = new LocaleRuntime(runtime.ctx)
+    locale.setLocale('zh')
     runtime.provide('locale', locale)
     runtime.slots.installLocale(locale)
     await runtime.root.declare(LAYOUT_CHILDREN, AppRoot)
@@ -114,6 +114,7 @@ describe('resident composer', () => {
     runtime.provide('settingsScope', { bind: () => stubSettingsScope().scope } as never)
     runtime.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn() })
     const locale = new LocaleRuntime(runtime.ctx)
+    locale.setLocale('zh')
     runtime.provide('locale', locale)
     runtime.slots.installLocale(locale)
     await runtime.workspaces.update((draft) => {
@@ -183,6 +184,7 @@ describe('prompt rejection through the assembled composer', () => {
     runtime.provide('settingsScope', { bind: () => stubSettingsScope().scope } as never)
     runtime.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn() })
     const locale = new LocaleRuntime(runtime.ctx)
+    locale.setLocale('zh')
     runtime.provide('locale', locale)
     runtime.slots.installLocale(locale)
     const prompt = vi.fn<ISession['prompt']>(async () => ({

@@ -15,7 +15,7 @@
 // chat-toolview-slot.spec.tsx.
 
 import { describe, expect, it, vi } from 'vitest'
-import { SlotTestRuntime, usePinnedBrowserLanguages, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
+import { SlotTestRuntime, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import type { SessionBehaviorOverrides } from '@open-harness/oh-client-test-runtime'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import type { ISession, SessionId } from '@open-harness/oh-client-runtime/client'
@@ -25,10 +25,6 @@ import type {
   ConversationSessionInjected, DetailsInjected,
 } from '@open-harness/oh-client-ui-conversation/client'
 import type { createChatStore } from '../src/client/stores.ts'
-
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
 
 const ROOT = 'root-1' as SessionId
 
@@ -60,6 +56,7 @@ async function bench() {
   const layoutFake = { openDetails: vi.fn(), closeDetails: vi.fn() }
   runtime.provide('layout', layoutFake)
   const locale = new LocaleRuntime(runtime.ctx)
+  locale.setLocale('zh')
   runtime.provide('locale', locale)
   runtime.slots.installLocale(locale)
 

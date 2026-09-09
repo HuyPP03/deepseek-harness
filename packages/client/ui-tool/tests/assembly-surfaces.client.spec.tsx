@@ -5,14 +5,10 @@ import { cleanup, fireEvent, waitFor } from '@testing-library/react'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import type { ISession, SessionId, TodoItem, ToolResultNode } from '@open-harness/oh-client-runtime/client'
 import type { PropsRenderSlots } from '@open-harness/oh-client-ui-slots'
-import { SlotTestRuntime, usePinnedBrowserLanguages, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
+import { SlotTestRuntime, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import { apply as applyConversation, inject as injectConversation } from '@open-harness/oh-client-ui-conversation/client'
 import { apply as applyTool, inject as injectTool } from '../src/client/apply.ts'
 import { toolChatSnapshot } from './tool-details-render.client.tsx'
-
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
 
 const SID = 's1' as SessionId
 
@@ -74,6 +70,7 @@ async function bench(nodes: ToolResultNode[]) {
   runtime.provide('settingsScope', { bind: () => stubSettingsScope().scope } as never)
   runtime.provide('layout', { openDetails: vi.fn(), closeDetails: vi.fn() })
   const locale = new LocaleRuntime(runtime.ctx)
+  locale.setLocale('zh')
   runtime.provide('locale', locale)
   runtime.slots.installLocale(locale)
   await runtime.sessions.add({

@@ -6,16 +6,12 @@ import { describe, expect, it, vi } from 'vitest'
 import { resolveSlotLabel } from '@open-harness/oh-client-ui-slots'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
-import { TestRemote, usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { TestRemote } from '@open-harness/oh-client-test-runtime'
 import { SettingsScopeBinder } from '@open-harness/oh-client-ui-settings/client'
 import { apply, inject } from '@open-harness/oh-client-ui-settings-plugins/client'
 import type {
   ConfigurablePluginsTabFace, PluginsSettingsSectionInjected,
 } from '@open-harness/oh-client-ui-settings-plugins/client'
-
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
 
 /**
  * @param served - namespaces the Host describes; omitted answers a failed read,
@@ -25,6 +21,7 @@ async function bench(served?: string[]) {
   const ctx = new Context()
   await ctx.plugin(SlotRegistry).await()
   const locale = new LocaleRuntime(ctx)
+  locale.setLocale('zh')
   ctx.provide('locale', locale)
   const describeSettings = vi.fn(() => Promise.resolve(served === undefined
     ? { rpcId: 's', result: { ok: false, error: {} } }

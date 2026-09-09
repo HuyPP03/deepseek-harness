@@ -5,15 +5,10 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import type { DirectoryListing } from '@open-harness/oh-client-runtime/client'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
-import { usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
 import type { DirectoryFlowOwnerProps } from '@open-harness/oh-client-ui-workspace/client'
 import { apply, inject } from '../src/client/index.ts'
 import { BrowseDirectoryFlow } from '../src/client/flow.ts'
 import { apply as nodeApply } from '../src/index.ts'
-
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
 
 afterEach(cleanup)
 
@@ -31,7 +26,9 @@ const homeListing: DirectoryListing = {
 async function bench() {
   const ctx = new Context()
   await ctx.plugin(SlotRegistry).await()
-  ctx.provide('locale', new LocaleRuntime(ctx))
+  const locale = new LocaleRuntime(ctx)
+  locale.setLocale('zh')
+  ctx.provide('locale', locale)
   const listDirectory = vi.fn(async (): Promise<DirectoryListing> => homeListing)
   const createDirectory = vi.fn(async (path: string, name: string) => `${path}/${name}`)
   ctx.provide('workspaces', { listDirectory, createDirectory } as never)

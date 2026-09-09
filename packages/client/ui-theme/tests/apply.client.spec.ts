@@ -6,17 +6,13 @@ import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
-import { TestRemote, usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { TestRemote } from '@open-harness/oh-client-test-runtime'
 import { SettingsScopeBinder } from '@open-harness/oh-client-ui-settings/client'
 import { apply, inject, SETTINGS_NS } from '@open-harness/oh-client-ui-theme/client'
 import type { AppearanceRowInjected, ThemeRuntime } from '@open-harness/oh-client-ui-theme/client'
 import { THEME_SETTINGS_NAMESPACE, ThemeSettingsSchema } from '../src/theme-settings.ts'
 import { AppearanceRow } from '../src/client/AppearanceRow.tsx'
 import type { createAppearanceRowStore } from '../src/client/settings-store.ts'
-
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
 
 const SLOT = 'settings.general.item'
 
@@ -30,6 +26,7 @@ async function bench(isLoopback = true) {
   const ctx = new Context()
   await ctx.plugin(SlotRegistry).await()
   const locale = new LocaleRuntime(ctx)
+  locale.setLocale('zh')
   ctx.provide('locale', locale)
   let preference = 'system'
   const namespace = () => ({

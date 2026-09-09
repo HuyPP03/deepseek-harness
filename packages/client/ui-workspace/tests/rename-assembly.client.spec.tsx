@@ -15,13 +15,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, waitFor, within } from '@testing-library/react'
 import type { ISession, SessionId, WorkspaceId } from '@open-harness/oh-client-runtime/client'
 import type { PropsRenderSlots } from '@open-harness/oh-client-ui-slots'
-import { SlotTestRuntime, usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { SlotTestRuntime } from '@open-harness/oh-client-test-runtime'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import { apply, inject } from '@open-harness/oh-client-ui-workspace/client'
-
-// The service reads its initial locale from the browser; these specs assert
-// the shipped Chinese copy, so they state the browser they assume.
-usePinnedBrowserLanguages('zh-CN')
 
 const SID = 's1' as SessionId
 
@@ -32,6 +28,7 @@ beforeEach(() => { localStorage.clear() })
 async function createRuntime(): Promise<SlotTestRuntime> {
   const runtime = await SlotTestRuntime.create()
   const locale = new LocaleRuntime(runtime.ctx)
+  locale.setLocale('zh')
   runtime.provide('locale', locale)
   runtime.slots.installLocale(locale)
   return runtime

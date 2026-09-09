@@ -9,16 +9,12 @@ import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
-import { stubSettingsScope, usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import { apply as applyLocale, inject as localeInject } from '@open-harness/oh-client-locale/client'
 import { apply, inject } from '../src/client/index.ts'
 import { apply as applyNode } from '../src/index.ts'
 import * as JobInvariant from '../src/invariant.ts'
 import { en, NS, vi, zh } from '../src/client/locales.ts'
-
-// The dictionary spec below reads the initial locale before setting one, so it
-// pins the browser it assumes.
-usePinnedBrowserLanguages('zh-CN')
 
 /** Slot ledger reader: entry ids currently registered in the header list. */
 function headerEntryIds(ctx: Context): (string | undefined)[] {
@@ -44,6 +40,7 @@ async function bench(): Promise<{ ctx: Context; fiber: ReturnType<Context['plugi
   ctx.provide('remote', { $on: () => () => {} } as never)
   ctx.provide('settingsScope', { bind: () => stubSettingsScope().scope } as never)
   await ctx.plugin({ inject: localeInject, apply: applyLocale }).await()
+  ctx.locale.setLocale('zh')
   const fiber = ctx.plugin({ inject: [...inject], apply })
   await fiber.await()
   return { ctx, fiber }

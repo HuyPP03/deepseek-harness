@@ -13,11 +13,7 @@ import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import type { ClientSessionContext } from '@open-harness/oh-client-ui-input-trigger/client'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import type { CommandDecoration, CommandPopupSelectSpec } from '@open-harness/oh-client-ui-commands/client'
-import { usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
 import { apply, inject } from '../src/client/index.ts'
-
-// These specs assert the shipped English copy; state the browser they assume.
-usePinnedBrowserLanguages('en-US')
 
 const session: ClientSessionContext = { sessionId: 'live' as never }
 
