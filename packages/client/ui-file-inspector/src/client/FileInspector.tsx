@@ -136,7 +136,7 @@ export function FileInspector({ path, cwd, readFile, fileUrl, useSession, t }: F
         {active === 'preview' && previewKind !== null
           ? <PreviewSeat kind={previewKind} path={path} fileUrl={fileUrl} readFile={readFile} code={code} t={t} />
           : active === 'changes' && changes !== null
-            ? <DiffBlock diffs={changes} labels={diffBlockLabels(t)} />
+            ? <DiffBlock diffs={changes} labels={diffBlockLabels(t)} className={css.changesDiff} maxLines={Infinity} />
             : codeSeat}
       </div>
     </div>

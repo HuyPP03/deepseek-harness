@@ -1,8 +1,10 @@
 /* Geometry mirrors CodeBlock/TerminalBlock (12px radius, code-block surface +
    banner row, markdown code-block font) so a diff card reads as one family with
-   a fenced block and a terminal card. The deliberate divergence, shared with
-   TerminalBlock: the body keeps `white-space: pre` and scrolls horizontally,
-   because folding a source line destroys the indentation a diff is read by. */
+   a fenced block and a terminal card. The body keeps `white-space: pre` and
+   scrolls horizontally so indentation stays intact; vertical scroll engages
+   when a consumer sets --dsl-diff-body-max-height (TerminalBlock's output
+   max-height pattern), so a long Changes seat or in-row card can be read end
+   to end without clipping. */
 
 .block {
   --dsl-diff-radius: 12px;
@@ -18,6 +20,9 @@
   border-radius: var(--dsl-diff-radius);
   box-shadow: var(--dsw-shadow-lv1);
   overflow: hidden;
+  /* When a consumer fills a flex seat (file-inspector Changes), keep the
+     footer pinned and let only .body scroll. Standalone cards stay auto-sized. */
+  min-height: 0;
 }
 
 /* The copy control floats in the top-right corner over the body, so the card
@@ -49,12 +54,30 @@
 }
 
 .body {
+  /* Unset, max-height is none and the auto overflow never engages — the card
+     grows with its rows. A consumer that needs a bounded viewport (the file
+     inspector Changes seat, an in-row tool card) rebinds the variable. When
+     the block itself is a flex column filling a seat, flex:1 lets the body
+     take the remaining height under the footer so 100% is not required. */
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: var(--dsl-diff-body-max-height, none);
   padding: 10px 0 8px;
   font: var(--dsw-font-markdown-code-block);
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
   --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+}
+
+.body::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 6px;
+}
+
+.body::-webkit-scrollbar-track {
+  margin: 6px;
 }
 
 /* One body row: optional gutter, a sign column, then the content. No wrapping —
@@ -155,6 +178,7 @@
 
 /* The change summary under the body. */
 .footer {
+  flex: none;
   padding: 8px 14px 12px;
   border-top: 1px solid var(--dsw-alias-border-l1);
   font: var(--dsw-font-markdown-code-block);

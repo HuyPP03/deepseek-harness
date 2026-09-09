@@ -57,6 +57,17 @@
   overflow: hidden;
 }
 
+/* Changes seat: DiffBlock is the seat itself (className lands on [data-diff]),
+   so fill the panel and let its body scroll under a pinned footer — the same
+   readable viewport the Code seat gives a long file. */
+.changesDiff {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .state {
   padding: 20px 16px;
   color: var(--dsw-alias-label-tertiary);
