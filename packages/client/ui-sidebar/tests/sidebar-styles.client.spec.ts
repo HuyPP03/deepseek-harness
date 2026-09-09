@@ -59,7 +59,10 @@ describe('SidebarRoot.module.css', () => {
   })
 
   it('gives shell rail controls the same base anchor for their shared translation', () => {
-    expect(declarations('.collapsed .logoRow')?.get('justify-content')).toBe('flex-start')
+    // The brand and the nav tabs moved to the header, so the top row is the
+    // fold toggle alone; it left-anchors in both states (base rule), which is
+    // the rail's shared base anchor for the entry translation.
+    expect(declarations('.logoRow')?.get('justify-content')).toBe('flex-start')
     expect(declarations('.collapsed .newSession')?.get('align-self')).toBe('flex-start')
     expect(declarations('.collapsed .newSession')?.get('width')).toBe('36px')
   })

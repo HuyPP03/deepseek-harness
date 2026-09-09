@@ -1,7 +1,7 @@
 /**
  * Layout plugin, browser half: one register() call contributes AppFrame into
  * the runtime's built-in 'root' slot and, in the same breath, declares the
- * four child slots (declaration = exclusive render authority), seats the
+ * five child slots (declaration = exclusive render authority), seats the
  * layout store (panel geometry), and wires the panel-action service face.
  * ctx.layout is the cross-plugin panel-action contract; navigation state lives
  * with the runtime sessions service. A second effect seats the theme
@@ -94,6 +94,16 @@ declare module '@open-harness/oh-client-ui-slots' {
      * `id` is added beside the shipped entries instead of replacing them.
      */
     'shell.overlay': { kind: 'list'; scope: 'root' }
+    /**
+     * The full-width top bar above the three columns: the product brand and
+     * the primary navigation (Chat / Workspace / Connector). OCCUPIED by
+     * ui-sidebar's HeaderRoot, which shares the sidebar store's browsing tab,
+     * so the header tabs and the sidebar's context list never disagree.
+     *
+     * No owner props: navigation state arrives through the shared store and
+     * the layout face.
+     */
+    'shell.header': { kind: 'single'; scope: 'root' }
   }
 }
 
@@ -133,6 +143,7 @@ export function apply(ctx: ClientContext): void {
     const disposeRegistration = ctx.slots.register({
       name: 'root',
       children: {
+        'shell.header': { kind: 'single', scope: 'root' },
         'sidebar': { kind: 'single', scope: 'root' },
         'conversation': { kind: 'single', scope: 'session-maybe' },
         'main.connectors': { kind: 'single', scope: 'root' },

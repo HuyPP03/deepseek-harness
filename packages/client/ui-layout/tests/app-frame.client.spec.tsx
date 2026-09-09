@@ -58,6 +58,7 @@ function mountFrame() {
   const slotCalls: { key: string; props: unknown }[] = []
   const renderSlot = ((key: string, owner: object) => {
     slotCalls.push({ key, props: owner })
+    if (key === 'shell.header') return <div data-testid="header-content" />
     if (key === 'sidebar') return <div data-testid="sidebar-content" />
     if (key === 'conversation') return <div data-testid="center-content" />
     if (key === 'main.connectors') return <div data-testid="center-connectors-content" />

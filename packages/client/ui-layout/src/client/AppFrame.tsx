@@ -1,14 +1,14 @@
 /**
- * Three-column shell frame, registered into the built-in 'root' slot (the web
- * shell renders only 'root'). Owns the grid tracks (sidebar | center |
- * details), the drag handles (pointer capture + rAF throttle), the concession
- * chain (columns.ts), and the child-slot render decisions: the sidebar slot
- * renders HERE with live parameters from the concession solve, and the
- * session-aware occupants render in fixed column positions; strict entries
- * gate themselves on current-session availability while session-maybe
- * entries retain identity. Pure component: everything arrives
- * through the three framework shares — zero cordis or framework imports,
- * zero self-made hooks.
+ * Shell frame, registered into the built-in 'root' slot (the web shell
+ * renders only 'root'): a header row above three columns. Owns the grid
+ * tracks (header full-width; sidebar | center | details), the drag handles
+ * (pointer capture + rAF throttle), the concession chain (columns.ts), and
+ * the child-slot render decisions: the sidebar slot renders HERE with live
+ * parameters from the concession solve, and the session-aware occupants
+ * render in fixed column positions; strict entries gate themselves on
+ * current-session availability while session-maybe entries retain identity.
+ * Pure component: everything arrives through the three framework shares —
+ * zero cordis or framework imports, zero self-made hooks.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
@@ -20,7 +20,7 @@ import css from './AppFrame.module.css'
 /** Full composed props: runtime share + child-slot render share + store share. */
 export type AppFrameProps =
   & PropsRuntime<'root'>
-  & PropsRenderSlots<'sidebar' | 'conversation' | 'main.connectors' | 'details' | 'shell.overlay'>
+  & PropsRenderSlots<'shell.header' | 'sidebar' | 'conversation' | 'main.connectors' | 'details' | 'shell.overlay'>
   & PropsStore<ReturnType<typeof createLayoutStore>>
 
 /** Center column grid item (session-body building block). */
@@ -170,6 +170,10 @@ export function AppFrame({
       data-details-collapsed={cols.details === 0 || undefined}
       data-dragging={dragging || undefined}
     >
+      {/* The full-width top row: the product brand and the primary
+          navigation (the sidebar's HeaderRoot shares the browsing-tab store,
+          so header tabs and the sidebar's context list stay in sync). */}
+      <div className={css.headerRow}>{renderSlot('shell.header', {})}</div>
       <div className={css.sidebarCol}>
         {/* Render-site slot call with live concession output: a closed
             sidebar keeps the mounted slot at the compact-rail width, and the

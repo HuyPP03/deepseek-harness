@@ -1,7 +1,10 @@
 .frame {
+  /* Header row height: the handle top offset below reads the same value, so
+     the resize strip never covers the top bar. */
+  --oh-frame-header-height: 48px;
   position: relative; /* anchors the drag handles, which straddle column borders */
   display: grid;
-  grid-template-rows: 100%;
+  grid-template-rows: var(--oh-frame-header-height) 1fr;
   height: 100%;
   overflow: hidden;
   background: var(--oh-alias-bg-base);
@@ -20,6 +23,15 @@
   .frame {
     transition: none;
   }
+}
+
+/* The full-width top row (the brand + primary navigation occupant). */
+.headerRow {
+  grid-column: 1 / -1;
+  min-height: 0;
+  overflow: hidden;
+  border-bottom: 1px solid var(--oh-alias-border-l1);
+  background: var(--oh-alias-bg-layer-1);
 }
 
 .sidebarCol {
@@ -80,7 +92,9 @@
    adds a visible 12x32 pill at vertical center; sidebar keeps only the hit strip. */
 .handle {
   position: absolute;
-  top: 0;
+  /* The strip spans the columns only — the header row above them is not
+     resizable. */
+  top: var(--oh-frame-header-height);
   bottom: 0;
   width: 8px;
   margin-left: -4px;

@@ -28,28 +28,33 @@ async function bench(options: { locale?: 'en' } = {}) {
   locale.setLocale(options.locale === 'en' ? 'en' : 'zh')
   runtime.provide('locale', locale)
   runtime.slots.installLocale(locale)
-  await runtime.declare({ 'sidebar': { kind: 'single', scope: 'root' } })
+  await runtime.declare({
+    'sidebar': { kind: 'single', scope: 'root' },
+    'shell.header': { kind: 'single', scope: 'root' },
+  })
   await runtime.mount({ inject: [...inject], apply })
   return { runtime, locale }
 }
 
 describe('sidebar shell snapshots', () => {
-  it('renders the expanded column in the default locale (zh, no setLocale)', async () => {
+  it('renders the expanded column in the zh copy (no nav: the header owns it)', async () => {
     const { runtime } = await bench()
     const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 300 })
-    // Default tab is Chats: wordmark + capsule both start a chat.
-    expect(slot.view.getAllByRole('button', { name: '新建会话' })).toHaveLength(2)
+    // Default tab is Workspaces: the New button starts a session, and the
+    // brand/wordmark no longer lives in the column (it is the header's).
+    expect(slot.view.getAllByRole('button', { name: '新建会话' })).toHaveLength(1)
+    expect(slot.view.queryAllByRole('tab')).toHaveLength(0)
     expect(slot.container).toMatchSnapshot()
     await runtime.dispose()
   })
 
-  it('renders the expanded column (wordmark, capsule, empty holes)', async () => {
+  it('renders the expanded column (toggle, New button, empty holes)', async () => {
     const { runtime } = await bench({ locale: 'en' })
     const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 300 })
-    // Default tab is Workspaces: wordmark + capsule both start a session,
-    // and the tablist carries the third (connectors) tab.
-    expect(slot.view.getAllByRole('button', { name: 'New session' })).toHaveLength(2)
-    expect(slot.view.getByRole('tab', { name: 'Connectors' })).toBeTruthy()
+    // Default tab is Workspaces: the New button starts a session; the nav
+    // tabs live in the header, so the column carries no tablist.
+    expect(slot.view.getByRole('button', { name: 'New session' })).toBeTruthy()
+    expect(slot.view.queryAllByRole('tab')).toHaveLength(0)
     expect(slot.container).toMatchSnapshot()
     await runtime.dispose()
   })
@@ -59,8 +64,8 @@ describe('sidebar shell snapshots', () => {
     const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 300 })
     const shell = slot.container.firstElementChild
     slot.update({ collapsed: true, width: 56 })
-    // The wide content (wordmark shortcut, tablist) unmounts at the 150ms
-    // settle; only the rail's capsule remains a New-chat button.
+    // The wide content unmounts at the 150ms settle; only the rail's capsule
+    // remains a New-session button.
     await waitFor(() => {
       expect(slot.view.getAllByRole('button', { name: 'New session' })).toHaveLength(1)
     })
@@ -73,10 +78,10 @@ describe('sidebar shell snapshots', () => {
   it('a locale switch refreshes mounted copy without re-registration', async () => {
     const { runtime, locale } = await bench()
     const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 300 })
-    expect(slot.view.getAllByRole('button', { name: '新建会话' })).toHaveLength(2)
+    expect(slot.view.getAllByRole('button', { name: '新建会话' })).toHaveLength(1)
     // Same fiber, same registration: setLocale alone re-renders the outlet.
     act(() => { locale.setLocale('en') })
-    expect(slot.view.getAllByRole('button', { name: 'New session' })).toHaveLength(2)
+    expect(slot.view.getAllByRole('button', { name: 'New session' })).toHaveLength(1)
     expect(slot.view.queryByRole('button', { name: '新建会话' })).toBeNull()
     await runtime.dispose()
   })

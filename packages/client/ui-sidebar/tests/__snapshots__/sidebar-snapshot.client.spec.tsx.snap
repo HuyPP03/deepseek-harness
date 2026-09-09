@@ -6,116 +6,14 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
   style="display: contents;"
 >
   <div
-    class="root collapsed railIn quietBars"
-    style=""
-  >
-    <div
-      class="logoRow"
-    >
-      <button
-        aria-label="Open sidebar"
-        class="iconButton toggle"
-        type="button"
-      >
-        <svg
-          aria-hidden="true"
-          class="railMark"
-          data-content="6929fd36"
-          fill="none"
-          height="24"
-          viewBox="0 0 32 32"
-          width="24"
-        />
-        <svg
-          class="panelIcon"
-          data-content="35f95b0c"
-          fill="none"
-          height="18"
-          viewBox="0 0 16 16"
-          width="18"
-          xmlns="http://www.w3.org/2000/svg"
-        />
-      </button>
-    </div>
-    <button
-      aria-label="New session"
-      class="newSession"
-      type="button"
-    >
-      <svg
-        data-content="c0ce4dcc"
-        fill="none"
-        height="18"
-        viewBox="0 0 16 16"
-        width="18"
-        xmlns="http://www.w3.org/2000/svg"
-      />
-    </button>
-    <div
-      class="regionArea"
-    >
-      <div
-        data-slot="sidebar.workspaces"
-        style="display: contents;"
-      />
-    </div>
-    <div
-      class="footArea"
-    >
-      <div
-        class="footerActions"
-      >
-        <div
-          data-slot="sidebar.footer.action"
-          style="display: contents;"
-        />
-      </div>
-      <div
-        class="settingsArea"
-      >
-        <div
-          data-slot="sidebar.settings"
-          style="display: contents;"
-        />
-      </div>
-    </div>
-  </div>
-</div>
-`;
-
-exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsule, empty holes) 1`] = `
-<div
-  data-slot="sidebar"
-  style="display: contents;"
->
-  <div
-    class="root quietBars"
+    class="root fading quietBars"
     style="width: 300px;"
   >
     <div
       class="logoRow"
     >
       <button
-        aria-label="New session"
-        class="brand wide"
-        type="button"
-      >
-        <svg
-          aria-hidden="true"
-          data-content="6929fd36"
-          fill="none"
-          height="20"
-          viewBox="0 0 32 32"
-          width="20"
-        />
-        <span
-          class="brandText"
-        >
-          Open Harness
-        </span>
-      </button>
-      <button
-        aria-label="Collapse sidebar"
+        aria-label="Open sidebar"
         class="iconButton toggle"
         type="button"
       >
@@ -128,36 +26,6 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
           width="16"
           xmlns="http://www.w3.org/2000/svg"
         />
-      </button>
-    </div>
-    <div
-      aria-label="Browse tabs"
-      class="tabs"
-      role="tablist"
-    >
-      <button
-        aria-selected="false"
-        class="tab"
-        role="tab"
-        type="button"
-      >
-        Chats
-      </button>
-      <button
-        aria-selected="true"
-        class="tab tabActive"
-        role="tab"
-        type="button"
-      >
-        Workspaces
-      </button>
-      <button
-        aria-selected="false"
-        class="tab"
-        role="tab"
-        type="button"
-      >
-        Connectors
       </button>
     </div>
     <button
@@ -211,7 +79,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
 </div>
 `;
 
-exports[`sidebar shell snapshots > renders the expanded column in the default locale (zh, no setLocale) 1`] = `
+exports[`sidebar shell snapshots > renders the expanded column (toggle, New button, empty holes) 1`] = `
 <div
   data-slot="sidebar"
   style="display: contents;"
@@ -224,26 +92,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       class="logoRow"
     >
       <button
-        aria-label="新建会话"
-        class="brand wide"
-        type="button"
-      >
-        <svg
-          aria-hidden="true"
-          data-content="6929fd36"
-          fill="none"
-          height="20"
-          viewBox="0 0 32 32"
-          width="20"
-        />
-        <span
-          class="brandText"
-        >
-          Open Harness
-        </span>
-      </button>
-      <button
-        aria-label="收起侧边栏"
+        aria-label="Collapse sidebar"
         class="iconButton toggle"
         type="button"
       >
@@ -258,34 +107,83 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
         />
       </button>
     </div>
+    <button
+      aria-label="New session"
+      class="newSession"
+      type="button"
+    >
+      <svg
+        data-content="c0ce4dcc"
+        fill="none"
+        height="14"
+        viewBox="0 0 16 16"
+        width="14"
+        xmlns="http://www.w3.org/2000/svg"
+      />
+      <span
+        class="newSessionLabel wide"
+      >
+        New Session
+      </span>
+    </button>
     <div
-      aria-label="浏览标签"
-      class="tabs"
-      role="tablist"
+      class="regionArea"
+    >
+      <div
+        data-slot="sidebar.workspaces"
+        style="display: contents;"
+      />
+    </div>
+    <div
+      class="footArea"
+    >
+      <div
+        class="footerActions"
+      >
+        <div
+          data-slot="sidebar.footer.action"
+          style="display: contents;"
+        />
+      </div>
+      <div
+        class="settingsArea"
+      >
+        <div
+          data-slot="sidebar.settings"
+          style="display: contents;"
+        />
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`sidebar shell snapshots > renders the expanded column in the zh copy (no nav: the header owns it) 1`] = `
+<div
+  data-slot="sidebar"
+  style="display: contents;"
+>
+  <div
+    class="root quietBars"
+    style="width: 300px;"
+  >
+    <div
+      class="logoRow"
     >
       <button
-        aria-selected="false"
-        class="tab"
-        role="tab"
+        aria-label="收起侧边栏"
+        class="iconButton toggle"
         type="button"
       >
-        聊天
-      </button>
-      <button
-        aria-selected="true"
-        class="tab tabActive"
-        role="tab"
-        type="button"
-      >
-        工作区
-      </button>
-      <button
-        aria-selected="false"
-        class="tab"
-        role="tab"
-        type="button"
-      >
-        连接
+        <svg
+          class="panelIcon"
+          data-content="35f95b0c"
+          fill="none"
+          height="16"
+          viewBox="0 0 16 16"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        />
       </button>
     </div>
     <button

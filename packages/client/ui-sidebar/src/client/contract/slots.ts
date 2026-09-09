@@ -1,11 +1,12 @@
 /**
  * Sidebar slot contract: the registrant-side props composition for the
- * layout-owned `sidebar` slot, plus the holes this shell declares. The shell
- * owns column geometry (fold state machine, brand row, New Session);
- * everything between the section header and the list bottom is the
- * `sidebar.workspaces` registrant's (ui-workspace), and the foot is the
- * `sidebar.settings` registrant's (ui-settings), followed by optional footer
- * actions in `sidebar.footer.action`.
+ * layout-owned `sidebar` and `shell.header` slots, plus the holes the
+ * sidebar entry declares. The shell owns the browsing tab (shared by the
+ * header's primary navigation and the sidebar's context region), column
+ * geometry, and the New control; everything between the section header and
+ * the list bottom is the `sidebar.workspaces` registrant's (ui-workspace),
+ * and the foot is the `sidebar.settings` registrant's (ui-settings),
+ * followed by optional footer actions in `sidebar.footer.action`.
  */
 import type { PropsLocale, PropsRenderSlots, PropsRuntime, PropsStore } from '@open-harness/oh-client-ui-slots'
 // Type-only: pulls ui-layout's SlotMap merge (the 'sidebar' entry) into every
@@ -82,7 +83,8 @@ export interface SidebarFooterActionOwnerProps {
 /**
  * Registrant-private injected share (arrives via the register inject
  * factory). The shell keeps only its own controls: starting a Session or a
- * Chat from the New button and toggling the column.
+ * Chat from the New button and toggling the column. The center-view mirror
+ * belongs to the header (HeaderRootInjected).
  */
 export type SidebarRootInjected = {
   /**
@@ -98,12 +100,6 @@ export type SidebarRootInjected = {
   startChat: () => void
   /** Toggle the sidebar column through the layout service. */
   toggleSidebar: () => void
-  /**
-   * Switch the center column's full-column view through the layout service:
-   * the shell mirrors its active browsing tab (the connectors tab shows the
-   * directory overlay, the others the conversation).
-   */
-  setCenterView: (view: CenterView) => void
 }
 
 /**
@@ -116,3 +112,32 @@ export type SidebarRootComponentProps =
   & PropsRenderSlots<'sidebar.workspaces' | 'sidebar.connectors' | 'sidebar.settings' | 'sidebar.footer.action'>
   & PropsStore<ReturnType<typeof createSidebarStore>>
   & SidebarRootInjected & PropsLocale<'sidebar'>
+
+/**
+ * Registrant-private injected share for the header (arrives via the register
+ * inject factory). The header owns the brand and the primary navigation:
+ * starting a Session or a Chat from the brand shortcut and mirroring the
+ * active browsing tab into the layout's center view.
+ */
+export type HeaderRootInjected = {
+  /** Start a New Session (the Workspaces brand shortcut). */
+  startSession: (workspaceId?: WorkspaceId) => void
+  /** Start a New Chat (the Chats brand shortcut). */
+  startChat: () => void
+  /**
+   * Switch the center column's full-column view through the layout service:
+   * the header mirrors the active browsing tab (the connectors tab shows the
+   * directory overlay, the others the conversation).
+   */
+  setCenterView: (view: CenterView) => void
+}
+
+/**
+ * Full header component props: the shared browsing-tab store, this package's
+ * injected callbacks, and the standard locale seat. The header renders no
+ * child slots.
+ */
+export type HeaderRootComponentProps =
+  PropsRuntime<'shell.header'>
+  & PropsStore<ReturnType<typeof createSidebarStore>>
+  & HeaderRootInjected & PropsLocale<'sidebar'>

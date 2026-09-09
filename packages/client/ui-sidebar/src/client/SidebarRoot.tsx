@@ -1,10 +1,13 @@
 /**
- * Sidebar shell: column geometry only. Collapse is a slide plus crossfade:
+ * Sidebar shell: column geometry only. The brand and the primary navigation
+ * live in the header (HeaderRoot); this column holds the fold toggle, the New
+ * control, and the browsing region that renders against the shared browsing
+ * tab. Collapse is a slide plus crossfade:
  * content freezes at its expanded width (inline style) and fades out in place
  * while the sliding column (AppFrame grid tracks) clips it — nothing reflows
- * mid-slide. At settle the wide-only content unmounts and the four upper
- * controls enter the 56px rail from the same horizontal offset (one icon each,
- * same top-down order) on one fade that ends with the slide. The bottom-pinned
+ * mid-slide. At settle the wide-only content unmounts and the upper controls
+ * enter the 56px rail from the same horizontal offset (one icon each, same
+ * top-down order) on one fade that ends with the slide. The bottom-pinned
  * settings control only fades. The workspace/session browsing region between
  * the New Session button and the foot is the `sidebar.workspaces` registrant's,
  * and the foot holds `sidebar.settings` plus `sidebar.footer.action`; the shell
@@ -46,28 +49,11 @@ export function SidebarRoot({
   startSession,
   startChat,
   toggleSidebar,
-  setCenterView,
   t,
   useStore,
-  actions,
   renderSlot,
 }: SidebarRootComponentProps) {
   const tab = useStore(state => state.tab)
-  // The browsing tab drives the center column's full-column view: the
-  // connectors tab shows the directory overlay over the conversation, the
-  // other tabs the conversation. An effect (not the click handler) so the
-  // persisted tab restored on mount syncs too.
-  useEffect(() => {
-    setCenterView(tab === 'connectors' ? 'connectors' : 'conversation')
-  }, [tab, setCenterView])
-  // A tab click re-asserts the center view even when the tab is already
-  // active: opening a provider chat from the directory switches the center
-  // view back to the conversation while the tab stays on connectors, so the
-  // next click on that tab must bring the directory back.
-  const selectTab = (candidate: 'chats' | 'workspaces' | 'connectors'): void => {
-    if (tab !== candidate) actions.setTab(candidate)
-    setCenterView(candidate === 'connectors' ? 'connectors' : 'conversation')
-  }
   // The New control follows the active tab: Chats mints the ungrouped blank
   // chat (a chat is what the Chats tab lists), Workspaces starts a session.
   // The connectors tab has no New control at all: the region's own
@@ -154,21 +140,8 @@ export function SidebarRoot({
       onPointerLeave={() => { armLinger() }}
     >
       <div className={css.logoRow}>
-        {/* Expanded, the wordmark doubles as a New shortcut for the active
-            tab; the collapsed rail's logo is the expand toggle below instead. */}
-        {wide && (
-          <button
-            type="button"
-            className={clsx(css.brand, css.wide)}
-            aria-label={tab === 'connectors' ? t('tabs.label') : newLabelFull}
-            onClick={() => { if (tab !== 'connectors') startNew() }}
-          >
-            <OpenMark size={20} />
-            <span className={css.brandText}>Open Harness</span>
-          </button>
-        )}
-        {/* Rail resting state is the open-ring mark; hovering swaps in the panel
-            icon (the expand affordance, figma sidebar-hover flow). */}
+        {/* Rail resting state is the buckle mark; hovering swaps in the panel
+            icon (the expand affordance). Expanded it is a plain panel icon. */}
         <Tooltip label={collapsed ? t('toggle.open') : t('toggle.collapse')} delayMs={500}>
           <button
             type="button"
@@ -182,26 +155,6 @@ export function SidebarRoot({
           </button>
         </Tooltip>
       </div>
-
-      {/* The browsing tabs: the ungrouped chat rows, the workspace tree,
-          or the external connections roster. Wide only — the rail has no
-          room, and its New icon follows the persisted tab. */}
-      {wide && (
-        <div className={css.tabs} role="tablist" aria-label={t('tabs.label')}>
-          {(['chats', 'workspaces', 'connectors'] as const).map(candidate => (
-            <button
-              key={candidate}
-              type="button"
-              role="tab"
-              aria-selected={tab === candidate}
-              className={clsx(css.tab, tab === candidate && css.tabActive)}
-              onClick={() => { selectTab(candidate) }}
-            >
-              {t(`tab.${candidate}` as const)}
-            </button>
-          ))}
-        </div>
-      )}
 
       {/* Expanded, the button carries its own label — tooltip only on the rail.
           The connectors tab has no blank session to start: its New control is

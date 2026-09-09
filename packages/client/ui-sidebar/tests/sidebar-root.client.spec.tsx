@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
 import type {
   SidebarConnectorsOwnerProps, SidebarFooterActionOwnerProps, SidebarRootComponentProps, SidebarSectionOwnerProps,
@@ -35,7 +35,6 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
   const startSession = vi.fn()
   const startChat = vi.fn()
   const toggleSidebar = vi.fn()
-  const setCenterView = vi.fn()
   const store = createSidebarStore().create()
   store.actions.setTab(tab)
   let regionOwner: SidebarSectionOwnerProps | undefined
@@ -48,7 +47,7 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
       collapsed={current.collapsed} width={current.width}
       useSessions={neverHook} useWorkspaces={neverHook}
       startSession={startSession} startChat={startChat} toggleSidebar={toggleSidebar}
-      setCenterView={setCenterView} t={t}
+      t={t}
       useStore={bindSnapshotSelector(store)} actions={store.actions}
       renderSlot={((
         key: string,
@@ -79,7 +78,6 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
     startChat,
     store,
     toggleSidebar,
-    setCenterView,
     regionOwner: () => {
       if (regionOwner === undefined) throw new Error('region owner not rendered')
       return regionOwner
@@ -104,83 +102,50 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
 }
 
 describe('SidebarRoot shell', () => {
-  it('routes New (capsule + wordmark) to the active tab starter', () => {
-    // Workspaces tab (the default): both starters call startSession.
+  it('routes the New button to the active tab starter', () => {
+    // Workspaces tab (the default): the button is "New session" and calls
+    // startSession.
     const b = mountShell()
-    const starters = screen.getAllByRole('button', { name: 'New session' })
-    expect(starters).toHaveLength(2)
-    for (const button of starters) fireEvent.click(button)
-    expect(b.startSession).toHaveBeenCalledTimes(2)
+    fireEvent.click(screen.getByRole('button', { name: 'New session' }))
+    expect(b.startSession).toHaveBeenCalledOnce()
     expect(b.startChat).not.toHaveBeenCalled()
     fireEvent.click(screen.getByRole('button', { name: 'Collapse sidebar' }))
     expect(b.toggleSidebar).toHaveBeenCalledOnce()
 
     cleanup()
-    // The chats tab: the same two starters are "New chat" and call startChat
+    // The chats tab: the same button is "New chat" and calls startChat
     // (the ungrouped blank chat the Chats tab lists).
     const c = mountShell({ tab: 'chats' })
-    const chatStarters = screen.getAllByRole('button', { name: 'New chat' })
-    expect(chatStarters).toHaveLength(2)
-    for (const button of chatStarters) fireEvent.click(button)
-    expect(c.startChat).toHaveBeenCalledTimes(2)
+    fireEvent.click(screen.getByRole('button', { name: 'New chat' }))
+    expect(c.startChat).toHaveBeenCalledOnce()
     expect(c.startSession).not.toHaveBeenCalled()
     cleanup()
 
-    // The connectors tab: the wordmark is not a New shortcut — its label
-    // switches to the browse-tabs a11y name and clicking it starts nothing
-    // (the region's own "New connector" owns minting there).
-    const d = mountShell({ tab: 'connectors' })
-    const wordmark = screen.getByRole('button', { name: 'Browse tabs' })
-    fireEvent.click(wordmark)
-    expect(d.startChat).not.toHaveBeenCalled()
-    expect(d.startSession).not.toHaveBeenCalled()
+    // The connectors tab has no New control at all: its roster mints its own
+    // connectors.
+    mountShell({ tab: 'connectors' })
+    expect(screen.queryByRole('button', { name: 'New session' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'New chat' })).toBeNull()
     cleanup()
   })
 
-  it('switches tabs through the tablist and hands the tab to the region', () => {
+  it('renders the region for the shared tab (the nav tabs live in the header)', () => {
     const b = mountShell()
     expect(b.regionOwner().tab).toBe('workspaces')
-    expect(screen.getByRole('tab', { name: 'Workspaces' }).getAttribute('aria-selected')).toBe('true')
-    expect(screen.getByRole('tab', { name: 'Chats' }).getAttribute('aria-selected')).toBe('false')
+    // No tablist in the sidebar: the header owns the navigation and both
+    // occupants read the same store tab.
+    expect(screen.queryAllByRole('tab')).toHaveLength(0)
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
-    expect(b.store.getSnapshot().tab).toBe('chats')
+    act(() => { b.store.actions.setTab('chats') })
     expect(b.regionOwner().tab).toBe('chats')
-    expect(screen.getByRole('tab', { name: 'Chats' }).getAttribute('aria-selected')).toBe('true')
-
-    // Clicking the active tab is a no-op.
-    fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
-    expect(b.store.getSnapshot().tab).toBe('chats')
     cleanup()
 
-    // The rail has no tablist; the New icon follows the persisted tab (the
-    // chats tab persists "New chat").
+    // The rail likewise has no tabs; its New icon follows the persisted tab
+    // (the chats tab persists "New chat").
     mountShell({ collapsed: true, tab: 'chats' })
     expect(screen.queryAllByRole('tab')).toHaveLength(0)
     expect(screen.getByRole('button', { name: 'New chat' })).toBeTruthy()
     cleanup()
-  })
-
-  it('mirrors the browsing tab into the center view (connectors shows the directory)', () => {
-    const b = mountShell()
-    // Mount syncs the persisted tab (workspaces) to the conversation view,
-    // and exactly once — an unchanged tab issues no further writes.
-    expect(b.setCenterView).toHaveBeenCalledTimes(1)
-    expect(b.setCenterView).toHaveBeenCalledWith('conversation')
-
-    // Each tab change writes twice: the click re-asserts immediately, the
-    // effect confirms after the tab store settles.
-    fireEvent.click(screen.getByRole('tab', { name: 'Connectors' }))
-    expect(b.setCenterView).toHaveBeenLastCalledWith('connectors')
-    expect(b.setCenterView).toHaveBeenCalledTimes(3)
-    fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
-    expect(b.setCenterView).toHaveBeenLastCalledWith('conversation')
-    expect(b.setCenterView).toHaveBeenCalledTimes(5)
-    cleanup()
-
-    // A cold mount on the connectors tab syncs the directory view too.
-    const c = mountShell({ tab: 'connectors' })
-    expect(c.setCenterView).toHaveBeenCalledWith('connectors')
   })
 
   it('swaps the browsing region for the connectors registrant on the connectors tab', () => {
@@ -199,8 +164,9 @@ describe('SidebarRoot shell', () => {
     // connectors, and a blank session has nothing to do with the roster.
     expect(screen.queryByRole('button', { name: 'New session' })).toBeNull()
 
-    // Switching back restores the workspaces region with the tab handed over.
-    fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
+    // Switching the shared tab back restores the workspaces region with the
+    // tab handed over.
+    act(() => { b.store.actions.setTab('chats') })
     expect(screen.getByTestId('region')).toBeTruthy()
     expect(screen.queryByTestId('connectors-region')).toBeNull()
     expect(b.regionOwner().tab).toBe('chats')

@@ -1,0 +1,70 @@
+/* Header bar (48px frame row): brand lockup on the left, the primary
+   navigation segmented control beside it. The frame paints the row's bottom
+   border and background. */
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 100%;
+  padding: 0 16px;
+  color: var(--oh-alias-label-primary);
+}
+
+/* Brand lockup: buckle mark + product name in the brand ink. A button only
+   in behavior (New shortcut for the active tab): the pointer cursor is the
+   sole affordance — no hover chrome on the mark. */
+.brand {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.brandText {
+  font: var(--oh-font-s-strong-14);
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  color: var(--oh-alias-brand-text);
+}
+
+/* Primary navigation: the three browsing tabs as a flat segmented control. */
+.tabs {
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--oh-alias-interactive-bg-hover);
+}
+
+.tab {
+  padding: 4px 14px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--oh-alias-label-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.tab:hover {
+  color: var(--oh-alias-label-primary);
+}
+
+/* The active tab rides the business accent's tertiary tint, so it follows
+   the theme (teal in dark, red in light). */
+.tabActive {
+  background: var(--oh-alias-state-business-tertiary);
+  color: var(--oh-alias-label-primary);
+}
+
+.tabActive:hover {
+  color: var(--oh-alias-label-primary);
+}
