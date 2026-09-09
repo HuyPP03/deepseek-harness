@@ -6,13 +6,13 @@ Shared filesystem path helpers for Open Harness user data.
 
 ## DSH home
 
-`resolveDshHome()` resolves the single-root Open Harness home. Precedence, highest first: an explicit configured path, `$DSH_HOME`, then `~/.dsh`. The harness keeps all user data under one root.
+`resolveDshHome()` resolves the single-root Open Harness home. Precedence, highest first: an explicit configured path, `$OH_HOME`, then `~/.dsh`. The harness keeps all user data under one root.
 
 `dshHomePath(...segments)` joins child segments onto that resolved home with Node's platform path rules. With no segments it returns the home itself.
 
-`dshHomeDisplay()` names an active root symbolically for user-facing paths: `~/.dsh` for the default home, `$DSH_HOME` for any configured home. It never leaks an absolute machine path.
+`dshHomeDisplay()` names an active root symbolically for user-facing paths: `~/.dsh` for the default home, `$OH_HOME` for any configured home. It never leaks an absolute machine path.
 
-`DSH_HOME_DIR_NAME` owns the default user-data directory name: `.dsh`.
+`OH_HOME_DIR_NAME` owns the default user-data directory name: `.dsh`.
 
 `defaultDshHome()` returns the default Open Harness home by joining the operating-system home directory with `.dsh`, using Node's platform path rules.
 

@@ -23,7 +23,7 @@ let identityHome: string
 
 beforeEach(async () => {
   identityHome = await mkdtemp(join(tmpdir(), 'dsh-e2e-user-id-'))
-  vi.stubEnv('DSH_HOME', identityHome)
+  vi.stubEnv('OH_HOME', identityHome)
 })
 
 async function harness(_model: string, config: Partial<Config> = {}) {

@@ -309,7 +309,7 @@ async function boot(options: BootOptions = {}): Promise<{ ctx: Context; root: st
     await mkdir(join(systemPresets, 'custom'), { recursive: true })
     await writeFile(join(systemPresets, 'custom', 'agent.cordis.yml'), '- id: stub\n  name: test:stub-preset\n')
     const home = await tempDir('home')
-    vi.stubEnv('DSH_HOME', home)
+    vi.stubEnv('OH_HOME', home)
     await track(ctx.plugin(AgentPresets, {
       default: 'custom',
       roots: [{ path: systemPresets, trust: 'system' }],
@@ -718,7 +718,7 @@ describe('derived states', () => {
 describe('custom connectors', () => {
   it('adds a no-auth custom connector and mounts it at once', async () => {
     const { ctx } = await boot()
-    const home = process.env.DSH_HOME
+    const home = process.env.OH_HOME
     const id = await ctx.connectors.addCustom({
       name: 'My Local API',
       transport: 'streamable-http',
@@ -755,7 +755,7 @@ describe('custom connectors', () => {
     const manifest = ctx.connectors.manifest(id)
     const stdio = manifest?.servers[0]
     if (stdio === undefined || stdio.transport !== 'stdio') throw new Error('expected a stdio custom server')
-    expect(stdio.env?.API_TOKEN).toEqual({ $cred: 'DSH_CONNECTOR_AUTHED_TOKEN' })
+    expect(stdio.env?.API_TOKEN).toEqual({ $cred: 'OH_CONNECTOR_AUTHED_TOKEN' })
 
     await expect(ctx.connectors.connect(id, 'token')).rejects.toThrow(ConnectorCredentialMissingError)
     await ctx.connectors.configure(id, { token: 't' })
@@ -765,7 +765,7 @@ describe('custom connectors', () => {
 
   it('removing a custom whose preset was hand-deleted still succeeds', async () => {
     const { ctx } = await boot()
-    const home = process.env.DSH_HOME
+    const home = process.env.OH_HOME
     const id = await ctx.connectors.addCustom({ name: 'Orphan', transport: 'streamable-http', url: 'http://127.0.0.1:1/mcp' })
     await rm(join(home!, '.agent-presets', id), { recursive: true, force: true })
     await expect(ctx.connectors.removeCustom(id)).resolves.toBeUndefined()
@@ -816,7 +816,7 @@ describe('custom connectors', () => {
     })
     const http = ctx.connectors.manifest(id)?.servers[0]
     if (http === undefined || http.transport !== 'streamable-http') throw new Error('expected an http custom server')
-    expect(http.headers).toEqual({ 'X-Static': 'one', Authorization: { $cred: 'DSH_CONNECTOR_HDR_TOKEN' } })
+    expect(http.headers).toEqual({ 'X-Static': 'one', Authorization: { $cred: 'OH_CONNECTOR_HDR_TOKEN' } })
 
     await ctx.connectors.configure(id, { token: 't' })
     await poll(() => ctx.tools.get(`mcp__${id}__remote`) !== undefined, 'hdr custom tool')
@@ -847,17 +847,17 @@ describe('custom connectors', () => {
     const { ctx, root } = await boot()
     const id = await ctx.connectors.addCustom({ name: 'Authed CLI', id: 'authed', transport: 'stdio', command: 'node', tokenVar: 'API_TOKEN' })
     await ctx.connectors.configure(id, { token: 't' })
-    expect(await readFile(join(root, '.credentials.yaml'), 'utf8')).toContain('DSH_CONNECTOR_AUTHED_TOKEN')
+    expect(await readFile(join(root, '.credentials.yaml'), 'utf8')).toContain('OH_CONNECTOR_AUTHED_TOKEN')
     await ctx.connectors.removeCustom(id)
     expect(await ctx.connectors.get(id)).toBeUndefined()
     expect(ctx.tools.get(`mcp__${id}__remote`)).toBeUndefined()
-    expect(await readFile(join(root, '.credentials.yaml'), 'utf8')).not.toContain('DSH_CONNECTOR_AUTHED_TOKEN')
+    expect(await readFile(join(root, '.credentials.yaml'), 'utf8')).not.toContain('OH_CONNECTOR_AUTHED_TOKEN')
   })
 
   it('rethrows a preset removal failure that is not a hand deletion', async () => {
     if (process.platform === 'win32') return
     const { ctx } = await boot()
-    const home = process.env.DSH_HOME
+    const home = process.env.OH_HOME
     const id = await ctx.connectors.addCustom({ name: 'Locked', transport: 'streamable-http', url: 'http://127.0.0.1:6000/mcp' })
     await chmod(join(home!, '.agent-presets'), 0o500)
     try {
@@ -881,7 +881,7 @@ describe('custom connectors', () => {
     await mkdir(join(systemPresets, 'custom'), { recursive: true })
     await writeFile(join(systemPresets, 'custom', 'agent.cordis.yml'), '- id: stub\n  name: test:stub-preset\n')
     const home = await tempDir('home')
-    vi.stubEnv('DSH_HOME', home)
+    vi.stubEnv('OH_HOME', home)
     const ctx = new Context()
     await track(ctx.plugin(Loader))
     ctx.loader.builtins.include = Include
@@ -1047,7 +1047,7 @@ describe('multi-server mount', () => {
 describe('boot configuration edges', () => {
   it('defaults the user directory to the harness home and tolerates a missing catalog directory', async () => {
     const home = await tempDir('home')
-    vi.stubEnv('DSH_HOME', home)
+    vi.stubEnv('OH_HOME', home)
     const ctx = new Context()
     await track(ctx.plugin(SystemPrompt))
     await track(ctx.plugin(ToolRuntime))

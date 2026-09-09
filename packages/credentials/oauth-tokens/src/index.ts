@@ -1,5 +1,5 @@
 /**
- * File-backed OAuth token bundle store: `$DSH_HOME/.connectors/oauth-tokens.json`.
+ * File-backed OAuth token bundle store: `$OH_HOME/.connectors/oauth-tokens.json`.
  *
  * The document is a strict JSON mapping of owner id to
  * {@link OAuthTokenBundle}: an owner id outside the store's id shape, a
@@ -45,7 +45,7 @@ const OWNER_ID = /^[a-z0-9][a-z0-9-]{0,31}$/
 export interface Config {
   /** Token document path; defaults to `.connectors/oauth-tokens.json` under the harness home. */
   path?: string
-  /** Harness home used when `path` is omitted; defaults to `$DSH_HOME` or `~/.dsh`. */
+  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.dsh`. */
   dshHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean

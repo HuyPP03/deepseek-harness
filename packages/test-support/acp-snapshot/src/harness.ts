@@ -160,7 +160,7 @@ export interface RunOptions {
   /**
    * Recorded SUBAGENT child-session fixture paths (replay). A nested-agent
    * scenario ships one per child (`session.1.jsonl`, …); the harness forwards
-   * them to `dsh-llm-replay` via `$DSH_SNAPSHOT_CHILD_FILES` so each child
+   * them to `dsh-llm-replay` via `$OH_SNAPSHOT_CHILD_FILES` so each child
    * session replays from its own recorded script. Empty for single-session
    * scenarios. Ignored in record mode (children are harvested, not replayed).
    */
@@ -248,15 +248,15 @@ export async function runScenario(input: InputScript, opts: RunOptions): Promise
     await opts.prepareWorkspace?.(cwd)
     const env: NodeJS.ProcessEnv = {
       ...opts.env,
-      DSH_SNAPSHOT: opts.mode,
-      DSH_SNAPSHOT_FILE: opts.fixtureFile,
-      DSH_SNAPSHOT_SESSIONS_ROOT: sessionsRoot,
-      DSH_SNAPSHOT_SPILL_ROOT: spillRoot,
-      DSH_HOME: join(cwd, '.dsh'),
-      DSH_AGENTS_HOME: join(cwd, '.agents'),
-      ...opts.overrideFile !== undefined ? { DSH_SNAPSHOT_OVERRIDE: opts.overrideFile } : {},
+      OH_SNAPSHOT: opts.mode,
+      OH_SNAPSHOT_FILE: opts.fixtureFile,
+      OH_SNAPSHOT_SESSIONS_ROOT: sessionsRoot,
+      OH_SNAPSHOT_SPILL_ROOT: spillRoot,
+      OH_HOME: join(cwd, '.dsh'),
+      OH_AGENTS_HOME: join(cwd, '.agents'),
+      ...opts.overrideFile !== undefined ? { OH_SNAPSHOT_OVERRIDE: opts.overrideFile } : {},
       ...opts.childFiles !== undefined && opts.childFiles.length > 0
-        ? { DSH_SNAPSHOT_CHILD_FILES: opts.childFiles.join(delimiter) }
+        ? { OH_SNAPSHOT_CHILD_FILES: opts.childFiles.join(delimiter) }
         : {},
     }
 

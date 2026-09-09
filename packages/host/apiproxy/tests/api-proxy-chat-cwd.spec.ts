@@ -100,14 +100,14 @@ describe('chat session default project directory', () => {
 
   it('maps the gateway chat sandbox under the harness home', () => {
     const home = mkdtempSync(join(tmpdir(), 'dsh-apiproxy-chathome-env-'))
-    const previous = process.env.DSH_HOME
-    process.env.DSH_HOME = home
+    const previous = process.env.OH_HOME
+    process.env.OH_HOME = home
     try {
       const sessionId = SessionId('s-env')
       expect(dshHomePath('chat', sessionId)).toBe(join(home, 'chat', 's-env'))
     } finally {
-      if (previous === undefined) delete process.env.DSH_HOME
-      else process.env.DSH_HOME = previous
+      if (previous === undefined) delete process.env.OH_HOME
+      else process.env.OH_HOME = previous
     }
   })
 })

@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-User MCP server manager: the owner of the user-added MCP servers in one app. Each user server is persisted as one `<serverName>.cordis.yml` file under the harness home's `.mcp/` directory (default `$DSH_HOME/.mcp`) holding a single `mcp-client` entry, and mounted as a live [`dsh-mcp-client`](../mcp-client/) instance at startup and on `add`. Servers declared in the profile or host composition are not user servers — the manager never touches them — but every server (both origins) reports into the shared [`dsh-mcp-registry`](../mcp-registry/), and the manager's `servers`/`reconnect` faces read that union directly.
+User MCP server manager: the owner of the user-added MCP servers in one app. Each user server is persisted as one `<serverName>.cordis.yml` file under the harness home's `.mcp/` directory (default `$OH_HOME/.mcp`) holding a single `mcp-client` entry, and mounted as a live [`dsh-mcp-client`](../mcp-client/) instance at startup and on `add`. Servers declared in the profile or host composition are not user servers — the manager never touches them — but every server (both origins) reports into the shared [`dsh-mcp-registry`](../mcp-registry/), and the manager's `servers`/`reconnect` faces read that union directly.
 
 ## Usage
 
@@ -18,7 +18,7 @@ Mounted in the base composition (`packages/bundle/base/cordis.patch.yml`):
 One file per user server, holding a single `mcp-client` entry:
 
 ```yaml
-# $DSH_HOME/.mcp/websift.cordis.yml
+# $OH_HOME/.mcp/websift.cordis.yml
 - id: mcp-client-websift
   name: "@deepseek-ai/dsh-mcp-client"
   config:
@@ -45,7 +45,7 @@ The host RPC surface (`mcp.list` / `mcp.add` / `mcp.remove` / `mcp.reconnect` on
 
 | Field | Required | Description |
 |---|---|---|
-| `mcpDir` | no | Directory holding one cordis.yml per user server; defaults to `.mcp` under the harness home (`$DSH_HOME` / `~/.dsh`) |
+| `mcpDir` | no | Directory holding one cordis.yml per user server; defaults to `.mcp` under the harness home (`$OH_HOME` / `~/.dsh`) |
 
 ## Model Experience
 
@@ -57,5 +57,5 @@ Indirectly, through the `mcp-client` instances it mounts and unmounts: the tools
 
 ## Known Limitations and Deferred Work
 
-- The manager is per-process; concurrent apps sharing one `$DSH_HOME` may edit `.mcp/` simultaneously (last write wins per file, no locking).
+- The manager is per-process; concurrent apps sharing one `$OH_HOME` may edit `.mcp/` simultaneously (last write wins per file, no locking).
 - `add` mounts the instance synchronously: an unreachable server is still added and enters the mcp-client reconnect loop (observable through `servers()`).

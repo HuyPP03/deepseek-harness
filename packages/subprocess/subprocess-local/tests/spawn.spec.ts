@@ -899,38 +899,38 @@ describe('abort edge cases', () => {
 
 describe('environment and spill-file hardening', () => {
   it('scrubs credential-shaped and ambient DSH env vars from child processes', async () => {
-    process.env.DSH_TEST_API_KEY = 'super-secret'
-    process.env.DSH_TEST_TOKEN = 'also-secret'
+    process.env.OH_TEST_API_KEY = 'super-secret'
+    process.env.OH_TEST_TOKEN = 'also-secret'
     process.env.SUBPROCESS_TEST_PASSWORD = 'password-secret'
-    process.env.DSH_TEST_PLAIN = 'visible'
+    process.env.OH_TEST_PLAIN = 'visible'
     // The GitHub connector's token reference: the agent's bash tool must
     // never see it (the MCP server process is the only holder).
     process.env.GITHUB_PERSONAL_ACCESS_TOKEN = 'ghp_connector_token'
     try {
       const result = await finish(spawnSubprocess(spec(
-        'echo "[${DSH_TEST_API_KEY:-absent}|${DSH_TEST_TOKEN:-absent}|${SUBPROCESS_TEST_PASSWORD:-absent}|${DSH_TEST_PLAIN:-absent}|${GITHUB_PERSONAL_ACCESS_TOKEN:-absent}]"',
+        'echo "[${OH_TEST_API_KEY:-absent}|${OH_TEST_TOKEN:-absent}|${SUBPROCESS_TEST_PASSWORD:-absent}|${OH_TEST_PLAIN:-absent}|${GITHUB_PERSONAL_ACCESS_TOKEN:-absent}]"',
       )))
       expect(result.stdout.text.trim()).toBe('[absent|absent|absent|absent|absent]')
     } finally {
-      delete process.env.DSH_TEST_API_KEY
-      delete process.env.DSH_TEST_TOKEN
+      delete process.env.OH_TEST_API_KEY
+      delete process.env.OH_TEST_TOKEN
       delete process.env.SUBPROCESS_TEST_PASSWORD
-      delete process.env.DSH_TEST_PLAIN
+      delete process.env.OH_TEST_PLAIN
       delete process.env.GITHUB_PERSONAL_ACCESS_TOKEN
     }
   })
 
-  it('forwards explicit DSH_* env entries while scrubbing ambient ones', async () => {
-    // Both facts through one explicit map: the ambient DSH_STALE is dropped by
+  it('forwards explicit OH_* env entries while scrubbing ambient ones', async () => {
+    // Both facts through one explicit map: the ambient OH_STALE is dropped by
     // the scrub, and the deliberately supplied current values merge after it.
-    process.env.DSH_STALE = 'old-value'
+    process.env.OH_STALE = 'old-value'
     try {
-      const result = await finish(spawnSubprocess(spec('echo "[${DSH_STALE:-absent}|$DSH_SHELL|$DSH_SESSION_ID]"', {
-        env: { DSH_SHELL: '1', DSH_SESSION_ID: 'current-session' },
+      const result = await finish(spawnSubprocess(spec('echo "[${OH_STALE:-absent}|$OH_SHELL|$OH_SESSION_ID]"', {
+        env: { OH_SHELL: '1', OH_SESSION_ID: 'current-session' },
       })))
       expect(result.stdout.text.trim()).toBe('[absent|1|current-session]')
     } finally {
-      delete process.env.DSH_STALE
+      delete process.env.OH_STALE
     }
   })
 

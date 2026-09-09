@@ -102,7 +102,7 @@ describe('gate graph validation', () => {
   })
 
   it('applies one configured test and polling timeout to both coverage gates', () => {
-    const gates = withEnv('DSH_COVERAGE_TEST_TIMEOUT_MS', '15000', () =>
+    const gates = withEnv('OH_COVERAGE_TEST_TIMEOUT_MS', '15000', () =>
       withPnpmEntrypoint(() => gatesForMode('ci-windows-complete')))
 
     for (const id of ['coverage', 'coverage-exempt-heavy']) {
@@ -114,7 +114,7 @@ describe('gate graph validation', () => {
   })
 
   it('keeps Vitest timeout defaults when the coverage override is absent', () => {
-    const gates = withEnv('DSH_COVERAGE_TEST_TIMEOUT_MS', undefined, () =>
+    const gates = withEnv('OH_COVERAGE_TEST_TIMEOUT_MS', undefined, () =>
       withPnpmEntrypoint(() => gatesForMode('ci-windows-complete')))
 
     for (const id of ['coverage', 'coverage-exempt-heavy']) {
@@ -125,9 +125,9 @@ describe('gate graph validation', () => {
   })
 
   it('rejects an invalid coverage timeout before starting a gate', () => {
-    expect(() => withEnv('DSH_COVERAGE_TEST_TIMEOUT_MS', '0', () =>
+    expect(() => withEnv('OH_COVERAGE_TEST_TIMEOUT_MS', '0', () =>
       withPnpmEntrypoint(() => gatesForMode('ci-windows-complete'))))
-      .toThrow('DSH_COVERAGE_TEST_TIMEOUT_MS must be a positive integer')
+      .toThrow('OH_COVERAGE_TEST_TIMEOUT_MS must be a positive integer')
   })
 
   it.each([
@@ -164,7 +164,7 @@ describe('gate graph validation', () => {
 
 describe('Oxlint gate', () => {
   it('uses the package script when no worker bound is configured', () => {
-    const subject = withEnv('DSH_OXLINT_THREADS', undefined, () =>
+    const subject = withEnv('OH_OXLINT_THREADS', undefined, () =>
       withPnpmEntrypoint(() => gatesForMode('ci-lint-contracts-ready')[0]))
 
     expect(subject).toMatchObject({
@@ -176,12 +176,12 @@ describe('Oxlint gate', () => {
   })
 
   it('surfaces the configured worker bound on the shared package script', () => {
-    const subject = withEnv('DSH_OXLINT_THREADS', '4', () =>
+    const subject = withEnv('OH_OXLINT_THREADS', '4', () =>
       withPnpmEntrypoint(() => gatesForMode('ci-lint-contracts-ready')[0]))
 
     expect(subject).toMatchObject({
       id: 'lint',
-      displayCommand: 'DSH_OXLINT_THREADS=4 pnpm run lint:contracts-ready',
+      displayCommand: 'OH_OXLINT_THREADS=4 pnpm run lint:contracts-ready',
       command: process.execPath,
       args: ['/private/pnpm.cjs', 'run', 'lint:contracts-ready'],
     })
@@ -190,7 +190,7 @@ describe('Oxlint gate', () => {
 
 describe('Typert contract preparation', () => {
   it('prepares primary source consumers once before they run', () => {
-    const subject = withEnv('DSH_OXLINT_THREADS', undefined, () =>
+    const subject = withEnv('OH_OXLINT_THREADS', undefined, () =>
       withPnpmEntrypoint(() => gatesForMode('ci-primary')))
 
     expect(subject.find(item => item.id === 'typert-contracts')).toMatchObject({
@@ -292,9 +292,9 @@ describe('Node 24 lane ownership', () => {
     ]) {
       expect(subject.find(item => item.id === id)?.needs).toEqual(['built-package-invariants'])
     }
-    expect(subject.find(item => item.id === 'snapshot')?.env).toEqual({ DSH_EXAMPLE_MODE: 'lib' })
+    expect(subject.find(item => item.id === 'snapshot')?.env).toEqual({ OH_EXAMPLE_MODE: 'lib' })
     expect(subject.find(item => item.id === 'doc-typecheck')?.env).toEqual({
-      DSH_DOC_TYPECHECK_USE_BUILD_OUTPUT: '1',
+      OH_DOC_TYPECHECK_USE_BUILD_OUTPUT: '1',
     })
     expect(subject.find(item => item.id === 'built-bin-smoke')?.args).toEqual(
       expect.arrayContaining([
@@ -303,8 +303,8 @@ describe('Node 24 lane ownership', () => {
       ]),
     )
     expect(subject.find(item => item.id === 'web-snapshot')).toMatchObject({
-      displayCommand: 'DSH_SNAPSHOT=replay pnpm run test:web:built',
-      env: { DSH_SNAPSHOT: 'replay' },
+      displayCommand: 'OH_SNAPSHOT=replay pnpm run test:web:built',
+      env: { OH_SNAPSHOT: 'replay' },
     })
   })
 })
@@ -315,8 +315,8 @@ describe('Linux primary graph', () => {
     const web = subject.find(item => item.id === 'web-snapshot')
 
     expect(web).toMatchObject({
-      displayCommand: 'DSH_SNAPSHOT=replay pnpm run test:web:built',
-      env: { DSH_SNAPSHOT: 'replay' },
+      displayCommand: 'OH_SNAPSHOT=replay pnpm run test:web:built',
+      env: { OH_SNAPSHOT: 'replay' },
       needs: ['built-package-invariants'],
     })
   })

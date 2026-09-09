@@ -85,7 +85,7 @@ export interface Config {
   readonly catalogDir?: string
   /** Directory holding user override documents and custom connector manifests; defaults to `.connectors` under the harness home. */
   readonly userDir?: string
-  /** Harness home used when `userDir` is omitted; defaults to `$DSH_HOME` or `~/.dsh`. */
+  /** Harness home used when `userDir` is omitted; defaults to `$OH_HOME` or `~/.dsh`. */
   readonly dshHome?: string
 }
 
@@ -120,7 +120,7 @@ export function clientSecretRef(id: string): string {
  * @returns the derived credential reference name.
  */
 export function customTokenRef(slug: string): string {
-  return `DSH_CONNECTOR_${slug.replace(/-/g, '_').toUpperCase()}_TOKEN`
+  return `OH_CONNECTOR_${slug.replace(/-/g, '_').toUpperCase()}_TOKEN`
 }
 
 /** Thrown when an operation targets a connector that is not in the catalog. */

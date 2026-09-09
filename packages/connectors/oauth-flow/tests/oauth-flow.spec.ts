@@ -361,7 +361,7 @@ async function boot(
   }
   await writeFile(join(systemPresets, 'custom', 'agent.cordis.yml'), '- id: stub\n  name: test:stub-preset\n')
   const home = await tempDir('home')
-  vi.stubEnv('DSH_HOME', home)
+  vi.stubEnv('OH_HOME', home)
 
   const ctx = new Context()
   await track(ctx.plugin(Loader))

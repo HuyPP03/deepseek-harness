@@ -72,14 +72,14 @@
     - id: llm-retry
       name: '@deepseek-ai/dsh-llm-retry'
 
-    # User-settings document (`$DSH_HOME/settings.yaml`, hot-reloaded): a
+    # User-settings document (`$OH_HOME/settings.yaml`, hot-reloaded): a
     # `llm-deepseek:` or `llm-pi-ai:` section there overrides the adapter entries
     # below without a restart, and is what the web Models page writes.
     - id: settings
       name: '@deepseek-ai/dsh-settings-file'
 
     # Credential sources: inherited environment over the managed
-    # `$DSH_HOME/.credentials.yaml`, with project and user `.env` fallbacks.
+    # `$OH_HOME/.credentials.yaml`, with project and user `.env` fallbacks.
     # Adapters resolve references per request; the Models page writes only the
     # managed document, which is never materialized into the process environment.
     - id: credentials
@@ -126,15 +126,15 @@
     - id: session-projection
       name: '@deepseek-ai/dsh-session-projection'
 
-    # Session telemetry is mounted but disabled by default. DSH_TELEMETRY_MODE
+    # Session telemetry is mounted but disabled by default. OH_TELEMETRY_MODE
     # explicitly opts into FULL or FEEDBACK_ONLY reporting; uploading mirrors
     # session-log records onto OTLP/HTTP logs with no session-telemetry/record redaction
     # rule, so exports are the raw captured copy. The deployment stance, env
     # seams, and follow-ups are pinned in the default-off Agent Note.
-    # DSH_TELEMETRY_OTLP_URL overrides the production endpoint. A non-empty
-    # DSH_TELEMETRY_DISABLED — any value, including '0'/'false' — opts the
+    # OH_TELEMETRY_OTLP_URL overrides the production endpoint. A non-empty
+    # OH_TELEMETRY_DISABLED — any value, including '0'/'false' — opts the
     # process out (the launchers patch the row disabled; config cannot disable
-    # a row). Exports carry the harness home's anonymous user id ($DSH_HOME/.anonymous-user-id,
+    # a row). Exports carry the harness home's anonymous user id ($OH_HOME/.anonymous-user-id,
     # random UUID; delete the file to reset the identity) as the Resource's
     # user.id. The exporter/processor values normally bound the shutdown drain
     # to ~1s against an unreachable collector: exporter.timeoutMillis is both
@@ -148,10 +148,10 @@
     - id: session-telemetry-otel
       name: '@deepseek-ai/dsh-session-telemetry-otel'
       config:
-        mode: !!js process.env.DSH_TELEMETRY_MODE || 'DISABLED'
+        mode: !!js process.env.OH_TELEMETRY_MODE || 'DISABLED'
         shutdownTimeoutMillis: 3000
         exporter:
-          url: !!js process.env.DSH_TELEMETRY_OTLP_URL ?? 'https://harness-telemetry.deepseeksvc.com/v1/logs'
+          url: !!js process.env.OH_TELEMETRY_OTLP_URL ?? 'https://harness-telemetry.deepseeksvc.com/v1/logs'
           compression: gzip
           timeoutMillis: 1000
         processor:
@@ -172,7 +172,7 @@
     - id: sandbox-policy
       name: '@deepseek-ai/dsh-sandbox-policy'
       config:
-        mode: !!js process.env.DSH_PERMISSION_MODE ?? 'workspace-write'
+        mode: !!js process.env.OH_PERMISSION_MODE ?? 'workspace-write'
         workspaceRoot: !!js process.cwd()
 
     - id: bash-sandbox
@@ -188,7 +188,7 @@
     - id: approval
       name: '@deepseek-ai/dsh-user-approval'
       config:
-        policy: !!js "(process.env.DSH_PERMISSION_MODE ?? 'workspace-write') === 'danger-full-access' ? 'never' : 'ask'"
+        policy: !!js "(process.env.OH_PERMISSION_MODE ?? 'workspace-write') === 'danger-full-access' ? 'never' : 'ask'"
 
     - id: permission
       name: '@deepseek-ai/dsh-permission-presets'
@@ -305,7 +305,7 @@
       name: '@deepseek-ai/dsh-command-mcp'
 
     # User MCP servers: persists one cordis.yml per server under
-    # $DSH_HOME/.mcp and runtime-mounts their mcp-client instances. A
+    # $OH_HOME/.mcp and runtime-mounts their mcp-client instances. A
     # deployment without user servers boots an empty directory.
     - id: mcp-manager
       name: '@deepseek-ai/dsh-mcp-manager'
@@ -319,7 +319,7 @@
       name: '@deepseek-ai/dsh-connectors'
 
     # Token bundles for connectors that authenticate through a browser OAuth
-    # flow: one bundle per connector under `$DSH_HOME/.connectors/oauth-tokens.json`.
+    # flow: one bundle per connector under `$OH_HOME/.connectors/oauth-tokens.json`.
     # The file is created lazily by the first bundle write; no file at boot
     # means no stored bundles, which the connectors surface as unconfigured.
     - id: oauth-tokens

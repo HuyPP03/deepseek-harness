@@ -4,7 +4,7 @@
  * real profile boot, not a parser unit. The web profile mounts the
  * `connectors` row from the base layer and patches in this app's shipped
  * catalog root; the test binds an OS-assigned port so it never contends
- * with a running instance. `$DSH_HOME` is pointed at a temp home before
+ * with a running instance. `$OH_HOME` is pointed at a temp home before
  * boot: the roster asserts every row is unconfigured, which an ambient
  * developer home (with configured connectors and their mounted servers)
  * would break.
@@ -26,14 +26,14 @@ let previousHome: string | undefined
 
 beforeEach(async () => {
   home = await mkdtemp(join(tmpdir(), 'dsh-shipped-connectors-'))
-  previousHome = process.env.DSH_HOME
-  process.env.DSH_HOME = home
+  previousHome = process.env.OH_HOME
+  process.env.OH_HOME = home
   healProfilesModuleFallback(INSTALL_ANCHOR, home)
 })
 
 afterEach(async () => {
-  if (previousHome === undefined) delete process.env.DSH_HOME
-  else process.env.DSH_HOME = previousHome
+  if (previousHome === undefined) delete process.env.OH_HOME
+  else process.env.OH_HOME = previousHome
   if (home !== undefined) await rm(home, { recursive: true, force: true })
   home = undefined
   previousHome = undefined

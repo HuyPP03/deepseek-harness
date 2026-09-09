@@ -393,7 +393,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         signature: 'graph(): WebBootGraph',
         description: 'Current composed entry graph (stable object between changes).',
         parameters: [],
-        returns: 'the graph served as `window.__DSH_BOOT__`.',
+        returns: 'the graph served as `window.__OH_BOOT__`.',
       },
       {
         signature: 'clientPath(id: string): string | undefined',
@@ -1645,8 +1645,8 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
   },
   {
     key: 'shellEnv',
-    summary: 'Registry (`ctx.shellEnv`) for trusted, per-execution `DSH_*` variables.',
-    description: 'Registry (`ctx.shellEnv`) for trusted, per-execution `DSH_*` variables. The namespace is rebuilt for every model shell call: ambient `DSH_*` values are discarded by the executor, then the registry\'s current snapshot is injected. Built-in shell facts remain owned by the registry itself while plugins can register additional, enumerable facts with effect-scoped disposal.',
+    summary: 'Registry (`ctx.shellEnv`) for trusted, per-execution `OH_*` variables.',
+    description: 'Registry (`ctx.shellEnv`) for trusted, per-execution `OH_*` variables. The namespace is rebuilt for every model shell call: ambient `OH_*` values are discarded by the executor, then the registry\'s current snapshot is injected. Built-in shell facts remain owned by the registry itself while plugins can register additional, enumerable facts with effect-scoped disposal.',
     methods: [
       {
         signature: 'register(contributor: BashEnvContributor): () => void',
@@ -1656,7 +1656,7 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
       },
       {
         signature: 'collect(execution: ToolExecution): DshEnvironment',
-        description: 'Build the trusted `DSH_*` snapshot for one shell tool execution.',
+        description: 'Build the trusted `OH_*` snapshot for one shell tool execution.',
         parameters: [{ name: 'execution', description: 'the current tool execution.' }],
         returns: 'an immutable environment overlay containing built-ins and current contributions.',
       },
@@ -3272,7 +3272,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'DshEnvironmentKey',
-    declaration: 'export type DshEnvironmentKey = `${typeof DSH_ENV_PREFIX}${string}`;',
+    declaration: 'export type DshEnvironmentKey = `${typeof OH_ENV_PREFIX}${string}`;',
   },
   {
     name: 'DynamicCordisPackage',

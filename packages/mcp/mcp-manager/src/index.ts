@@ -1,7 +1,7 @@
 /**
  * User MCP server manager: the owner of the user-added MCP servers in one
  * app. Each user server is persisted as one `<serverName>.cordis.yml` file
- * under the harness home's `.mcp/` directory (default `$DSH_HOME/.mcp`),
+ * under the harness home's `.mcp/` directory (default `$OH_HOME/.mcp`),
  * holding a single `mcp-client` entry, and mounted as a live `mcp-client`
  * instance into the host plane at startup and on `add`.
  *

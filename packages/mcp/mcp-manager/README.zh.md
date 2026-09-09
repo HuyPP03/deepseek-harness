@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-用户 MCP 服务器管理器：负责用户在运行时添加的 MCP 服务器。每个用户服务器持久化为 harness home 下 `.mcp/` 目录（默认 `$DSH_HOME/.mcp`）中的一个 `<serverName>.cordis.yml` 文件，并在启动和 `add` 时挂载为 [`dsh-mcp-client`](../mcp-client/) 的实时实例。profile 或宿主组合中声明的服务器不是用户服务器——管理器绝不触碰它们，但所有服务器（两种来源）都会上报到共享的 [`dsh-mcp-registry`](../mcp-registry/)，管理器的 `servers`/`reconnect` 接口直接读取该并集。
+用户 MCP 服务器管理器：负责用户在运行时添加的 MCP 服务器。每个用户服务器持久化为 harness home 下 `.mcp/` 目录（默认 `$OH_HOME/.mcp`）中的一个 `<serverName>.cordis.yml` 文件，并在启动和 `add` 时挂载为 [`dsh-mcp-client`](../mcp-client/) 的实时实例。profile 或宿主组合中声明的服务器不是用户服务器——管理器绝不触碰它们，但所有服务器（两种来源）都会上报到共享的 [`dsh-mcp-registry`](../mcp-registry/)，管理器的 `servers`/`reconnect` 接口直接读取该并集。
 
 ## 用法
 
@@ -18,7 +18,7 @@
 每个用户服务器一个文件，包含单个 `mcp-client` 条目：
 
 ```yaml
-# $DSH_HOME/.mcp/websift.cordis.yml
+# $OH_HOME/.mcp/websift.cordis.yml
 - id: mcp-client-websift
   name: "@deepseek-ai/dsh-mcp-client"
   config:
@@ -45,7 +45,7 @@
 
 | 字段 | 必填 | 说明 |
 |---|---|---|
-| `mcpDir` | 否 | 存放每个用户服务器 cordis.yml 的目录；默认 harness home（`$DSH_HOME` / `~/.dsh`）下的 `.mcp` |
+| `mcpDir` | 否 | 存放每个用户服务器 cordis.yml 的目录；默认 harness home（`$OH_HOME` / `~/.dsh`）下的 `.mcp` |
 
 ## Model Experience
 
@@ -57,5 +57,5 @@
 
 ## 已知限制与延迟工作
 
-- 管理器服务于单个进程；共享同一 `$DSH_HOME` 的并发应用可能同时编辑 `.mcp/`（每个文件最后写入者获胜，无锁）。
+- 管理器服务于单个进程；共享同一 `$OH_HOME` 的并发应用可能同时编辑 `.mcp/`（每个文件最后写入者获胜，无锁）。
 - `add` 同步挂载实例：无法连接的服务器仍会被添加，并进入 mcp-client 重连循环（可通过 `servers()` 观察）。

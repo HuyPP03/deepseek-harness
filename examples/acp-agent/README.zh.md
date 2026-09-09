@@ -19,6 +19,6 @@ Stdout 只携带以换行分隔的 ACP JSON-RPC。`@deepseek-ai/dsh-acp-demo` �
 
 ## 会话 workspace 与权限
 
-每次 `session/new` 都提供一个绝对 `cwd`。受沙箱限制的 bash 和文件系统修改会以该会话 cwd 为基准应用 `workspace-write`，因此并发会话可以使用不同的项目根目录；平台临时根目录仍是共享可写暂存空间（参见[沙箱约定](../../packages/sandbox/sandbox/README.md)）。`DSH_PERMISSION_MODE` 为部署选择 `workspace-write` 或 `danger-full-access`。
+每次 `session/new` 都提供一个绝对 `cwd`。受沙箱限制的 bash 和文件系统修改会以该会话 cwd 为基准应用 `workspace-write`，因此并发会话可以使用不同的项目根目录；平台临时根目录仍是共享可写暂存空间（参见[沙箱约定](../../packages/sandbox/sandbox/README.md)）。`OH_PERMISSION_MODE` 为部署选择 `workspace-write` 或 `danger-full-access`。
 
 在 `workspace-write` 下，如果模型重试请求更广泛的沙箱访问权限，就会触发 `session/request_permission`，选项为 `allow_once` 和 `reject_once`。客户端以程序方式决策；客户端放弃选择或无法给出答复时，系统会按拒绝处理。选定结果仅适用于该次重试，并通过常规工具结果／审计路径记录。服务器绝不公开权限选择器，也不持久化客户端策略。

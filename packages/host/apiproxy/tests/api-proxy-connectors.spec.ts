@@ -143,7 +143,7 @@ async function harness(options: HarnessOptions = {}): Promise<{
 }> {
   const root = await mkdtemp(join(tmpdir(), 'dsh-api-connectors-'))
   const home = await mkdtemp(join(tmpdir(), 'dsh-api-connectors-home-'))
-  vi.stubEnv('DSH_HOME', home)
+  vi.stubEnv('OH_HOME', home)
   const mcpDir = join(root, '.mcp')
   const catalogDir = join(root, 'catalog')
   const userDir = join(root, 'user')

@@ -40,7 +40,7 @@
 | 字段 | 默认值 | 含义 |
 |---|---|---|
 | `path` | `<harness home>/.connectors/oauth-tokens.json` | 令牌文档位置。 |
-| `dshHome` | `$DSH_HOME` 或 `~/.dsh` | 省略 `path` 时使用的 harness home。 |
+| `dshHome` | `$OH_HOME` 或 `~/.dsh` | 省略 `path` 时使用的 harness home。 |
 | `watch` | `true` | 热发布外部编辑。 |
 | `debounceMs` | `100` | 监听器写稳定窗口。 |
 

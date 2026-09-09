@@ -10,10 +10,10 @@
 import type { Readable, Writable } from 'node:stream'
 
 /** Namespace prefix reserved for Open Harness-managed child environment facts. */
-export const DSH_ENV_PREFIX = 'DSH_' as const
+export const OH_ENV_PREFIX = 'OH_' as const
 
-/** One environment key inside the managed {@link DSH_ENV_PREFIX} namespace. */
-export type DshEnvironmentKey = `${typeof DSH_ENV_PREFIX}${string}`
+/** One environment key inside the managed {@link OH_ENV_PREFIX} namespace. */
+export type DshEnvironmentKey = `${typeof OH_ENV_PREFIX}${string}`
 
 /** Trusted Open Harness variables for one child-process execution. */
 export type DshEnvironment = Readonly<Record<DshEnvironmentKey, string>>
@@ -97,7 +97,7 @@ export interface SubprocessSpawnSpec {
    * Explicit environment entries merged onto the implementation's scrubbed
    * parent base (see `scrubbedParentEnv`), with no namespace validation. A
    * string is a deliberate caller opt-in, so a forwarded credential-shaped
-   * entry or current `DSH_*` fact survives the scrub; `undefined` is a
+   * entry or current `OH_*` fact survives the scrub; `undefined` is a
    * tombstone that removes an ordinary ambient entry from the child.
    */
   env?: NodeJS.ProcessEnv | undefined
