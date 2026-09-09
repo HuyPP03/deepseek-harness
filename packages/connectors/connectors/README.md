@@ -42,6 +42,7 @@ suggestions:
 | Operation | Meaning |
 |---|---|
 | `list()` | Every catalog + custom connector as a wire-safe view, sorted by id. |
+| `presetIds()` | The `presetId` set over every catalog + custom manifest — the agent presets a connector session is born under, so host gates (mode switches, reference eligibility, permission pinning) read the provider set from here. |
 | `get(id)` | One view, or `undefined`. |
 | `manifest(id)` | The raw manifest (host-internal; views never carry commands or env, and the only URL a view carries is the user-stored `url`). |
 | `setAuthorizing(id, inFlight)` | Flag an in-flight auth flow; the state reads `authorizing` while flagged. |

@@ -7,8 +7,9 @@
  * `permissions` session projection; the write side ships as the
  * `/permission` command — both optional children over the same service.
  *
- * Chat sessions (the `chatPresetIds` agent presets) are pinned to the
- * configured read-only preset at creation and refuse the `/permission`
+ * Chat sessions (the `chatPresetIds` agent presets) and provider (connector)
+ * sessions — whose preset the composed connectors service claims — are pinned
+ * to the configured read-only preset at creation and refuse the `/permission`
  * switch: their mode is fixed by composition, not user-selectable.
  *
  * @module dsh-permission-presets
@@ -292,12 +293,18 @@ export class PermissionPresetService extends Service {
         // surface that renders `name · text` (the web command row) would
         // otherwise read `permission · Permission preset: workspace-write.`
         handler: ({ agent, rawInput }) => {
-          // Chat sessions are pinned read-only at creation; the switch is
-          // refused while the session runs a listed chat preset (a blank
-          // switch away from it unlocks the preset, matching the composition
-          // its next turn will run under).
-          if (this.chatPresetIds.includes(resolveSessionPreset(agent.session) ?? '')) {
+          // Chat and provider sessions are pinned read-only at creation; the
+          // switch is refused while the session runs a listed chat preset or
+          // a connector-claimed provider preset (a blank switch away from it
+          // unlocks the preset, matching the composition its next turn will
+          // run under).
+          const running = resolveSessionPreset(agent.session) ?? ''
+          const providerIds = this.providerPresetIds()
+          if (this.chatPresetIds.includes(running)) {
             return { kind: 'error', text: 'Chat sessions run read-only and cannot switch permission presets.' }
+          }
+          if (providerIds !== undefined && providerIds.has(running)) {
+            return { kind: 'error', text: 'Connector sessions run their provider preset and cannot switch permission presets.' }
           }
           const name = rawInput.trim()
           if (name === '') {
@@ -428,11 +435,23 @@ export class PermissionPresetService extends Service {
   }
 
   /**
+   * The preset ids the composed connectors claim: their sessions run a fixed
+   * provider mode, so the permission preset is pinned for them exactly as for
+   * chat sessions. Absent when the deployment composes no connectors service.
+   * @returns the claimed preset ids, or `undefined` without a connectors service.
+   */
+  private providerPresetIds(): ReadonlySet<string> | undefined {
+    const connectors = this.ctx.get('connectors') as { presetIds(): ReadonlySet<string> } | undefined
+    return connectors?.presetIds()
+  }
+
+  /**
    * Fill every missing permission fact before a session is published. A
    * genuinely fresh session uses the current user default — or the
-   * configured chat preset when its header names a chat agent preset;
-   * seeded or partially initialized sessions preserve their effective knob
-   * values and only gain the missing durable facts.
+   * configured chat preset when its header names a chat agent preset or a
+   * connector-claimed provider preset; seeded or partially initialized
+   * sessions preserve their effective knob values and only gain the missing
+   * durable facts.
    */
   private pinInitialPermission(session: Session): void {
     const events = session.events
@@ -441,11 +460,15 @@ export class PermissionPresetService extends Service {
     const approval = effectiveApprovalPolicy(events)
     const seeded = events.some(event => event.type === 'session/end-seed')
     if (selected === undefined && sandbox === undefined && approval === undefined && !seeded) {
-      // A freshly created chat session pins the configured read-only preset
-      // instead of the user default; the header carries the creation-time
-      // preset (no logged selection can exist on a blank session yet).
-      const chat = this.chatPresetIds.includes(session.header.agentPreset ?? '')
-      const name = chat ? this.chatPreset : this.defaultPreset
+      // A freshly created chat or provider session pins the configured
+      // read-only preset instead of the user default; the header carries the
+      // creation-time preset (no logged selection can exist on a blank
+      // session yet).
+      const header = session.header.agentPreset
+      const provider = this.providerPresetIds()
+      const pinned = this.chatPresetIds.includes(header ?? '')
+        || (header !== undefined && provider !== undefined && provider.has(header))
+      const name = pinned ? this.chatPreset : this.defaultPreset
       const spec = this.resolve(name)
       session.append('permission/preset', { preset: name })
       setSandboxMode(session, spec.sandbox)

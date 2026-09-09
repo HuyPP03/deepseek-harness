@@ -51,7 +51,7 @@ subagent 的子 agent 通过 `composeFrom()` 加入其父方的常驻组装，�
 两条写入路径调用它，各有一道闸门：
 
 - **空白座位流程。** `agentPresets.select` RPC（由 composer 座位呈现）要求**空白**会话——网关在传输层执行，否则回答 `agent-preset-locked`。
-- **`/mode` 命令。** 服务在命令注册表存在时于其上注册 `mode`：`/mode` 报告当前 preset 与 roster，`/mode <preset>` 在对话中途切换会话的组装。闸门：agent 必须**空闲**——运行中的轮次在其步骤期间独占其组装，且切换在每会话锁之下重读该状态——以及配置在 `chatPresetIds` 中的 preset 双向都不可跨越，因为 chat 会话是一个固定的对话界面，不是一个模式。
+- **`/mode` 命令。** 服务在命令注册表存在时于其上注册 `mode`：`/mode` 报告当前 preset 与可切换 roster（被配置的 `chatPresetIds` 或已组合的 connectors 服务声明的 preset 永不作为切换目标），`/mode <preset>` 在对话中途切换会话的组装。闸门：agent 必须**空闲**——运行中的轮次在其步骤期间独占其组装，且切换在每会话锁之下重读该状态——配置在 `chatPresetIds` 中的 preset 双向都不可跨越，因为 chat 会话是一个固定的对话界面，不是一个模式——已组合 connectors 服务声明的 preset（provider preset）同样双向都不可跨越，因为 connector 会话由其 Connect 流程创建，而非由模式切换创建。
 
 对话中途切换之所以安全，是因为日志即记录：更早的轮次保留其组合作为惰性历史（新目录无法执行、已被记录的工具调用，与对话中途换模型完全同构），而提交之后追加的 `agent-preset/selected` 事件正是 resume 或 fork 重建所用的。命令自身不记录输入——该事件拥有载荷——同一会话的并发切换经每会话队列串行化，后到者生效。
 

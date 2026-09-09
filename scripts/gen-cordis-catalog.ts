@@ -512,6 +512,7 @@ export const FOUNDATION_TYPE_NAMES: ReadonlySet<string> = new Set([
   'Promise',
   'Record',
   'Readonly',
+  'ReadonlySet',
   'Uint8Array',
 ])
 

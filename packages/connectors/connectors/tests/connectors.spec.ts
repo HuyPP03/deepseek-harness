@@ -367,6 +367,19 @@ describe('catalog and list', () => {
     expect(google?.products).toEqual(['gmail', 'drive'])
   })
 
+  it('publishes the claimed preset ids over catalog and custom connectors', async () => {
+    const { ctx } = await boot()
+    expect([...ctx.connectors.presetIds()].sort()).toEqual(['atlas', 'duo', 'google', 'm365', 'mislabeled', 'notion'])
+    const id = await ctx.connectors.addCustom({
+      name: 'My Local API',
+      transport: 'streamable-http',
+      url: 'http://127.0.0.1:9999/mcp',
+    })
+    expect(ctx.connectors.presetIds().has('custom-my-local-api')).toBe(true)
+    await ctx.connectors.removeCustom(id)
+    expect(ctx.connectors.presetIds().has('custom-my-local-api')).toBe(false)
+  })
+
   it('boots loud on a malformed catalog manifest', async () => {
     const root = await tempDir('bad-catalog')
     await mkdir(join(root, 'catalog'), { recursive: true })

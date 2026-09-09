@@ -42,6 +42,7 @@ suggestions:
 | 操作 | 含义 |
 |---|---|
 | `list()` | 所有目录 + 自定义连接器，以 wire 安全视图返回，按 id 排序。 |
+| `presetIds()` | 覆盖每个目录 + 自定义清单的 `presetId` 集合——connector 会话出生时所处的 agent preset，因此 host 门控（模式切换、参考资格、权限固定）从这里读取 provider 集合。 |
 | `get(id)` | 一个视图，或 `undefined`。 |
 | `manifest(id)` | 原始清单（host 内部用；视图永不携带命令或 env，视图唯一可能携带的 URL 是用户存储的 `url`）。 |
 | `setAuthorizing(id, inFlight)` | 标记进行中的认证流程；标记期间状态读作 `authorizing`。 |

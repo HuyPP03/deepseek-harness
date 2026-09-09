@@ -264,11 +264,30 @@ describe('candidates', () => {
     expect(plainNames).toEqual(['plan', 'goal', 'permission'])
   })
 
-  it('hides providerHidden commands from a provider chat menu but keeps them for ordinary sessions', async () => {
+  it('hides /mode from chat and provider chat menus but keeps it for ordinary sessions', async () => {
+    const commands = () => Promise.resolve({
+      commands: [...S1_CMDS, { name: 'mode', description: 'switch preset' }],
+    })
+    const chat = await bench({ commands, chatSession: sid('s1') })
+    expect((await chat.source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['plan', 'goal'])
+
+    const provider = await bench({
+      commands,
+      providerSession: sid('s1'),
+      connectorPresetIds: new Set(['preset-github']),
+    })
+    expect((await provider.source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['plan', 'goal'])
+
+    const plain = await bench({ commands })
+    expect((await plain.source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['plan', 'goal', 'mode'])
+  })
+
+  it('hides providerHidden and /permission rows from a provider chat menu but keeps them for ordinary sessions', async () => {
     const commands: CommandDescriptor[] = [
       { name: 'compact', description: 'compact the conversation' },
       { name: 'goal', description: 'steer a long-running task', providerHidden: true },
       { name: 'mcp', description: 'list the MCP servers', providerHidden: true },
+      { name: 'permission', description: 'switch preset', input: { hint: 'preset' } },
     ]
     const provider = await bench({
       commands: () => Promise.resolve({ commands }),
@@ -278,7 +297,7 @@ describe('candidates', () => {
     expect((await provider.source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['compact'])
 
     const plain = await bench({ commands: () => Promise.resolve({ commands }) })
-    expect((await plain.source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['compact', 'goal', 'mcp'])
+    expect((await plain.source.candidates(proj('s1'), req(''))).map(c => c.name)).toEqual(['compact', 'goal', 'mcp', 'permission'])
   })
 
   it('matches case-insensitive subsequences and ranks prefixes, boundaries, adjacency, gaps, then source order', async () => {

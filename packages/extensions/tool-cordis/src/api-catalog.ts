@@ -514,6 +514,12 @@ export const SERVICE_API: readonly ServiceApiEntry[] = [
         returns: 'the connector views.',
       },
       {
+        signature: 'presetIds(): ReadonlySet<string>',
+        description: 'The agent presets the known connectors\' sessions run: a connector\'s preset is that session\'s fixed mode, so host gates (`/mode` switches, reference eligibility) read the provider set from here rather than parsing manifests themselves.',
+        parameters: [],
+        returns: 'the claimed preset ids (catalog and custom connectors).',
+      },
+      {
         signature: 'async get(id: string): Promise<ConnectorView | undefined>',
         description: 'One connector\'s wire-safe view.',
         parameters: [{ name: 'id', description: 'the connector id.' }],
@@ -3082,7 +3088,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'ConnectorView',
-    declaration: 'export interface ConnectorView {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly presetId: string;\n    readonly state: ConnectorState;\n    readonly lastError?: string;\n    readonly custom: boolean;\n    readonly servers: readonly ConnectorServerView[];\n    readonly auth: readonly ConnectorAuthView[];\n    readonly suggestions: readonly string[];\n    readonly products?: readonly string[];\n}',
+    declaration: 'export interface ConnectorView {\n    readonly id: string;\n    readonly name: string;\n    readonly description: string;\n    readonly presetId: string;\n    readonly state: ConnectorState;\n    readonly lastError?: string;\n    readonly custom: boolean;\n    readonly servers: readonly ConnectorServerView[];\n    readonly auth: readonly ConnectorAuthView[];\n    readonly suggestions: readonly string[];\n    readonly products?: readonly string[];\n    readonly urlRequired?: boolean;\n    readonly url?: string;\n}',
   },
   {
     name: 'ContentBlockMap',
@@ -3930,7 +3936,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'RpcErrorDetailsMap',
-    declaration: 'export interface RpcErrorDetailsMap {\n    \'bad-request\': {\n        issues: ZodIssue[];\n    };\n    \'cancelled\': {};\n    \'session-not-found\': {\n        sessionId: SessionId;\n    };\n    \'model-unavailable\': {\n        provider: string;\n        model: string;\n    };\n    \'session-conflict\': {\n        sessionId: SessionId;\n        requestedCwd: string;\n        existingCwd?: string;\n    };\n    \'invalid-time-zone\': {\n        value: string;\n    };\n    \'workspace-attach-failed\': {\n        sessionId: SessionId;\n        workspaceId: string;\n    };\n    \'workspace-not-found\': {\n        workspaceId: string;\n    };\n    \'references-unsupported\': {\n        sessionId: SessionId;\n    };\n    \'references-invalid\': {\n        sessionId: SessionId;\n        reason: string;\n    };\n    \'references-require-workspace\': {\n        sessionId: SessionId;\n    };\n    \'workspace-invalid-path\': {\n        path: string;\n    };\n    \'workspace-name-conflict\': {\n        name: string;\n    };\n    \'workspace-move-invalid\': {\n        workspaceId: string;\n        sessionId: SessionId;\n        beforeSessionId?: SessionId;\n    };\n    \'directory-unreadable\': {\n        path: string;\n    };\n    \'directory-exists\': {\n        path: string;\n    };\n    \'directory-create-failed\': {\n        path: string;\n    };\n    \'directory-picker-unavailable\': {\n        capability: string;\n    };\n    \'agent-preset-read-only\': {\n        agentPreset: string;\n        reason: string;\n    };\n    \'agent-preset-locked\': {\n        sessionId: SessionId;\n    /* …truncated — full shape in source */',
+    declaration: 'export interface RpcErrorDetailsMap {\n    \'bad-request\': {\n        issues: ZodIssue[];\n    };\n    \'cancelled\': {};\n    \'session-not-found\': {\n        sessionId: SessionId;\n    };\n    \'model-unavailable\': {\n        provider: string;\n        model: string;\n    };\n    \'session-conflict\': {\n        sessionId: SessionId;\n        requestedCwd: string;\n        existingCwd?: string;\n    };\n    \'invalid-time-zone\': {\n        value: string;\n    };\n    \'workspace-attach-failed\': {\n        sessionId: SessionId;\n        workspaceId: string;\n    };\n    \'workspace-not-found\': {\n        workspaceId: string;\n    };\n    \'references-unsupported\': {\n        sessionId: SessionId;\n    };\n    \'references-unavailable\': {\n        sessionId: SessionId;\n    };\n    \'references-invalid\': {\n        sessionId: SessionId;\n        reason: string;\n    };\n    \'workspace-invalid-path\': {\n        path: string;\n    };\n    \'workspace-name-conflict\': {\n        name: string;\n    };\n    \'workspace-move-invalid\': {\n        workspaceId: string;\n        sessionId: SessionId;\n        beforeSessionId?: SessionId;\n    };\n    \'directory-unreadable\': {\n        path: string;\n    };\n    \'directory-exists\': {\n        path: string;\n    };\n    \'directory-create-failed\': {\n        path: string;\n    };\n    \'directory-picker-unavailable\': {\n        capability: string;\n    };\n    \'agent-preset-read-only\': {\n        agentPreset: string;\n        reason: string;\n    };\n    \'agent-preset-locked\': {\n        sessionId: SessionId;\n        a /* …truncated — full shape in source */',
   },
   {
     name: 'RpcId',

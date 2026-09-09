@@ -254,9 +254,11 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
   /**
    * The merged slash-menu rows before position and query filtering: host
    * catalog + available contributions, in menu order.
-   * Chat sessions run the fixed read-only preset: the host refuses the
-   * `/permission` switch, so the menu hides the row (a typed line still
-   * reaches the host and gets its error).
+   * Chat and provider (connector) sessions run the fixed read-only
+   * permission preset: the host refuses the `/permission` switch, so the
+   * menu hides the row (a typed line still reaches the host and gets its
+   * error). Both surfaces are mode-fixed, so the menu hides `/mode` for
+   * them too (the host refuses the switch across either surface).
    */
   private async menuRowCandidates(session: ClientSessionContext, signal: AbortSignal): Promise<readonly InputTriggerCandidate[]> {
     const list = await this.directory.ensureReady(session.sessionId, signal)
@@ -266,7 +268,8 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     const rows: InputTriggerCandidate[] = []
     const seen = new Set<string>()
     for (const c of list) {
-      if (chatSession && c.name === 'permission') continue
+      if ((chatSession || providerChat) && c.name === 'permission') continue
+      if ((chatSession || providerChat) && c.name === 'mode') continue
       if (providerChat && c.providerHidden === true) continue
       seen.add(c.name)
       rows.push({ name: c.name, description: c.description, ...(c.input !== undefined ? { hint: c.input.hint } : {}) })

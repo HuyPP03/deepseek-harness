@@ -289,6 +289,19 @@ export class Connectors extends Service {
   }
 
   /**
+   * The agent presets the known connectors' sessions run: a connector's
+   * preset is that session's fixed mode, so host gates (`/mode` switches,
+   * reference eligibility) read the provider set from here rather than
+   * parsing manifests themselves.
+   * @returns the claimed preset ids (catalog and custom connectors).
+   */
+  presetIds(): ReadonlySet<string> {
+    const ids = new Set<string>()
+    for (const manifest of [...this.catalog.values(), ...this.customs.values()]) ids.add(manifest.presetId)
+    return ids
+  }
+
+  /**
    * One connector's wire-safe view.
    * @param id - the connector id.
    * @returns the view, or `undefined` while the id is not in the catalog.
