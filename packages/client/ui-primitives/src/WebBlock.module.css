@@ -102,7 +102,7 @@
 
 .fetchUrl {
   color: var(--oh-alias-state-business-primary);
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 13px;
   line-height: 19px;
   word-break: break-all;

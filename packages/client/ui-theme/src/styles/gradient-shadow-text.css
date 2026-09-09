@@ -117,23 +117,23 @@ body {
   --oh-font-markdown-small-strong-italic-font-size: 14px;
   --oh-font-markdown-small-strong-italic-font-style: italic;
 
-  --oh-font-markdown-code: 14px/22px var(--ds-font-family-code);
-  --oh-font-markdown-code-font-family: var(--ds-font-family-code);
+  --oh-font-markdown-code: 14px/22px var(--oh-font-family-code);
+  --oh-font-markdown-code-font-family: var(--oh-font-family-code);
   --oh-font-markdown-code-font-weight: 400;
   --oh-font-markdown-code-line-height: 22px;
   --oh-font-markdown-code-font-size: 14px;
   --oh-font-markdown-code-font-style: normal;
 
-  --oh-font-markdown-code-block: 13px/22px var(--ds-font-family-code);
-  --oh-font-markdown-code-block-font-family: var(--ds-font-family-code);
+  --oh-font-markdown-code-block: 13px/22px var(--oh-font-family-code);
+  --oh-font-markdown-code-block-font-family: var(--oh-font-family-code);
   --oh-font-markdown-code-block-font-weight: 400;
   --oh-font-markdown-code-block-line-height: 22px;
   --oh-font-markdown-code-block-font-size: 13px;
   --oh-font-markdown-code-block-font-style: normal;
 
   /* Added by hand (not a plugin export): the small code font inside an expanded tool row card. */
-  --oh-font-markdown-code-block-small: 12px/18px var(--ds-font-family-code);
-  --oh-font-markdown-code-block-small-font-family: var(--ds-font-family-code);
+  --oh-font-markdown-code-block-small: 12px/18px var(--oh-font-family-code);
+  --oh-font-markdown-code-block-small-font-family: var(--oh-font-family-code);
   --oh-font-markdown-code-block-small-font-weight: 400;
   --oh-font-markdown-code-block-small-line-height: 18px;
   --oh-font-markdown-code-block-small-font-size: 12px;

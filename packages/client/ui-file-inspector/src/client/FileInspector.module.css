@@ -31,7 +31,7 @@
   font-weight: 500;
   padding: 8px 12px 7px;
   cursor: pointer;
-  transition: color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+  transition: color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .tab:hover {
@@ -215,7 +215,7 @@
   font-size: 12px;
   line-height: 18px;
   outline: none;
-  transition: border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+  transition: border-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .browserFilter:focus {
@@ -263,7 +263,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+  transition: background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .browserRow:hover {

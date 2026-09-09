@@ -148,9 +148,9 @@
   font: var(--oh-font-xs-13);
   line-height: calc(var(--dsl-terminal-line-height) - 2px);
   transition:
-    color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+    color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    border-color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .copyButton:hover {
@@ -197,7 +197,7 @@
   cursor: pointer;
   font: inherit;
   text-align: left;
-  transition: color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+  transition: color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .expand:hover {

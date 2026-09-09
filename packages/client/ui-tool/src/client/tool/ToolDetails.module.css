@@ -21,7 +21,7 @@
   padding: 16px;
   border-radius: 12px;
   background: var(--oh-alias-markdown-code-block);
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 13px;
   line-height: 22px;
   color: var(--oh-alias-label-primary);

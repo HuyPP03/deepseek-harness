@@ -38,7 +38,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--oh-alias-label-primary);
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 12px;
   line-height: 18px;
 }
@@ -57,7 +57,7 @@
 
 .lang {
   color: var(--oh-alias-label-tertiary);
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 12px;
   line-height: 18px;
 }

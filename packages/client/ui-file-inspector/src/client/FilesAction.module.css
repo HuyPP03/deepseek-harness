@@ -17,8 +17,8 @@
   cursor: pointer;
   white-space: nowrap;
   transition:
-    color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+    color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .action:hover {

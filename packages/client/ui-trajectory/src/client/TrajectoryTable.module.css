@@ -188,8 +188,8 @@
   cursor: default;
   outline: none;
   transition:
-    background-color 120ms var(--ds-ease-in-out),
-    opacity 120ms var(--ds-ease-in-out);
+    background-color 120ms var(--oh-ease-in-out),
+    opacity 120ms var(--oh-ease-in-out);
 }
 
 .table tbody tr[data-timeline-focus='outside'] {
@@ -257,8 +257,8 @@
     0 0 0 3px transparent;
   content: '';
   transition:
-    background 120ms var(--ds-ease-in-out),
-    box-shadow 120ms var(--ds-ease-in-out);
+    background 120ms var(--oh-ease-in-out),
+    box-shadow 120ms var(--oh-ease-in-out);
 }
 
 .requestBoundaryControl::after {
@@ -273,13 +273,13 @@
   background: var(--oh-alias-bg-layer-1);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
   content: attr(data-label);
-  font: 9px/12px var(--ds-font-family-code);
+  font: 9px/12px var(--oh-font-family-code);
   opacity: 0;
   pointer-events: none;
   transform: translateX(-2px);
   transition:
-    opacity 120ms var(--ds-ease-in-out),
-    transform 120ms var(--ds-ease-in-out);
+    opacity 120ms var(--oh-ease-in-out),
+    transform 120ms var(--oh-ease-in-out);
   user-select: none;
   white-space: nowrap;
 }
@@ -401,7 +401,7 @@
   border-radius: 0 0 2px;
   color: var(--oh-alias-label-tertiary);
   background: var(--oh-alias-bg-module-platform);
-  font: 8px/10px var(--ds-font-family-code);
+  font: 8px/10px var(--oh-font-family-code);
   font-variant-numeric: tabular-nums;
   user-select: none;
   white-space: nowrap;
@@ -558,7 +558,7 @@
   .turnLabelFull,
   .turnLabelCompact {
     transition-duration: 180ms;
-    transition-timing-function: var(--ds-ease-in-out);
+    transition-timing-function: var(--oh-ease-in-out);
   }
 
   .eventColumn,
@@ -644,7 +644,7 @@
   overflow: auto;
   color: var(--oh-alias-label-primary);
   background: var(--oh-alias-bg-layer-1);
-  font: 11px/17px var(--ds-font-family-code);
+  font: 11px/17px var(--oh-font-family-code);
   white-space: pre;
 }
 
@@ -737,7 +737,7 @@
 .table tbody tr[data-collapsed-summary] {
   cursor: pointer;
   outline: none;
-  transition: background-color 120ms var(--ds-ease-in-out);
+  transition: background-color 120ms var(--oh-ease-in-out);
 }
 
 .table tbody tr[data-collapsed-summary]:hover {
@@ -803,14 +803,14 @@
 .toolCallPayload {
   margin-left: 7px;
   color: var(--oh-alias-label-secondary);
-  font: 400 12px/18px var(--ds-font-family-code);
+  font: 400 12px/18px var(--oh-font-family-code);
 }
 
 .table tbody tr[data-kind='tool'] .contentText,
 .table tbody tr[data-kind='subtool'] .contentText,
 .table tbody tr[data-kind='tool'] .resultPreview,
 .table tbody tr[data-kind='subtool'] .resultPreview {
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 12px;
 }
 
@@ -922,14 +922,14 @@
 
 .requestDetailsName {
   flex: none;
-  font: 500 12px/16px var(--ds-font-family-code);
+  font: 500 12px/16px var(--oh-font-family-code);
 }
 
 .detailsLocation {
   min-width: 0;
   overflow: hidden;
   color: var(--oh-alias-label-tertiary);
-  font: 11px/16px var(--ds-font-family-code);
+  font: 11px/16px var(--oh-font-family-code);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1290,7 +1290,7 @@
 
 .markdownPreview > div :not(pre) > code,
 .markdownPayload > div :not(pre) > code {
-  font: 12px/18px var(--ds-font-family-code);
+  font: 12px/18px var(--oh-font-family-code);
 }
 
 .markdownPreview > div table,
@@ -1372,7 +1372,7 @@
 
 .thinkingChevron {
   flex: none;
-  transition: transform 120ms var(--ds-ease-in-out);
+  transition: transform 120ms var(--oh-ease-in-out);
 }
 
 .thinkingToggle[aria-expanded='true'] .thinkingChevron {
@@ -1438,7 +1438,7 @@
 .schemaName {
   margin: 0;
   color: var(--oh-alias-label-primary);
-  font: 600 12px/18px var(--ds-font-family-code);
+  font: 600 12px/18px var(--oh-font-family-code);
 }
 
 .schemaDescription {
@@ -1472,7 +1472,7 @@
   overflow-wrap: anywhere;
   color: var(--oh-alias-label-primary);
   background: var(--oh-alias-markdown-code-block);
-  font: 12px/19px var(--ds-font-family-code);
+  font: 12px/19px var(--oh-font-family-code);
   tab-size: 2;
   white-space: pre-wrap;
 }
@@ -1515,7 +1515,7 @@
 
 .sourceBlockLabel {
   color: var(--oh-alias-label-tertiary);
-  font: 11px/16px var(--ds-font-family-code);
+  font: 11px/16px var(--oh-font-family-code);
 }
 
 .sourceBlockJumpIcon {
@@ -1540,7 +1540,7 @@
   overflow-wrap: anywhere;
   color: var(--oh-alias-label-primary);
   background: transparent;
-  font: 12px/19px var(--ds-font-family-code);
+  font: 12px/19px var(--oh-font-family-code);
   tab-size: 2;
   white-space: pre-wrap;
 }
@@ -1592,7 +1592,7 @@
   margin: 2px 14px 12px;
   padding: 0;
   color: var(--oh-alias-label-secondary);
-  font: 11px/17px var(--ds-font-family-code);
+  font: 11px/17px var(--oh-font-family-code);
   list-style: none;
 }
 
@@ -1709,7 +1709,7 @@
 }
 
 .toolCatalogChevron {
-  transition: transform 100ms var(--ds-ease-in-out);
+  transition: transform 100ms var(--oh-ease-in-out);
 }
 
 .toolCatalogItem[open] .toolCatalogChevron {
@@ -1718,7 +1718,7 @@
 
 .toolCatalogName {
   color: var(--oh-alias-label-primary);
-  font: 500 12px/18px var(--ds-font-family-code);
+  font: 500 12px/18px var(--oh-font-family-code);
 }
 
 .toolCatalogDescription {
@@ -1768,7 +1768,7 @@
   overflow-wrap: anywhere;
   color: var(--oh-alias-label-primary);
   background: transparent;
-  font: 12px/19px var(--ds-font-family-code);
+  font: 12px/19px var(--oh-font-family-code);
   tab-size: 2;
   white-space: pre-wrap;
 }

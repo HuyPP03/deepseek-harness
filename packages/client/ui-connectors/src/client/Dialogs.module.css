@@ -80,9 +80,9 @@
   color: var(--oh-alias-label-secondary);
   cursor: pointer;
   transition:
-    border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+    border-color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .customTransport label:hover {

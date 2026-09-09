@@ -29,7 +29,7 @@
   background: transparent;
   cursor: pointer;
   color: var(--oh-alias-label-secondary);
-  transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+  transition: background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .railIcon:hover {
@@ -95,7 +95,7 @@
   padding: 8px 10px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+  transition: background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .row:hover {

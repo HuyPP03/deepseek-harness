@@ -54,7 +54,7 @@
   border-radius: 10px;
   background: var(--oh-alias-state-business-tertiary);
   color: var(--oh-alias-label-primary-bluish);
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 12px;
   line-height: 18px;
   font-weight: 500;
@@ -92,7 +92,7 @@
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .markHitbox:hover .mark {
-    animation: hero-mark-bob var(--ds-transition-duration-slow) var(--ds-ease-in-out);
+    animation: hero-mark-bob var(--oh-transition-duration-slow) var(--oh-ease-in-out);
   }
 }
 

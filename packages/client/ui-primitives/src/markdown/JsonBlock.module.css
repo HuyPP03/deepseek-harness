@@ -25,7 +25,7 @@
   background: var(--oh-alias-markdown-code-block);
   border: 1px solid var(--oh-alias-border-l1);
   border-radius: 6px;
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 11px;
   line-height: 16px;
   color: var(--oh-alias-label-primary);

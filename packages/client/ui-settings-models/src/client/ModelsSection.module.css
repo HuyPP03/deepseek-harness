@@ -669,7 +669,7 @@ select.input {
 
 .candidateId {
   flex: 1 1 auto;
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 13px;
   overflow-wrap: anywhere;
 }

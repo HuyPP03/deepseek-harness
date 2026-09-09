@@ -225,7 +225,7 @@
   display: block;
   overflow-wrap: anywhere;
   color: var(--oh-alias-label-primary);
-  font-family: var(--ds-font-family-code);
+  font-family: var(--oh-font-family-code);
   font-size: 12px;
   line-height: 18px;
 }
@@ -268,7 +268,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .chevron {
-    transition: transform 140ms var(--ds-ease-in-out);
+    transition: transform 140ms var(--oh-ease-in-out);
   }
 }
 

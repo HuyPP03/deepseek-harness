@@ -26,7 +26,7 @@ import { WorkspacePickFlow } from './WorkspacePicker.tsx'
 import css from './WorkspaceBrowser.module.css'
 
 /**
- * Column slide length (--ds-transition-duration-slow): rail-search focus waits it out —
+ * Column slide length (--oh-transition-duration-slow): rail-search focus waits it out —
  * focus() forces a synchronous layout and would jank the slide.
  */
 const EXPAND_SLIDE_MS = 300

@@ -109,10 +109,10 @@
   box-shadow: var(--oh-shadow-lv1);
   cursor: pointer;
   transition:
-    border-color var(--ds-transition-duration) var(--ds-ease-in-out),
-    background-color var(--ds-transition-duration) var(--ds-ease-in-out),
-    box-shadow var(--ds-transition-duration) var(--ds-ease-in-out),
-    transform var(--ds-transition-duration) var(--ds-ease-in-out);
+    border-color var(--oh-transition-duration) var(--oh-ease-in-out),
+    background-color var(--oh-transition-duration) var(--oh-ease-in-out),
+    box-shadow var(--oh-transition-duration) var(--oh-ease-in-out),
+    transform var(--oh-transition-duration) var(--oh-ease-in-out);
 }
 
 .cardWrapper:hover .card {
@@ -270,7 +270,7 @@
   padding: 10px 12px;
   border-radius: 10px;
   cursor: pointer;
-  transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+  transition: background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .sessionRow:hover {

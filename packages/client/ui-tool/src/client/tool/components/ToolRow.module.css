@@ -120,9 +120,9 @@
   text-underline-offset: 3px;
   cursor: pointer;
   transition:
-    color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    text-decoration-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
-    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+    color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    text-decoration-color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .fileLink:hover {

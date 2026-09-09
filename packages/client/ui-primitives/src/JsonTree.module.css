@@ -12,7 +12,7 @@
   position: relative;
   color: var(--oh-alias-label-primary);
   background: var(--oh-alias-bg-layer-1);
-  font: 12px/16px var(--ds-font-family-code);
+  font: 12px/16px var(--oh-font-family-code);
   overscroll-behavior-x: contain;
   overscroll-behavior-y: auto;
 }

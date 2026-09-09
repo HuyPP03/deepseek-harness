@@ -6,8 +6,8 @@
   overflow: hidden;
   background: var(--oh-alias-bg-base);
   /* Collapse/expand animates the tracks on the deepsuite sider curve
-     (--ds-ease-in-out / --ds-transition-duration-slow, ui-theme base.css). */
-  transition: grid-template-columns var(--ds-transition-duration-slow) var(--ds-ease-in-out);
+     (--oh-ease-in-out / --oh-transition-duration-slow, ui-theme base.css). */
+  transition: grid-template-columns var(--oh-transition-duration-slow) var(--oh-ease-in-out);
 }
 
 /* Dragging writes widths at pointer cadence; easing them would detach the
@@ -89,7 +89,7 @@
   touch-action: none;
   /* Rides the same curve as the tracks so the pill stays on the moving
      border during collapse/expand; paused while dragging (frame rule). */
-  transition: left var(--ds-transition-duration-slow) var(--ds-ease-in-out);
+  transition: left var(--oh-transition-duration-slow) var(--oh-ease-in-out);
 }
 
 .frame[data-dragging] .handle {
@@ -118,8 +118,8 @@
      column, the strip itself, or a drag. */
   opacity: 0;
   transition:
-    opacity var(--ds-transition-duration-slow) var(--ds-ease-in-out),
-    background var(--ds-transition-duration-slow) var(--ds-ease-in-out);
+    opacity var(--oh-transition-duration-slow) var(--oh-ease-in-out),
+    background var(--oh-transition-duration-slow) var(--oh-ease-in-out);
 }
 
 .detailsCol:hover ~ .handle[data-side='details']::after,

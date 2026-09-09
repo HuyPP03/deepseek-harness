@@ -59,7 +59,7 @@
 }
 
 .failedItem {
-  font-family: var(--ds-font-family-code, ui-monospace, 'SF Mono', Menlo, Consolas, 'Courier New');
+  font-family: var(--oh-font-family-code, ui-monospace, 'SF Mono', Menlo, Consolas, 'Courier New');
   font-size: 12px;
   line-height: 18px;
   color: var(--oh-alias-label-secondary, #61666b);
