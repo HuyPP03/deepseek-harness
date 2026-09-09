@@ -4,7 +4,7 @@ English | [中文](README.zh.md)
 
 Shared filesystem path helpers for Open Harness user data.
 
-## DSH home
+## Open Harness home
 
 `resolveDshHome()` resolves the single-root Open Harness home. Precedence, highest first: an explicit configured path, `$OH_HOME`, then `~/.dsh`. The harness keeps all user data under one root.
 

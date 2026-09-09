@@ -84,7 +84,7 @@ describe('gate graph validation', () => {
   })
 
   it.each(['ci-primary', 'ci-static', 'check-all'] as const)(
-    'keeps the DSH package license policy in %s',
+    'keeps the Open Harness package license policy in %s',
     (mode) => {
       const ids = withPnpmEntrypoint(() => gatesForMode(mode).map(subject => subject.id))
 

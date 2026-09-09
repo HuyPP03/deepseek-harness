@@ -18,7 +18,7 @@ afterEach(() => {
 })
 
 describe('dsh path helpers', () => {
-  it('owns the shared default DSH home directory name', () => {
+  it('owns the shared default Open Harness home directory name', () => {
     expect(OH_HOME_DIR_NAME).toBe('.dsh')
     expect(DEFAULT_OH_HOME_DISPLAY).toBe('~/.dsh')
     expect(defaultDshHome()).toBe(join(homedir(), '.dsh'))

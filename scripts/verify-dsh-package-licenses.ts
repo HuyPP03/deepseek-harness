@@ -1,5 +1,5 @@
 /**
- * Enforce the MIT license declaration for repository-owned DSH npm packages.
+ * Enforce the MIT license declaration for repository-owned Open Harness npm packages.
  * @module scripts/verify-dsh-package-licenses
  */
 
@@ -9,9 +9,9 @@ import { resolve, sep } from 'node:path'
 const ROOT = resolve(import.meta.dirname, '..')
 const OH_PACKAGE_NAME = /^(?:oh|open-harness|@deepseek-ai\/dsh(?:-|$))/
 
-/** Result of checking every DSH package reachable through the root workspace list. */
+/** Result of checking every Open Harness package reachable through the root workspace list. */
 export interface DshPackageLicenseReport {
-  /** Number of DSH package manifests checked. */
+  /** Number of Open Harness package manifests checked. */
   packageCount: number
   /** Repository-relative diagnostics for non-MIT declarations. */
   failures: string[]
@@ -50,7 +50,7 @@ function printable(value: unknown): string {
 }
 
 /**
- * Check every DSH npm package declared by the repository workspace.
+ * Check every Open Harness npm package declared by the repository workspace.
  * @param root - absolute repository root containing the workspace package.json.
  * @returns the checked package count and every non-MIT declaration.
  */
@@ -78,12 +78,12 @@ export function inspectDshPackageLicenses(root: string): DshPackageLicenseReport
 if (process.argv[1] && import.meta.filename === resolve(process.argv[1])) {
   const report = inspectDshPackageLicenses(ROOT)
   if (report.failures.length > 0) {
-    process.stderr.write('verify-dsh-package-licenses: non-MIT DSH package declarations found:\n')
+    process.stderr.write('verify-dsh-package-licenses: non-MIT Open Harness package declarations found:\n')
     for (const failure of report.failures) process.stderr.write(`  ${failure}\n`)
     process.exitCode = 1
   } else {
     process.stdout.write(
-      `verify-dsh-package-licenses: ${String(report.packageCount)} DSH package(s) checked; all declare MIT.\n`,
+      `verify-dsh-package-licenses: ${String(report.packageCount)} Open Harness package(s) checked; all declare MIT.\n`,
     )
   }
 }

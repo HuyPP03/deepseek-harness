@@ -39,13 +39,13 @@ function resolveWorkspaceRoot(path: string): string {
 function renderPolicyContext(policy: SandboxExecutionPolicy): string {
   switch (policy.mode) {
     case 'read-only':
-      return 'Current DSH file policy: read-only. Any available operation enforced by the DSH file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.'
+      return 'Current Open Harness file policy: read-only. Any available operation enforced by the Open Harness file sandbox cannot modify files in the standing mode. Do not refuse a required modification from this policy alone: try an available tool normally and follow any denial and escalation guidance it returns.'
     case 'workspace-write':
-      return `Current DSH file policy: workspace-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(policy.workspaceRoot)}. Some platform temporary areas may also be writable.`
+      return `Current Open Harness file policy: workspace-write. Any available operation enforced by the Open Harness file sandbox may modify files under the session workspace: ${JSON.stringify(policy.workspaceRoot)}. Some platform temporary areas may also be writable.`
     case 'workspace-refs-write':
-      return `Current DSH file policy: workspace-refs-write. Any available operation enforced by the DSH file sandbox may modify files under the session workspace: ${JSON.stringify(policy.workspaceRoot)} and under the session's attached reference projects listed in the reference section. Some platform temporary areas may also be writable.`
+      return `Current Open Harness file policy: workspace-refs-write. Any available operation enforced by the Open Harness file sandbox may modify files under the session workspace: ${JSON.stringify(policy.workspaceRoot)} and under the session's attached reference projects listed in the reference section. Some platform temporary areas may also be writable.`
     case 'danger-full-access':
-      return 'Current DSH file policy: danger-full-access. The DSH file sandbox does not restrict file modifications by available operations.'
+      return 'Current Open Harness file policy: danger-full-access. The Open Harness file sandbox does not restrict file modifications by available operations.'
     /* v8 ignore next 4 -- SandboxMode is a typed same-process closed union; this branch is only the static exhaustiveness guard. */
     default: {
       const mode: never = policy.mode

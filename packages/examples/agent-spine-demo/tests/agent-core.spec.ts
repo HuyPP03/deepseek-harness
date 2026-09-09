@@ -614,7 +614,7 @@ describe('dsh-agent-spine-demo bundle', () => {
     await ctx.fiber.dispose()
   })
 
-  it('rejects conflicting global and nested DSH home directories', () => {
+  it('rejects conflicting global and nested Open Harness home directories', () => {
     expect(() => {
       agentCore.apply(new Context(), {
         dshHome: '/global-dsh-home',

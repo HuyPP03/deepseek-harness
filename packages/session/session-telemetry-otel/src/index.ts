@@ -85,7 +85,7 @@ function sharingStatusFor(mode: SessionTelemetryMode): SessionTelemetrySharingSt
 
 /**
  * Plugin configuration: one sharing policy, two verbatim SDK option objects,
- * and one DSH-owned shutdown bound. Uploading modes validate their endpoint
+ * and one Open Harness-owned shutdown bound. Uploading modes validate their endpoint
  * and shutdown deadline at plugin load; `DISABLED` reads neither.
  */
 export interface Config {

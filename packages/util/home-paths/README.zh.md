@@ -4,7 +4,7 @@
 
 Open Harness 用户数据的共享文件系统路径辅助工具。
 
-## DSH 主目录
+## Open Harness 主目录
 
 `resolveDshHome()` 解析 Open Harness 的单根主目录。优先级从高到低为：显式配置的路径、`$OH_HOME`、`~/.dsh`。harness 将所有用户数据保存在同一根目录下。
 

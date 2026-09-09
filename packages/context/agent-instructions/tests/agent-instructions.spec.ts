@@ -618,7 +618,7 @@ describe('workspace context instruction discovery', () => {
     }
   })
 
-  it('labels the default DSH home as ~/.dsh when HOME points at the configured default', async () => {
+  it('labels the default Open Harness home as ~/.dsh when HOME points at the configured default', async () => {
     const root = await tempRepo()
     const home = await tempRepo()
     try {
