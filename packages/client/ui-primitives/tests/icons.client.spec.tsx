@@ -55,14 +55,14 @@ describe('ic_ds_ icon set', () => {
 })
 
 describe('OpenMark', () => {
-  it('renders the open-ring arc and terminal dot in currentColor at the square native size', () => {
+  it('renders the buckle clamp and tongue in currentColor at the square native size', () => {
     const { container } = render(<primitives.OpenMark />)
     const svg = container.querySelector('svg')!
     expect(svg.getAttribute('width')).toBe('24')
     expect(svg.getAttribute('height')).toBe('24')
     expect(svg.getAttribute('viewBox')).toBe('0 0 32 32')
-    expect(container.querySelectorAll('path')).toHaveLength(1)
-    expect(container.querySelectorAll('circle')).toHaveLength(1)
+    expect(container.querySelectorAll('path')).toHaveLength(2)
+    expect(container.querySelectorAll('circle')).toHaveLength(0)
     expect(container.innerHTML).toContain('currentColor')
     expect(container.innerHTML).not.toMatch(/#[0-9a-fA-F]{3,8}/)
   })
