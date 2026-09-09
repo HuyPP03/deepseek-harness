@@ -1,9 +1,9 @@
 ---
 name: dsh-doc-site-sync
-description: Use when publishing, updating, moving, or removing DeepSeek Harness documentation website pages; editing website/docs.ts mappings or navigation; diagnosing a page missing from the VitePress site; fixing projected documentation links; or running the docs:dev, docs:check, and doc-sync workflow after website-content changes.
+description: Use when publishing, updating, moving, or removing Open Harness documentation website pages; editing website/docs.ts mappings or navigation; diagnosing a page missing from the VitePress site; fixing projected documentation links; or running the docs:dev, docs:check, and doc-sync workflow after website-content changes.
 ---
 
-# Synchronizing the DeepSeek Harness Documentation Site
+# Synchronizing the Open Harness Documentation Site
 
 Keep repository Markdown as the only editable content source. Treat the website as a tested projection: [website/docs.ts](../../../website/docs.ts) selects public pages, [scripts/project-doc-site.ts](../../../scripts/project-doc-site.ts) rewrites them into the disposable `website/.generated/` tree, and VitePress builds that tree.
 

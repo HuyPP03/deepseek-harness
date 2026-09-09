@@ -303,7 +303,7 @@ describe('docsPages locale routes', () => {
       expect(projected).toContain('layout: false')
       expect(projected).toContain('http-equiv: refresh')
       expect(projected).toContain('content: 0; url=./guide/quickstart')
-      expect(projected).not.toContain('# DeepSeek Harness')
+      expect(projected).not.toContain('# Open Harness')
     }
   })
 

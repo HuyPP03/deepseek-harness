@@ -26,7 +26,7 @@ export type { OAuthFlowStart } from './types.ts'
 /** The loopback path the redirect URI points at. */
 const CALLBACK_PATH = '/callback'
 /** The registered client's display name at dynamic registration. */
-const CLIENT_NAME = 'DeepSeek Harness'
+const CLIENT_NAME = 'Open Harness'
 /** Access-token slack before `ensureFresh` treats the bundle as expiring, in milliseconds. */
 const REFRESH_SLACK_MS = 60_000
 
@@ -170,7 +170,7 @@ export class OAuthFlowEngine extends Service {
         return
       }
       response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' })
-      response.end('<!doctype html><meta charset="utf-8"><title>DeepSeek Harness</title><h1>Authorization complete</h1><p>You can close this tab and return to DeepSeek Harness.</p>')
+      response.end('<!doctype html><meta charset="utf-8"><title>Open Harness</title><h1>Authorization complete</h1><p>You can close this tab and return to Open Harness.</p>')
       void this.handleCallback(id, active, url.searchParams)
     })
     boundPort = await this.bindLoopback(server, method.byoApp === true)

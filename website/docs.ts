@@ -113,7 +113,7 @@ const homeAndGuide = pairedPages([
   {
     source: 'docs/user/index.md',
     route: 'index.md',
-    label: { root: 'DeepSeek Harness', vi: 'DeepSeek Harness', zh: 'DeepSeek Harness' },
+    label: { root: 'Open Harness', vi: 'Open Harness', zh: 'Open Harness' },
     sidebar: { root: null, vi: null, zh: null },
     section: { root: 'Home', vi: 'Home', zh: '首页' },
     order: 0,

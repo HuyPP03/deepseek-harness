@@ -21,7 +21,7 @@ const SNAPSHOT_DIR = fileURLToPath(new URL('./snapshots/web-search-round', impor
 const FIXTURE = fileURLToPath(new URL('./snapshots/web-search-round/session.jsonl', import.meta.url))
 const UI_EXPECTED = fileURLToPath(new URL('./snapshots/web-search-round/ui.expected.md', import.meta.url))
 const MODE = webSnapshotMode()
-const QUERY = 'DeepSeek Harness snapshot search'
+const QUERY = 'Open Harness snapshot search'
 const PROMPT = `Use web_search to search exactly "${QUERY}". Then reply exactly SEARCH_DONE and stop.`
 
 /**

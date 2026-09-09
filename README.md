@@ -1,14 +1,14 @@
-# DeepSeek Harness
+# Open Harness
 
 English | [中文](README.zh.md)
 
-DeepSeek Harness (`oh`) is an open-source agent harness developed by [DeepSeek AI](https://deepseek.com).
+Open Harness (`oh`) is an open-source agent harness developed by [DeepSeek AI](https://deepseek.com).
 
 It uses an architecture where **everything is a plugin**, and is powered by [Cordis](https://github.com/cordiverse/cordis), whose design is described in [_A Programming Paradigm for Spatiotemporal Composability_](https://github.com/cordiverse/paper).
 
 ## Developer preview
 
-DeepSeek Harness is currently in _developer preview_ and is iterating rapidly. **THERE WILL BE COMPATIBILITY-BREAKING CHANGES.**
+Open Harness is currently in _developer preview_ and is iterating rapidly. **THERE WILL BE COMPATIBILITY-BREAKING CHANGES.**
 
 ## Run
 
@@ -38,7 +38,7 @@ pnpm oh web
 
 - Feel free to submit feedback or bug reports through [GitHub Discussions](https://github.com/deepseek-ai/deepseek-harness/discussions).
 - Add the [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic to your plugin repository for discoverability.
-- Join <a href="https://discord.gg/Ycq5dCaS4">DeepSeek Harness Discord community</a>.
+- Join <a href="https://discord.gg/Ycq5dCaS4">Open Harness Discord community</a>.
 
 ## Contributing
 

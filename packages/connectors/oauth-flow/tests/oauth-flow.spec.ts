@@ -429,7 +429,7 @@ describe('begin: discovery and registration', () => {
     expect(url.searchParams.get('state')).toMatch(/^[0-9a-f]{48}$/)
     expect(url.searchParams.get('code_challenge')).toHaveLength(43)
     expect(fake.seenRegistration).toEqual({
-      client_name: 'DeepSeek Harness',
+      client_name: 'Open Harness',
       redirect_uris: [`http://127.0.0.1:${port}/callback`],
       grant_types: ['authorization_code', 'refresh_token'],
       response_types: ['code'],

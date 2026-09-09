@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-web-search-websift",
-  "description": "Websift-backed search provider (keyless DuckDuckGo or self-hosted SearXNG, in-process TS library) for the DeepSeek Harness web capability seam (ctx.web)",
+  "description": "Websift-backed search provider (keyless DuckDuckGo or self-hosted SearXNG, in-process TS library) for the Open Harness web capability seam (ctx.web)",
   "version": "0.1.0-rc.7",
   "publishConfig": {
     "access": "public"
