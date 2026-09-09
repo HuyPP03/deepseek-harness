@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-client-ui-theme",
+  "name": "@open-harness/oh-client-ui-theme",
   "description": "Theme plugin: Host bootstrap for the pre-plugin palette; DOM-free ThemeRuntime for light/dark/system state; --dsw-* token styles and Appearance settings row",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -33,11 +33,11 @@
   "oh": {
     "client": {
       "inject": [
-        "@deepseek-ai/dsh-client-connection",
-        "@deepseek-ai/dsh-client-runtime",
-        "@deepseek-ai/dsh-client-locale",
-        "@deepseek-ai/dsh-client-ui-settings",
-        "@deepseek-ai/dsh-api-remotes"
+        "@open-harness/oh-client-connection",
+        "@open-harness/oh-client-runtime",
+        "@open-harness/oh-client-locale",
+        "@open-harness/oh-client-ui-settings",
+        "@open-harness/oh-api-remotes"
       ],
       "platform": "web",
       "immediately": true
@@ -46,28 +46,28 @@
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/dsh-api-remotes": "workspace:^",
-    "@deepseek-ai/dsh-client-connection": "workspace:^",
-    "@deepseek-ai/dsh-client-locale": "workspace:^",
-    "@deepseek-ai/dsh-client-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-primitives": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-settings": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-slots": "workspace:^",
-    "@deepseek-ai/dsh-host-webserver": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@open-harness/oh-api-remotes": "workspace:^",
+    "@open-harness/oh-client-connection": "workspace:^",
+    "@open-harness/oh-client-locale": "workspace:^",
+    "@open-harness/oh-client-runtime": "workspace:^",
+    "@open-harness/oh-client-ui-primitives": "workspace:^",
+    "@open-harness/oh-client-ui-settings": "workspace:^",
+    "@open-harness/oh-client-ui-slots": "workspace:^",
+    "@open-harness/oh-host-webserver": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
     "react": "^18.2.0"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/dsh-api-remotes": "workspace:^",
-    "@deepseek-ai/dsh-client-locale": "workspace:^",
-    "@deepseek-ai/dsh-client-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-test-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-primitives": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-settings": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-slots": "workspace:^",
-    "@deepseek-ai/dsh-host-webserver": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@open-harness/oh-api-remotes": "workspace:^",
+    "@open-harness/oh-client-locale": "workspace:^",
+    "@open-harness/oh-client-runtime": "workspace:^",
+    "@open-harness/oh-client-test-runtime": "workspace:^",
+    "@open-harness/oh-client-ui-primitives": "workspace:^",
+    "@open-harness/oh-client-ui-settings": "workspace:^",
+    "@open-harness/oh-client-ui-slots": "workspace:^",
+    "@open-harness/oh-host-webserver": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
     "react": "^18.2.0"
   },
@@ -83,7 +83,7 @@
     "watch": "tsdown --watch"
   },
   "dependencies": {
-    "@deepseek-ai/dsh-settings": "workspace:^",
+    "@open-harness/oh-settings": "workspace:^",
     "clsx": "^2.0.0",
     "@deepseek-ai/schemastery": "workspace:^"
   }

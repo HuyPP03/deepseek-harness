@@ -1,17 +1,17 @@
 /**
- * `@deepseek-ai/dsh-web-search-websift`: registers a websift-backed
+ * `@open-harness/oh-web-search-websift`: registers a websift-backed
  * `WebSearchProvider` with `ctx.web`. A function/namespace plugin (NOT a
  * default-export service): it registers INTO the seam's provider registry,
- * like `@deepseek-ai/dsh-llm-deepseek` registers an adapter into `ctx.llm`.
+ * like `@open-harness/oh-llm-deepseek` registers an adapter into `ctx.llm`.
  * The websift library is the transport owner; this package owns the seam
  * mapping, the keyless provider allowlist, and the settings section.
- * @module @deepseek-ai/dsh-web-search-websift
+ * @module @open-harness/oh-web-search-websift
  */
 
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { installSettingsSection, settingsNamespace } from '@deepseek-ai/dsh-settings'
-import type {} from '@deepseek-ai/dsh-web'
+import { installSettingsSection, settingsNamespace } from '@open-harness/oh-settings'
+import type {} from '@open-harness/oh-web'
 import {
   WEBSIFT_PROVIDER_NAMES,
   WebsiftSearchProvider,

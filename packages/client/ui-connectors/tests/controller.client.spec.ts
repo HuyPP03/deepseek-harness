@@ -3,7 +3,7 @@
  * and the row actions — all over a fake connector api, no wire.
  */
 import { describe, expect, it, vi } from 'vitest'
-import type { ConnectorView, IApiClient, RpcId, RpcResponse } from '@deepseek-ai/dsh-api-remotes/client'
+import type { ConnectorView, IApiClient, RpcId, RpcResponse } from '@open-harness/oh-api-remotes/client'
 import { ConnectorsSectionController, parseEnvDraft } from '../src/client/controller.ts'
 
 /** One secret-free roster view; `with` overrides the interesting fields. */

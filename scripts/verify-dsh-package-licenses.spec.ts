@@ -32,7 +32,7 @@ describe('Open Harness package license gate', () => {
     const root = createWorkspace()
     writeManifest(root, 'apps/cli/package.json', { name: 'oh', license: 'MIT' })
     writeManifest(root, 'packages/core/agent/package.json', {
-      name: '@deepseek-ai/dsh-agent',
+      name: '@open-harness/oh-agent',
       license: 'BSD-3-Clause',
     })
     writeManifest(root, 'vendor/cordis/package.json', {
@@ -43,17 +43,17 @@ describe('Open Harness package license gate', () => {
     expect(inspectDshPackageLicenses(root)).toEqual({
       packageCount: 3,
       failures: [
-        'packages/core/agent/package.json: @deepseek-ai/dsh-agent must declare "license": "MIT"; found "BSD-3-Clause".',
+        'packages/core/agent/package.json: @open-harness/oh-agent must declare "license": "MIT"; found "BSD-3-Clause".',
       ],
     })
   })
 
   it('rejects a missing license declaration', () => {
     const root = createWorkspace()
-    writeManifest(root, 'packages/core/agent/package.json', { name: '@deepseek-ai/dsh-agent' })
+    writeManifest(root, 'packages/core/agent/package.json', { name: '@open-harness/oh-agent' })
 
     expect(inspectDshPackageLicenses(root).failures).toEqual([
-      'packages/core/agent/package.json: @deepseek-ai/dsh-agent must declare "license": "MIT"; found undefined.',
+      'packages/core/agent/package.json: @open-harness/oh-agent must declare "license": "MIT"; found undefined.',
     ])
   })
 })

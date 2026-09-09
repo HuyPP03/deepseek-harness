@@ -8,7 +8,7 @@
     path: ./cordis.yml
     patches:
       - id: sandbox-policy
-        name: '@deepseek-ai/dsh-sandbox-policy'
+        name: '@open-harness/oh-sandbox-policy'
         config:
           mode: !!js "process.env.OH_PERMISSION_MODE ?? (process.env.OH_SNAPSHOT === undefined ? 'workspace-write' : 'danger-full-access')"
           workspaceRoot: /tmp

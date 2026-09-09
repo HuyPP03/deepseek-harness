@@ -15,17 +15,17 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import AgentRegistry from '@deepseek-ai/dsh-agent'
-import SessionStore from '@deepseek-ai/dsh-session'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import UserQuestionService from '@deepseek-ai/dsh-user-questions'
-import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
-import McpManager from '@deepseek-ai/dsh-mcp-manager'
-import LocalCredentialProvider from '@deepseek-ai/dsh-credentials-local'
-import OAuthTokenStore from '@deepseek-ai/dsh-credentials-oauth-tokens'
-import AgentPresets from '@deepseek-ai/dsh-agent-presets'
-import Connectors from '@deepseek-ai/dsh-connectors'
+import AgentRegistry from '@open-harness/oh-agent'
+import SessionStore from '@open-harness/oh-session'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import UserQuestionService from '@open-harness/oh-user-questions'
+import McpRegistry from '@open-harness/oh-mcp-registry'
+import McpManager from '@open-harness/oh-mcp-manager'
+import LocalCredentialProvider from '@open-harness/oh-credentials-local'
+import OAuthTokenStore from '@open-harness/oh-credentials-oauth-tokens'
+import AgentPresets from '@open-harness/oh-agent-presets'
+import Connectors from '@open-harness/oh-connectors'
 import { createApiProxy } from '../src/api-proxy.ts'
 import { toFetchHandler } from '../src/fetch/handler.ts'
 import { InProcessApiClient } from '../src/fetch/client.ts'
@@ -157,46 +157,46 @@ async function harness(options: HarnessOptions = {}): Promise<{
   await writeFile(join(systemPresets, 'custom', 'agent.cordis.yml'), '- id: stub\n  name: test:stub-preset\n')
 
   const lines: string[] = [
-    "- name: '@deepseek-ai/dsh-session'",
-    "- name: '@deepseek-ai/dsh-system-prompt'",
+    "- name: '@open-harness/oh-session'",
+    "- name: '@open-harness/oh-system-prompt'",
     '  config:',
     "    persona: ''",
-    "- name: '@deepseek-ai/dsh-tools'",
-    "- name: '@deepseek-ai/dsh-user-questions'",
-    "- name: '@deepseek-ai/dsh-agent'",
-    "- name: '@deepseek-ai/dsh-mcp-registry'",
-    "- name: '@deepseek-ai/dsh-mcp-manager'",
+    "- name: '@open-harness/oh-tools'",
+    "- name: '@open-harness/oh-user-questions'",
+    "- name: '@open-harness/oh-agent'",
+    "- name: '@open-harness/oh-mcp-registry'",
+    "- name: '@open-harness/oh-mcp-manager'",
     '  config:',
     `    mcpDir: ${JSON.stringify(mcpDir)}`,
   ]
   const modules = new Map<string, unknown>([
-    ['@deepseek-ai/dsh-session', SessionStore],
-    ['@deepseek-ai/dsh-system-prompt', SystemPrompt],
-    ['@deepseek-ai/dsh-tools', ToolRuntime],
-    ['@deepseek-ai/dsh-user-questions', UserQuestionService],
-    ['@deepseek-ai/dsh-agent', AgentRegistry],
-    ['@deepseek-ai/dsh-mcp-registry', McpRegistry],
-    ['@deepseek-ai/dsh-mcp-manager', McpManager],
+    ['@open-harness/oh-session', SessionStore],
+    ['@open-harness/oh-system-prompt', SystemPrompt],
+    ['@open-harness/oh-tools', ToolRuntime],
+    ['@open-harness/oh-user-questions', UserQuestionService],
+    ['@open-harness/oh-agent', AgentRegistry],
+    ['@open-harness/oh-mcp-registry', McpRegistry],
+    ['@open-harness/oh-mcp-manager', McpManager],
   ])
   if (options.credentials !== false) {
     lines.push(
-      "- name: '@deepseek-ai/dsh-credentials-local'",
+      "- name: '@open-harness/oh-credentials-local'",
       '  config:',
       `    path: ${JSON.stringify(join(root, '.credentials.yaml'))}`,
       '    watch: false',
     )
-    modules.set('@deepseek-ai/dsh-credentials-local', LocalCredentialProvider)
+    modules.set('@open-harness/oh-credentials-local', LocalCredentialProvider)
   }
   lines.push(
-    "- name: '@deepseek-ai/dsh-credentials-oauth-tokens'",
+    "- name: '@open-harness/oh-credentials-oauth-tokens'",
     '  config:',
     `    path: ${JSON.stringify(join(home, 'tokens.json'))}`,
     '    watch: false',
   )
-  modules.set('@deepseek-ai/dsh-credentials-oauth-tokens', OAuthTokenStore)
+  modules.set('@open-harness/oh-credentials-oauth-tokens', OAuthTokenStore)
   if (options.presets !== false) {
     lines.push(
-      "- name: '@deepseek-ai/dsh-agent-presets'",
+      "- name: '@open-harness/oh-agent-presets'",
       '  config:',
       '    default: custom',
       '    roots:',
@@ -204,16 +204,16 @@ async function harness(options: HarnessOptions = {}): Promise<{
       '        trust: system',
       '    includeUserRoot: true',
     )
-    modules.set('@deepseek-ai/dsh-agent-presets', AgentPresets)
+    modules.set('@open-harness/oh-agent-presets', AgentPresets)
   }
   if (options.connectors !== false) {
     lines.push(
-      "- name: '@deepseek-ai/dsh-connectors'",
+      "- name: '@open-harness/oh-connectors'",
       '  config:',
       `    catalogDir: ${JSON.stringify(catalogDir)}`,
       `    userDir: ${JSON.stringify(userDir)}`,
     )
-    modules.set('@deepseek-ai/dsh-connectors', Connectors)
+    modules.set('@open-harness/oh-connectors', Connectors)
   }
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, `${lines.join('\n')}\n`)

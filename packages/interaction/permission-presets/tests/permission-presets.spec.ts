@@ -1,20 +1,20 @@
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import AgentRegistry, { Inbox } from '@deepseek-ai/dsh-agent'
-import type { Agent, AgentStatus } from '@deepseek-ai/dsh-agent'
-import CommandRuntime from '@deepseek-ai/dsh-commands'
+import AgentRegistry, { Inbox } from '@open-harness/oh-agent'
+import type { Agent, AgentStatus } from '@open-harness/oh-agent'
+import CommandRuntime from '@open-harness/oh-commands'
 // Side-effect type import: pulls the `agent-preset/selected` SessionEventMap
 // merge so the switch-ability spec can append it.
-import type {} from '@deepseek-ai/dsh-agent-presets'
-import SessionStore, { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type { SandboxMode } from '@deepseek-ai/dsh-sandbox'
-import { ApprovalPolicy, setApprovalPolicy } from '@deepseek-ai/dsh-user-approval'
+import type {} from '@open-harness/oh-agent-presets'
+import SessionStore, { Session, SessionId } from '@open-harness/oh-session'
+import type { SandboxMode } from '@open-harness/oh-sandbox'
+import { ApprovalPolicy, setApprovalPolicy } from '@open-harness/oh-user-approval'
 import PermissionPresetService, {
   CUSTOM_PRESET, effectivePermissionPreset, PERMISSION_SETTINGS_NAMESPACE,
-} from '@deepseek-ai/dsh-permission-presets'
-import type { Config } from '@deepseek-ai/dsh-permission-presets'
-import { SettingsProvider } from '@deepseek-ai/dsh-settings'
-import type { SettingsNamespace } from '@deepseek-ai/dsh-settings'
+} from '@open-harness/oh-permission-presets'
+import type { Config } from '@open-harness/oh-permission-presets'
+import { SettingsProvider } from '@open-harness/oh-settings'
+import type { SettingsNamespace } from '@open-harness/oh-settings'
 
 /** Writable memory provider for the permission/settings lifecycle specs. */
 class MemorySettings extends SettingsProvider {

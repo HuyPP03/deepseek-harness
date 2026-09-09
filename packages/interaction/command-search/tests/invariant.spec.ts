@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import * as invariant from '@deepseek-ai/dsh-command-search/invariant'
+import * as invariant from '@open-harness/oh-command-search/invariant'
 
 describe('command-search invariant companion', () => {
   it('registers the package-owned no-op installer', async () => {
@@ -8,7 +8,7 @@ describe('command-search invariant companion', () => {
     const dispose = await invariant.apply(ctx)
     expect(invariant.name).toBe('command-search-invariant')
     expect(invariant.inject).toEqual(['invariants'])
-    expect(register).toHaveBeenCalledWith('@deepseek-ai/dsh-command-search', expect.any(Function))
+    expect(register).toHaveBeenCalledWith('@open-harness/oh-command-search', expect.any(Function))
     expect(() => {
       const install = register.mock.calls[0]![1] as () => void
       install()

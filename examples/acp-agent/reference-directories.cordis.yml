@@ -8,4 +8,4 @@
     patches:
       - insert:
           - id: workspace-references
-            name: '@deepseek-ai/dsh-workspace-references'
+            name: '@open-harness/oh-workspace-references'

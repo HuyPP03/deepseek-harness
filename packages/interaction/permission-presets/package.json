@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-permission-presets",
+  "name": "@open-harness/oh-permission-presets",
   "description": "User-facing permission presets (ctx.permissionPresets) for the Open Harness: one product-level Permissions select bundling the sandbox-mode and approval-policy knobs, written through to their own session events",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -41,16 +41,16 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-agent-presets": "workspace:^",
-    "@deepseek-ai/dsh-shell": "workspace:^",
-    "@deepseek-ai/dsh-commands": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-sandbox": "workspace:^",
-    "@deepseek-ai/dsh-sandbox-policy": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-session-projection": "workspace:^",
-    "@deepseek-ai/dsh-settings": "workspace:^",
-    "@deepseek-ai/dsh-user-approval": "workspace:^",
+    "@open-harness/oh-agent-presets": "workspace:^",
+    "@open-harness/oh-shell": "workspace:^",
+    "@open-harness/oh-commands": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-sandbox": "workspace:^",
+    "@open-harness/oh-sandbox-policy": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-session-projection": "workspace:^",
+    "@open-harness/oh-settings": "workspace:^",
+    "@open-harness/oh-user-approval": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "dependencies": {
@@ -58,17 +58,17 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-agent-presets": "workspace:^",
-    "@deepseek-ai/dsh-shell": "workspace:^",
-    "@deepseek-ai/dsh-commands": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-sandbox": "workspace:^",
-    "@deepseek-ai/dsh-sandbox-policy": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-session-projection": "workspace:^",
-    "@deepseek-ai/dsh-settings": "workspace:^",
-    "@deepseek-ai/dsh-user-approval": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-agent-presets": "workspace:^",
+    "@open-harness/oh-shell": "workspace:^",
+    "@open-harness/oh-commands": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-sandbox": "workspace:^",
+    "@open-harness/oh-sandbox-policy": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-session-projection": "workspace:^",
+    "@open-harness/oh-settings": "workspace:^",
+    "@open-harness/oh-user-approval": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

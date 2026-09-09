@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-tool-goal
+# @open-harness/oh-tool-goal
 
 [English](README.md) | 中文
 
@@ -28,7 +28,7 @@ complete 与 blocked 还接受完全一致的当前 Goal Round：来源为 goal 
 
 ```yaml
 - id: tool-goal
-  name: '@deepseek-ai/dsh-tool-goal'
+  name: '@open-harness/oh-tool-goal'
   config:
     blockedAfterConsecutiveRounds: 3
 ```

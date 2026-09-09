@@ -3,7 +3,7 @@
  * secret-free view exposes, and the three-line cap the cards keep.
  */
 import { describe, expect, it } from 'vitest'
-import type { ConnectorView } from '@deepseek-ai/dsh-api-remotes/client'
+import type { ConnectorView } from '@open-harness/oh-api-remotes/client'
 import { riskNotesOf } from '../src/client/risks.ts'
 
 function view(withFields: Partial<ConnectorView> & { id: string }): ConnectorView {

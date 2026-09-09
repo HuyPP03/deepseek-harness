@@ -7,17 +7,17 @@
  * composing this plugin out of cordis.yml removes both surfaces entirely;
  * the owning view renders an empty chain and inert prose at zero cost.
  */
-import type { ConnectionHandle } from '@deepseek-ai/dsh-client-connection/client'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
-import type { ChatFileMentions } from '@deepseek-ai/dsh-client-ui-conversation/client'
-import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type { ConnectionHandle } from '@open-harness/oh-client-connection/client'
+import type { ClientContext } from '@open-harness/oh-client-runtime/client'
+import type { ChatFileMentions } from '@open-harness/oh-client-ui-conversation/client'
+import type {} from '@open-harness/oh-client-locale/client'
 import { ProducedFiles } from './ProducedFiles.tsx'
 import { en, NS, vi, zh, type DeliverablesKey } from './locales.ts'
 import {
   deliverablesDefinition, producedFileMentions, selectProducedFiles,
 } from './turn-deliverables.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** Produced-files row copy. */
     'deliverables': DeliverablesKey

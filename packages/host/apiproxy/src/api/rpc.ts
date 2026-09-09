@@ -7,10 +7,10 @@
 
 import type { z as zCore } from 'zod'
 type ZodIssue = zCore.core.$ZodIssue
-import type { Branded } from '@deepseek-ai/dsh-brand'
-import type { JobId } from '@deepseek-ai/dsh-jobs/brand'
-import type { MessageId } from '@deepseek-ai/dsh-llm/brand'
-import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { Branded } from '@open-harness/oh-brand'
+import type { JobId } from '@open-harness/oh-jobs/brand'
+import type { MessageId } from '@open-harness/oh-llm/brand'
+import type { SessionId } from '@open-harness/oh-session/types'
 
 /**
  * Message correlation id: the initiator mints it on a request; a response

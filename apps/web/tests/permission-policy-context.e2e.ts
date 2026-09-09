@@ -9,8 +9,8 @@ import { fileURLToPath } from 'node:url'
 import type { Browser, Page } from 'playwright'
 import { chromium } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it, onTestFailed } from 'vitest'
-import { canonicalPath } from '@deepseek-ai/dsh-sandbox'
-import type { SessionEvent } from '@deepseek-ai/dsh-session'
+import { canonicalPath } from '@open-harness/oh-sandbox'
+import type { SessionEvent } from '@open-harness/oh-session'
 import {
   assertFixtureInventory, fixtureUserPrompts, launchWebScaffold, recordFixture,
   watchConsole, webSnapshotMode, type WebScaffold,
@@ -42,7 +42,7 @@ function runtimeContexts(events: readonly SessionEvent[]): string[] {
   return events.flatMap((event) => {
     if (event.type !== 'user/message'
       || event.data.source.kind !== 'plugin'
-      || event.data.source.plugin !== '@deepseek-ai/dsh-system-prompt') return []
+      || event.data.source.plugin !== '@open-harness/oh-system-prompt') return []
     return event.data.content.flatMap(block => block.type === 'text' ? [block.text] : [])
   })
 }

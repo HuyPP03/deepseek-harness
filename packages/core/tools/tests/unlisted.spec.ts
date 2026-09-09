@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import type { JsonValue, ToolDefinition } from '@deepseek-ai/dsh-tools'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import type { ContentBlock } from '@deepseek-ai/dsh-llm'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import type { JsonValue, ToolDefinition } from '@open-harness/oh-tools'
+import { CallId } from '@open-harness/oh-llm'
+import type { ContentBlock } from '@open-harness/oh-llm'
 
 /** One minimal registered tool; `unlisted` mirrors the MCP bridge's dispatch-only form. */
 function tool(name: string, unlisted = false): ToolDefinition {

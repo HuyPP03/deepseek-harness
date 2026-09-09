@@ -13,13 +13,13 @@
  * panel's open gesture comes from ui-conversation's `detailsPanel` service,
  * read at call time so apply order relative to it stays unconstrained.
  */
-import type { ConnectionHandle, SessionId } from '@deepseek-ai/dsh-api-remotes/client'
-import type { ClientContext, FileBytesService } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ConnectionHandle, SessionId } from '@open-harness/oh-api-remotes/client'
+import type { ClientContext, FileBytesService } from '@open-harness/oh-client-runtime/client'
 // Type-only: pulls the ui-conversation Context merge (the detailsPanel
 // service face typed by its declaration) and the seats' SlotMap merge.
-import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type {} from '@open-harness/oh-client-ui-conversation/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
-import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type {} from '@open-harness/oh-client-locale/client'
 import { FileBrowser } from './FileBrowser.tsx'
 import { FileInspector } from './FileInspector.tsx'
 import { FilesAction } from './FilesAction.tsx'
@@ -29,7 +29,7 @@ export type { FileBrowserInjected, FileBrowserProps, FileInspectorInjected, File
 export type { FilesActionInjected, FilesActionProps } from './FilesAction.tsx'
 export type { FileInspectorKey } from './locales.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** The file inspector's tab labels and state copy. */
     fileInspector: FileInspectorKey

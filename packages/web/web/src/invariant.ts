@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-web`.
- * @module @deepseek-ai/dsh-web/invariant
+ * Package-owned invariant companion for `@open-harness/oh-web`.
+ * @module @open-harness/oh-web/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-web'
+const PACKAGE_NAME = '@open-harness/oh-web'
 
 /** Cordis companion plugin name. */
 export const name = 'web-invariant'

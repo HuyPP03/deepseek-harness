@@ -1,5 +1,5 @@
 /**
- * @deepseek-ai/dsh-host-apiproxy — the API gateway every client shape shares:
+ * @open-harness/oh-host-apiproxy — the API gateway every client shape shares:
  * the ApiProxy contract (api/: types + zod schemas, browser-safe), the fetch
  * carrier pair (fetch/: toFetchHandler on the host side, AbstractApiClient +
  * platform subclasses on the client side), and the host-side implementation
@@ -13,9 +13,9 @@
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'
-import { ohHomePath } from '@deepseek-ai/dsh-home-paths'
+import { ohHomePath } from '@open-harness/oh-home-paths'
 import z from '@deepseek-ai/schemastery'
-import type {} from '@deepseek-ai/dsh-agent-default-model'
+import type {} from '@open-harness/oh-agent-default-model'
 import type { ApiProxy } from './api/index.ts'
 import { createApiProxy, DEFAULT_COLD_BLANK_PROBE_MAX_BYTES } from './api-proxy.ts'
 import {

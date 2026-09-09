@@ -59,15 +59,15 @@ describe('initProfile', () => {
   it('creates manifest, user patch layer, and pnpm workspace once, never overwriting', () => {
     const home = tmp()
     const dir = resolveProfileDir('tui', home)
-    initProfile(dir, ['@deepseek-ai/dsh-base'])
+    initProfile(dir, ['@open-harness/oh-base'])
     const manifest = readProfileManifest('t', dir)
-    expect(manifest.oh?.profile?.bundles).toEqual(['@deepseek-ai/dsh-base'])
+    expect(manifest.oh?.profile?.bundles).toEqual(['@open-harness/oh-base'])
     expect(readFileSync(join(dir, PROFILE_PATCH_FILENAME), 'utf8')).toContain('[]')
     expect(readFileSync(join(dir, 'pnpm-workspace.yaml'), 'utf8')).toContain('nodeLinker: hoisted')
     // Re-init keeps user edits.
     writeFileSync(join(dir, PROFILE_PATCH_FILENAME), '- id: x\n  config: {}\n')
     initProfile(dir, ['other'])
-    expect(readProfileManifest('t', dir).oh?.profile?.bundles).toEqual(['@deepseek-ai/dsh-base'])
+    expect(readProfileManifest('t', dir).oh?.profile?.bundles).toEqual(['@open-harness/oh-base'])
     expect(readFileSync(join(dir, PROFILE_PATCH_FILENAME), 'utf8')).toContain('- id: x')
   })
 })
@@ -151,7 +151,7 @@ describe('loadProfile', () => {
     // The web template auto-initializes on first load. Bundle resolution
     // cannot be asserted to fail here: the source-plane test runner resolves
     // @deepseek-ai/* through tsconfig paths regardless of the staged anchor.
-    expect(PROFILE_TEMPLATES.web).toContain('@deepseek-ai/dsh-base')
+    expect(PROFILE_TEMPLATES.web).toContain('@open-harness/oh-base')
     try {
       loadProfile('t', 'web', anchor, home)
     } catch {
@@ -163,28 +163,28 @@ describe('loadProfile', () => {
 
   it('normalizes only the exact installation-owned headless bundle tuple', () => {
     const anchor = stageInstallation({
-      '@deepseek-ai/dsh-base': { patch: '[]\n' },
-      '@deepseek-ai/dsh-web-app': { patch: '[]\n' },
-      '@deepseek-ai/dsh-headless': { patch: '[]\n' },
+      '@open-harness/oh-base': { patch: '[]\n' },
+      '@open-harness/oh-web-app': { patch: '[]\n' },
+      '@open-harness/oh-headless': { patch: '[]\n' },
       'custom-bundle': { patch: '[]\n' },
     })
     const home = tmp()
     const stock = resolveProfileDir('headless', home)
     initProfile(stock, [
-      '@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@deepseek-ai/dsh-headless',
+      '@open-harness/oh-base', '@open-harness/oh-web-app', '@open-harness/oh-headless',
     ])
     loadProfile('t', 'headless', anchor, home)
     expect(readProfileManifest('t', stock).oh?.profile?.bundles)
-      .toEqual(['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-headless'])
+      .toEqual(['@open-harness/oh-base', '@open-harness/oh-headless'])
 
     const customHome = tmp()
     const custom = resolveProfileDir('headless', customHome)
     initProfile(custom, [
-      '@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@deepseek-ai/dsh-headless', 'custom-bundle',
+      '@open-harness/oh-base', '@open-harness/oh-web-app', '@open-harness/oh-headless', 'custom-bundle',
     ])
     loadProfile('t', 'headless', anchor, customHome)
     expect(readProfileManifest('t', custom).oh?.profile?.bundles).toEqual([
-      '@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', '@deepseek-ai/dsh-headless', 'custom-bundle',
+      '@open-harness/oh-base', '@open-harness/oh-web-app', '@open-harness/oh-headless', 'custom-bundle',
     ])
   })
 

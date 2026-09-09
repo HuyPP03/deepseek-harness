@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-client-ui-mcp",
+  "name": "@open-harness/oh-client-ui-mcp",
   "description": "MCP server surfaces: the /mcp popup over the shared registry, and the MCP settings section with reconnect, remove, and the add form",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,13 +32,13 @@
   "oh": {
     "client": {
       "inject": [
-        "@deepseek-ai/dsh-api-remotes",
-        "@deepseek-ai/dsh-client-connection",
-        "@deepseek-ai/dsh-client-locale",
-        "@deepseek-ai/dsh-client-runtime",
-        "@deepseek-ai/dsh-client-ui-commands",
-        "@deepseek-ai/dsh-client-ui-settings-general",
-        "@deepseek-ai/dsh-client-ui-slots"
+        "@open-harness/oh-api-remotes",
+        "@open-harness/oh-client-connection",
+        "@open-harness/oh-client-locale",
+        "@open-harness/oh-client-runtime",
+        "@open-harness/oh-client-ui-commands",
+        "@open-harness/oh-client-ui-settings-general",
+        "@open-harness/oh-client-ui-slots"
       ],
       "platform": "web"
     }
@@ -50,30 +50,30 @@
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/dsh-api-remotes": "workspace:^",
-    "@deepseek-ai/dsh-client-connection": "workspace:^",
-    "@deepseek-ai/dsh-client-locale": "workspace:^",
-    "@deepseek-ai/dsh-client-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-commands": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-primitives": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-settings-general": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-slots": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@open-harness/oh-api-remotes": "workspace:^",
+    "@open-harness/oh-client-connection": "workspace:^",
+    "@open-harness/oh-client-locale": "workspace:^",
+    "@open-harness/oh-client-runtime": "workspace:^",
+    "@open-harness/oh-client-ui-commands": "workspace:^",
+    "@open-harness/oh-client-ui-primitives": "workspace:^",
+    "@open-harness/oh-client-ui-settings-general": "workspace:^",
+    "@open-harness/oh-client-ui-slots": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
     "clsx": "^2.0.0",
     "react": "^18.2.0"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/dsh-api-remotes": "workspace:^",
-    "@deepseek-ai/dsh-client-connection": "workspace:^",
-    "@deepseek-ai/dsh-client-locale": "workspace:^",
-    "@deepseek-ai/dsh-client-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-test-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-commands": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-primitives": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-settings-general": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-slots": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@open-harness/oh-api-remotes": "workspace:^",
+    "@open-harness/oh-client-connection": "workspace:^",
+    "@open-harness/oh-client-locale": "workspace:^",
+    "@open-harness/oh-client-runtime": "workspace:^",
+    "@open-harness/oh-client-test-runtime": "workspace:^",
+    "@open-harness/oh-client-ui-commands": "workspace:^",
+    "@open-harness/oh-client-ui-primitives": "workspace:^",
+    "@open-harness/oh-client-ui-settings-general": "workspace:^",
+    "@open-harness/oh-client-ui-slots": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
     "react": "^18.2.0"
   },

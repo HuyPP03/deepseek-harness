@@ -5,12 +5,12 @@
  * it reads an in-memory snapshot and settles through the
  * `command/run`/`command/done` pair.
  *
- * @module @deepseek-ai/dsh-command-mcp
+ * @module @open-harness/oh-command-mcp
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import type { CommandInvocation, CommandResult } from '@deepseek-ai/dsh-commands'
-import type { McpServerView } from '@deepseek-ai/dsh-mcp-registry'
+import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'
+import type { McpServerView } from '@open-harness/oh-mcp-registry'
 
 /** Cordis plugin name used by loader diagnostics. */
 export const name = 'command-mcp'

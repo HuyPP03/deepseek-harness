@@ -1,7 +1,7 @@
 /**
  * Model text rendering and generic tool-call presentation.
  *
- * @module @deepseek-ai/dsh-tool-session-query/presentation
+ * @module @open-harness/oh-tool-session-query/presentation
  */
 
 import {
@@ -12,12 +12,12 @@ import {
   type SessionLineageTrace,
   type SessionRecord,
   type SessionSearchHit,
-} from '@deepseek-ai/dsh-session-query'
+} from '@open-harness/oh-session-query'
 import type {
   SessionEvent,
   SessionId,
-} from '@deepseek-ai/dsh-session'
-import type { GenericCallView } from '@deepseek-ai/dsh-tools'
+} from '@open-harness/oh-session'
+import type { GenericCallView } from '@open-harness/oh-tools'
 import { workspaceAccess } from './workspace-access.ts'
 
 type TitleView = Awaited<ReturnType<typeof workspaceAccess.readTitle>>

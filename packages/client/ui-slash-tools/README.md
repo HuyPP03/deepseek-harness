@@ -1,8 +1,8 @@
-# @deepseek-ai/dsh-client-ui-slash-tools
+# @open-harness/oh-client-ui-slash-tools
 
 English | [中文](README.zh.md)
 
-Web slash-tool feature owner: contributes two client-owned surfaces to `ctx.commandUi` — the `/clear` ACTION and the `/help` popupSelect. The `/mode` preset-switch popup lives in [`@deepseek-ai/dsh-client-ui-agent-preset`](../ui-agent-preset/README.md), which owns the roster's display copy.
+Web slash-tool feature owner: contributes two client-owned surfaces to `ctx.commandUi` — the `/clear` ACTION and the `/help` popupSelect. The `/mode` preset-switch popup lives in [`@open-harness/oh-client-ui-agent-preset`](../ui-agent-preset/README.md), which owns the roster's display copy.
 
 `/clear`: a menu pick or a bare enter mints a fresh blank session in the current session's Workspace (account membership, never cwd) and its agent preset (when the deployment composes one), then opens it; the current session stays in the list untouched. The action is offered only on a session with something to clear — a blank current session has no conversation to discard — and re-checks that at run time. A chat session (no Workspace membership, no preset) mints a bare session. The new session does not carry the current one's reference Workspaces: the list summary carries no reference axis, so the action cannot see them. The action kind has no result channel: a refused create is logged by the command service, never announced.
 

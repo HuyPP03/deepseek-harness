@@ -1,11 +1,11 @@
-/** Local durable attachment backend rooted below `OH_HOME`. @module @deepseek-ai/dsh-attachment-local */
+/** Local durable attachment backend rooted below `OH_HOME`. @module @open-harness/oh-attachment-local */
 
 import { join, resolve } from 'node:path'
 import { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { AttachmentStore } from '@deepseek-ai/dsh-attachment'
-import type { ImageAttachmentLimits, ImageAttachmentRef, SaveImageAttachment, StoredImageAttachment } from '@deepseek-ai/dsh-attachment'
-import { resolveOhHome } from '@deepseek-ai/dsh-home-paths'
+import { AttachmentStore } from '@open-harness/oh-attachment'
+import type { ImageAttachmentLimits, ImageAttachmentRef, SaveImageAttachment, StoredImageAttachment } from '@open-harness/oh-attachment'
+import { resolveOhHome } from '@open-harness/oh-home-paths'
 import { readImageFile, saveImageFile, validateImageFile } from './store.ts'
 
 export { detectImage } from './image.ts'

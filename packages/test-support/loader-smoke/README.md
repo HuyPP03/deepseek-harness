@@ -1,4 +1,4 @@
-# `@deepseek-ai/dsh-loader-smoke`
+# `@open-harness/oh-loader-smoke`
 
 English | [中文](README.zh.md)
 

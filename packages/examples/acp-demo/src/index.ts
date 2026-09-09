@@ -1,29 +1,29 @@
 /**
  * The ACP automation server app: the default agent spine
- * ({@link @deepseek-ai/dsh-agent-spine-demo}), JSONL session persistence, and
- * the {@link @deepseek-ai/dsh-acp} bridge. The app owns those plugins through one
+ * ({@link @open-harness/oh-agent-spine-demo}), JSONL session persistence, and
+ * the {@link @open-harness/oh-acp} bridge. The app owns those plugins through one
  * ordered lifecycle so ACP sessions quiesce before persistence detaches. It
  * writes nothing to stdout.
  * It pre-creates no agents and leaves adapters, executors, and optional tools to
  * the leaf, which must likewise avoid stdout loggers. Named exports are
  * required so Loader retains this plugin's `Config` schema (see
  * docs/postmortem/0001).
- * @module @deepseek-ai/dsh-acp-demo
+ * @module @open-harness/oh-acp-demo
  */
 
 import type { Context } from '@deepseek-ai/cordis'
 import { join } from 'node:path'
 import z from '@deepseek-ai/schemastery'
-import * as acp from '@deepseek-ai/dsh-acp'
-import * as agentCore from '@deepseek-ai/dsh-agent-spine-demo'
-import * as workspaceContext from '@deepseek-ai/dsh-agent-instructions'
-import ToolRuntime, { type Config as ToolsConfig } from '@deepseek-ai/dsh-tools'
+import * as acp from '@open-harness/oh-acp'
+import * as agentCore from '@open-harness/oh-agent-spine-demo'
+import * as workspaceContext from '@open-harness/oh-agent-instructions'
+import ToolRuntime, { type Config as ToolsConfig } from '@open-harness/oh-tools'
 import JsonlSessionPersistence, {
   JsonlCompressionSchema,
   type JsonlCompression,
-} from '@deepseek-ai/dsh-session-persistence-jsonl'
-import * as sessionCheckpointPolicy from '@deepseek-ai/dsh-session-checkpoint-policy'
-import SqliteSessionQueryEngine from '@deepseek-ai/dsh-session-query-sqlite'
+} from '@open-harness/oh-session-persistence-jsonl'
+import * as sessionCheckpointPolicy from '@open-harness/oh-session-checkpoint-policy'
+import SqliteSessionQueryEngine from '@open-harness/oh-session-query-sqlite'
 
 export const name = 'acp-demo'
 const DEFAULT_PERSISTENCE_ROOT = './.sessions'

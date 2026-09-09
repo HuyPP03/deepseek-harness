@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-sandbox",
+  "name": "@open-harness/oh-sandbox",
   "description": "Abstract process-sandbox seam (ctx.sandbox) for the Open Harness: same-world confinement vocabulary and the SandboxProvider contract",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,15 +32,15 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

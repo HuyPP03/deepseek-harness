@@ -3,7 +3,7 @@ import type {
   AssistantMessageNode, ConversationNode, ConversationPromptSnapshot,
   ConversationViewBuilder, ConversationViewDefinition, RequestView,
   ToolCallBlock,
-} from '@deepseek-ai/dsh-client-runtime/client'
+} from '@open-harness/oh-client-runtime/client'
 import type {
   TrajectoryConversationViewNode, TrajectoryRequestHeaderState,
   TrajectorySnapshot,

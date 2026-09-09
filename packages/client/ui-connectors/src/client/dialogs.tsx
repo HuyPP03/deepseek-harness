@@ -7,7 +7,7 @@
  * the client.
  */
 import type { ReactNode } from 'react'
-import { Button, Input, Modal } from '@deepseek-ai/dsh-client-ui-primitives'
+import { Button, Input, Modal } from '@open-harness/oh-client-ui-primitives'
 import { parseEnvDraft } from './controller.ts'
 import type { ConnectOauthDialog, ConnectTokenDialog, CustomConnectorDialog } from './controller.ts'
 import type { ConnectorsTranslate } from './contract/slots.ts'

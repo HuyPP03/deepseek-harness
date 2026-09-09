@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-hmr
+# @open-harness/oh-client-hmr
 
 [English](README.md) | 中文
 

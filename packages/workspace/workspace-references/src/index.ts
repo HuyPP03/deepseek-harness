@@ -20,7 +20,7 @@
  * at `Config.maxReferences`; a violation throws at the operation boundary
  * (fail loud, never a silent skip).
  *
- * @module @deepseek-ai/dsh-workspace-references
+ * @module @open-harness/oh-workspace-references
  */
 
 import { realpath, stat } from 'node:fs/promises'
@@ -29,10 +29,10 @@ import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import zod from 'zod'
 // Type-only: resolves the declaration merges these types rely on.
-import type {} from '@deepseek-ai/dsh-agent'
-import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
-import type {} from '@deepseek-ai/dsh-session-projection'
-import type {} from '@deepseek-ai/dsh-system-prompt'
+import type {} from '@open-harness/oh-agent'
+import type { Session, SessionEvent } from '@open-harness/oh-session'
+import type {} from '@open-harness/oh-session-projection'
+import type {} from '@open-harness/oh-system-prompt'
 import type { ReferenceProject, WorkspaceReferencesView } from './types.ts'
 
 declare module '@deepseek-ai/cordis' {
@@ -42,7 +42,7 @@ declare module '@deepseek-ai/cordis' {
   }
 }
 
-declare module '@deepseek-ai/dsh-session/types' {
+declare module '@open-harness/oh-session/types' {
   interface SessionEventMap {
     /**
      * The session's reference-project set changed — log-only (like
@@ -59,7 +59,7 @@ declare module '@deepseek-ai/dsh-session/types' {
   }
 }
 
-declare module '@deepseek-ai/dsh-session-projection/types' {
+declare module '@open-harness/oh-session-projection/types' {
   interface SessionProjectionMap {
     /**
      * The session's reference-project fold for clients: the attached paths

@@ -1,4 +1,4 @@
-declare module '@deepseek-ai/dsh-typert-protocol' {
+declare module '@open-harness/oh-typert-protocol' {
   export interface TypertLookup<Host, Wire> {
     readonly host: Host
     readonly wire: Wire

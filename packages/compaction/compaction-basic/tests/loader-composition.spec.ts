@@ -6,11 +6,11 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import LlmRuntime from '@deepseek-ai/dsh-llm'
-import SessionStore from '@deepseek-ai/dsh-session'
-import TokenMeter from '@deepseek-ai/dsh-token-meter'
-import BasicCompactionEngine from '@deepseek-ai/dsh-compaction-basic'
-import ToolResultPruner from '@deepseek-ai/dsh-compaction-tool-result-pruner'
+import LlmRuntime from '@open-harness/oh-llm'
+import SessionStore from '@open-harness/oh-session'
+import TokenMeter from '@open-harness/oh-token-meter'
+import BasicCompactionEngine from '@open-harness/oh-compaction-basic'
+import ToolResultPruner from '@open-harness/oh-compaction-tool-result-pruner'
 
 let root: string | undefined
 let context: Context | undefined
@@ -32,11 +32,11 @@ async function loadYaml(lines: readonly string[]): Promise<Context> {
   await context.plugin(Loader)
   context.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
-    ['@deepseek-ai/dsh-llm', LlmRuntime],
-    ['@deepseek-ai/dsh-session', SessionStore],
-    ['@deepseek-ai/dsh-token-meter', TokenMeter],
-    ['@deepseek-ai/dsh-compaction-tool-result-pruner', ToolResultPruner],
-    ['@deepseek-ai/dsh-compaction-basic', BasicCompactionEngine],
+    ['@open-harness/oh-llm', LlmRuntime],
+    ['@open-harness/oh-session', SessionStore],
+    ['@open-harness/oh-token-meter', TokenMeter],
+    ['@open-harness/oh-compaction-tool-result-pruner', ToolResultPruner],
+    ['@open-harness/oh-compaction-basic', BasicCompactionEngine],
   ])
   context.loader.internal = {
     version: 'v2',
@@ -56,15 +56,15 @@ async function loadYaml(lines: readonly string[]): Promise<Context> {
 describe('real Loader composition', () => {
   it('loads the shipped token-meter, pruning, and compaction-basic YAML order', async () => {
     const loaded = await loadYaml([
-      "- name: '@deepseek-ai/dsh-llm'",
-      "- name: '@deepseek-ai/dsh-session'",
-      "- name: '@deepseek-ai/dsh-token-meter'",
-      "- name: '@deepseek-ai/dsh-compaction-tool-result-pruner'",
+      "- name: '@open-harness/oh-llm'",
+      "- name: '@open-harness/oh-session'",
+      "- name: '@open-harness/oh-token-meter'",
+      "- name: '@open-harness/oh-compaction-tool-result-pruner'",
       '  config:',
       '    thresholdChars: 100',
       '    headChars: 20',
       '    tailChars: 10',
-      "- name: '@deepseek-ai/dsh-compaction-basic'",
+      "- name: '@open-harness/oh-compaction-basic'",
       '  config:',
       '    thresholdRatio: 0.5',
       '    retainRatio: 0.125',

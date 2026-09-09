@@ -1,9 +1,9 @@
 /** First-party Host inspect providers registered by the Cordis tool package. */
 
 import type { Context } from '@deepseek-ai/cordis'
-import { HOST_BUILTIN_INSPECTION } from '@deepseek-ai/dsh-cordis-host-runner'
-import type { HostCordisInspectProviderRegistration } from '@deepseek-ai/dsh-cordis-host-runner'
-import type { JsonValue } from '@deepseek-ai/dsh-session'
+import { HOST_BUILTIN_INSPECTION } from '@open-harness/oh-cordis-host-runner'
+import type { HostCordisInspectProviderRegistration } from '@open-harness/oh-cordis-host-runner'
+import type { JsonValue } from '@open-harness/oh-session'
 import { EVENT_API, queryEventApi, queryServiceApi } from './api-catalog.ts'
 
 const EMPTY_INPUT = { type: 'object', properties: {}, additionalProperties: false } as const

@@ -10,8 +10,8 @@ import type { OAuthTokenBundle } from '../src/types.ts'
 // commit; gating it makes the dispose-versus-queued-operation race fully
 // deterministic. The lock helper passes through so the gated operation still
 // runs inside its real acquire/release cycle.
-vi.mock('@deepseek-ai/dsh-atomic-write', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@deepseek-ai/dsh-atomic-write')>()
+vi.mock('@open-harness/oh-atomic-write', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@open-harness/oh-atomic-write')>()
   let gate: Promise<void> = Promise.resolve()
   return {
     ...actual,
@@ -23,7 +23,7 @@ vi.mock('@deepseek-ai/dsh-atomic-write', async (importOriginal) => {
 })
 
 async function setGate(next: Promise<void>): Promise<void> {
-  const mocked = await import('@deepseek-ai/dsh-atomic-write') as unknown as { __setGate: (next: Promise<void>) => void }
+  const mocked = await import('@open-harness/oh-atomic-write') as unknown as { __setGate: (next: Promise<void>) => void }
   mocked.__setGate(next)
 }
 

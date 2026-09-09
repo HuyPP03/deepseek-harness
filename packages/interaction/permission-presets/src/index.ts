@@ -18,19 +18,19 @@
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { z as zod } from 'zod'
-import { resolveSessionPreset } from '@deepseek-ai/dsh-agent-presets'
-import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
-import type { SandboxMode } from '@deepseek-ai/dsh-sandbox'
-import { SANDBOX_MODES, effectiveSandboxMode, setSandboxMode } from '@deepseek-ai/dsh-sandbox-policy'
+import { resolveSessionPreset } from '@open-harness/oh-agent-presets'
+import type { Session, SessionEvent } from '@open-harness/oh-session'
+import type { SandboxMode } from '@open-harness/oh-sandbox'
+import { SANDBOX_MODES, effectiveSandboxMode, setSandboxMode } from '@open-harness/oh-sandbox-policy'
 // Side-effect type import: declaration-merges `ctx.shell` (the capability fact
 // `sandboxMode` this service reads), without a value dependency on the seam.
-import type {} from '@deepseek-ai/dsh-shell'
-import type { ApprovalPolicy } from '@deepseek-ai/dsh-user-approval'
-import { APPROVAL_POLICIES, effectiveApprovalPolicy, setApprovalPolicy } from '@deepseek-ai/dsh-user-approval'
-import { installSettingsSection, settingsNamespace } from '@deepseek-ai/dsh-settings'
+import type {} from '@open-harness/oh-shell'
+import type { ApprovalPolicy } from '@open-harness/oh-user-approval'
+import { APPROVAL_POLICIES, effectiveApprovalPolicy, setApprovalPolicy } from '@open-harness/oh-user-approval'
+import { installSettingsSection, settingsNamespace } from '@open-harness/oh-settings'
 // Type-only: resolves ctx.sessionProjections / ctx.commands for the optional children.
-import type {} from '@deepseek-ai/dsh-session-projection'
-import type {} from '@deepseek-ai/dsh-commands'
+import type {} from '@open-harness/oh-session-projection'
+import type {} from '@open-harness/oh-commands'
 import type { PermissionSelect, PresetOption } from './types.ts'
 
 // The `permissions` projection-key declaration lives in src/types.ts (its one
@@ -45,7 +45,7 @@ declare module '@deepseek-ai/cordis' {
   }
 }
 
-declare module '@deepseek-ai/dsh-session/types' {
+declare module '@open-harness/oh-session/types' {
   interface SessionEventMap {
     /**
      * Records the selected preset as durable, log-only user intent. The knob

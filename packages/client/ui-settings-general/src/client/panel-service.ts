@@ -12,7 +12,7 @@
 
 import { Service } from '@deepseek-ai/cordis'
 import type { Context } from '@deepseek-ai/cordis'
-import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client-runtime/client'
 
 /** The settings panel's viewing state. */
 export interface SettingsPanelState {

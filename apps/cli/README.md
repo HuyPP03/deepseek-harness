@@ -36,7 +36,7 @@ The tree composes over an empty root:
 - then the profile's `cordis.patch.yml`, then the home-level `$OH_HOME/cordis.patch.yml`
 - then `--patch` overlays
 
-Bundles named in `oh.profile.bundles` resolve from the dsh installation first (`@deepseek-ai/dsh-base`, `@deepseek-ai/dsh-web-app`, `@deepseek-ai/dsh-headless`), then from the profile's own `node_modules`, where pnpm installs out-of-tree plugins.
+Bundles named in `oh.profile.bundles` resolve from the dsh installation first (`@open-harness/oh-base`, `@open-harness/oh-web-app`, `@open-harness/oh-headless`), then from the profile's own `node_modules`, where pnpm installs out-of-tree plugins.
 
 Use `--dump-default-config` and `--dump-config` to inspect the composed tree without booting it.
 

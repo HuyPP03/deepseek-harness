@@ -1,9 +1,9 @@
 /**
  * Strict Schedule decoding, replay, time validation, and framing.
- * @module @deepseek-ai/dsh-schedule
+ * @module @open-harness/oh-schedule
  */
 
-import type { SessionEvent } from '@deepseek-ai/dsh-session'
+import type { SessionEvent } from '@open-harness/oh-session'
 import type {
   AfterScheduleRecord,
   AtInput,

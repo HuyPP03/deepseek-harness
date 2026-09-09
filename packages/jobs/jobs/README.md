@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-jobs
+# @open-harness/oh-jobs
 
 English | [中文](README.zh.md)
 

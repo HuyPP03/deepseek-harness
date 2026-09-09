@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { PROTOCOL_VERSION } from '@agentclientprotocol/sdk'
-import { AttachmentError } from '@deepseek-ai/dsh-attachment'
-import { SessionId } from '@deepseek-ai/dsh-session'
+import { AttachmentError } from '@open-harness/oh-attachment'
+import { SessionId } from '@open-harness/oh-session'
 import { makeBridgeHarness, textResponse, type BridgeHarness } from './harness.ts'
 
 describe('automation-only ACP bridge', () => {

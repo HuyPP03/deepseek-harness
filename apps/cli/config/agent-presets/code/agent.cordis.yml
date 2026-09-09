@@ -29,13 +29,13 @@
 # The preset's own persona, shadowing the deployment default for this agent.
 # `{{model}}` and `{{cwd}}` resolve from the agent's own route and workspace.
 - id: persona
-  name: '@deepseek-ai/dsh-persona'
+  name: '@open-harness/oh-persona'
   config:
     text: >-
       You are a coding agent powered by the {{model}} model. Your working directory is {{cwd}}.
 
 - id: agent-instructions
-  name: '@deepseek-ai/dsh-agent-instructions'
+  name: '@open-harness/oh-agent-instructions'
   config:
     maxBytes: 65536
 
@@ -49,11 +49,11 @@
 # registry from here; their executors (`bash-sandbox`/`pwsh-sandbox`) are
 # host-plane too.
 - id: tool-bash
-  name: '@deepseek-ai/dsh-tool-bash'
+  name: '@open-harness/oh-tool-bash'
   disabled: !!js process.platform === 'win32'
 
 - id: tool-pwsh
-  name: '@deepseek-ai/dsh-tool-pwsh'
+  name: '@open-harness/oh-tool-pwsh'
   disabled: !!js process.platform !== 'win32'
 
 # ── filesystem ──────────────────────────────────────────────────────────────
@@ -61,10 +61,10 @@
 # Both register into the host `tools` registry and provide nothing, so
 # they need no realm. The `fs` service and its policy stay in the host.
 - id: tool-fs
-  name: '@deepseek-ai/dsh-tool-fs'
+  name: '@open-harness/oh-tool-fs'
 
 - id: tool-fs-search
-  name: '@deepseek-ai/dsh-tool-fs-search'
+  name: '@open-harness/oh-tool-fs-search'
   config:
     sampleOverCapGlobResults: false
 
@@ -75,7 +75,7 @@
 # the host plane (this row consumes it), so it needs no realm; a chat session
 # has no project directory to search, so the chat preset does not mount it.
 - id: command-search
-  name: '@deepseek-ai/dsh-command-search'
+  name: '@open-harness/oh-command-search'
 
 # Human-facing `/simplify` and `/code-review`: agent steering and parallel
 # one-shot subagent review over the code the session changed. The command
@@ -83,7 +83,7 @@
 # both), so it needs no realm; a chat session has no code changes to review,
 # so the chat preset does not mount it.
 - id: command-agent-actions
-  name: '@deepseek-ai/dsh-command-agent-actions'
+  name: '@open-harness/oh-command-agent-actions'
 
 # ── background jobs ────────────────────────────────────────────────────────
 
@@ -95,7 +95,7 @@
 # owning agent anyway, so one host instance serves every session. What a preset
 # chooses is whether its agent can collect and stop background work at all.
 - id: tool-jobs
-  name: '@deepseek-ai/dsh-tool-jobs'
+  name: '@open-harness/oh-tool-jobs'
 
 # ── skills ──────────────────────────────────────────────────────────────────
 
@@ -111,13 +111,13 @@
 # points), and the preset is the unit that gets copied and edited. `baseUrl`
 # is the preset's own directory, so the root resolves wherever it is installed.
 - id: skill-filesystem
-  name: '@deepseek-ai/dsh-skill-filesystem'
+  name: '@open-harness/oh-skill-filesystem'
   config:
     customSkillDirs:
       - !!js "process.getBuiltinModule('node:url').fileURLToPath(new URL('skills/', baseUrl))"
 
 - id: tool-skill
-  name: '@deepseek-ai/dsh-tool-skill'
+  name: '@open-harness/oh-tool-skill'
 
 # ── goals ───────────────────────────────────────────────────────────────────
 
@@ -128,7 +128,7 @@
 # registry is keyed by session anyway, so one host instance serves every
 # session. What a preset chooses is whether its agent can call the goal tool.
 - id: tool-goal
-  name: '@deepseek-ai/dsh-tool-goal'
+  name: '@open-harness/oh-tool-goal'
 
 # ── plan mode ───────────────────────────────────────────────────────────────
 
@@ -141,7 +141,7 @@
     planMode: true
   config:
     - id: plan-mode
-      name: '@deepseek-ai/dsh-plan-mode'
+      name: '@open-harness/oh-plan-mode'
       config:
         section: |
               You are in plan mode. Stay in plan mode until exit_plan_mode succeeds or the user switches the session mode. Imperative language to implement changes means plan the implementation, not execute it. A user's conversational agreement — including an answer confirming something you asked — approves nothing and does not end plan mode; fold the confirmed decision into the plan and submit it through exit_plan_mode.
@@ -175,13 +175,13 @@
     toolResultPruner: true
   config:
     - id: compaction-basic
-      name: '@deepseek-ai/dsh-compaction-basic'
+      name: '@open-harness/oh-compaction-basic'
 
     - id: command-compact
-      name: '@deepseek-ai/dsh-command-compact'
+      name: '@open-harness/oh-command-compact'
 
     - id: tool-result-pruner
-      name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+      name: '@open-harness/oh-compaction-tool-result-pruner'
       config:
         thresholdChars: 8192
         headChars: 4096
@@ -205,20 +205,20 @@
     workflowEngine: true
   config:
     - id: tool-subagent-control
-      name: '@deepseek-ai/dsh-tool-subagent-control'
+      name: '@open-harness/oh-tool-subagent-control'
 
     - id: tool-subagent-list-agents
-      name: '@deepseek-ai/dsh-tool-subagent-control/list-agents'
+      name: '@open-harness/oh-tool-subagent-control/list-agents'
 
     - id: tool-subagent
-      name: '@deepseek-ai/dsh-tool-subagent'
+      name: '@open-harness/oh-tool-subagent'
       config:
         provider: spawn
         toolName: subagent
         backgroundMode: continuable
 
     - id: tool-subagent-fork
-      name: '@deepseek-ai/dsh-tool-subagent'
+      name: '@open-harness/oh-tool-subagent'
       config:
         provider: fork
         toolName: subagent_fork
@@ -228,7 +228,7 @@
     # Profile mounts each provider once on the host plane; copy this preset,
     # then remove `disabled` from the matching tool row.
     - id: tool-subagent-codex
-      name: '@deepseek-ai/dsh-tool-subagent'
+      name: '@open-harness/oh-tool-subagent'
       disabled: true
       config:
         provider: codex
@@ -237,7 +237,7 @@
         maxDepth: provider-managed
 
     - id: tool-subagent-claude-code
-      name: '@deepseek-ai/dsh-tool-subagent'
+      name: '@open-harness/oh-tool-subagent'
       disabled: true
       config:
         provider: claude-code
@@ -246,15 +246,15 @@
         maxDepth: provider-managed
 
     - id: workflow-worker-thread
-      name: '@deepseek-ai/dsh-workflow-worker-thread'
+      name: '@open-harness/oh-workflow-worker-thread'
       config:
         provider: spawn
 
     - id: tool-workflow
-      name: '@deepseek-ai/dsh-tool-workflow'
+      name: '@open-harness/oh-tool-workflow'
 
     - id: tool-ralph
-      name: '@deepseek-ai/dsh-tool-ralph'
+      name: '@open-harness/oh-tool-ralph'
       config:
         subagentProvider: spawn
         maxRounds: 64
@@ -262,17 +262,17 @@
 # ── remaining model-facing rows ─────────────────────────────────────────────
 
 - id: tool-ask-user
-  name: '@deepseek-ai/dsh-tool-ask-user'
+  name: '@open-harness/oh-tool-ask-user'
 
 - id: tool-todo
-  name: '@deepseek-ai/dsh-tool-todo'
+  name: '@open-harness/oh-tool-todo'
   config:
     allowParallelInProgress: true
 
 # The `web` service and its providers stay in the host composition; only
 # the model-facing tools are per-session.
 - id: tool-web
-  name: '@deepseek-ai/dsh-tool-web'
+  name: '@open-harness/oh-tool-web'
 
 # ── presentation ────────────────────────────────────────────────────────────
 
@@ -280,6 +280,6 @@
 # rather than assuming it: a deployment that composes no TypeScript runtime
 # fails this preset at mount, naming this id, instead of at the first request.
 - id: tool-presentation
-  name: '@deepseek-ai/dsh-agent-tool-presentation'
+  name: '@open-harness/oh-agent-tool-presentation'
   config:
     mode: code

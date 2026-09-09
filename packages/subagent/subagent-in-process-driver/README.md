@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-subagent-in-process-driver
+# @open-harness/oh-subagent-in-process-driver
 
 English | [中文](README.zh.md)
 

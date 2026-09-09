@@ -7,11 +7,11 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 import { Context, Service } from '@deepseek-ai/cordis'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import { CredentialProvider, type CredentialRef, type CredentialInfo, type ResolvedCredential } from '@deepseek-ai/dsh-credentials'
-import type { OAuthTokenBundle } from '@deepseek-ai/dsh-credentials-oauth-tokens'
-import type { Config, ServerValue } from '@deepseek-ai/dsh-mcp-client'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import { CredentialProvider, type CredentialRef, type CredentialInfo, type ResolvedCredential } from '@open-harness/oh-credentials'
+import type { OAuthTokenBundle } from '@open-harness/oh-credentials-oauth-tokens'
+import type { Config, ServerValue } from '@open-harness/oh-mcp-client'
 
 // vi.mock factories are hoisted above every import/const, so the mock fns and
 // class must be created inside vi.hoisted to exist when the factories run.
@@ -52,8 +52,8 @@ vi.mock('@modelcontextprotocol/sdk/client/streamableHttp.js', () => ({
 }))
 
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
-import { resolveServerValues } from '@deepseek-ai/dsh-mcp-client/src/credentials.ts'
-import { resolveReconnectPolicy, startConnection } from '@deepseek-ai/dsh-mcp-client/src/connection.ts'
+import { resolveServerValues } from '@open-harness/oh-mcp-client/src/credentials.ts'
+import { resolveReconnectPolicy, startConnection } from '@open-harness/oh-mcp-client/src/connection.ts'
 
 // ---- Fakes over the two optional services ----
 

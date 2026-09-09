@@ -6,13 +6,13 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import CommandRuntime from '@deepseek-ai/dsh-commands'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import { SESSION_FORMAT_VERSION, Session, SessionId } from '@deepseek-ai/dsh-session'
-import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
-import * as commandMcp from '@deepseek-ai/dsh-command-mcp'
+import type { Agent } from '@open-harness/oh-agent'
+import CommandRuntime from '@open-harness/oh-commands'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import { SESSION_FORMAT_VERSION, Session, SessionId } from '@open-harness/oh-session'
+import McpRegistry from '@open-harness/oh-mcp-registry'
+import * as commandMcp from '@open-harness/oh-command-mcp'
 
 let root: string | undefined
 let context: Context | undefined
@@ -29,11 +29,11 @@ describe('command-mcp real Loader composition', () => {
     root = await mkdtemp(join(tmpdir(), 'dsh-command-mcp-loader-'))
     const configPath = join(root, 'cordis.yml')
     await writeFile(configPath, [
-      "- name: '@deepseek-ai/dsh-system-prompt'",
-      "- name: '@deepseek-ai/dsh-tools'",
-      "- name: '@deepseek-ai/dsh-commands'",
-      "- name: '@deepseek-ai/dsh-mcp-registry'",
-      "- name: '@deepseek-ai/dsh-command-mcp'",
+      "- name: '@open-harness/oh-system-prompt'",
+      "- name: '@open-harness/oh-tools'",
+      "- name: '@open-harness/oh-commands'",
+      "- name: '@open-harness/oh-mcp-registry'",
+      "- name: '@open-harness/oh-command-mcp'",
       "- name: 'test:stub-mcp-reporter'",
       '',
     ].join('\n'))
@@ -43,11 +43,11 @@ describe('command-mcp real Loader composition', () => {
     await context.plugin(Loader)
     context.loader.builtins.include = Include
     const modules = new Map<string, unknown>([
-      ['@deepseek-ai/dsh-system-prompt', SystemPrompt],
-      ['@deepseek-ai/dsh-tools', ToolRuntime],
-      ['@deepseek-ai/dsh-commands', CommandRuntime],
-      ['@deepseek-ai/dsh-mcp-registry', McpRegistry],
-      ['@deepseek-ai/dsh-command-mcp', commandMcp],
+      ['@open-harness/oh-system-prompt', SystemPrompt],
+      ['@open-harness/oh-tools', ToolRuntime],
+      ['@open-harness/oh-commands', CommandRuntime],
+      ['@open-harness/oh-mcp-registry', McpRegistry],
+      ['@open-harness/oh-command-mcp', commandMcp],
       // A stand-in for an mcp-client instance: reports one stable server.
       ['test:stub-mcp-reporter', {
         name: 'stub-mcp-reporter',

@@ -6,20 +6,20 @@
  * Registrations outlive producer and controller fibers. Agent or service
  * disposal cancels live work and awaits compliant producers; a throwing
  * teardown cancel force-fails only the record and reports a possible orphan.
- * @module @deepseek-ai/dsh-jobs-local
+ * @module @open-harness/oh-jobs-local
  */
 
 import { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import { AnonymousEntries, ScopedLayers, scopeOf } from '@deepseek-ai/dsh-scope'
-import type { ScopeLayer } from '@deepseek-ai/dsh-scope'
-import { deadline, timeoutOf } from '@deepseek-ai/dsh-timeout'
-import { JobRegistry, JobId } from '@deepseek-ai/dsh-jobs'
+import type { Agent } from '@open-harness/oh-agent'
+import { AnonymousEntries, ScopedLayers, scopeOf } from '@open-harness/oh-scope'
+import type { ScopeLayer } from '@open-harness/oh-scope'
+import { deadline, timeoutOf } from '@open-harness/oh-timeout'
+import { JobRegistry, JobId } from '@open-harness/oh-jobs'
 import type {
   JobDoneListener, JobKind, JobLogRead, JobOutcome, JobRead, JobSnapshot, JobStart, JobStatus,
   JobsChangedListener,
-} from '@deepseek-ai/dsh-jobs'
+} from '@open-harness/oh-jobs'
 
 /** Timeout code that distinguishes a bounded wait from caller cancellation. */
 export const TASK_WAIT_TIMEOUT = 'TASK_WAIT_TIMEOUT'
@@ -108,7 +108,7 @@ class JobLayer implements ScopeLayer {
 
 /**
  * The in-memory `jobs` registry. See the Service Definition contract in
- * `@deepseek-ai/dsh-jobs` for the ownership, isolation, and lifecycle
+ * `@open-harness/oh-jobs` for the ownership, isolation, and lifecycle
  * semantics this implementation honors.
  */
 export class LocalJobRegistry extends JobRegistry {
@@ -161,7 +161,7 @@ export class LocalJobRegistry extends JobRegistry {
 
   start(spec: JobStart): JobId {
     if (!this.servesOwner(spec.owner)) {
-      throw new Error('background jobs unavailable: no job controller serves this agent (load @deepseek-ai/dsh-tool-jobs in its composition)')
+      throw new Error('background jobs unavailable: no job controller serves this agent (load @open-harness/oh-tool-jobs in its composition)')
     }
     if (spec.kind.length === 0) throw new Error('invalid job kind: expected a non-empty string')
     if (spec.label.length === 0) throw new Error('invalid job label: expected a non-empty string')
@@ -538,7 +538,7 @@ export class LocalJobRegistry extends JobRegistry {
     const ownerId = owner.id
     const agents = this.selfCtx.get('agents')
     if (agents === undefined) {
-      throw new Error('background job ownership requires the agent registry (load @deepseek-ai/dsh-agent)')
+      throw new Error('background job ownership requires the agent registry (load @open-harness/oh-agent)')
     }
     if (agents.get(ownerId) !== owner) {
       throw new Error(`agent "${ownerId}" is not the registered agent instance (background job owner must be live)`)

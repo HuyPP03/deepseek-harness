@@ -89,11 +89,11 @@ When a preset genuinely owns a service, wrap the provider **and every consumer t
     workflows: true
   config:
     - id: workflow-worker-thread
-      name: '@deepseek-ai/dsh-workflow-worker-thread'
+      name: '@open-harness/oh-workflow-worker-thread'
       config:
         provider: spawn
     - id: tool-workflow
-      name: '@deepseek-ai/dsh-tool-workflow'
+      name: '@open-harness/oh-tool-workflow'
 ```
 
 `true` means a realm private to each mounting session. A string label instead joins subtrees into one shared realm; `provide()` still throws on the second registration under that symbol, so a label does not pool instances and is not what a preset needs.
@@ -129,7 +129,7 @@ Copy these disabled templates from a shipped full preset and remove `disabled` o
 
 ```yaml
 - id: tool-subagent-codex
-  name: '@deepseek-ai/dsh-tool-subagent'
+  name: '@open-harness/oh-tool-subagent'
   disabled: true
   config:
     provider: codex
@@ -138,7 +138,7 @@ Copy these disabled templates from a shipped full preset and remove `disabled` o
     maxDepth: provider-managed
 
 - id: tool-subagent-claude-code
-  name: '@deepseek-ai/dsh-tool-subagent'
+  name: '@open-harness/oh-tool-subagent'
   disabled: true
   config:
     provider: claude-code
@@ -147,7 +147,7 @@ Copy these disabled templates from a shipped full preset and remove `disabled` o
     maxDepth: provider-managed
 ```
 
-The two rows are independent. Leaving both disabled preserves the copied preset, enabling one exposes only that product tool, and enabling both exposes both. Production `dsh` does not install or mount either optional provider: before enabling a row, the Profile must install the matching `@deepseek-ai/dsh-subagent-codex` or `@deepseek-ai/dsh-subagent-claude-code` package and mount it once on the host plane. A preset cannot provide that host dependency. `backgroundMode: one-shot` keeps omitted or `false` calls in the foreground and lets explicit `run_in_background: true` return a generic Job id. Full presets already carry `tool-jobs`, while the base host carries the job registry; retain both so `job_output`, `job_list`, `job_kill`, cancellation, and completion notices stay available. The host must also provide `codex` or `claude` on `PATH`; the preset does not install, authenticate, select a model for, or probe either product.
+The two rows are independent. Leaving both disabled preserves the copied preset, enabling one exposes only that product tool, and enabling both exposes both. Production `dsh` does not install or mount either optional provider: before enabling a row, the Profile must install the matching `@open-harness/oh-subagent-codex` or `@open-harness/oh-subagent-claude-code` package and mount it once on the host plane. A preset cannot provide that host dependency. `backgroundMode: one-shot` keeps omitted or `false` calls in the foreground and lets explicit `run_in_background: true` return a generic Job id. Full presets already carry `tool-jobs`, while the base host carries the job registry; retain both so `job_output`, `job_list`, `job_kill`, cancellation, and completion notices stay available. The host must also provide `codex` or `claude` on `PATH`; the preset does not install, authenticate, select a model for, or probe either product.
 
 ## What not to move into a preset
 

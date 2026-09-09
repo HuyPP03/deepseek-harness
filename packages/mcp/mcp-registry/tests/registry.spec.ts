@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
-import type { McpServerView } from '@deepseek-ai/dsh-mcp-registry'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import McpRegistry from '@open-harness/oh-mcp-registry'
+import type { McpServerView } from '@open-harness/oh-mcp-registry'
 
 /** Build one connected server view with `toolCount` placeholder tools. */
 function view(serverName: string, toolCount = 0): McpServerView {

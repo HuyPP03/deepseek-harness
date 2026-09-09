@@ -5,7 +5,7 @@
  * part). Pure over the view — the card renders the localized lines, so no
  * copy crosses the boundary.
  */
-import type { ConnectorView } from '@deepseek-ai/dsh-api-remotes/client'
+import type { ConnectorView } from '@open-harness/oh-api-remotes/client'
 
 /** One risk line: the locale key plus its interpolation params. */
 export interface RiskNote {

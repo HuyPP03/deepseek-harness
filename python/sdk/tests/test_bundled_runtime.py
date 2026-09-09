@@ -21,25 +21,25 @@ _MINIMAL_CONFIG = _REPO_ROOT / "examples" / "jsonrpc-agent" / "minimal.cordis.ym
 # The config must include the JSON-RPC serving plugin.
 _CORDIS_YML = """\
 - id: sdk-jsonrpc-server
-  name: '@deepseek-ai/dsh-sdk-jsonrpc-server'
+  name: '@open-harness/oh-sdk-jsonrpc-server'
 - id: agent-core
-  name: '@deepseek-ai/dsh-agent-spine-demo'
+  name: '@open-harness/oh-agent-spine-demo'
   config:
     workspaceContext: false
 - id: sessions
-  name: '@deepseek-ai/dsh-session-persistence-jsonl'
+  name: '@open-harness/oh-session-persistence-jsonl'
   config:
     root: './sessions'
 - id: session-checkpoints
-  name: '@deepseek-ai/dsh-session-checkpoint-policy'
+  name: '@open-harness/oh-session-checkpoint-policy'
 - id: subprocess
-  name: '@deepseek-ai/dsh-subprocess-local'
+  name: '@open-harness/oh-subprocess-local'
 - id: bash
-  name: '@deepseek-ai/dsh-bash-local'
+  name: '@open-harness/oh-bash-local'
   config:
     cwd: '.'
 - id: todo
-  name: '@deepseek-ai/dsh-tool-todo'
+  name: '@open-harness/oh-tool-todo'
   config:
     allowParallelInProgress: true
 """
@@ -110,7 +110,7 @@ def test_python_sdk_boots_minimal_jsonrpc_config(tmp_path: Path, mode: str) -> N
 def test_bundled_runtime_surfaces_unbundled_plugin_failure(tmp_path: Path, mode: str) -> None:
     launch_args = _launch_args(mode)
     (tmp_path / "cordis.yml").write_text(
-        "- id: missing\n  name: '@deepseek-ai/dsh-does-not-exist'\n"
+        "- id: missing\n  name: '@open-harness/oh-does-not-exist'\n"
     )
 
     client = _client(tmp_path, launch_args)
@@ -121,7 +121,7 @@ def test_bundled_runtime_surfaces_unbundled_plugin_failure(tmp_path: Path, mode:
     finally:
         client.close()
 
-    assert "@deepseek-ai/dsh-does-not-exist" in str(excinfo.value)
+    assert "@open-harness/oh-does-not-exist" in str(excinfo.value)
 
 
 @pytest.mark.parametrize("mode", _MODES)

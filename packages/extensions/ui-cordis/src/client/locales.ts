@@ -58,7 +58,7 @@ export const en = {
 /** Translation keys owned by the Cordis UI namespace. */
 export type CordisKey = keyof typeof en
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** Dynamic Cordis UI copy. */
     cordis: CordisKey

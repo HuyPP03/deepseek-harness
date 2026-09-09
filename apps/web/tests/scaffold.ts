@@ -33,21 +33,21 @@ import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include, { type PatchOptions } from '@deepseek-ai/cordis-plugin-include'
 import Group from '@deepseek-ai/cordis-plugin-group'
-import { scrubRequestHeaders, stabilizeFixtureMessageIds } from '@deepseek-ai/dsh-acp-snapshot'
+import { scrubRequestHeaders, stabilizeFixtureMessageIds } from '@open-harness/oh-acp-snapshot'
 import {
   assertEntriesLoaded,
   composeEntries,
   healProfilesModuleFallback,
   loadOverlayPatches,
-} from '@deepseek-ai/dsh-app-boot'
-import { ohHomePath } from '@deepseek-ai/dsh-home-paths'
-import { settingsNamespace } from '@deepseek-ai/dsh-settings'
-import { LlmAdapter } from '@deepseek-ai/dsh-llm'
+} from '@open-harness/oh-app-boot'
+import { ohHomePath } from '@open-harness/oh-home-paths'
+import { settingsNamespace } from '@open-harness/oh-settings'
+import { LlmAdapter } from '@open-harness/oh-llm'
 import type {
   LlmModelInfo, LlmProviderInfo, LlmResolvedModelInfo, StreamChunk,
-} from '@deepseek-ai/dsh-llm'
-import type { ReplayHandle } from '@deepseek-ai/dsh-llm-replay'
-import { installLlmReplay, parseSessionLog } from '@deepseek-ai/dsh-llm-replay'
+} from '@open-harness/oh-llm'
+import type { ReplayHandle } from '@open-harness/oh-llm-replay'
+import { installLlmReplay, parseSessionLog } from '@open-harness/oh-llm-replay'
 import SessionStore, {
   packChunkRuns,
   SESSION_FORMAT_VERSION,
@@ -55,12 +55,12 @@ import SessionStore, {
   type Session,
   type SessionEvent,
   type SessionHeader,
-} from '@deepseek-ai/dsh-session'
-import JsonlSessionPersistence from '@deepseek-ai/dsh-session-persistence-jsonl'
+} from '@open-harness/oh-session'
+import JsonlSessionPersistence from '@open-harness/oh-session-persistence-jsonl'
 // Empty type imports carry the webServer/agents/sessionPersistence Context merges.
-import type {} from '@deepseek-ai/dsh-host-webserver'
-import type {} from '@deepseek-ai/dsh-agent'
-import { provideCmdline } from '@deepseek-ai/dsh-cmdline'
+import type {} from '@open-harness/oh-host-webserver'
+import type {} from '@open-harness/oh-agent'
+import { provideCmdline } from '@open-harness/oh-cmdline'
 import { REPO_ROOT, requireDist } from './support.ts'
 
 // Host-side web e2e cannot import a browser package: doing so would pull that
@@ -70,7 +70,7 @@ import { REPO_ROOT, requireDist } from './support.ts'
 // import {
 //   WELCOME_NOTICE_ACK_FIELD, WELCOME_NOTICE_SETTINGS_NAMESPACE,
 //   WELCOME_NOTICE_VERSION, WELCOME_NOTICE_COPY,
-// } from '@deepseek-ai/dsh-client-ui-settings-models'
+// } from '@open-harness/oh-client-ui-settings-models'
 export const WELCOME_NOTICE_SETTINGS_NAMESPACE = 'ui-onboarding'
 export const WELCOME_NOTICE_ACK_FIELD = 'welcomeNoticeVersion'
 export const WELCOME_NOTICE_VERSION = '2026-08-13.1'
@@ -441,7 +441,7 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
       config: { host: '127.0.0.1', port: 0 },
     },
     // The bundle's web-runtime row resolves the same built dist under test
-    // (apps/web IS @deepseek-ai/dsh-web-frontend); only the URL line is silenced.
+    // (apps/web IS @open-harness/oh-web-frontend); only the URL line is silenced.
     // Preserve the composed surface-context choice because a patch replaces
     // the row's complete config.
     { id: 'web-runtime', config: { printUrl: false, surfaceContext } },
@@ -458,8 +458,8 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
     // disable+insert pair.
     { id: 'directory-picker', disabled: true },
     { insert: [
-      { id: 'directory-picker-browse', name: '@deepseek-ai/dsh-host-directory-picker-browse' },
-      { id: 'ui-directory-picker-browse', name: '@deepseek-ai/dsh-client-ui-directory-picker-browse' },
+      { id: 'directory-picker-browse', name: '@open-harness/oh-host-directory-picker-browse' },
+      { id: 'ui-directory-picker-browse', name: '@open-harness/oh-client-ui-directory-picker-browse' },
     ] },
     ...options.agentPresets === undefined
       ? []
@@ -471,7 +471,7 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
     // scenario adds only the model-facing tools that exercise those services.
     ...options.cordisTools === true
       ? [{ insert: [
-        { id: 'tool-cordis', name: '@deepseek-ai/dsh-tool-cordis' },
+        { id: 'tool-cordis', name: '@open-harness/oh-tool-cordis' },
       ] }]
       : [],
     ...options.websiftSearch === undefined

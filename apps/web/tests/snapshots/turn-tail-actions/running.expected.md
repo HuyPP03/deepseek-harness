@@ -19,10 +19,10 @@
 - button "Copy":
   - img
 - tooltip "Copy"
-- button "Context injection @deepseek-ai/dsh-system-prompt":
+- button "Context injection @open-harness/oh-system-prompt":
   - img
   - img
-  - text: Context injection @deepseek-ai/dsh-system-prompt
+  - text: Context injection @open-harness/oh-system-prompt
 - button "Context injection skill-catalog":
   - img
   - img

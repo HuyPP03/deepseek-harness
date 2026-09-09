@@ -16,13 +16,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import LlmRuntime from '@deepseek-ai/dsh-llm'
-import { credentialRef } from '@deepseek-ai/dsh-credentials'
-import LocalCredentialProvider from '@deepseek-ai/dsh-credentials-local'
-import { settingsNamespace } from '@deepseek-ai/dsh-settings'
-import FileSettingsProvider from '@deepseek-ai/dsh-settings-file'
-import { getOrCreateAnonymousUserId } from '@deepseek-ai/dsh-anonymous-user-id'
-import * as LlmDeepSeek from '@deepseek-ai/dsh-llm-deepseek'
+import LlmRuntime from '@open-harness/oh-llm'
+import { credentialRef } from '@open-harness/oh-credentials'
+import LocalCredentialProvider from '@open-harness/oh-credentials-local'
+import { settingsNamespace } from '@open-harness/oh-settings'
+import FileSettingsProvider from '@open-harness/oh-settings-file'
+import { getOrCreateAnonymousUserId } from '@open-harness/oh-anonymous-user-id'
+import * as LlmDeepSeek from '@open-harness/oh-llm-deepseek'
 import { assemble } from './assemble.ts'
 import { closeMockServers, mockServer, textEvents } from './mock-server.ts'
 
@@ -63,19 +63,19 @@ async function loadComposition(
     ...options.withDynamic
       ? [
         '- id: settings',
-        "  name: '@deepseek-ai/dsh-settings-file'",
+        "  name: '@open-harness/oh-settings-file'",
         '  config:',
         `    path: ${JSON.stringify(settingsPath)}`,
         '    debounceMs: 10',
         '- id: credentials',
-        "  name: '@deepseek-ai/dsh-credentials-local'",
+        "  name: '@open-harness/oh-credentials-local'",
         '  config:',
         `    path: ${JSON.stringify(credentialsPath)}`,
         '    debounceMs: 10',
       ]
       : [],
     '- id: llm-deepseek',
-    "  name: '@deepseek-ai/dsh-llm-deepseek'",
+    "  name: '@open-harness/oh-llm-deepseek'",
     '  config:',
     `    baseURL: ${JSON.stringify(options.baseURL)}`,
     '',
@@ -88,9 +88,9 @@ async function loadComposition(
   ctx.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
     ['test-llm-service', LlmRuntime],
-    ['@deepseek-ai/dsh-settings-file', FileSettingsProvider],
-    ['@deepseek-ai/dsh-credentials-local', LocalCredentialProvider],
-    ['@deepseek-ai/dsh-llm-deepseek', LlmDeepSeek],
+    ['@open-harness/oh-settings-file', FileSettingsProvider],
+    ['@open-harness/oh-credentials-local', LocalCredentialProvider],
+    ['@open-harness/oh-llm-deepseek', LlmDeepSeek],
   ])
   ctx.loader.internal = {
     version: 'v2',

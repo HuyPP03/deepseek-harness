@@ -6,13 +6,13 @@
  */
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
-import { createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
+import { createSnapshotStore } from '@open-harness/oh-client-runtime/client'
 import { ConnectedProvidersList } from '../src/client/ConnectedProvidersList.tsx'
 import type { ConnectedProvidersListProps } from '../src/client/contract/slots.ts'
 import type { ConnectorsSectionState } from '../src/client/controller.ts'
 import { en } from '../src/client/locales.ts'
-import type { ConnectorView } from '@deepseek-ai/dsh-api-remotes/client'
+import type { ConnectorView } from '@open-harness/oh-api-remotes/client'
 
 afterEach(cleanup)
 

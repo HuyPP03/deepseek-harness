@@ -9,15 +9,15 @@
  * presents as the bearer for the connector's servers. `ensureFresh` refreshes
  * an expiring bundle before a mount, so a re-authorization only happens when
  * the provider's grant actually lapsed.
- * @module @deepseek-ai/dsh-connectors-oauth-flow
+ * @module @open-harness/oh-connectors-oauth-flow
  */
 
 import { createHash, randomBytes } from 'node:crypto'
 import { createServer, type Server } from 'node:http'
 import { Context, Service } from '@deepseek-ai/cordis'
-import { clientSecretRef, type Connectors, type OauthAuthMethod } from '@deepseek-ai/dsh-connectors'
-import { credentialRef } from '@deepseek-ai/dsh-credentials'
-import type { OAuthTokenBundle } from '@deepseek-ai/dsh-credentials-oauth-tokens'
+import { clientSecretRef, type Connectors, type OauthAuthMethod } from '@open-harness/oh-connectors'
+import { credentialRef } from '@open-harness/oh-credentials'
+import type { OAuthTokenBundle } from '@open-harness/oh-credentials-oauth-tokens'
 import z from '@deepseek-ai/schemastery'
 import type { OAuthFlowStart } from './types.ts'
 

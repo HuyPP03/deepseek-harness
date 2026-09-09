@@ -2,7 +2,7 @@ import type { Context } from '@deepseek-ai/cordis'
 import type {
   ConversationMatch, ConversationNodeDefinition, ConversationPromptSnapshot,
   RequestPromptChange,
-} from '@deepseek-ai/dsh-client-runtime/client'
+} from '@open-harness/oh-client-runtime/client'
 import { trajectoryNode } from './trajectory-definition-common.ts'
 import type { TrajectoryRequestHeaderState } from './trajectory-contract.ts'
 

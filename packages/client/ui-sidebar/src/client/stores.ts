@@ -5,7 +5,7 @@
  * receives the factory and the shell derives its PropsStore share from the
  * return type.
  */
-import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-runtime/client'
+import { defineStore, type EngineStoreHandle } from '@open-harness/oh-client-runtime/client'
 
 /**
  * The sidebar browsing tabs: the ungrouped chat rows, the workspace tree, or

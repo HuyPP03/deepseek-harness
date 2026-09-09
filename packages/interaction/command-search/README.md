@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-command-search
+# @open-harness/oh-command-search
 
 English | [中文](README.zh.md)
 
@@ -21,9 +21,9 @@ The command injects `commands`. Mount the command registry and this plugin:
 
 ```yaml
 - id: commands
-  name: '@deepseek-ai/dsh-commands'
+  name: '@open-harness/oh-commands'
 - id: command-search
-  name: '@deepseek-ai/dsh-command-search'
+  name: '@open-harness/oh-command-search'
 ```
 
 The shipped `dsh` presets mount it in the `standard` and `code` agent presets; the `chat` preset does not, because a chat session has no project directory to search. Plugin disposal first unregisters `/search`, then drains every handler that already started, so root teardown cannot outlive a handler that is still running.

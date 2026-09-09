@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-typert-protocol
+# @open-harness/oh-typert-protocol
 
 [English](README.md) | 中文
 

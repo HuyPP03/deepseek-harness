@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-command-agent-actions
+# @open-harness/oh-command-agent-actions
 
 [English](README.md) | 中文
 
@@ -23,11 +23,11 @@
 
 ```yaml
 - id: commands
-  name: '@deepseek-ai/dsh-commands'
+  name: '@open-harness/oh-commands'
 - id: subagents
-  name: '@deepseek-ai/dsh-subagent'
+  name: '@open-harness/oh-subagent'
 - id: command-agent-actions
-  name: '@deepseek-ai/dsh-command-agent-actions'
+  name: '@open-harness/oh-command-agent-actions'
 ```
 
 `/code-review` 在 `provider` 配置字段指定的 provider（默认 `spawn`）上启动子 agent；注册了其他评审传输的部署在该行设置此字段。随产品发布的 `dsh` 预设把它挂载在 `standard` 与 `code` 两个 agent 预设上；`chat` 预设不挂载，因为 chat 会话没有可评审或可简化的代码改动。插件卸载先注销两个命令，再排空所有已开始的 handler，保证根卸载不会活在一个仍在运行的评审之后。

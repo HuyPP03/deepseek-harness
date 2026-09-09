@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-attachment
+# @open-harness/oh-attachment
 
 [English](README.md) | 中文
 

@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-tool-fs-search`.
- * @module @deepseek-ai/dsh-tool-fs-search/invariant
+ * Package-owned invariant companion for `@open-harness/oh-tool-fs-search`.
+ * @module @open-harness/oh-tool-fs-search/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-tool-fs-search'
+const PACKAGE_NAME = '@open-harness/oh-tool-fs-search'
 
 /** Cordis companion plugin name. */
 export const name = 'tool-fs-search-invariant'

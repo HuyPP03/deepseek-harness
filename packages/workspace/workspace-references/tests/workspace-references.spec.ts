@@ -12,15 +12,15 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import SessionStore, { Session, SessionId } from '@deepseek-ai/dsh-session'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
+import type { Agent } from '@open-harness/oh-agent'
+import SessionStore, { Session, SessionId } from '@open-harness/oh-session'
+import SystemPrompt from '@open-harness/oh-system-prompt'
 import WorkspaceReferenceService, {
   REFERENCE_PROJECTS_INTRO,
   normalizeReferencePaths,
   referencesOf,
-} from '@deepseek-ai/dsh-workspace-references'
-import type { Config } from '@deepseek-ai/dsh-workspace-references'
+} from '@open-harness/oh-workspace-references'
+import type { Config } from '@open-harness/oh-workspace-references'
 
 let root: string
 let work: string

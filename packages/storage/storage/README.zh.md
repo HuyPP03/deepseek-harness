@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-storage
+# @open-harness/oh-storage
 
 [English](README.md) | 中文
 

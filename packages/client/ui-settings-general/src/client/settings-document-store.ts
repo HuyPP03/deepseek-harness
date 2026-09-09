@@ -1,7 +1,7 @@
 /** State owner for the optional local settings-document action. */
 
-import type { IApiClient } from '@deepseek-ai/dsh-api-remotes/client'
-import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { IApiClient } from '@open-harness/oh-api-remotes/client'
+import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client-runtime/client'
 
 /** Browser state of the Host-owned settings document. */
 export interface SettingsDocumentState {

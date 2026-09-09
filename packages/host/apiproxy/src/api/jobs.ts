@@ -4,8 +4,8 @@
  * per push.
  */
 
-import type { JobId } from '@deepseek-ai/dsh-jobs/brand'
-import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { JobId } from '@open-harness/oh-jobs/brand'
+import type { SessionId } from '@open-harness/oh-session/types'
 import type { RpcRequest, RpcResponse } from './rpc.ts'
 
 /**

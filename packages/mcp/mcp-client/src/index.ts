@@ -10,18 +10,18 @@
  * disposing the old instance and creating a new one; identical `serverName`
  * reproduces identical public tool names.
  *
- * @module @deepseek-ai/dsh-mcp-client
+ * @module @open-harness/oh-mcp-client
  */
 
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { MAX_TIMER_DELAY_MS } from '@deepseek-ai/dsh-timeout'
-import type { McpRegistry } from '@deepseek-ai/dsh-mcp-registry'
+import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'
+import type { McpRegistry } from '@open-harness/oh-mcp-registry'
 import type { ServerValue } from './credentials.ts'
 import { RECONNECT_DEFAULTS, resolveReconnectPolicy, startConnection } from './connection.ts'
 import type { ReconnectConfig } from './connection.ts'
 // Side-effect type import: declaration-merges `ctx.tools` onto Context.
-import type {} from '@deepseek-ai/dsh-tools'
+import type {} from '@open-harness/oh-tools'
 
 export type { McpResult } from './tools.ts'
 export type { CredentialRefValue, ResolvedConfig, ServerValue } from './credentials.ts'

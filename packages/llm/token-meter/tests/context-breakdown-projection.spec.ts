@@ -3,14 +3,14 @@
 
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import { createMessage, createUserMessage } from '@deepseek-ai/dsh-llm'
-import type { ContentBlock, ToolSchema } from '@deepseek-ai/dsh-llm'
-import SessionStore from '@deepseek-ai/dsh-session'
-import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
-import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
-import TokenMeter from '@deepseek-ai/dsh-token-meter'
-import type { ContextBreakdownProjection } from '@deepseek-ai/dsh-token-meter/client'
-import { CompactionId } from '@deepseek-ai/dsh-compaction'
+import { createMessage, createUserMessage } from '@open-harness/oh-llm'
+import type { ContentBlock, ToolSchema } from '@open-harness/oh-llm'
+import SessionStore from '@open-harness/oh-session'
+import type { Session, SessionEvent } from '@open-harness/oh-session'
+import SessionProjectionRegistry from '@open-harness/oh-session-projection'
+import TokenMeter from '@open-harness/oh-token-meter'
+import type { ContextBreakdownProjection } from '@open-harness/oh-token-meter/client'
+import { CompactionId } from '@open-harness/oh-compaction'
 import { contextBreakdownProjectionDefinition } from '../src/breakdown-projection.ts'
 import {
   estimateContent,

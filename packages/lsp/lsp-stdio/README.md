@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-lsp-stdio
+# @open-harness/oh-lsp-stdio
 
 English | [中文](README.zh.md)
 

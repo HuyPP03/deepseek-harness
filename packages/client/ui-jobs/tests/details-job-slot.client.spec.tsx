@@ -10,11 +10,11 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent } from '@testing-library/react'
-import type { ISession, JobView, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
-import type { PropsRenderSlots } from '@deepseek-ai/dsh-client-ui-slots'
-import { SlotTestRuntime, stubSettingsScope } from '@deepseek-ai/dsh-client-test-runtime'
-import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
-import { apply as applyConversation, inject as injectConversation } from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type { ISession, JobView, SessionId } from '@open-harness/oh-client-runtime/client'
+import type { PropsRenderSlots } from '@open-harness/oh-client-ui-slots'
+import { SlotTestRuntime, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
+import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
+import { apply as applyConversation, inject as injectConversation } from '@open-harness/oh-client-ui-conversation/client'
 import { apply as applyJobs, inject as injectJobs } from '../src/client/index.ts'
 
 const SID = 's1' as SessionId

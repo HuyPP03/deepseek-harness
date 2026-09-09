@@ -8,11 +8,11 @@
  * client half (see the contract module doc). Export discipline:
  * packages/client/AGENTS.md.
  */
-import type { HostObservable } from '@deepseek-ai/dsh-client-ui-slots'
-import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { HostObservable } from '@open-harness/oh-client-ui-slots'
+import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client-runtime/client'
+import type { ClientContext } from '@open-harness/oh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
-import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type {} from '@open-harness/oh-client-locale/client'
 import type { WorkspaceBrowserInjected, WorkspacePickerInjected } from './contract/slots.ts'
 import { createWorkspaceViewStore } from './stores.ts'
 import { WorkspaceBrowser } from './WorkspaceBrowser.tsx'
@@ -26,7 +26,7 @@ export type {
 } from './contract/slots.ts'
 export type { WorkspaceKey } from './locales.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** The workspace browsing region and pick/create flow copy. */
     workspace: WorkspaceKey

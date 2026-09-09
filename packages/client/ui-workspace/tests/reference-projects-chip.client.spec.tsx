@@ -1,10 +1,10 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
-import type { RpcResult } from '@deepseek-ai/dsh-api-remotes/client'
-import type { SessionId, WorkspaceId, WorkspaceListState, WorkspaceView } from '@deepseek-ai/dsh-client-runtime/client'
-import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
-import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
+import type { RpcResult } from '@open-harness/oh-api-remotes/client'
+import type { SessionId, WorkspaceId, WorkspaceListState, WorkspaceView } from '@open-harness/oh-client-runtime/client'
+import { makeTranslate } from '@open-harness/oh-client-test-runtime'
+import { zh as commonZh } from '@open-harness/oh-client-locale/src/locales/zh.ts'
 import { ReferenceProjectsChip, type ReferenceProjectsChipProps } from '../src/client/ReferenceProjectsChip.tsx'
 import { zh } from '../src/client/locales.ts'
 

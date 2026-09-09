@@ -7,17 +7,17 @@
  * `detailsPanel` service, read at call time so apply order relative to it
  * stays unconstrained.
  */
-import type { ClientContext, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
-import type { ConnectionHandle } from '@deepseek-ai/dsh-api-remotes/client'
-import type { JobId } from '@deepseek-ai/dsh-jobs/brand'
-import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
-import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type { ClientContext, SessionId } from '@open-harness/oh-client-runtime/client'
+import type { ConnectionHandle } from '@open-harness/oh-api-remotes/client'
+import type { JobId } from '@open-harness/oh-jobs/brand'
+import type {} from '@open-harness/oh-client-ui-conversation/client'
+import type {} from '@open-harness/oh-client-locale/client'
 import { JobDetailPanel } from './JobDetailPanel.tsx'
 import { JobListAction } from './JobListAction.tsx'
 import { en, NS, vi, zh, type JobKey } from './locales.ts'
 import { JobNotFoundError } from './job-view.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** Background-job list copy. */
     'job': JobKey

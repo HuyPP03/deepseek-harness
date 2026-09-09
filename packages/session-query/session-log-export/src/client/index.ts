@@ -1,9 +1,9 @@
 /** Browser plugin owning Session export download state and its shared modal. */
 
-import type { ClientContext, SessionId } from '@deepseek-ai/dsh-client-runtime/client'
-import type {} from '@deepseek-ai/dsh-client-locale/client'
-import type {} from '@deepseek-ai/dsh-client-ui-commands/client'
-import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type { ClientContext, SessionId } from '@open-harness/oh-client-runtime/client'
+import type {} from '@open-harness/oh-client-locale/client'
+import type {} from '@open-harness/oh-client-ui-commands/client'
+import type {} from '@open-harness/oh-client-ui-conversation/client'
 import { SessionLogDownloadController } from './controller.ts'
 import type { SessionLogDownloadDialogInjected } from './Dialog.tsx'
 import { SessionLogDownloadHeaderAction } from './HeaderAction.tsx'
@@ -15,7 +15,7 @@ declare module '@deepseek-ai/cordis' {
   }
 }
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     'session-log-download': SessionLogDownloadKey
   }

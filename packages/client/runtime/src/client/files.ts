@@ -11,7 +11,7 @@
  * use the same URL shape directly and bypass the JS copy.
  */
 
-import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
+import type { SessionId } from '@open-harness/oh-api-remotes/client'
 
 /** Maximum cached entries (protocol constant of the inspector cache). */
 export const FILE_BYTES_MAX_ENTRIES = 32

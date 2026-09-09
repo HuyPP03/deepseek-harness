@@ -3,15 +3,15 @@
 
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { resolveSlotLabel } from '@deepseek-ai/dsh-client-ui-slots'
-import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
-import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
-import { TestRemote, usePinnedBrowserLanguages } from '@deepseek-ai/dsh-client-test-runtime'
-import { SettingsScopeBinder } from '@deepseek-ai/dsh-client-ui-settings/client'
-import { apply, inject } from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
+import { resolveSlotLabel } from '@open-harness/oh-client-ui-slots'
+import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
+import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
+import { TestRemote, usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { SettingsScopeBinder } from '@open-harness/oh-client-ui-settings/client'
+import { apply, inject } from '@open-harness/oh-client-ui-settings-plugins/client'
 import type {
   ConfigurablePluginsTabFace, PluginsSettingsSectionInjected,
-} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
+} from '@open-harness/oh-client-ui-settings-plugins/client'
 
 // The service reads its initial locale from the browser; these specs assert
 // the shipped Chinese copy, so they state the browser they assume.

@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-mcp-registry`.
- * @module @deepseek-ai/dsh-mcp-registry/invariant
+ * Package-owned invariant companion for `@open-harness/oh-mcp-registry`.
+ * @module @open-harness/oh-mcp-registry/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-mcp-registry'
+const PACKAGE_NAME = '@open-harness/oh-mcp-registry'
 
 /** Cordis companion plugin name. */
 export const name = 'mcp-registry-invariant'

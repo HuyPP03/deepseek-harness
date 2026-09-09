@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-subprocess
+# @open-harness/oh-subprocess
 
 [English](README.md) | 中文
 

@@ -1,14 +1,14 @@
-# @deepseek-ai/dsh-web-fetch-websift
+# @open-harness/oh-web-fetch-websift
 
 English | [中文](README.zh.md)
 
 A [websift](https://www.npmjs.com/package/websift)-backed `WebFetchProvider` for the harness [web capability seam](../web/README.md) (`ctx.web`). It embeds the websift TypeScript library in-process and runs every target URL through the library's SSRF-safe retrieval: loopback, private, and link-local destinations are refused before any request leaves the process, then the page is converted to markdown (or read as PDF text). It is the fetch route the [base bundle](../../bundle/base/README.md) ships with `web_fetch` enabled — the first keyless fetch route that can ship on, because its safety wall is a hard invariant rather than deferred work.
 
-This is an **implementation** package: it registers a provider into `ctx.web` and does not own the key and does not register a model-facing tool. Like [`@deepseek-ai/dsh-web-search-websift`](../web-search-websift/README.md), it is a function/namespace plugin (`inject: ['web']`).
+This is an **implementation** package: it registers a provider into `ctx.web` and does not own the key and does not register a model-facing tool. Like [`@open-harness/oh-web-search-websift`](../web-search-websift/README.md), it is a function/namespace plugin (`inject: ['web']`).
 
 ## Responsibility split
 
-The provider owns **SSRF-safe retrieval**: URL validation, the scheme policy, the non-global-address refusal, transport (byte caps, same-process redirect bounds, timeout), and extraction (HTML→markdown, PDF→text, rendered-page cap). [`@deepseek-ai/dsh-tool-web`](../tool-web/README.md) owns **presentation**: it passes this provider's rendered text through unchanged, truncates at its own output bound, and wraps provider failures in the tool's error format.
+The provider owns **SSRF-safe retrieval**: URL validation, the scheme policy, the non-global-address refusal, transport (byte caps, same-process redirect bounds, timeout), and extraction (HTML→markdown, PDF→text, rendered-page cap). [`@open-harness/oh-tool-web`](../tool-web/README.md) owns **presentation**: it passes this provider's rendered text through unchanged, truncates at its own output bound, and wraps provider failures in the tool's error format.
 
 Unlike [`dsh-web-fetch-http`](../web-fetch-http/README.md), a non-2xx HTTP response is a *failure* here, not a result: the library classifies the status (401/403/407 → `auth`, 429 → `rate_limit`, 5xx → `unavailable`, other 4xx → `http_error`) and the provider surfaces each as `WEB_PROVIDER_ERROR` with the library's sanitized message.
 
@@ -47,7 +47,7 @@ An unexpected rejection from the library becomes `websift fetch failed: <error>`
 
 ```yaml
 - id: web-fetch-websift
-  name: '@deepseek-ai/dsh-web-fetch-websift'
+  name: '@open-harness/oh-web-fetch-websift'
   config:
     allowHttp: true
 ```

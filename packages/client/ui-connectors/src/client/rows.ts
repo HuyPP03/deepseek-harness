@@ -3,8 +3,8 @@
  * directory card: which state dot color a state takes, and which row action
  * each state allows (configure a token, connect, or disconnect).
  */
-import type { ConnectorState, ConnectorView } from '@deepseek-ai/dsh-api-remotes/client'
-import type { StateDotState } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { ConnectorState, ConnectorView } from '@open-harness/oh-api-remotes/client'
+import type { StateDotState } from '@open-harness/oh-client-ui-primitives'
 import type { ConnectorsKey } from './locales.ts'
 
 /** Each derived state's `state.*` copy key (the translate takes the union, not a template). */

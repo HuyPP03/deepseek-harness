@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import CommandRuntime from '@deepseek-ai/dsh-commands'
-import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@deepseek-ai/dsh-session'
-import * as commandSearch from '@deepseek-ai/dsh-command-search'
+import type { Agent } from '@open-harness/oh-agent'
+import CommandRuntime from '@open-harness/oh-commands'
+import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@open-harness/oh-session'
+import * as commandSearch from '@open-harness/oh-command-search'
 
 const QUEUED_TEXT = 'Search queued for this session.'
 const USAGE_TEXT = 'Usage: /search <query> — asks the agent to search this session workspace and list the matching files'
@@ -100,7 +100,7 @@ function expectLastLifecycle(
   expect(test.session.deriveMessages()).toEqual([])
 }
 
-describe('@deepseek-ai/dsh-command-search registration', () => {
+describe('@open-harness/oh-command-search registration', () => {
   it('registers the search command and disposes it', async () => {
     const test = await harness()
     try {

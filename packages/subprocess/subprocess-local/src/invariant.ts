@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-subprocess-local`.
- * @module @deepseek-ai/dsh-subprocess-local/invariant
+ * Package-owned invariant companion for `@open-harness/oh-subprocess-local`.
+ * @module @open-harness/oh-subprocess-local/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-subprocess-local'
+const PACKAGE_NAME = '@open-harness/oh-subprocess-local'
 
 /** Cordis companion plugin name. */
 export const name = 'subprocess-local-invariant'

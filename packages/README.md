@@ -2,11 +2,11 @@
 
 English | [中文](README.zh.md)
 
-npm scope: `@deepseek-ai/dsh-*`; Cordis `Service` subclasses + function plugins contribute through `ctx.effect()`, `ctx.on()`, or `ctx.waterfall()`. Rules: [package](AGENTS.md), [root](../AGENTS.md#conventions).
+npm scope: `@open-harness/oh-*`; Cordis `Service` subclasses + function plugins contribute through `ctx.effect()`, `ctx.on()`, or `ctx.waterfall()`. Rules: [package](AGENTS.md), [root](../AGENTS.md#conventions).
 
 ## Hierarchy
 
-Groups hold `packages/<group>/<pkg>/`; names stay `@deepseek-ai/dsh-<pkg>`. **Group READMEs own package/ctx-key maps.**
+Groups hold `packages/<group>/<pkg>/`; names stay `@open-harness/oh-<pkg>`. **Group READMEs own package/ctx-key maps.**
 
 | Group | Role | Release expectation |
 |---|---|---|

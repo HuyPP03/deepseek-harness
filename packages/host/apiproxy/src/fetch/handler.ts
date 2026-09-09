@@ -13,7 +13,7 @@ import { sessionLogQuerySchema } from '../api/downloads.schema.ts'
 import type { RequestPayload, ResponseValue, RpcMethodMap } from '../api/rpc-map.ts'
 import type { ClientRequest, RpcError, RpcRequest, RpcResponse, ServerRequest, ServerResponse } from '../api/rpc.ts'
 import { RpcId } from '../api/rpc.ts'
-import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { SessionId } from '@open-harness/oh-session/types'
 import type { Wire } from '../api/rpc.schema.ts'
 import { clientRequestSchema, clientResponseSchema } from '../api/rpc.schema.ts'
 import {

@@ -7,9 +7,9 @@
 // a long log and flags the cut.
 
 import { useEffect, useState } from 'react'
-import type { JobView } from '@deepseek-ai/dsh-client-runtime/client'
-import { StateDot } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { JobView } from '@open-harness/oh-client-runtime/client'
+import { StateDot } from '@open-harness/oh-client-ui-primitives'
+import type { PropsLocale, PropsRuntime } from '@open-harness/oh-client-ui-slots'
 import { dotState, isLive, JobNotFoundError, statusLabel } from './job-view.ts'
 import { NS } from './locales.ts'
 import css from './JobDetailPanel.module.css'

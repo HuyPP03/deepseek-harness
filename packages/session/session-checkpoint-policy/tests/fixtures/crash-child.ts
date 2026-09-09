@@ -1,10 +1,10 @@
 import { writeFile } from 'node:fs/promises'
 import { Context } from '@deepseek-ai/cordis'
-import AgentLoop from '@deepseek-ai/dsh-agent-loop'
-import { mountAgentLoopTestDependencies } from '@deepseek-ai/dsh-agent-loop-testkit'
-import { createUserMessage, CallId, type GenerateOptions, LlmAdapter, type StreamChunk  } from '@deepseek-ai/dsh-llm'
-import { SessionId } from '@deepseek-ai/dsh-session'
-import JsonlSessionPersistence from '@deepseek-ai/dsh-session-persistence-jsonl'
+import AgentLoop from '@open-harness/oh-agent-loop'
+import { mountAgentLoopTestDependencies } from '@open-harness/oh-agent-loop-testkit'
+import { createUserMessage, CallId, type GenerateOptions, LlmAdapter, type StreamChunk  } from '@open-harness/oh-llm'
+import { SessionId } from '@open-harness/oh-session'
+import JsonlSessionPersistence from '@open-harness/oh-session-persistence-jsonl'
 import * as checkpointPolicy from '../../src/index.ts'
 
 function waitForCrash(): Promise<never> {

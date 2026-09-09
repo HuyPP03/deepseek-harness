@@ -5,7 +5,7 @@
  * and nothing here reaches a Host-only symbol, so a Client compilation face
  * reads exactly the signature the Host emits.
  *
- * @module @deepseek-ai/dsh-connectors/types
+ * @module @open-harness/oh-connectors/types
  */
 
 /**

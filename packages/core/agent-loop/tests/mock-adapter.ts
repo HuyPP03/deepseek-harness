@@ -1,5 +1,5 @@
-import type { GenerateOptions, LlmModelReasoningInfo, LlmResolvedModelInfo, StreamChunk } from '@deepseek-ai/dsh-llm'
-import { CallId, LlmAdapter } from '@deepseek-ai/dsh-llm'
+import type { GenerateOptions, LlmModelReasoningInfo, LlmResolvedModelInfo, StreamChunk } from '@open-harness/oh-llm'
+import { CallId, LlmAdapter } from '@open-harness/oh-llm'
 
 /** Helpers to write scripted responses tersely. */
 export function textResponse(text: string): StreamChunk[] {

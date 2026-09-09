@@ -10,15 +10,15 @@ import { act, cleanup, fireEvent, render, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   ConversationEventRegistry, ConversationNodeAssembler, SlotRegistry,
-} from '@deepseek-ai/dsh-client-runtime/client'
+} from '@open-harness/oh-client-runtime/client'
 import type {
   ConversationEventInput, ConversationLocationDataStore, ConversationMatch, ConversationNodeDefinition,
   ConversationTimelineSnapshot, ConversationTurnDataMap, ConversationViewDefinition,
   ConversationViewNode, ToolResultNode, TurnLocation,
-} from '@deepseek-ai/dsh-client-runtime/client'
-import { apply as applyLocale, inject as localeInject } from '@deepseek-ai/dsh-client-locale/client'
-import type { ChatFileMentions, TurnTailOwnerProps } from '@deepseek-ai/dsh-client-ui-conversation/client'
-import { makeTranslate, stubSettingsScope } from '@deepseek-ai/dsh-client-test-runtime'
+} from '@open-harness/oh-client-runtime/client'
+import { apply as applyLocale, inject as localeInject } from '@open-harness/oh-client-locale/client'
+import type { ChatFileMentions, TurnTailOwnerProps } from '@open-harness/oh-client-ui-conversation/client'
+import { makeTranslate, stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import {
   fitProducedFiles, ProducedFiles, type ProducedFilesProps,
 } from '../src/client/ProducedFiles.tsx'
@@ -75,7 +75,7 @@ function tailOwner(
   seq: number,
   openFile: (path: string) => void = () => {},
   turn = 1,
-  openDetails: (target: import('@deepseek-ai/dsh-client-ui-conversation/client').SelectionTarget) => void = () => {},
+  openDetails: (target: import('@open-harness/oh-client-ui-conversation/client').SelectionTarget) => void = () => {},
 ): TurnTailOwnerProps {
   return { seq, openFile, openDetails, turn: turnLocation(turn, data) }
 }
@@ -450,7 +450,7 @@ describe('package shells', () => {
       register: (pkg: string) => { registered.push(pkg); return () => {} },
     } as never)
     const dispose = await applyInvariant(ctx)
-    expect(registered).toEqual(['@deepseek-ai/dsh-client-ui-deliverables'])
+    expect(registered).toEqual(['@open-harness/oh-client-ui-deliverables'])
     expect(dispose).toBeTypeOf('function')
   })
 })

@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-mcp-manager
+# @open-harness/oh-mcp-manager
 
 [English](README.md) | 中文
 
@@ -10,7 +10,7 @@
 
 ```yaml
 - id: mcp-manager
-  name: '@deepseek-ai/dsh-mcp-manager'
+  name: '@open-harness/oh-mcp-manager'
 ```
 
 ### 持久化服务器文档
@@ -20,7 +20,7 @@
 ```yaml
 # $OH_HOME/.mcp/websift.cordis.yml
 - id: mcp-client-websift
-  name: "@deepseek-ai/dsh-mcp-client"
+  name: "@open-harness/oh-mcp-client"
   config:
     serverName: websift
     transport: streamable-http

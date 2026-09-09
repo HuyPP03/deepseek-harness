@@ -7,15 +7,15 @@
  */
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
-import { createSnapshotStore, type SessionListState, type SessionSummary } from '@deepseek-ai/dsh-client-runtime/client'
-import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
+import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
+import { createSnapshotStore, type SessionListState, type SessionSummary } from '@open-harness/oh-client-runtime/client'
+import type { SessionId } from '@open-harness/oh-api-remotes/client'
 import { ConnectorsDirectory } from '../src/client/ConnectorsDirectory.tsx'
 import type { ConnectorsDirectoryProps } from '../src/client/contract/slots.ts'
 import { ConnectorsSectionController } from '../src/client/controller.ts'
 import type { ConnectorsSectionState } from '../src/client/controller.ts'
 import { en } from '../src/client/locales.ts'
-import type { ConnectorView } from '@deepseek-ai/dsh-api-remotes/client'
+import type { ConnectorView } from '@open-harness/oh-api-remotes/client'
 
 afterEach(cleanup)
 

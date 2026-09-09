@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import type { JsonValue, ToolDefinition } from '@deepseek-ai/dsh-tools'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import type { ContentBlock } from '@deepseek-ai/dsh-llm'
-import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
-import type { McpServerView } from '@deepseek-ai/dsh-mcp-registry'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import type { JsonValue, ToolDefinition } from '@open-harness/oh-tools'
+import { CallId } from '@open-harness/oh-llm'
+import type { ContentBlock } from '@open-harness/oh-llm'
+import McpRegistry from '@open-harness/oh-mcp-registry'
+import type { McpServerView } from '@open-harness/oh-mcp-registry'
 
 /** One minimal registered tool; `unlisted` mirrors the mcp-client per-tool form. */
 function tool(name: string, description: string, parameters: Record<string, unknown>, execute: ToolDefinition['execute'], unlisted = false): ToolDefinition {

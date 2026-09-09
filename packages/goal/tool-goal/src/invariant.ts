@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-tool-goal`.
- * @module @deepseek-ai/dsh-tool-goal/invariant
+ * Package-owned invariant companion for `@open-harness/oh-tool-goal`.
+ * @module @open-harness/oh-tool-goal/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-tool-goal'
+const PACKAGE_NAME = '@open-harness/oh-tool-goal'
 
 /** Cordis companion plugin name. */
 export const name = 'tool-goal-invariant'

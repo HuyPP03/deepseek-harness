@@ -12,11 +12,11 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
-import type { Session } from '@deepseek-ai/dsh-session'
-import SessionProjectionRegistry from '@deepseek-ai/dsh-session-projection'
-import WorkspaceReferenceService from '@deepseek-ai/dsh-workspace-references'
-import { referencesOf } from '@deepseek-ai/dsh-workspace-references'
+import SessionStore, { SessionId } from '@open-harness/oh-session'
+import type { Session } from '@open-harness/oh-session'
+import SessionProjectionRegistry from '@open-harness/oh-session-projection'
+import WorkspaceReferenceService from '@open-harness/oh-workspace-references'
+import { referencesOf } from '@open-harness/oh-workspace-references'
 
 let root: string
 let work: string

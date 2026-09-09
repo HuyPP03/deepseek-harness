@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type {
   SessionId, SessionListState, SessionSummary, WorkspaceId, WorkspaceView,
-} from '@deepseek-ai/dsh-client-runtime/client'
+} from '@open-harness/oh-client-runtime/client'
 import {
   CHAT_LABEL, deriveChats, deriveGroups, deriveSearchResults, workspaceLabel, relativeTime,
   UNGROUPED_LABEL,

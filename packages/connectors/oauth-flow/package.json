@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-connectors-oauth-flow",
+  "name": "@open-harness/oh-connectors-oauth-flow",
   "description": "The connector OAuth flow engine: RFC 9728/8414 discovery, dynamic client registration, PKCE, and the loopback callback server that exchanges the code for a stored token bundle.",
   "type": "module",
   "exports": {
@@ -24,16 +24,16 @@
     "@deepseek-ai/schemastery": "workspace:^"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-connectors": "workspace:^",
-    "@deepseek-ai/dsh-credentials": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@open-harness/oh-connectors": "workspace:^",
+    "@open-harness/oh-credentials": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-connectors": "workspace:^",
-    "@deepseek-ai/dsh-credentials": "workspace:^",
-    "@deepseek-ai/dsh-credentials-oauth-tokens": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@open-harness/oh-connectors": "workspace:^",
+    "@open-harness/oh-credentials": "workspace:^",
+    "@open-harness/oh-credentials-oauth-tokens": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

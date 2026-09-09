@@ -7,9 +7,9 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { launchWebScaffold, type WebScaffold } from './scaffold.ts'
 import { newEnglishPage } from './support.ts'
-import { assembleContextFor } from '@deepseek-ai/dsh-agent'
-import type { StreamChunk } from '@deepseek-ai/dsh-llm'
-import type { SessionId } from '@deepseek-ai/dsh-session'
+import { assembleContextFor } from '@open-harness/oh-agent'
+import type { StreamChunk } from '@open-harness/oh-llm'
+import type { SessionId } from '@open-harness/oh-session'
 
 // The recorded single-turn fixture the plain-chat prompt replays (a keyless
 // assembled turn: one model call, no tools).

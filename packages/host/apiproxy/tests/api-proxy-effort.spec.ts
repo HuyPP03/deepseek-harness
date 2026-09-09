@@ -10,22 +10,22 @@
 
 import { afterEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import AgentRegistry from '@deepseek-ai/dsh-agent'
-import type { Agent } from '@deepseek-ai/dsh-agent'
+import AgentRegistry from '@open-harness/oh-agent'
+import type { Agent } from '@open-harness/oh-agent'
 import {
   LlmAdapter, LlmRuntime, ReasoningEffortId,
-} from '@deepseek-ai/dsh-llm'
+} from '@open-harness/oh-llm'
 import type {
   GenerateOptions, LlmModelInfo, LlmModelReasoningInfo, LlmProviderInfo, LlmResolvedModelInfo,
   StreamChunk,
-} from '@deepseek-ai/dsh-llm'
-import CommandRuntime from '@deepseek-ai/dsh-commands'
-import SessionStore from '@deepseek-ai/dsh-session'
-import type { SessionId } from '@deepseek-ai/dsh-session'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import UserQuestionService from '@deepseek-ai/dsh-user-questions'
-import type { ApiProxy } from '@deepseek-ai/dsh-host-apiproxy/api'
-import { RpcId } from '@deepseek-ai/dsh-host-apiproxy/api/rpc'
+} from '@open-harness/oh-llm'
+import CommandRuntime from '@open-harness/oh-commands'
+import SessionStore from '@open-harness/oh-session'
+import type { SessionId } from '@open-harness/oh-session'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import UserQuestionService from '@open-harness/oh-user-questions'
+import type { ApiProxy } from '@open-harness/oh-host-apiproxy/api'
+import { RpcId } from '@open-harness/oh-host-apiproxy/api/rpc'
 import { createApiProxy } from '../src/api-proxy.ts'
 
 const contexts: Context[] = []

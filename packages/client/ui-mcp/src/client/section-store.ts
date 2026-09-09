@@ -7,8 +7,8 @@
  * changes the row it targeted and every row that shares the tool namespace.
  */
 
-import type { IApiClient, McpServerRow, McpServerSpec } from '@deepseek-ai/dsh-api-remotes/client'
-import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { IApiClient, McpServerRow, McpServerSpec } from '@open-harness/oh-api-remotes/client'
+import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client-runtime/client'
 
 /** Server-name rule mirrored from the host: the tool prefix is a namespace. */
 const SERVER_NAME = /^[A-Za-z0-9_-]{1,32}$/

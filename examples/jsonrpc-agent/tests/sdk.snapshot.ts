@@ -1,7 +1,7 @@
 /**
  * Keyless snapshot coverage for the TypeScript SDK path: each scenario spawns
  * the REAL `dsh-jsonrpc-agent` runtime (per `OH_EXAMPLE_MODE`) through the
- * REAL `@deepseek-ai/dsh-sdk-client`, drives one turn over stdio JSON-RPC,
+ * REAL `@open-harness/oh-sdk-client`, drives one turn over stdio JSON-RPC,
  * and pins the SDK `RunResult`, the complete notification stream, and the
  * persisted session logs. Replay serves recorded model
  * responses via `llm-replay` (`cordis.snapshot.yml`); `OH_SNAPSHOT=record`
@@ -25,9 +25,9 @@ import {
   tokenizeSessionFixtureCwd,
   type HarvestedLog,
   type NormalizeContext,
-} from '@deepseek-ai/dsh-acp-snapshot'
-import { resolveExampleLaunch } from '@deepseek-ai/dsh-loader-smoke'
-import { DeepSeekHarness, type HarnessNotification, type RunResult } from '@deepseek-ai/dsh-sdk-client'
+} from '@open-harness/oh-acp-snapshot'
+import { resolveExampleLaunch } from '@open-harness/oh-loader-smoke'
+import { DeepSeekHarness, type HarnessNotification, type RunResult } from '@open-harness/oh-sdk-client'
 
 const testsDir = dirOf(import.meta.url)
 const snapshotsDir = join(testsDir, 'snapshots')
@@ -187,7 +187,7 @@ function assembledRuntimeContexts(log: PersistedLog): string[] {
     }
     if (event.type !== 'user/message'
       || event.data?.source?.kind !== 'plugin'
-      || event.data.source.plugin !== '@deepseek-ai/dsh-system-prompt') return []
+      || event.data.source.plugin !== '@open-harness/oh-system-prompt') return []
     return event.data.content?.flatMap(block => block.type === 'text' && typeof block.text === 'string' ? [block.text] : []) ?? []
   })
 }

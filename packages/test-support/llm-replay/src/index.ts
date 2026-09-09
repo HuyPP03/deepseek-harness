@@ -4,15 +4,15 @@
  * compaction calls, then binds fresh live sessions to parent/child scripts by
  * first-call order. Throw and hang cases require an explicit override because
  * a session log cannot reconstruct them alone.
- * @module @deepseek-ai/dsh-llm-replay
+ * @module @open-harness/oh-llm-replay
  */
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { delimiter as pathDelimiter } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
-import type {} from '@deepseek-ai/dsh-compaction'
-import { decodeStorageRecord } from '@deepseek-ai/dsh-session'
-import type { SessionEvent } from '@deepseek-ai/dsh-session'
+import type {} from '@open-harness/oh-compaction'
+import { decodeStorageRecord } from '@open-harness/oh-session'
+import type { SessionEvent } from '@open-harness/oh-session'
 import type {
   ContentBlock,
   GenerateOptions,
@@ -24,8 +24,8 @@ import type {
   RetryPolicyConfig,
   StreamChunk,
   TokenUsage,
-} from '@deepseek-ai/dsh-llm'
-import { LlmAdapter, LlmError, ReasoningEffortId, assertNever, resolveRetryPolicy } from '@deepseek-ai/dsh-llm'
+} from '@open-harness/oh-llm'
+import { LlmAdapter, LlmError, ReasoningEffortId, assertNever, resolveRetryPolicy } from '@open-harness/oh-llm'
 
 /**
  * One recorded model call. `throw` may replay prefix chunks before failing;

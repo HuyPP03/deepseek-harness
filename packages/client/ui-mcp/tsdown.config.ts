@@ -1,3 +1,3 @@
 import { clientBundle } from '../tsdown.client.ts'
 
-export default clientBundle('@deepseek-ai/dsh-client-ui-mcp', ['lib/types/index.js', 'lib/types/invariant.js'])
+export default clientBundle('@open-harness/oh-client-ui-mcp', ['lib/types/index.js', 'lib/types/invariant.js'])

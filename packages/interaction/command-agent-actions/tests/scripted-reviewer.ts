@@ -1,12 +1,12 @@
 import { vi } from 'vitest'
-import { SessionId } from '@deepseek-ai/dsh-session'
+import { SessionId } from '@open-harness/oh-session'
 import {
   type SubagentProvider,
   type SubagentResult,
   type SubagentRun,
   type SubagentStartRequest,
   type SubagentStopReason,
-} from '@deepseek-ai/dsh-subagent'
+} from '@open-harness/oh-subagent'
 
 /** One scripted reviewer child: reply text, optional stop reason, settle delay. */
 interface ScriptedChild {

@@ -10,12 +10,12 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { Context } from '@deepseek-ai/cordis'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime, { TOOL_ABORTED_BEFORE_DISPATCH } from '@deepseek-ai/dsh-tools'
-import { LocalFileSystem } from '@deepseek-ai/dsh-fs-local'
-import * as FsPolicy from '@deepseek-ai/dsh-fs-observation-policy'
-import * as ToolFs from '@deepseek-ai/dsh-tool-fs'
+import { CallId } from '@open-harness/oh-llm'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime, { TOOL_ABORTED_BEFORE_DISPATCH } from '@open-harness/oh-tools'
+import { LocalFileSystem } from '@open-harness/oh-fs-local'
+import * as FsPolicy from '@open-harness/oh-fs-observation-policy'
+import * as ToolFs from '@open-harness/oh-tool-fs'
 
 const testToolSignal = new AbortController().signal
 

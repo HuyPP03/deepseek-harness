@@ -4,7 +4,7 @@
  * and flushes it while generation continues), so a long file write produces a
  * long wire gap that must not read as provider idle time.
  *
- * @module @deepseek-ai/dsh-llm/stream
+ * @module @open-harness/oh-llm/stream
  */
 
 import type { StreamChunk } from './types.ts'

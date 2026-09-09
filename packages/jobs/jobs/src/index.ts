@@ -2,12 +2,12 @@
  * The background-job Service Definition (`ctx.jobs`). It owns the contract for
  * job ids, session-scoped access, lifecycle state, completion listeners, and
  * owner cleanup while producers retain their execution resources. The
- * process-local registry lives in `@deepseek-ai/dsh-jobs-local`.
- * @module @deepseek-ai/dsh-jobs
+ * process-local registry lives in `@open-harness/oh-jobs-local`.
+ * @module @open-harness/oh-jobs
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'
-import type { Agent } from '@deepseek-ai/dsh-agent'
+import type { Agent } from '@open-harness/oh-agent'
 import type {
   JobDoneListener, JobId, JobLogRead, JobRead, JobSnapshot, JobStart, JobsChangedListener,
 } from './types.ts'
@@ -66,7 +66,7 @@ export abstract class JobRegistry extends Service {
     // would register a ctx.jobs with no method implementations and fail far
     // from the misconfiguration. Fail loud at load instead.
     if (new.target === JobRegistry) {
-      throw new Error('@deepseek-ai/dsh-jobs is the abstract job registry seam; load an implementation such as @deepseek-ai/dsh-jobs-local instead')
+      throw new Error('@open-harness/oh-jobs is the abstract job registry seam; load an implementation such as @open-harness/oh-jobs-local instead')
     }
     super(ctx, 'jobs')
   }

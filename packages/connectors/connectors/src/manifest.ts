@@ -7,7 +7,7 @@
  *
  * Every deviation is a rejection, not a skip: a manifest that parses to the
  * wrong type would read as "the connector I added has no effect".
- * @module @deepseek-ai/dsh-connectors/manifest
+ * @module @open-harness/oh-connectors/manifest
  */
 
 import { parse as parseYaml } from 'yaml'

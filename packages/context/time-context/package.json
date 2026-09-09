@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-time-context",
+  "name": "@open-harness/oh-time-context",
   "description": "Opt-in durable per-step context with the current time and elapsed time",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -35,21 +35,21 @@
     "@deepseek-ai/schemastery": "workspace:^"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop-testkit": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-loader-smoke": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-system-prompt": "workspace:^",
-    "@deepseek-ai/dsh-tools": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-agent-loop": "workspace:^",
+    "@open-harness/oh-agent-loop-testkit": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-loader-smoke": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-system-prompt": "workspace:^",
+    "@open-harness/oh-tools": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

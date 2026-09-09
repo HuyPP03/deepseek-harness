@@ -9,33 +9,33 @@ import { access, constants, mkdir, stat } from 'node:fs/promises'
 import { basename, dirname } from 'node:path'
 import { Readable } from 'node:stream'
 import type { Context } from '@deepseek-ai/cordis'
-import { installModelSelection } from '@deepseek-ai/dsh-agent'
-import type { Agent, ModelSelection, ModelSelectionRef, AgentOptions, AgentStatus } from '@deepseek-ai/dsh-agent'
-import type {} from '@deepseek-ai/dsh-agent-presets/types'
-import { AttachmentError } from '@deepseek-ai/dsh-attachment'
-import type { ImageAttachmentRef } from '@deepseek-ai/dsh-attachment'
-import { contentHasImage, createUserMessage, freezeMessage, LlmError, ReasoningEffortId } from '@deepseek-ai/dsh-llm'
-import { errorChain } from '@deepseek-ai/dsh-llm'
-import type { ContentBlock, LlmCallConfig, LlmResolvedModelInfo, MessageSource } from '@deepseek-ai/dsh-llm'
-import type {} from '@deepseek-ai/dsh-commands'
-import type { CommandResult } from '@deepseek-ai/dsh-commands/types'
-import { isAppendSurfaceEvent, isJsonValue } from '@deepseek-ai/dsh-session'
-import type { JsonValue, Session, SessionEvent, SessionEventMap, SessionHeader, SessionId, UserMessage } from '@deepseek-ai/dsh-session'
-import type { SessionPersistence } from '@deepseek-ai/dsh-session-persistence'
-import { SessionQueryError, type SessionSearchCursor } from '@deepseek-ai/dsh-session-query'
-import { SubagentError } from '@deepseek-ai/dsh-subagent'
-import type { SubagentListEntry as CatalogSubagentListEntry } from '@deepseek-ai/dsh-subagent'
-import { isUserInvocable } from '@deepseek-ai/dsh-skill'
+import { installModelSelection } from '@open-harness/oh-agent'
+import type { Agent, ModelSelection, ModelSelectionRef, AgentOptions, AgentStatus } from '@open-harness/oh-agent'
+import type {} from '@open-harness/oh-agent-presets/types'
+import { AttachmentError } from '@open-harness/oh-attachment'
+import type { ImageAttachmentRef } from '@open-harness/oh-attachment'
+import { contentHasImage, createUserMessage, freezeMessage, LlmError, ReasoningEffortId } from '@open-harness/oh-llm'
+import { errorChain } from '@open-harness/oh-llm'
+import type { ContentBlock, LlmCallConfig, LlmResolvedModelInfo, MessageSource } from '@open-harness/oh-llm'
+import type {} from '@open-harness/oh-commands'
+import type { CommandResult } from '@open-harness/oh-commands/types'
+import { isAppendSurfaceEvent, isJsonValue } from '@open-harness/oh-session'
+import type { JsonValue, Session, SessionEvent, SessionEventMap, SessionHeader, SessionId, UserMessage } from '@open-harness/oh-session'
+import type { SessionPersistence } from '@open-harness/oh-session-persistence'
+import { SessionQueryError, type SessionSearchCursor } from '@open-harness/oh-session-query'
+import { SubagentError } from '@open-harness/oh-subagent'
+import type { SubagentListEntry as CatalogSubagentListEntry } from '@open-harness/oh-subagent'
+import { isUserInvocable } from '@open-harness/oh-skill'
 // The mcp domain: the value edges carry the Context merges (resolving
 // `ctx.get('mcpRegistry')` / `ctx.get('mcpManager')`) and the typed
 // rejections narrowed to stable codes at this wire boundary. The services
 // are optional — a deployment without either still serves every other domain.
-import { McpServerNotReportedError } from '@deepseek-ai/dsh-mcp-registry'
-import { McpServerExistsError, McpServerNotManagedError } from '@deepseek-ai/dsh-mcp-manager'
+import { McpServerNotReportedError } from '@open-harness/oh-mcp-registry'
+import { McpServerExistsError, McpServerNotManagedError } from '@open-harness/oh-mcp-manager'
 // The connector domain: same value-edge pattern as the mcp domain — the
 // service is optional, and the named rejections narrow to stable codes at
 // this wire boundary.
-import type { Connectors, ConnectorView } from '@deepseek-ai/dsh-connectors'
+import type { Connectors, ConnectorView } from '@open-harness/oh-connectors'
 import {
   ConnectorAuthUnavailableError,
   ConnectorCredentialMissingError,
@@ -44,23 +44,23 @@ import {
   ConnectorNotCustomError,
   ConnectorOverrideMissingError,
   ConnectorSeamUnavailableError,
-} from '@deepseek-ai/dsh-connectors'
-import type { Workspace, WorkspaceRecord } from '@deepseek-ai/dsh-workspace'
+} from '@open-harness/oh-connectors'
+import type { Workspace, WorkspaceRecord } from '@open-harness/oh-workspace'
 import {
   workspaceDomainState, workspaceRecord, WorkspaceId as brandWorkspaceId,
   WorkspaceMoveInvalidError, WorkspaceOrderInvalidError, WorkspaceUnknownSessionError,
-} from '@deepseek-ai/dsh-workspace'
+} from '@open-harness/oh-workspace'
 // Value import: normalizeReferencePaths validates the wire ids before the
 // create commits; the package root also carries the ctx.workspaceReferences
 // Context merge.
-import { normalizeReferencePaths, referencesOf } from '@deepseek-ai/dsh-workspace-references'
+import { normalizeReferencePaths, referencesOf } from '@open-harness/oh-workspace-references'
 // Type-only: brings the `ctx.tools` Context merge into this program (viewFor reads presenters).
 import {
   InvalidPresetIdError, PresetExistsError, PresetMountError,
   PresetNotWritableError, resolveSessionPreset, UnknownPresetError,
-} from '@deepseek-ai/dsh-agent-presets'
-import type { PresetBearingSession } from '@deepseek-ai/dsh-agent-presets'
-import type {} from '@deepseek-ai/dsh-tools'
+} from '@open-harness/oh-agent-presets'
+import type { PresetBearingSession } from '@open-harness/oh-agent-presets'
+import type {} from '@open-harness/oh-tools'
 import type {
   ApiProxy, ConfigurableProviderView, CredentialView, GoalRef, HistoryEntry, HostFrame,
   ModelCatalogFailure, ModelProviderGroup,
@@ -78,7 +78,7 @@ import {
   type SessionLogExportReady,
   type SessionLogCompressionLevel,
 } from './session-export.ts'
-import type { SessionRawArtifact } from '@deepseek-ai/dsh-session-persistence'
+import type { SessionRawArtifact } from '@open-harness/oh-session-persistence'
 import {
   SESSION_SEARCH_RESULT_LIMIT,
   SESSION_SEARCH_SNIPPET_MAX_CODE_POINTS,
@@ -89,37 +89,37 @@ import { walkFiles } from './files-walk.ts'
 import { admitSessionPath, readSessionFile } from './files-read.ts'
 import { FILE_RAW_MAX_BYTES, mimeForPath } from './files-raw.ts'
 // Type-only: resolves `ctx.get('sessionProjections')` to the projection registry.
-import type {} from '@deepseek-ai/dsh-session-projection'
+import type {} from '@open-harness/oh-session-projection'
 // Type-only: resolves `ctx.get('tasks')` to the background job registry.
-import type {} from '@deepseek-ai/dsh-jobs'
-import type { JobSnapshot } from '@deepseek-ai/dsh-jobs'
+import type {} from '@open-harness/oh-jobs'
+import type { JobSnapshot } from '@open-harness/oh-jobs'
 // Type-only: resolves `ctx.get('sessionProjectionCache')` (the cold listing column).
-import type {} from '@deepseek-ai/dsh-session-projection-cache'
+import type {} from '@open-harness/oh-session-projection-cache'
 // GoalError narrows domain rejections to their stable codes at the wire boundary.
-import { GoalError } from '@deepseek-ai/dsh-goal'
-import type { GoalRef as CoreGoalRef } from '@deepseek-ai/dsh-goal'
+import { GoalError } from '@open-harness/oh-goal'
+import type { GoalRef as CoreGoalRef } from '@open-harness/oh-goal'
 // Type-only edges: resolve the command-change stream and `ctx.get('skills')`.
-import type {} from '@deepseek-ai/dsh-commands'
+import type {} from '@open-harness/oh-commands'
 // Type-only: the dynamic-package runner's forwarded-event declarations. Its
 // client-safe `./types` subpath deliberately, not the package root — the root
 // merges `ctx.dynamicCordisRunner`, and a dependency on that package would
 // rebuild the api-remotes cycle this direction exists to avoid.
-import type {} from '@deepseek-ai/dsh-cordis-host-runner/types'
-import type {} from '@deepseek-ai/dsh-skill'
+import type {} from '@open-harness/oh-cordis-host-runner/types'
+import type {} from '@open-harness/oh-skill'
 // The settings/credentials seams: brand guards run at this wire boundary; the
 // service reads stay optional (`ctx.get`) so a composition without either
 // provider still serves every other domain.
-import { SettingsConflictError, settingsNamespace } from '@deepseek-ai/dsh-settings'
-import type { SettingsDescriptor, SettingsNamespace, SettingsPathOp } from '@deepseek-ai/dsh-settings'
-import { credentialRef } from '@deepseek-ai/dsh-credentials'
+import { SettingsConflictError, settingsNamespace } from '@open-harness/oh-settings'
+import type { SettingsDescriptor, SettingsNamespace, SettingsPathOp } from '@open-harness/oh-settings'
+import { credentialRef } from '@open-harness/oh-credentials'
 // Value edge: the rename impl narrows the title service's validation failure; the import also resolves `ctx.get('sessionTitle')`.
-import { SessionTitleInvalidError } from '@deepseek-ai/dsh-session-title'
-import type { CallId } from '@deepseek-ai/dsh-llm/brand'
-import type { ScopeKey } from '@deepseek-ai/dsh-scope'
-import type { ApprovalOutcome, ApprovalRequestId } from '@deepseek-ai/dsh-user-approval'
+import { SessionTitleInvalidError } from '@open-harness/oh-session-title'
+import type { CallId } from '@open-harness/oh-llm/brand'
+import type { ScopeKey } from '@open-harness/oh-scope'
+import type { ApprovalOutcome, ApprovalRequestId } from '@open-harness/oh-user-approval'
 // Side-effect type import: resolves the `approval/request` waterfall and
 // `ctx.get('approval')` without a value dependency on the seam (optional composition).
-import type {} from '@deepseek-ai/dsh-user-approval'
+import type {} from '@open-harness/oh-user-approval'
 import { approvalResponsePayloadSchema } from './api/approvals.schema.ts'
 import { imageLimitsProjectionSchema, sessionListMetadataProjectionSchema } from './api/sessions.schema.ts'
 import { questionResponsePayloadSchema } from './api/questions.schema.ts'
@@ -127,9 +127,9 @@ import type { ClientResponse, RpcError, RpcReceipt, RpcRequest, RpcResponse } fr
 import { RpcId } from './api/rpc.ts'
 import type {
   AskUserQuestionAnswer, AskUserQuestionItem, AskUserQuestionRequest,
-} from '@deepseek-ai/dsh-user-questions'
-import { UserQuestionError } from '@deepseek-ai/dsh-user-questions'
-import { DirectoryPickerError } from '@deepseek-ai/dsh-host-directory-picker'
+} from '@open-harness/oh-user-questions'
+import { UserQuestionError } from '@open-harness/oh-user-questions'
+import { DirectoryPickerError } from '@open-harness/oh-host-directory-picker'
 import {
   ApiRemoteSessionNotFound as SessionNotFound,
   ApiRemoteSubagentSessionOwnership as SubagentSessionOwnership,
@@ -138,7 +138,7 @@ import {
   createApiRemoteAgentResolver,
   hasApiRemoteSubagentOwner,
   inspectApiRemoteSession,
-} from '@deepseek-ai/dsh-api-remotes'
+} from '@open-harness/oh-api-remotes'
 import { canOpenNativePath, openNativePath, openNativeTextFile } from './native-path-opener.ts'
 
 /** Page size when history is called without maxMessages. */
@@ -561,7 +561,7 @@ function resolveReferencePaths(
 function referencesUnsupported(request: RpcRequest<unknown>, sessionId: SessionId): RpcResponse<never> {
   return err(request, {
     code: 'references-unsupported',
-    message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
+    message: 'this deployment does not mount @open-harness/oh-workspace-references',
     details: { sessionId },
   })
 }
@@ -1097,7 +1097,7 @@ function subagentPromptError(
 function projectionsUnavailableError(): RpcError {
   return {
     code: 'internal',
-    message: 'subagent catalog is unavailable: this deployment does not mount the sessionProjections registry (load @deepseek-ai/dsh-session-projection)',
+    message: 'subagent catalog is unavailable: this deployment does not mount the sessionProjections registry (load @open-harness/oh-session-projection)',
     details: {},
   }
 }
@@ -2046,7 +2046,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
     const presets = ctx.get('agentPresets')
     const goals = presets?.serviceFor(agent, 'goals') ?? ctx.get('goals')
     if (goals === undefined) {
-      return { error: { code: 'internal', message: 'goal service is absent: neither this session\'s agent preset nor the host composition mounts @deepseek-ai/dsh-goal', details: {} } }
+      return { error: { code: 'internal', message: 'goal service is absent: neither this session\'s agent preset nor the host composition mounts @open-harness/oh-goal', details: {} } }
     }
     return goals
   }
@@ -2117,7 +2117,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
 
   /** Missing-service report shared by the settings domain (skills-domain stance). */
   function settingsAbsent(): RpcError {
-    return { code: 'internal', message: 'settings service is absent: this deployment does not mount a settings provider (e.g. @deepseek-ai/dsh-settings-file) in its composition', details: {} }
+    return { code: 'internal', message: 'settings service is absent: this deployment does not mount a settings provider (e.g. @open-harness/oh-settings-file) in its composition', details: {} }
   }
 
   /** Open one Host-resolved target and map native failures onto the wire vocabulary. */
@@ -2171,7 +2171,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
 
   /** Missing-service report shared by the credentials domain. */
   function credentialsAbsent(): RpcError {
-    return { code: 'internal', message: 'credentials service is absent: this deployment does not mount a credential provider (e.g. @deepseek-ai/dsh-credentials-local) in its composition', details: {} }
+    return { code: 'internal', message: 'credentials service is absent: this deployment does not mount a credential provider (e.g. @open-harness/oh-credentials-local) in its composition', details: {} }
   }
 
   /** Missing-service report shared by the connector domain. */
@@ -2297,7 +2297,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         if (sessionQuery === undefined) {
           return err(request, {
             code: 'internal',
-            message: 'session search is unavailable: this deployment does not mount @deepseek-ai/dsh-session-query',
+            message: 'session search is unavailable: this deployment does not mount @open-harness/oh-session-query',
             details: {},
           })
         }
@@ -3256,7 +3256,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         if (jobs === undefined) {
           return Promise.resolve(err(request, {
             code: 'internal',
-            message: 'the deployment composes no background-job registry (load @deepseek-ai/dsh-jobs-local)',
+            message: 'the deployment composes no background-job registry (load @open-harness/oh-jobs-local)',
             details: {},
           }))
         }
@@ -3592,7 +3592,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         // (an undeclared `ctx.skills` property read fails the reflect proxy).
         const skillRegistry = scoped ?? ctx.get('skills')
         if (skillRegistry === undefined) {
-          return err(request, { code: 'internal', message: 'skill registry is absent: neither this session\'s agent preset nor the host composition mounts @deepseek-ai/dsh-skill', details: {} })
+          return err(request, { code: 'internal', message: 'skill registry is absent: neither this session\'s agent preset nor the host composition mounts @open-harness/oh-skill', details: {} })
         }
         // The scope presenters resolve in — the live agent, else the recorded
         // preset's standing key, else the global layer — so a cold session's

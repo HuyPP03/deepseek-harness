@@ -2,12 +2,12 @@
 
 import { afterEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import AgentRegistry, { Inbox } from '@deepseek-ai/dsh-agent'
-import type { Agent, AgentHandle, CreateAgentOptions } from '@deepseek-ai/dsh-agent'
-import AgentDefaultModelConfig from '@deepseek-ai/dsh-agent-default-model'
-import { createAssistantMessage } from '@deepseek-ai/dsh-llm'
-import SessionStore from '@deepseek-ai/dsh-session'
-import type { Session, UserMessage } from '@deepseek-ai/dsh-session'
+import AgentRegistry, { Inbox } from '@open-harness/oh-agent'
+import type { Agent, AgentHandle, CreateAgentOptions } from '@open-harness/oh-agent'
+import AgentDefaultModelConfig from '@open-harness/oh-agent-default-model'
+import { createAssistantMessage } from '@open-harness/oh-llm'
+import SessionStore from '@open-harness/oh-session'
+import type { Session, UserMessage } from '@open-harness/oh-session'
 import { apply, Config, internals } from '../src/index.ts'
 
 const originalInternals = { ...internals }

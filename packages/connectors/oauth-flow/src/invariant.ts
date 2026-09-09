@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-connectors-oauth-flow`.
- * @module @deepseek-ai/dsh-connectors-oauth-flow/invariant
+ * Package-owned invariant companion for `@open-harness/oh-connectors-oauth-flow`.
+ * @module @open-harness/oh-connectors-oauth-flow/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-connectors-oauth-flow'
+const PACKAGE_NAME = '@open-harness/oh-connectors-oauth-flow'
 
 /** Cordis companion plugin name. */
 export const name = 'connectors-oauth-flow-invariant'

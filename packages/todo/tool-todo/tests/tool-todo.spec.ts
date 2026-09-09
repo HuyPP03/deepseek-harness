@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type { TodoItem } from '@deepseek-ai/dsh-session'
-import { type Agent } from '@deepseek-ai/dsh-agent'
+import { CallId } from '@open-harness/oh-llm'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import { Session, SessionId } from '@open-harness/oh-session'
+import type { TodoItem } from '@open-harness/oh-session'
+import { type Agent } from '@open-harness/oh-agent'
 
 import * as tool from '../src/index.ts'
 

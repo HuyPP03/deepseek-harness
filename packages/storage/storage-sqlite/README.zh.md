@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-storage-sqlite
+# @open-harness/oh-storage-sqlite
 
 [English](README.md) | 中文
 

@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-credentials-oauth-tokens`.
- * @module @deepseek-ai/dsh-credentials-oauth-tokens/invariant
+ * Package-owned invariant companion for `@open-harness/oh-credentials-oauth-tokens`.
+ * @module @open-harness/oh-credentials-oauth-tokens/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-credentials-oauth-tokens'
+const PACKAGE_NAME = '@open-harness/oh-credentials-oauth-tokens'
 
 /** Cordis companion plugin name. */
 export const name = 'credentials-oauth-tokens-invariant'

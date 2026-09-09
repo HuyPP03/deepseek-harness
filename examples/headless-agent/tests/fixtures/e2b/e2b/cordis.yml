@@ -2,36 +2,36 @@
 # e2b.cwd and sandbox-policy.workspaceRoot must name the same remote directory,
 # which is also bash-local's implicit default workdir.
 - id: e2b
-  name: '@deepseek-ai/dsh-e2b'
+  name: '@open-harness/oh-e2b'
   config:
     cwd: !!js process.cwd()
     timeoutMs: 180000
 
 - id: subprocess-e2b
-  name: '@deepseek-ai/dsh-subprocess-e2b'
+  name: '@open-harness/oh-subprocess-e2b'
 
 - id: bash
-  name: '@deepseek-ai/dsh-bash-local'
+  name: '@open-harness/oh-bash-local'
   config:
     timeoutMs: 30000
 
 - id: fs-e2b
-  name: '@deepseek-ai/dsh-fs-e2b'
+  name: '@open-harness/oh-fs-e2b'
 
 - id: agents
-  name: '@deepseek-ai/dsh-agent'
+  name: '@open-harness/oh-agent'
 
 - id: sandbox-policy
-  name: '@deepseek-ai/dsh-sandbox-policy'
+  name: '@open-harness/oh-sandbox-policy'
   config:
     mode: danger-full-access
     workspaceRoot: !!js process.cwd()
 
 - id: pty
-  name: '@deepseek-ai/dsh-terminal'
+  name: '@open-harness/oh-terminal'
 
 - id: terminal-bash
-  name: '@deepseek-ai/dsh-terminal-bash'
+  name: '@open-harness/oh-terminal-bash'
   config:
     pollIntervalMs: 25
     exactProbeAfterMs: 150
@@ -41,10 +41,10 @@
     disposeGraceMs: 1000
 
 - id: lsp
-  name: '@deepseek-ai/dsh-lsp'
+  name: '@open-harness/oh-lsp'
 
 - id: lsp-stdio
-  name: '@deepseek-ai/dsh-lsp-stdio'
+  name: '@open-harness/oh-lsp-stdio'
   config:
     servers:
       fixture:

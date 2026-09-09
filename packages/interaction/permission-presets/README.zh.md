@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-permission-presets
+# @open-harness/oh-permission-presets
 
 [English](README.md) | 中文
 

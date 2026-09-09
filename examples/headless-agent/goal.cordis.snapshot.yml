@@ -7,12 +7,12 @@
     path: ./cordis.yml
     patches:
       - id: llm-deepseek
-        name: '@deepseek-ai/dsh-llm-deepseek'
+        name: '@open-harness/oh-llm-deepseek'
         disabled: true
       - insert:
           - id: goal
-            name: '@deepseek-ai/dsh-goal'
+            name: '@open-harness/oh-goal'
           - id: tool-goal
-            name: '@deepseek-ai/dsh-tool-goal'
+            name: '@open-harness/oh-tool-goal'
           - id: llm-replay
-            name: '@deepseek-ai/dsh-llm-replay'
+            name: '@open-harness/oh-llm-replay'

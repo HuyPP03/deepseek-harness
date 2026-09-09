@@ -11,19 +11,19 @@ import type { ChangeEvent, KeyboardEvent, MouseEvent, ReactNode } from 'react'
 import clsx from 'clsx'
 import {
   IconPlusOutline16, IconWarningOutline16, Toast, Tooltip,
-} from '@deepseek-ai/dsh-client-ui-primitives'
-import { AttachmentRail, DropOverlay, ImageLightbox } from '@deepseek-ai/dsh-client-ui-attachment'
-import type { AttachmentRailItem } from '@deepseek-ai/dsh-client-ui-attachment'
+} from '@open-harness/oh-client-ui-primitives'
+import { AttachmentRail, DropOverlay, ImageLightbox } from '@open-harness/oh-client-ui-attachment'
+import type { AttachmentRailItem } from '@open-harness/oh-client-ui-attachment'
 // Type-only: the `plan` projection key merge (the TodoDock posture — the
 // composer reads a host-computed value; the domain owns the key).
-import type {} from '@deepseek-ai/dsh-plan-mode/client'
+import type {} from '@open-harness/oh-plan-mode/client'
 // Type-only: the `goal` projection key merge (hint disambiguation).
-import type {} from '@deepseek-ai/dsh-goal/client'
+import type {} from '@open-harness/oh-goal/client'
 // The `imageLimits` projection key merge (intake pre-check) arrives with the
 // wire types: apiproxy's sessions contract declares it, and client-runtime's
 // api-remotes import already places it in every client program.
-import type { Translate } from '@deepseek-ai/dsh-client-ui-slots'
-import { CHAT_PRESET_ID } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Translate } from '@open-harness/oh-client-ui-slots'
+import { CHAT_PRESET_ID } from '@open-harness/oh-client-runtime/client'
 import type { ComposerAttachment, ComposerBarProps } from '../contract/slots.ts'
 import { deriveDecorations } from '../input/decorations.ts'
 import type { DraftDecorations } from '../input/decorations.ts'

@@ -2,7 +2,7 @@
  * MCP server status and tool snapshot types, free of cordis imports so
  * consumers can read the registry's view without loading the service.
  *
- * @module @deepseek-ai/dsh-mcp-registry/types
+ * @module @open-harness/oh-mcp-registry/types
  */
 
 /** Connection lifecycle state of one reported MCP server. */

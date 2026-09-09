@@ -4,7 +4,7 @@
  * identity across plugin reloads); register() receives the factory and the
  * browser derives its PropsStore share from the return type.
  */
-import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-runtime/client'
+import { defineStore, type EngineStoreHandle } from '@open-harness/oh-client-runtime/client'
 
 /** Session order: user-arranged only, or user-arranged plus activity promotion. */
 export type SessionOrderBy = 'manual' | 'updated'

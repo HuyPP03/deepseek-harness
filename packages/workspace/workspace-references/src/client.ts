@@ -5,7 +5,7 @@
  * single-source content `./types` serves to host consumers — zero
  * duplication.
  *
- * @module @deepseek-ai/dsh-workspace-references/client
+ * @module @open-harness/oh-workspace-references/client
  */
 
 export type * from './types.ts'

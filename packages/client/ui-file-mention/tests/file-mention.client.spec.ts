@@ -11,11 +11,11 @@
  */
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import type { SessionId } from '@deepseek-ai/dsh-client-runtime/client'
-import { InputTriggerService } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
-import type { ClientSessionContext, InputTriggerSource } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
+import type { SessionId } from '@open-harness/oh-client-runtime/client'
+import { InputTriggerService } from '@open-harness/oh-client-ui-input-trigger/client'
+import type { ClientSessionContext, InputTriggerSource } from '@open-harness/oh-client-ui-input-trigger/client'
 import { apply, inject } from '../src/client/index.ts'
-import type { FileEntry } from '@deepseek-ai/dsh-api-remotes/client'
+import type { FileEntry } from '@open-harness/oh-api-remotes/client'
 
 type ListResult =
   | { ok: true; value: { files: FileEntry[]; truncated: boolean } }

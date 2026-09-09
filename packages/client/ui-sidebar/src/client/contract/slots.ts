@@ -7,15 +7,15 @@
  * `sidebar.settings` registrant's (ui-settings), followed by optional footer
  * actions in `sidebar.footer.action`.
  */
-import type { PropsLocale, PropsRenderSlots, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale, PropsRenderSlots, PropsRuntime, PropsStore } from '@open-harness/oh-client-ui-slots'
 // Type-only: pulls ui-layout's SlotMap merge (the 'sidebar' entry) into every
 // program that sees this contract, so PropsRuntime<'sidebar'> resolves, and
 // the CenterView union the tab-sync action writes.
-import type { CenterView } from '@deepseek-ai/dsh-client-ui-layout/client'
-import type { WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
+import type { CenterView } from '@open-harness/oh-client-ui-layout/client'
+import type { WorkspaceId } from '@open-harness/oh-client-runtime/client'
 import type { createSidebarStore, SidebarTab } from '../stores.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface SlotMap {
     /**
      * The workspace/session browsing region: section header, search, the

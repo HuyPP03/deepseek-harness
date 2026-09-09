@@ -1,21 +1,21 @@
 /**
  * Basic replay-aware compaction backend.
  *
- * @module @deepseek-ai/dsh-compaction-basic
+ * @module @open-harness/oh-compaction-basic
  */
 
 import { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { CompactionEngine, ManualCompactionError } from '@deepseek-ai/dsh-compaction'
-import type { CompactionResult, CompactionTrigger } from '@deepseek-ai/dsh-compaction'
-import type { TokenMeter } from '@deepseek-ai/dsh-token-meter'
-import type { Session } from '@deepseek-ai/dsh-session'
-import { CONTEXT_WINDOW_EXCEEDED_CODE, assertNever } from '@deepseek-ai/dsh-llm'
-import type { LlmCallConfig } from '@deepseek-ai/dsh-llm'
-import type { Agent, PreStepDecision } from '@deepseek-ai/dsh-agent'
-import type { CommandId } from '@deepseek-ai/dsh-commands/brand'
+import { CompactionEngine, ManualCompactionError } from '@open-harness/oh-compaction'
+import type { CompactionResult, CompactionTrigger } from '@open-harness/oh-compaction'
+import type { TokenMeter } from '@open-harness/oh-token-meter'
+import type { Session } from '@open-harness/oh-session'
+import { CONTEXT_WINDOW_EXCEEDED_CODE, assertNever } from '@open-harness/oh-llm'
+import type { LlmCallConfig } from '@open-harness/oh-llm'
+import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
+import type { CommandId } from '@open-harness/oh-commands/brand'
 // Type-only: makes the optional sibling service available to `ctx.get()`.
-import type {} from '@deepseek-ai/dsh-compaction-tool-result-pruner'
+import type {} from '@open-harness/oh-compaction-tool-result-pruner'
 import {
   resolveCompactSpec,
   resolveConfig,

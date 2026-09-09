@@ -8,8 +8,8 @@
 
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
-import { createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
+import { createSnapshotStore } from '@open-harness/oh-client-runtime/client'
 import { McpSection } from '../src/client/McpSection.tsx'
 import type { McpSectionProps } from '../src/client/McpSection.tsx'
 import type { McpSectionState } from '../src/client/section-store.ts'

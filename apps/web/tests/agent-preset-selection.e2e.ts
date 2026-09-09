@@ -18,8 +18,8 @@ import { chromium } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it, onTestFailed } from 'vitest'
 import {
   SESSION_FORMAT_VERSION, SessionId as sessionId, type SessionEvent, type SessionId,
-} from '@deepseek-ai/dsh-session'
-import { snapshotSubagentDescriptor } from '@deepseek-ai/dsh-subagent'
+} from '@open-harness/oh-session'
+import { snapshotSubagentDescriptor } from '@open-harness/oh-subagent'
 import {
   captureStableAria, compareOrRefreshGolden, launchWebScaffold, seedSession, watchConsole,
   webSnapshotMode, type WebScaffold,

@@ -17,7 +17,7 @@ import type { RpcRequest, RpcResponse } from './rpc.ts'
 // → dsh-tools → dsh-session) drags the host cordis Context merges into every
 // client-side program that imports this wire contract (session-projection's
 // types outlet is the precedent).
-import type { AddCustomSpec, ConnectorConfigureFields, ConnectorView } from '@deepseek-ai/dsh-connectors/types'
+import type { AddCustomSpec, ConnectorConfigureFields, ConnectorView } from '@open-harness/oh-connectors/types'
 
 /** Connector-domain unary methods (the map keys connector.* of RpcMethodMap). */
 export interface ConnectorApi {

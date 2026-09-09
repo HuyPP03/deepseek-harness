@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-session-title-llm
+# @open-harness/oh-session-title-llm
 
 [English](README.md) | 中文
 

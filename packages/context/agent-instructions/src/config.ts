@@ -1,12 +1,12 @@
 /**
  * Configuration normalization for workspace instruction discovery and rendering.
  *
- * @module @deepseek-ai/dsh-agent-instructions/config
+ * @module @open-harness/oh-agent-instructions/config
  */
 
 import { relative } from 'node:path'
 import z from '@deepseek-ai/schemastery'
-import { resolveOhHome } from '@deepseek-ai/dsh-home-paths'
+import { resolveOhHome } from '@open-harness/oh-home-paths'
 
 const DEFAULT_PROJECT_ROOT_MARKERS = ['.git'] as const
 const DEFAULT_INSTRUCTION_FILE_CANDIDATES = ['AGENTS.md', 'CLAUDE.md'] as const

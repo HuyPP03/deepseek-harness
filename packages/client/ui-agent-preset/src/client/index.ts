@@ -17,17 +17,17 @@
  * locale rather than in whatever language their metadata files were written.
  */
 
-import type { ConnectionHandle } from '@deepseek-ai/dsh-api-remotes/client'
+import type { ConnectionHandle } from '@open-harness/oh-api-remotes/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
-import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type {} from '@open-harness/oh-client-locale/client'
 // Type-only: pulls the ctx.remote merge and the forwarded-event key face
 // (the settings invalidation rides the allowlist) into this program.
-import type {} from '@deepseek-ai/dsh-api-remotes/client'
+import type {} from '@open-harness/oh-api-remotes/client'
 // Type-only: pulls the command surface contract (the /mode decoration face).
-import type { CommandUiContract } from '@deepseek-ai/dsh-client-ui-commands/client'
+import type { CommandUiContract } from '@open-harness/oh-client-ui-commands/client'
 // Type-only: pulls the settings shell's SlotMap merge (the 'settings.section' entry).
-import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
-import { CHAT_PRESET_ID, type ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type {} from '@open-harness/oh-client-ui-settings/client'
+import { CHAT_PRESET_ID, type ClientContext } from '@open-harness/oh-client-runtime/client'
 import { AgentPresetLabel } from './AgentPresetLabel.tsx'
 import type { AgentPresetLabelInjected } from './AgentPresetLabel.tsx'
 import { AgentPresetRow } from './AgentPresetRow.tsx'

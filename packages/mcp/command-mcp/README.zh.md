@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-command-mcp
+# @open-harness/oh-command-mcp
 
 [English](README.md) | 中文
 
@@ -22,11 +22,11 @@
 
 ```yaml
 - id: commands
-  name: '@deepseek-ai/dsh-commands'
+  name: '@open-harness/oh-commands'
 - id: mcp-registry
-  name: '@deepseek-ai/dsh-mcp-registry'
+  name: '@open-harness/oh-mcp-registry'
 - id: command-mcp
-  name: '@deepseek-ai/dsh-command-mcp'
+  name: '@open-harness/oh-command-mcp'
 ```
 
 每个 [`mcp-client`](../mcp-client/README.md) 实例都会把自身报告到已挂载的注册表；插件 disposed 时移除该条目，因此清单跟随存活实例。

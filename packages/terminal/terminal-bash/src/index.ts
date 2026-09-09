@@ -1,17 +1,17 @@
 /**
  * Persistent shell PTY backend over the subprocess terminal primitive, shared
  * sandbox policy, bounded output, and provider-owned session cleanup.
- * @module @deepseek-ai/dsh-terminal-bash
+ * @module @open-harness/oh-terminal-bash
  */
 
 import { Context } from '@deepseek-ai/cordis'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
-import { TerminalBackendCleanupError } from '@deepseek-ai/dsh-terminal'
-import type { TerminalBackend, TerminalBackendSpawnSpec } from '@deepseek-ai/dsh-terminal'
-import type { SubprocessTerminalHandle, SubprocessTerminalSpawnSpec } from '@deepseek-ai/dsh-subprocess'
-import type { SandboxExecutionPolicy } from '@deepseek-ai/dsh-sandbox'
-import { effectiveSandboxMode } from '@deepseek-ai/dsh-sandbox-policy'
+import type { Agent } from '@open-harness/oh-agent'
+import type { Session, SessionEvent } from '@open-harness/oh-session'
+import { TerminalBackendCleanupError } from '@open-harness/oh-terminal'
+import type { TerminalBackend, TerminalBackendSpawnSpec } from '@open-harness/oh-terminal'
+import type { SubprocessTerminalHandle, SubprocessTerminalSpawnSpec } from '@open-harness/oh-subprocess'
+import type { SandboxExecutionPolicy } from '@open-harness/oh-sandbox'
+import { effectiveSandboxMode } from '@open-harness/oh-sandbox-policy'
 import { type Config, type ResolvedConfig, validateConfig } from './config.ts'
 import { LocalPtySession } from './session.ts'
 import { CONTROLLED_PROMPT } from './sanitize.ts'

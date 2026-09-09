@@ -1,9 +1,9 @@
-/** Package-owned invariant companion for the bash seam. @module @deepseek-ai/dsh-shell/invariant */
+/** Package-owned invariant companion for the bash seam. @module @open-harness/oh-shell/invariant */
 
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-shell'
+const PACKAGE_NAME = '@open-harness/oh-shell'
 
 /** Cordis companion plugin name. */
 export const name = 'shell-invariant'

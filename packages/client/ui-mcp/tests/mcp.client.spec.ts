@@ -9,11 +9,11 @@
 
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it } from 'vitest'
-import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
-import type { ClientSessionContext } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
-import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
-import type { CommandDecoration, CommandPopupSelectSpec } from '@deepseek-ai/dsh-client-ui-commands/client'
-import { usePinnedBrowserLanguages } from '@deepseek-ai/dsh-client-test-runtime'
+import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
+import type { ClientSessionContext } from '@open-harness/oh-client-ui-input-trigger/client'
+import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
+import type { CommandDecoration, CommandPopupSelectSpec } from '@open-harness/oh-client-ui-commands/client'
+import { usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
 import { apply, inject } from '../src/client/index.ts'
 
 // These specs assert the shipped English copy; state the browser they assume.

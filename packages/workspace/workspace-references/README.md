@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-workspace-references
+# @open-harness/oh-workspace-references
 
 English | [中文](README.zh.md)
 

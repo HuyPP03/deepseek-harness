@@ -7,10 +7,10 @@
  */
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { SlotRegistry } from '@deepseek-ai/dsh-client-runtime/client'
-import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
-import { apply, inject } from '@deepseek-ai/dsh-client-ui-connectors/client'
-import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
+import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
+import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
+import { apply, inject } from '@open-harness/oh-client-ui-connectors/client'
+import type { SessionId } from '@open-harness/oh-api-remotes/client'
 import type { ConnectedProvidersListInjected, ConnectorsDirectoryInjected } from '../src/client/contract/slots.ts'
 
 /** The roster's one row: the mutations answer it back and the list repeats it. */

@@ -4,7 +4,7 @@
  * code, and nothing here reaches a Host-only symbol, so a Client
  * compilation face reads exactly the signature the Host emits.
  *
- * @module @deepseek-ai/dsh-credentials-oauth-tokens/types
+ * @module @open-harness/oh-credentials-oauth-tokens/types
  */
 
 /**

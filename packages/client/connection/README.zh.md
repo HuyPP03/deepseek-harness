@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-connection
+# @open-harness/oh-client-connection
 
 [English](README.md) | 中文
 

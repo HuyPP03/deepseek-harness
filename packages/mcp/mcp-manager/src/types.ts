@@ -2,10 +2,10 @@
  * User MCP server types, free of cordis imports so the RPC layer can shape
  * its wire schemas without loading the service.
  *
- * @module @deepseek-ai/dsh-mcp-manager/types
+ * @module @open-harness/oh-mcp-manager/types
  */
 
-import type { ServerValue } from '@deepseek-ai/dsh-mcp-client'
+import type { ServerValue } from '@open-harness/oh-mcp-client'
 
 /** One user MCP server added over a spawned child process (stdio transport). */
 export interface StdioServerSpec {

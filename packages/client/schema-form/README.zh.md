@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-schema-form
+# @open-harness/oh-client-schema-form
 
 [English](README.md) | 中文
 

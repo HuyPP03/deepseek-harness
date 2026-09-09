@@ -3,24 +3,24 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import { ShellExecutor } from '@deepseek-ai/dsh-shell'
-import type { ShellExecRequest, ShellExecSpec, ShellProcess, ShellProcessRead, ShellRunResult } from '@deepseek-ai/dsh-shell'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime, { TOOL_ABORTED, TOOL_ABORTED_BEFORE_DISPATCH } from '@deepseek-ai/dsh-tools'
-import AgentRegistry from '@deepseek-ai/dsh-agent'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
-import JsonlSessionPersistence from '@deepseek-ai/dsh-session-persistence-jsonl'
-import LocalJobRegistry from '@deepseek-ai/dsh-jobs-local'
-import * as ToolTasks from '@deepseek-ai/dsh-tool-jobs'
-import ApprovalService from '@deepseek-ai/dsh-user-approval'
-import type { ApprovalOutcome } from '@deepseek-ai/dsh-user-approval'
-import { LocalBashExecutor } from '@deepseek-ai/dsh-bash-local'
-import LocalSubprocessRuntime from '@deepseek-ai/dsh-subprocess-local'
-import SandboxPolicyService from '@deepseek-ai/dsh-sandbox-policy'
-import * as ToolBash from '@deepseek-ai/dsh-tool-bash'
-import * as BashEnvPlugin from '@deepseek-ai/dsh-shell-env'
+import { CallId } from '@open-harness/oh-llm'
+import { ShellExecutor } from '@open-harness/oh-shell'
+import type { ShellExecRequest, ShellExecSpec, ShellProcess, ShellProcessRead, ShellRunResult } from '@open-harness/oh-shell'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime, { TOOL_ABORTED, TOOL_ABORTED_BEFORE_DISPATCH } from '@open-harness/oh-tools'
+import AgentRegistry from '@open-harness/oh-agent'
+import type { Agent } from '@open-harness/oh-agent'
+import SessionStore, { SessionId } from '@open-harness/oh-session'
+import JsonlSessionPersistence from '@open-harness/oh-session-persistence-jsonl'
+import LocalJobRegistry from '@open-harness/oh-jobs-local'
+import * as ToolTasks from '@open-harness/oh-tool-jobs'
+import ApprovalService from '@open-harness/oh-user-approval'
+import type { ApprovalOutcome } from '@open-harness/oh-user-approval'
+import { LocalBashExecutor } from '@open-harness/oh-bash-local'
+import LocalSubprocessRuntime from '@open-harness/oh-subprocess-local'
+import SandboxPolicyService from '@open-harness/oh-sandbox-policy'
+import * as ToolBash from '@open-harness/oh-tool-bash'
+import * as BashEnvPlugin from '@open-harness/oh-shell-env'
 import { processOutcome } from '../src/background.ts'
 import { renderProcessRead, renderResult } from '../src/render.ts'
 
@@ -492,7 +492,7 @@ describe('background execution through the job runtime', () => {
     const ctx = await setup() // no LocalJobRegistry / ToolTasks
     const result = await call(ctx, 'bash', { command: 'sleep 60', description: 'test command', run_in_background: true })
     expect(result.isError).toBe(true)
-    expect(text(result)).toContain('background jobs unavailable: load @deepseek-ai/dsh-jobs and @deepseek-ai/dsh-tool-jobs')
+    expect(text(result)).toContain('background jobs unavailable: load @open-harness/oh-jobs and @open-harness/oh-tool-jobs')
   })
 
   it('a pre-aborted call is skipped before the process starts', async () => {

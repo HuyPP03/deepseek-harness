@@ -5,7 +5,7 @@
  * fold, and write path live in `index.ts` (this file carries no runtime
  * code).
  *
- * @module @deepseek-ai/dsh-workspace-references/src/types
+ * @module @open-harness/oh-workspace-references/src/types
  */
 
 /**

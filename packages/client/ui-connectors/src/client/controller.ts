@@ -10,8 +10,8 @@
  * renders).
  */
 
-import type { ConnectorView, IApiClient, RpcResponse } from '@deepseek-ai/dsh-api-remotes/client'
-import { createSnapshotStore, type SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ConnectorView, IApiClient, RpcResponse } from '@open-harness/oh-api-remotes/client'
+import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client-runtime/client'
 
 /** The token dialog: one secret field per credential reference over a fixed connector. */
 export interface ConnectTokenDialog {

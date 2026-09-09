@@ -1,6 +1,6 @@
-import type { ContentBlock } from '@deepseek-ai/dsh-llm/types'
-import type { MuxFrame } from '@deepseek-ai/dsh-api-remotes/client'
-import type { SessionEvent } from '@deepseek-ai/dsh-session/types'
+import type { ContentBlock } from '@open-harness/oh-llm/types'
+import type { MuxFrame } from '@open-harness/oh-api-remotes/client'
+import type { SessionEvent } from '@open-harness/oh-session/types'
 import type { QueuedMessage } from './conversation.ts'
 
 const QUEUE_PREVIEW_CHARS = 200

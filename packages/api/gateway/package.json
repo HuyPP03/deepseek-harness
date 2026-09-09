@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-api-gateway",
+  "name": "@open-harness/oh-api-gateway",
   "description": "Typert Remote Host dispatcher and Client API endpoint",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -36,8 +36,8 @@
   "oh": {
     "client": {
       "inject": [
-        "@deepseek-ai/dsh-typert-registry",
-        "@deepseek-ai/dsh-client-connection"
+        "@open-harness/oh-typert-registry",
+        "@open-harness/oh-client-connection"
       ],
       "platform": "web",
       "immediately": true
@@ -56,19 +56,19 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/dsh-typert-protocol": "workspace:^"
+    "@open-harness/oh-typert-protocol": "workspace:^"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-client-connection": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-typert-registry": "workspace:^",
+    "@open-harness/oh-client-connection": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-typert-registry": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-client-connection": "workspace:^",
-    "@deepseek-ai/dsh-host-webserver": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-typert-registry": "workspace:^",
+    "@open-harness/oh-client-connection": "workspace:^",
+    "@open-harness/oh-host-webserver": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-typert-registry": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^",
     "zod": "^4.4.3"
   }

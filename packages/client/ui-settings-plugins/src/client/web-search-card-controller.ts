@@ -7,7 +7,7 @@
  * shipped DeepSeek key is managed on the Models page, never here.
  */
 
-import type { SettingsScope, SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SettingsScope, SnapshotStore } from '@open-harness/oh-client-runtime/client'
 import {
   CardForm, choiceField, textField,
   type CardActions, type CardFieldState, type CardShell,

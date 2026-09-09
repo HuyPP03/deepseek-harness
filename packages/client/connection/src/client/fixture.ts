@@ -10,8 +10,8 @@ import {
   createToolResultMessage,
   createUserMessage,
   isTokenDelta,
-} from '@deepseek-ai/dsh-llm/message'
-import { CallId } from '@deepseek-ai/dsh-llm/brand'
+} from '@open-harness/oh-llm/message'
+import { CallId } from '@open-harness/oh-llm/brand'
 import type {
   AssistantMessage,
   ContentBlock,
@@ -19,24 +19,24 @@ import type {
   TokenUsage,
   ToolResultMessage,
   UserMessage,
-} from '@deepseek-ai/dsh-llm'
-import type { AttachmentIdType, ImageAttachmentRef } from '@deepseek-ai/dsh-attachment'
+} from '@open-harness/oh-llm'
+import type { AttachmentIdType, ImageAttachmentRef } from '@open-harness/oh-attachment'
 import type {
   SessionEvent,
   SessionId,
   TodoItem,
-} from '@deepseek-ai/dsh-session/types'
+} from '@open-harness/oh-session/types'
 // Type-only: the brand constructor is host-side; the fixture casts at its
 // wire-fabrication boundary (the schema layer's one-cast-point posture).
-import type { CommandId } from '@deepseek-ai/dsh-commands/brand'
-import type { CommandDescriptor, CommandExecution, CommandResult } from '@deepseek-ai/dsh-commands/types'
-import { deriveEventMessage, foldSurface } from '@deepseek-ai/dsh-session/surface'
+import type { CommandId } from '@open-harness/oh-commands/brand'
+import type { CommandDescriptor, CommandExecution, CommandResult } from '@open-harness/oh-commands/types'
+import { deriveEventMessage, foldSurface } from '@open-harness/oh-session/surface'
 import type {
   ApiProxy, ClientRequest, ClientResponse, FileEntry, HistoryEntry, HostFrame, MuxFrame, RpcReceipt,
   ModelProviderGroup, ModelSelection, RpcRequest, RpcResponse, RpcResult, ServerRequest, ServerResponse, SessionSummary,
   ToolCallView, ToolEventView, ToolResultView, WorkspaceId, WorkspaceView,
 } from './api.ts'
-import type { RequestPayload, ResponseValue, RpcMethodMap } from '@deepseek-ai/dsh-host-apiproxy/api'
+import type { RequestPayload, ResponseValue, RpcMethodMap } from '@open-harness/oh-host-apiproxy/api'
 import { AbstractApiClient, RpcId, SESSION_SEARCH_RESULT_LIMIT } from './api.ts'
 import { randomUuid } from './random-uuid.ts'
 import type { ClientConnectionRpc } from '../rpc.ts'
@@ -1540,9 +1540,9 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
    * roster a GUI journey sees after writing is the text it wrote.
    */
   const fixturePresets = new Map<string, { trust: 'system' | 'user'; content: string }>([
-    ['standard', { trust: 'system', content: "- id: tool-bash\n  name: '@deepseek-ai/dsh-tool-bash'\n" }],
-    ['minimal', { trust: 'system', content: "- id: tool-web-search\n  name: '@deepseek-ai/dsh-tool-web-search'\n" }],
-    ['my-agent', { trust: 'user', content: "- id: tool-read\n  name: '@deepseek-ai/dsh-tool-read'\n" }],
+    ['standard', { trust: 'system', content: "- id: tool-bash\n  name: '@open-harness/oh-tool-bash'\n" }],
+    ['minimal', { trust: 'system', content: "- id: tool-web-search\n  name: '@open-harness/oh-tool-web-search'\n" }],
+    ['my-agent', { trust: 'user', content: "- id: tool-read\n  name: '@open-harness/oh-tool-read'\n" }],
   ])
   let fixtureDefaultPreset = 'standard'
   const nextTurn = new Map<SessionId, number>([[sid('fx-alpha'), 75]])

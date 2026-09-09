@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-user-approval
+# @open-harness/oh-user-approval
 
 English | [中文](README.zh.md)
 

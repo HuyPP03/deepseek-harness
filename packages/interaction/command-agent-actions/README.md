@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-command-agent-actions
+# @open-harness/oh-command-agent-actions
 
 English | [中文](README.zh.md)
 
@@ -23,11 +23,11 @@ The plugin injects `commands` and `subagents`. Mount the command registry, the s
 
 ```yaml
 - id: commands
-  name: '@deepseek-ai/dsh-commands'
+  name: '@open-harness/oh-commands'
 - id: subagents
-  name: '@deepseek-ai/dsh-subagent'
+  name: '@open-harness/oh-subagent'
 - id: command-agent-actions
-  name: '@deepseek-ai/dsh-command-agent-actions'
+  name: '@open-harness/oh-command-agent-actions'
 ```
 
 `/code-review` starts its children on the `provider` config field's provider (default `spawn`); deployments that register another review transport set that field on this row. The shipped `dsh` presets mount it in the `standard` and `code` agent presets; the `chat` preset does not, because a chat session has no code changes to review or simplify. Plugin disposal first unregisters both commands, then drains every handler that already started, so root teardown cannot outlive a review that is still running.

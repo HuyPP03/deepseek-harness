@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-tool-ralph",
+  "name": "@open-harness/oh-tool-ralph",
   "description": "Model-facing fresh-agent Ralph loop over the workflow and subagent seams",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,13 +32,13 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-subagent": "workspace:^",
-    "@deepseek-ai/dsh-system-prompt": "workspace:^",
-    "@deepseek-ai/dsh-tools": "workspace:^",
-    "@deepseek-ai/dsh-workflow": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-subagent": "workspace:^",
+    "@open-harness/oh-system-prompt": "workspace:^",
+    "@open-harness/oh-tools": "workspace:^",
+    "@open-harness/oh-workflow": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "dependencies": {
@@ -46,19 +46,19 @@
   },
   "devDependencies": {
     "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop": "workspace:^",
-    "@deepseek-ai/dsh-agent-loop-testkit": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-subagent": "workspace:^",
-    "@deepseek-ai/dsh-subagent-in-process-driver": "workspace:^",
-    "@deepseek-ai/dsh-subagent-spawn-in-process": "workspace:^",
-    "@deepseek-ai/dsh-system-prompt": "workspace:^",
-    "@deepseek-ai/dsh-tools": "workspace:^",
-    "@deepseek-ai/dsh-workflow": "workspace:^",
-    "@deepseek-ai/dsh-workflow-worker-thread": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-agent-loop": "workspace:^",
+    "@open-harness/oh-agent-loop-testkit": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-subagent": "workspace:^",
+    "@open-harness/oh-subagent-in-process-driver": "workspace:^",
+    "@open-harness/oh-subagent-spawn-in-process": "workspace:^",
+    "@open-harness/oh-system-prompt": "workspace:^",
+    "@open-harness/oh-tools": "workspace:^",
+    "@open-harness/oh-workflow": "workspace:^",
+    "@open-harness/oh-workflow-worker-thread": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

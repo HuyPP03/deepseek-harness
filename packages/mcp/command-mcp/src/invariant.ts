@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-command-mcp`.
- * @module @deepseek-ai/dsh-command-mcp/invariant
+ * Package-owned invariant companion for `@open-harness/oh-command-mcp`.
+ * @module @open-harness/oh-command-mcp/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-command-mcp'
+const PACKAGE_NAME = '@open-harness/oh-command-mcp'
 
 /** Cordis companion plugin name. */
 export const name = 'command-mcp-invariant'

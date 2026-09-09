@@ -9,12 +9,12 @@ import { tmpdir } from 'node:os'
 import { join, resolve, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import SandboxPolicyService, { SANDBOX_MODES, effectiveSandboxMode, setSandboxMode } from '@deepseek-ai/dsh-sandbox-policy'
-import SystemPrompt, { renderContextSnapshot, renderPrompt } from '@deepseek-ai/dsh-system-prompt'
+import type { Agent } from '@open-harness/oh-agent'
+import { Session, SessionId } from '@open-harness/oh-session'
+import SandboxPolicyService, { SANDBOX_MODES, effectiveSandboxMode, setSandboxMode } from '@open-harness/oh-sandbox-policy'
+import SystemPrompt, { renderContextSnapshot, renderPrompt } from '@open-harness/oh-system-prompt'
 // Type-only: the workspace/references event declaration merge the referenceRoots tests append.
-import type {} from '@deepseek-ai/dsh-workspace-references'
+import type {} from '@open-harness/oh-workspace-references'
 
 async function mounted(config: { mode?: 'read-only' | 'workspace-write' | 'workspace-refs-write' | 'danger-full-access'; workspaceRoot?: string } = {}) {
   const ctx = new Context()

@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-goal
+# @open-harness/oh-client-ui-goal
 
 English | [中文](README.zh.md)
 

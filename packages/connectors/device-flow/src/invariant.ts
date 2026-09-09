@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-connectors-device-flow`.
- * @module @deepseek-ai/dsh-connectors-device-flow/invariant
+ * Package-owned invariant companion for `@open-harness/oh-connectors-device-flow`.
+ * @module @open-harness/oh-connectors-device-flow/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-connectors-device-flow'
+const PACKAGE_NAME = '@open-harness/oh-connectors-device-flow'
 
 /** Cordis companion plugin name. */
 export const name = 'connectors-device-flow-invariant'

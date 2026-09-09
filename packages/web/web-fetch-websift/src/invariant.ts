@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-web-fetch-websift`.
- * @module @deepseek-ai/dsh-web-fetch-websift/invariant
+ * Package-owned invariant companion for `@open-harness/oh-web-fetch-websift`.
+ * @module @open-harness/oh-web-fetch-websift/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-web-fetch-websift'
+const PACKAGE_NAME = '@open-harness/oh-web-fetch-websift'
 
 /** Cordis companion plugin name. */
 export const name = 'web-fetch-websift-invariant'

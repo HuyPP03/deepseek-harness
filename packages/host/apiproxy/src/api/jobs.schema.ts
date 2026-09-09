@@ -4,7 +4,7 @@
  */
 
 import { z } from 'zod'
-import type { JobId } from '@deepseek-ai/dsh-jobs/brand'
+import type { JobId } from '@open-harness/oh-jobs/brand'
 import type { JobLogView, JobView } from './jobs.ts'
 import type { RequestPayload, ResponseValue } from './index.ts'
 import type { Wire } from './rpc.schema.ts'

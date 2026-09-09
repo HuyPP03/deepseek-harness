@@ -7,9 +7,9 @@
     patches:
       - insert:
           - id: pty
-            name: '@deepseek-ai/dsh-terminal'
+            name: '@open-harness/oh-terminal'
           - id: terminal-bash
-            name: '@deepseek-ai/dsh-terminal-bash'
+            name: '@open-harness/oh-terminal-bash'
             config:
               pollIntervalMs: 10
               exactProbeAfterMs: 20
@@ -18,4 +18,4 @@
               timeoutMs: 2000
               disposeGraceMs: 500
           - id: tool-terminal
-            name: '@deepseek-ai/dsh-tool-terminal'
+            name: '@open-harness/oh-tool-terminal'

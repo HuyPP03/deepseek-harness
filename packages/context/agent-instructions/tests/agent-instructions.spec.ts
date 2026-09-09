@@ -4,12 +4,12 @@ import { tmpdir } from 'node:os'
 import { describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
-import * as workspaceContext from '@deepseek-ai/dsh-agent-instructions'
-import LlmRuntime, { createUserMessage, CallId, type Message, type StreamChunk } from '@deepseek-ai/dsh-llm'
-import SessionStore, { Session, SessionId, SESSION_FORMAT_VERSION, type SessionEvent, type UserMessage } from '@deepseek-ai/dsh-session'
-import AgentRegistry, { agentEvents, Inbox, type Agent } from '@deepseek-ai/dsh-agent'
-import AgentLoop from '@deepseek-ai/dsh-agent-loop'
-import { FileSystem, FsTargetKey, FsVersion } from '@deepseek-ai/dsh-fs'
+import * as workspaceContext from '@open-harness/oh-agent-instructions'
+import LlmRuntime, { createUserMessage, CallId, type Message, type StreamChunk } from '@open-harness/oh-llm'
+import SessionStore, { Session, SessionId, SESSION_FORMAT_VERSION, type SessionEvent, type UserMessage } from '@open-harness/oh-session'
+import AgentRegistry, { agentEvents, Inbox, type Agent } from '@open-harness/oh-agent'
+import AgentLoop from '@open-harness/oh-agent-loop'
+import { FileSystem, FsTargetKey, FsVersion } from '@open-harness/oh-fs'
 import type {
   FsDirEntry,
   FsEditOutcome,
@@ -19,20 +19,20 @@ import type {
   FsTarget,
   FsWriteIntent,
   FsWriteOutcome,
-} from '@deepseek-ai/dsh-fs'
-import LocalFileSystem from '@deepseek-ai/dsh-fs-local'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime, { defineContentToolFixture } from '@deepseek-ai/dsh-tools'
+} from '@open-harness/oh-fs'
+import LocalFileSystem from '@open-harness/oh-fs-local'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime, { defineContentToolFixture } from '@open-harness/oh-tools'
 import type {
   ToolExecution,
   ToolExecutionToken,
-} from '@deepseek-ai/dsh-tools'
-import * as ToolFs from '@deepseek-ai/dsh-tool-fs'
+} from '@open-harness/oh-tools'
+import * as ToolFs from '@open-harness/oh-tool-fs'
 import {
   discoverBaselineInstructionFiles,
   loadBaselineInstructions,
   renderWorkspaceContext,
-} from '@deepseek-ai/dsh-agent-instructions'
+} from '@open-harness/oh-agent-instructions'
 import {
   applyInstructionVersionUpdates,
   baselineInstructionState,
@@ -628,7 +628,7 @@ describe('workspace context instruction discovery', () => {
       vi.stubEnv('OH_HOME', '')
       vi.resetModules()
       vi.doMock('node:os', () => ({ homedir: () => home }))
-      const isolated = await import('@deepseek-ai/dsh-agent-instructions')
+      const isolated = await import('@open-harness/oh-agent-instructions')
       const files = await isolated.discoverBaselineInstructionFiles({ cwd: root })
 
       expect(files.map(file => file.displayPath)).toEqual(['~/.oh/AGENTS.md'])
@@ -649,7 +649,7 @@ describe('workspace context instruction discovery', () => {
 
       vi.resetModules()
       vi.doMock('node:os', () => ({ homedir: () => home }))
-      const isolated = await import('@deepseek-ai/dsh-agent-instructions')
+      const isolated = await import('@open-harness/oh-agent-instructions')
       const files = await isolated.discoverBaselineInstructionFiles({ cwd: root, dshHome: '~/.oh' })
 
       expect(files).toEqual([{ absolutePath: join(home, '.oh/AGENTS.md'), displayPath: '~/.oh/AGENTS.md' }])
@@ -2439,7 +2439,7 @@ describe('workspace context request injection', () => {
           },
         }
       })
-      const isolated = await import('@deepseek-ai/dsh-agent-instructions')
+      const isolated = await import('@open-harness/oh-agent-instructions')
       await isolated.loadBaselineInstructions({ cwd: root, dshHome: home, maxBytes: 65536 })
       observedStats.clear()
       await isolated.loadBaselineInstructions({ cwd: root, dshHome: home, maxBytes: 65536 })
@@ -2472,7 +2472,7 @@ describe('workspace context request injection', () => {
           },
         }
       })
-      const isolated = await import('@deepseek-ai/dsh-agent-instructions')
+      const isolated = await import('@open-harness/oh-agent-instructions')
 
       const rendered = await isolated.loadBaselineInstructions({ cwd: root, dshHome: home, maxBytes: 65536 })
 

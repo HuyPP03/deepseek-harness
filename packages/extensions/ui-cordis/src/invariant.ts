@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-client-ui-cordis`.
- * @module @deepseek-ai/dsh-client-ui-cordis/invariant
+ * Package-owned invariant companion for `@open-harness/oh-client-ui-cordis`.
+ * @module @open-harness/oh-client-ui-cordis/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-cordis'
+const PACKAGE_NAME = '@open-harness/oh-client-ui-cordis'
 
 /** Cordis companion plugin name. */
 export const name = 'client-ui-cordis-invariant'

@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-mcp-registry
+# @open-harness/oh-mcp-registry
 
 English | [中文](README.zh.md)
 
@@ -44,7 +44,7 @@ The base bundle mounts the registry so every `mcp-client` instance in any preset
 
 ```yaml
 - id: mcp-registry
-  name: '@deepseek-ai/dsh-mcp-registry'
+  name: '@open-harness/oh-mcp-registry'
 ```
 
 Because the registry is app-scoped, `/mcp` in a preset sees exactly the servers that preset's app connected; it is a status view of this deployment, not a catalog of everything that could be connected.

@@ -6,13 +6,13 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import AgentRegistry from '@deepseek-ai/dsh-agent'
-import AgentLoop from '@deepseek-ai/dsh-agent-loop'
-import LlmRuntime, { createUserMessage, LlmAdapter, LlmError, resolveRetryPolicy  } from '@deepseek-ai/dsh-llm'
-import type { GenerateOptions, ResolvedRetryPolicy, StreamChunk } from '@deepseek-ai/dsh-llm'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
+import AgentRegistry from '@open-harness/oh-agent'
+import AgentLoop from '@open-harness/oh-agent-loop'
+import LlmRuntime, { createUserMessage, LlmAdapter, LlmError, resolveRetryPolicy  } from '@open-harness/oh-llm'
+import type { GenerateOptions, ResolvedRetryPolicy, StreamChunk } from '@open-harness/oh-llm'
+import SessionStore, { SessionId } from '@open-harness/oh-session'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
 import * as retry from '../src/index.ts'
 
 let root: string | undefined
@@ -58,13 +58,13 @@ async function loadYaml(lines: readonly string[]): Promise<Context> {
   await context.plugin(Loader)
   context.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
-    ['@deepseek-ai/dsh-llm', LlmRuntime],
-    ['@deepseek-ai/dsh-session', SessionStore],
-    ['@deepseek-ai/dsh-system-prompt', SystemPrompt],
-    ['@deepseek-ai/dsh-tools', ToolRuntime],
-    ['@deepseek-ai/dsh-agent', AgentRegistry],
-    ['@deepseek-ai/dsh-llm-retry', retry],
-    ['@deepseek-ai/dsh-agent-loop', AgentLoop],
+    ['@open-harness/oh-llm', LlmRuntime],
+    ['@open-harness/oh-session', SessionStore],
+    ['@open-harness/oh-system-prompt', SystemPrompt],
+    ['@open-harness/oh-tools', ToolRuntime],
+    ['@open-harness/oh-agent', AgentRegistry],
+    ['@open-harness/oh-llm-retry', retry],
+    ['@open-harness/oh-agent-loop', AgentLoop],
   ])
   context.loader.internal = {
     version: 'v2',
@@ -87,13 +87,13 @@ describe('real Loader composition', () => {
   // to trip the default 5s budget on cold caches.
   it('loads provider-supplied policy and records recovery through the shipping loop', { timeout: 60_000 }, async () => {
     const loaded = await loadYaml([
-      "- name: '@deepseek-ai/dsh-llm'",
-      "- name: '@deepseek-ai/dsh-session'",
-      "- name: '@deepseek-ai/dsh-system-prompt'",
-      "- name: '@deepseek-ai/dsh-tools'",
-      "- name: '@deepseek-ai/dsh-agent'",
-      "- name: '@deepseek-ai/dsh-llm-retry'",
-      "- name: '@deepseek-ai/dsh-agent-loop'",
+      "- name: '@open-harness/oh-llm'",
+      "- name: '@open-harness/oh-session'",
+      "- name: '@open-harness/oh-system-prompt'",
+      "- name: '@open-harness/oh-tools'",
+      "- name: '@open-harness/oh-agent'",
+      "- name: '@open-harness/oh-llm-retry'",
+      "- name: '@open-harness/oh-agent-loop'",
     ])
 
     const unloaded = [...loaded.loader.entries()]

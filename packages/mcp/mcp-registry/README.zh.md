@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-mcp-registry
+# @open-harness/oh-mcp-registry
 
 [English](README.md) | 中文
 
@@ -44,7 +44,7 @@ interface McpServerView {
 
 ```yaml
 - id: mcp-registry
-  name: '@deepseek-ai/dsh-mcp-registry'
+  name: '@open-harness/oh-mcp-registry'
 ```
 
 由于注册表是 app 级的，preset 中的 `/mcp` 只看到该 preset app 连接的服务器；它是本部署的状态视图，而非所有可连接服务器的目录。

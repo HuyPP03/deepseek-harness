@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-command-feedback`.
- * @module @deepseek-ai/dsh-command-feedback/invariant
+ * Package-owned invariant companion for `@open-harness/oh-command-feedback`.
+ * @module @open-harness/oh-command-feedback/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-command-feedback'
+const PACKAGE_NAME = '@open-harness/oh-command-feedback'
 
 /** Cordis companion plugin name. */
 export const name = 'command-feedback-invariant'

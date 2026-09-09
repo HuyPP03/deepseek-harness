@@ -18,22 +18,22 @@
  * agent factory's `setup(agentCtx)` hook is the one supported call site,
  * because only there is the join installed while the agent is still
  * unpublished, so a rejected composition rolls the whole creation back.
- * @module @deepseek-ai/dsh-agent-presets
+ * @module @open-harness/oh-agent-presets
  */
 
 import { stat } from 'node:fs/promises'
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { bindScopeParent, createScope, scopeOf, type Scope, type ScopeKey, type ScopeParentBinding } from '@deepseek-ai/dsh-scope'
+import { bindScopeParent, createScope, scopeOf, type Scope, type ScopeKey, type ScopeParentBinding } from '@open-harness/oh-scope'
 // Type-only: the `agent/created` lifecycle event this service watches and the
 // Agent handle the `/mode` command operates on.
-import type { Agent } from '@deepseek-ai/dsh-agent'
+import type { Agent } from '@open-harness/oh-agent'
 // Side-effect type import: declaration-merges the `ctx.commands` face the
 // `/mode` registration needs.
-import type {} from '@deepseek-ai/dsh-commands'
-import type { CommandResult } from '@deepseek-ai/dsh-commands/types'
-import { settingsNamespace, type SettingsScope, type default as SettingsService } from '@deepseek-ai/dsh-settings'
-import { ohHomePath } from '@deepseek-ai/dsh-home-paths'
+import type {} from '@open-harness/oh-commands'
+import type { CommandResult } from '@open-harness/oh-commands/types'
+import { settingsNamespace, type SettingsScope, type default as SettingsService } from '@open-harness/oh-settings'
+import { ohHomePath } from '@open-harness/oh-home-paths'
 import { discoverPresets, USER_PRESET_DIR } from './discovery.ts'
 import { copyComposition, deleteComposition, readComposition } from './authoring.ts'
 import { mountPreset, serviceForAgent, standingMountFor } from './mount.ts'

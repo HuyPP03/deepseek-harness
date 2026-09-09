@@ -4,19 +4,19 @@
  * version this controller last observed, and a `version-conflict` reply carries
  * the authoritative item, so a lost race reconciles from the reply itself
  * instead of refetching the whole Session.
- * @module @deepseek-ai/dsh-client-ui-message-feedback/client/controller
+ * @module @open-harness/oh-client-ui-message-feedback/client/controller
  */
 
-import type { RemoteResult } from '@deepseek-ai/dsh-typert-protocol'
-import type { HostObservable } from '@deepseek-ai/dsh-client-ui-slots'
-import type { MessageId, SessionId } from '@deepseek-ai/dsh-client-connection/client'
+import type { RemoteResult } from '@open-harness/oh-typert-protocol'
+import type { HostObservable } from '@open-harness/oh-client-ui-slots'
+import type { MessageId, SessionId } from '@open-harness/oh-client-connection/client'
 import type {
   MessageFeedbackDeleteResult,
   MessageFeedbackItem,
   MessageFeedbackListResult,
   MessageFeedbackPutResult,
   MessageFeedbackRating,
-} from '@deepseek-ai/dsh-message-feedback/types'
+} from '@open-harness/oh-message-feedback/types'
 
 /**
  * The three Remote calls this controller needs. The generated face wraps every

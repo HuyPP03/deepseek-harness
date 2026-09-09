@@ -2,9 +2,9 @@
 // log seat both read the same wire status set, so the marker, the status word,
 // and the liveness test live here once.
 
-import type { JobView } from '@deepseek-ai/dsh-client-runtime/client'
-import type { StateDotState } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'
+import type { JobView } from '@open-harness/oh-client-runtime/client'
+import type { StateDotState } from '@open-harness/oh-client-ui-primitives'
+import type { TranslateNS } from '@open-harness/oh-client-ui-slots'
 
 /**
  * A job the registry still holds open, and whose duration therefore ticks.

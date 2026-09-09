@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { CallId, toolCallPhaseAfter } from '@deepseek-ai/dsh-llm'
-import type { StreamChunk } from '@deepseek-ai/dsh-llm'
+import { CallId, toolCallPhaseAfter } from '@open-harness/oh-llm'
+import type { StreamChunk } from '@open-harness/oh-llm'
 
 const TOOL_DELTA: StreamChunk = {
   type: 'tool-call-delta',

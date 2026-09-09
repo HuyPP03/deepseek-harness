@@ -6,10 +6,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import CommandRuntime from '@deepseek-ai/dsh-commands'
-import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@deepseek-ai/dsh-session'
-import * as commandSearch from '@deepseek-ai/dsh-command-search'
+import type { Agent } from '@open-harness/oh-agent'
+import CommandRuntime from '@open-harness/oh-commands'
+import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@open-harness/oh-session'
+import * as commandSearch from '@open-harness/oh-command-search'
 
 let root: string | undefined
 let context: Context | undefined
@@ -25,8 +25,8 @@ async function compose(): Promise<void> {
   root = await mkdtemp(join(tmpdir(), 'dsh-command-search-loader-'))
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, [
-    "- name: '@deepseek-ai/dsh-commands'",
-    "- name: '@deepseek-ai/dsh-command-search'",
+    "- name: '@open-harness/oh-commands'",
+    "- name: '@open-harness/oh-command-search'",
     '',
   ].join('\n'))
 
@@ -35,8 +35,8 @@ async function compose(): Promise<void> {
   await context.plugin(Loader)
   context.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
-    ['@deepseek-ai/dsh-commands', CommandRuntime],
-    ['@deepseek-ai/dsh-command-search', commandSearch],
+    ['@open-harness/oh-commands', CommandRuntime],
+    ['@open-harness/oh-command-search', commandSearch],
   ])
   context.loader.internal = {
     version: 'v2',

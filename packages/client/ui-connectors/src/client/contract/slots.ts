@@ -8,15 +8,15 @@
  * actions arrive through each registrant's own inject face (the controller's
  * snapshot store via the `hooks` compartment plus the mutation callbacks).
  */
-import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
-import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { SessionId } from '@open-harness/oh-api-remotes/client'
+import type { InjectFace, PropsLocale, PropsRuntime } from '@open-harness/oh-client-ui-slots'
 // Type-only: pull the sidebar shell's SlotMap merge ('sidebar.connectors')
 // and the frame's ('main.connectors') into programs that resolve the
 // runtime share below.
-import type {} from '@deepseek-ai/dsh-client-ui-sidebar/client'
-import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
+import type {} from '@open-harness/oh-client-ui-sidebar/client'
+import type {} from '@open-harness/oh-client-ui-layout/client'
 import type { ConnectorsSectionState } from '../controller.ts'
-import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SnapshotStore } from '@open-harness/oh-client-runtime/client'
 
 /**
  * The shared callback set the directory drives: the roster read, the row

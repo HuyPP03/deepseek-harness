@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-tool-ask-user
+# @open-harness/oh-tool-ask-user
 
 English | [中文](README.zh.md)
 

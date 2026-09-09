@@ -1,17 +1,17 @@
 /** Test-owned sessions face: the SlotRegistry host contract over declarative fixtures. */
 import type { Context } from '@deepseek-ai/cordis'
-import type { AttachmentIdType } from '@deepseek-ai/dsh-attachment'
-import { createScope, scopeOf, SessionProvideChannel } from '@deepseek-ai/dsh-client-runtime/client'
-import { createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { AttachmentIdType } from '@open-harness/oh-attachment'
+import { createScope, scopeOf, SessionProvideChannel } from '@open-harness/oh-client-runtime/client'
+import { createSnapshotStore } from '@open-harness/oh-client-runtime/client'
 import type {
   AgentContext, ConversationSnapshot, ISessions, ObservableSnapshot, ProjectionsFace, SessionFace, SessionId,
   SessionListState, SessionProvideDescriptor, SessionSearchResultItem, SessionSummary, SnapshotStore,
   SubagentAddress, WorkspaceId,
-} from '@deepseek-ai/dsh-client-runtime/client'
+} from '@open-harness/oh-client-runtime/client'
 // The double reports the wire schema's own search bound, like the production
 // service — a transport-varying limit would be a fiction no client can see.
-import { SESSION_SEARCH_RESULT_LIMIT } from '@deepseek-ai/dsh-host-apiproxy/api'
-import type { HostObservable, SessionMaybeProvideInfo, SessionProvideInfo } from '@deepseek-ai/dsh-client-ui-slots'
+import { SESSION_SEARCH_RESULT_LIMIT } from '@open-harness/oh-host-apiproxy/api'
+import type { HostObservable, SessionMaybeProvideInfo, SessionProvideInfo } from '@open-harness/oh-client-ui-slots'
 import { conversationSnapshot } from './fixtures.ts'
 import type { SessionFixture, Stabilizer } from './fixtures.ts'
 

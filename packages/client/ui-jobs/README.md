@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-jobs
+# @open-harness/oh-client-ui-jobs
 
 English | [中文](README.zh.md)
 

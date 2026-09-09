@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-settings
+# @open-harness/oh-settings
 
 English | [中文](README.zh.md)
 

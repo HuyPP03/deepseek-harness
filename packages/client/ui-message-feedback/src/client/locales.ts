@@ -19,7 +19,7 @@ export const en = {
 /** The feedback namespace key union. */
 export type MessageFeedbackKey = keyof typeof en
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** The per-message feedback controls' copy. */
     feedback: MessageFeedbackKey

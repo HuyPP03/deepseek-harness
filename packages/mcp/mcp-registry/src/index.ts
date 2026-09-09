@@ -1,6 +1,6 @@
 /**
  * MCP server registry: the shared read face over the live
- * `@deepseek-ai/dsh-mcp-client` instances in one app. Each client instance
+ * `@open-harness/oh-mcp-client` instances in one app. Each client instance
  * reports its server's connection state and registered tools through
  * {@link McpRegistry.report}; consumers (the `/mcp` command) read a snapshot
  * through {@link McpRegistry.servers}, and surfaces that can act on a server
@@ -13,10 +13,10 @@
  * disposer removes its entry, and a reader that yields nothing is simply
  * absent from the snapshot.
  *
- * @module @deepseek-ai/dsh-mcp-registry
+ * @module @open-harness/oh-mcp-registry
  */
 
-import { CallId } from '@deepseek-ai/dsh-llm'
+import { CallId } from '@open-harness/oh-llm'
 import { Context, Service } from '@deepseek-ai/cordis'
 import { createBridgeTools, type BridgeFaces } from './bridge.ts'
 import type { McpServerView } from './types.ts'

@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import CommandRuntime from '@deepseek-ai/dsh-commands'
-import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@deepseek-ai/dsh-session'
-import { SubagentRuntime } from '@deepseek-ai/dsh-subagent'
-import * as commandAgentActions from '@deepseek-ai/dsh-command-agent-actions'
+import type { Agent } from '@open-harness/oh-agent'
+import { CallId } from '@open-harness/oh-llm'
+import CommandRuntime from '@open-harness/oh-commands'
+import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@open-harness/oh-session'
+import { SubagentRuntime } from '@open-harness/oh-subagent'
+import * as commandAgentActions from '@open-harness/oh-command-agent-actions'
 import { ScriptedReviewer } from './scripted-reviewer'
 
 const SIMPLIFY_TEXT = 'Simplification queued for this session.'
@@ -105,7 +105,7 @@ afterEach(async () => {
   vi.useRealTimers()
 })
 
-describe('@deepseek-ai/dsh-command-agent-actions registration', () => {
+describe('@open-harness/oh-command-agent-actions registration', () => {
   it('registers both commands and disposes them', async () => {
     const test = await harness()
     expect(commandAgentActions.name).toBe('command-agent-actions')

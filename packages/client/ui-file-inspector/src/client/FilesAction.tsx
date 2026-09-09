@@ -5,10 +5,10 @@
 // which no mutation tool announced. It renders nothing for a session with no
 // cwd to browse.
 
-import { IconFolderOpenOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import { IconFolderOpenOutline16 } from '@open-harness/oh-client-ui-primitives'
+import type { InjectFace, PropsLocale, PropsRuntime } from '@open-harness/oh-client-ui-slots'
 // Type-only: pulls the ui-conversation SlotMap merge (the header actions).
-import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type {} from '@open-harness/oh-client-ui-conversation/client'
 import css from './FilesAction.module.css'
 
 /** Registration-side business face: the details-panel open gesture. */

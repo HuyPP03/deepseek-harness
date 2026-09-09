@@ -3,11 +3,11 @@
  * snapshot: the latest diff card touching one file, path-matched against the
  * session's workspace root. The snapshot is structurally shared, so a
  * memo on the nodes reference recomputes only when the window actually moves.
- * @module @deepseek-ai/dsh-client-ui-file-inspector/client/changes
+ * @module @open-harness/oh-client-ui-file-inspector/client/changes
  */
 
-import type { ConversationNode, ToolCallBlock } from '@deepseek-ai/dsh-client-runtime/client'
-import type { DiffHunk } from '@deepseek-ai/dsh-client-ui-primitives'
+import type { ConversationNode, ToolCallBlock } from '@open-harness/oh-client-runtime/client'
+import type { DiffHunk } from '@open-harness/oh-client-ui-primitives'
 
 /** One diff hunk the Changes tab draws (the primitive's own contract). */
 export type ChangesHunk = DiffHunk

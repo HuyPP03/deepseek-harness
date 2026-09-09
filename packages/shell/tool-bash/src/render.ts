@@ -1,12 +1,12 @@
 /**
  * Model-facing result rendering for the bash tool.
  *
- * @module @deepseek-ai/dsh-tool-bash/render
+ * @module @open-harness/oh-tool-bash/render
  */
 
-import type { ShellProcessRead, ShellRunResult, ShellSandboxInfo, CollectedOutput } from '@deepseek-ai/dsh-shell'
-import type { SandboxMode } from '@deepseek-ai/dsh-sandbox'
-import { escalationHintMarker, sandboxDenialMarker } from '@deepseek-ai/dsh-sandbox'
+import type { ShellProcessRead, ShellRunResult, ShellSandboxInfo, CollectedOutput } from '@open-harness/oh-shell'
+import type { SandboxMode } from '@open-harness/oh-sandbox'
+import { escalationHintMarker, sandboxDenialMarker } from '@open-harness/oh-sandbox'
 
 /** Append the truncation notice (with the full-output spill path) to a stream's text. */
 function streamText(output: CollectedOutput): string {
@@ -96,8 +96,8 @@ export function renderProcessRead(
 
 /**
  * The exit-status parse is the shared marker-contract half of the shell-tool
- * rendering story, owned by `@deepseek-ai/dsh-shell` so `dsh-tool-pwsh` reuses
+ * rendering story, owned by `@open-harness/oh-shell` so `dsh-tool-pwsh` reuses
  * it (its renderer emits the same markers). Re-exported here to keep
  * `../src/render.ts` a single import root for bash-tool consumers.
  */
-export { parseExitStatus, type ParsedExitStatus } from '@deepseek-ai/dsh-shell'
+export { parseExitStatus, type ParsedExitStatus } from '@open-harness/oh-shell'

@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-spill`.
- * @module @deepseek-ai/dsh-spill/invariant
+ * Package-owned invariant companion for `@open-harness/oh-spill`.
+ * @module @open-harness/oh-spill/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-spill'
+const PACKAGE_NAME = '@open-harness/oh-spill'
 
 /** Cordis companion plugin name. */
 export const name = 'spill-invariant'

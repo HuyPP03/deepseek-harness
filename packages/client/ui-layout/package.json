@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-client-ui-layout",
+  "name": "@open-harness/oh-client-ui-layout",
   "description": "Shell plugin: three-column AppFrame with drag handles, ctx.layout viewing-state service (navigation + panels)",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,8 +32,8 @@
   "oh": {
     "client": {
       "inject": [
-        "@deepseek-ai/dsh-client-runtime",
-        "@deepseek-ai/dsh-client-ui-theme"
+        "@open-harness/oh-client-runtime",
+        "@open-harness/oh-client-ui-theme"
       ],
       "platform": "web"
     }
@@ -44,19 +44,19 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-client-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-slots": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-theme": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@open-harness/oh-client-runtime": "workspace:^",
+    "@open-harness/oh-client-ui-slots": "workspace:^",
+    "@open-harness/oh-client-ui-theme": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-client-locale": "workspace:^",
-    "@deepseek-ai/dsh-client-runtime": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-slots": "workspace:^",
-    "@deepseek-ai/dsh-client-ui-theme": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
+    "@open-harness/oh-client-locale": "workspace:^",
+    "@open-harness/oh-client-runtime": "workspace:^",
+    "@open-harness/oh-client-ui-slots": "workspace:^",
+    "@open-harness/oh-client-ui-theme": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
     "@deepseek-ai/cordis": "workspace:^",
     "react": "^18.2.0"

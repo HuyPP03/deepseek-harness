@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-subagent-spawn-in-process
+# @open-harness/oh-subagent-spawn-in-process
 
 [English](README.md) | 中文
 

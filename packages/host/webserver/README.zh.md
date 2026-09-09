@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-host-webserver
+# @open-harness/oh-host-webserver
 
 [English](README.md) | 中文
 

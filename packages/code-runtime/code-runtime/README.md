@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-code-runtime
+# @open-harness/oh-code-runtime
 
 English | [中文](README.zh.md)
 

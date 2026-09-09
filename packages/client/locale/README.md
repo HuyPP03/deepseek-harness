@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-locale
+# @open-harness/oh-client-locale
 
 English | [中文](README.zh.md)
 

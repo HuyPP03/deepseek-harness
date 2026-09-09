@@ -6,10 +6,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
-import McpManager from '@deepseek-ai/dsh-mcp-manager'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import McpRegistry from '@open-harness/oh-mcp-registry'
+import McpManager from '@open-harness/oh-mcp-manager'
 import { stringify } from 'yaml'
 
 // The real mcp-client (workspace source) mounts below the manager; mock only
@@ -60,7 +60,7 @@ describe('mcp-manager real Loader composition', () => {
     await mkdir(mcpDir, { recursive: true })
     // A user server persisted from a previous run.
     await writeFile(join(mcpDir, 'persisted.cordis.yml'), stringify(
-      [{ id: 'mcp-client-persisted', name: '@deepseek-ai/dsh-mcp-client', config: {
+      [{ id: 'mcp-client-persisted', name: '@open-harness/oh-mcp-client', config: {
         serverName: 'persisted',
         transport: 'stdio',
         command: 'echo',
@@ -71,10 +71,10 @@ describe('mcp-manager real Loader composition', () => {
       { lineWidth: 0 },
     ))
     await writeFile(configPath, [
-      "- name: '@deepseek-ai/dsh-system-prompt'",
-      "- name: '@deepseek-ai/dsh-tools'",
-      "- name: '@deepseek-ai/dsh-mcp-registry'",
-      "- name: '@deepseek-ai/dsh-mcp-manager'",
+      "- name: '@open-harness/oh-system-prompt'",
+      "- name: '@open-harness/oh-tools'",
+      "- name: '@open-harness/oh-mcp-registry'",
+      "- name: '@open-harness/oh-mcp-manager'",
       '  config:',
       '    mcpDir: ' + JSON.stringify(mcpDir),
       "- name: 'test:stub-profile-server'",
@@ -86,10 +86,10 @@ describe('mcp-manager real Loader composition', () => {
     await context.plugin(Loader)
     context.loader.builtins.include = Include
     const modules = new Map<string, unknown>([
-      ['@deepseek-ai/dsh-system-prompt', SystemPrompt],
-      ['@deepseek-ai/dsh-tools', ToolRuntime],
-      ['@deepseek-ai/dsh-mcp-registry', McpRegistry],
-      ['@deepseek-ai/dsh-mcp-manager', McpManager],
+      ['@open-harness/oh-system-prompt', SystemPrompt],
+      ['@open-harness/oh-tools', ToolRuntime],
+      ['@open-harness/oh-mcp-registry', McpRegistry],
+      ['@open-harness/oh-mcp-manager', McpManager],
       // A stand-in for a profile-declared mcp-client instance.
       ['test:stub-profile-server', {
         name: 'stub-profile-server',
@@ -130,7 +130,7 @@ describe('mcp-manager real Loader composition', () => {
     await context.mcpManager.add({ serverName: 'fresh', transport: 'stdio', command: 'echo', args: [], env: {}, cwd: '' })
     expect(context.tools.get('mcp__fresh__remote')).toBeDefined()
     const document = await readFile(join(mcpDir, 'fresh.cordis.yml'), 'utf8')
-    expect(document).toContain('name: "@deepseek-ai/dsh-mcp-client"')
+    expect(document).toContain('name: "@open-harness/oh-mcp-client"')
     expect(document).toContain('serverName: fresh')
 
     // Reconnect flows to the live instance through the registry.

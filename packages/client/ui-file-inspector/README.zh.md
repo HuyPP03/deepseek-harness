@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-file-inspector
+# @open-harness/oh-client-ui-file-inspector
 
 [English](README.md) | 中文
 

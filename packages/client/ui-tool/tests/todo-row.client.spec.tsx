@@ -2,13 +2,13 @@
 /** todo_write atomic Tool presentation and its plan-summary model. */
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { TodoItem, ToolResultNode } from '@deepseek-ai/dsh-client-runtime/client'
-import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
-import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
+import type { TodoItem, ToolResultNode } from '@open-harness/oh-client-runtime/client'
+import { makeTranslate } from '@open-harness/oh-client-test-runtime'
+import { zh as commonZh } from '@open-harness/oh-client-locale/src/locales/zh.ts'
 import { TodoRow, todoToolview } from '../src/client/tool/toolviews/todo-row.tsx'
 import { planSummary } from '../src/client/tool/toolviews/plan-summary.ts'
 import { CONVERSATION_NS as NS } from '../src/client/locale.ts'
-import { zh } from '@deepseek-ai/dsh-client-ui-conversation/src/client/locales.ts'
+import { zh } from '@open-harness/oh-client-ui-conversation/src/client/locales.ts'
 
 type TodoRowProps = Parameters<typeof TodoRow>[0]
 

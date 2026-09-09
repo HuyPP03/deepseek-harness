@@ -14,9 +14,9 @@ import type {
   InboxTarget,
   PreStepDecision,
   RequestErrorAction,
-} from '@deepseek-ai/dsh-agent'
-import { Inbox, agentEvents, assembleContextFor } from '@deepseek-ai/dsh-agent'
-import type { GenerateOptions, LlmCallConfig, Message, PreparedLlmCall } from '@deepseek-ai/dsh-llm'
+} from '@open-harness/oh-agent'
+import { Inbox, agentEvents, assembleContextFor } from '@open-harness/oh-agent'
+import type { GenerateOptions, LlmCallConfig, Message, PreparedLlmCall } from '@open-harness/oh-llm'
 import {
   BlockAssembler,
   LlmError,
@@ -24,13 +24,13 @@ import {
   deepFreeze,
   errorChain,
   markAgentLoopRequest,
-} from '@deepseek-ai/dsh-llm'
-import type { Scope } from '@deepseek-ai/dsh-scope'
-import { createScope } from '@deepseek-ai/dsh-scope'
-import type { EpochHeader, RequestContext, Session, SessionId, TurnEndReason, UserMessage } from '@deepseek-ai/dsh-session'
-import { canonicalHeader, headerEquals } from '@deepseek-ai/dsh-session'
-import { joinContextSections, renderContextSections, renderPrompt } from '@deepseek-ai/dsh-system-prompt'
-import type { PromptAssembly } from '@deepseek-ai/dsh-system-prompt'
+} from '@open-harness/oh-llm'
+import type { Scope } from '@open-harness/oh-scope'
+import { createScope } from '@open-harness/oh-scope'
+import type { EpochHeader, RequestContext, Session, SessionId, TurnEndReason, UserMessage } from '@open-harness/oh-session'
+import { canonicalHeader, headerEquals } from '@open-harness/oh-session'
+import { joinContextSections, renderContextSections, renderPrompt } from '@open-harness/oh-system-prompt'
+import type { PromptAssembly } from '@open-harness/oh-system-prompt'
 import type { Context } from '@deepseek-ai/cordis'
 import { RuntimeContextProjection } from './runtime-context.ts'
 import { executeToolCalls } from './tool-calls.ts'

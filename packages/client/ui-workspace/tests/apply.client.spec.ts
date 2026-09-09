@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { SlotRegistry, createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
-import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
-import { usePinnedBrowserLanguages } from '@deepseek-ai/dsh-client-test-runtime'
-import { apply, inject } from '@deepseek-ai/dsh-client-ui-workspace/client'
-import type { WorkspaceBrowserInjected, WorkspacePickerInjected } from '@deepseek-ai/dsh-client-ui-workspace/client'
+import { SlotRegistry, createSnapshotStore } from '@open-harness/oh-client-runtime/client'
+import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
+import { usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'
+import { apply, inject } from '@open-harness/oh-client-ui-workspace/client'
+import type { WorkspaceBrowserInjected, WorkspacePickerInjected } from '@open-harness/oh-client-ui-workspace/client'
 import { WorkspaceBrowser } from '../src/client/WorkspaceBrowser.tsx'
 import { WorkspacePicker } from '../src/client/WorkspacePicker.tsx'
 

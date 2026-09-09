@@ -8,11 +8,11 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
-import McpManager, { resolveConfig } from '@deepseek-ai/dsh-mcp-manager'
-import { ohHomePath } from '@deepseek-ai/dsh-home-paths'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import McpRegistry from '@open-harness/oh-mcp-registry'
+import McpManager, { resolveConfig } from '@open-harness/oh-mcp-manager'
+import { ohHomePath } from '@open-harness/oh-home-paths'
 
 // ---- Mock MCP SDK ----
 
@@ -151,7 +151,7 @@ describe('mcp-manager', () => {
 
   it('mounts persisted servers at startup and serves their tools', async () => {
     await writeFile(join(dir, 'mine.cordis.yml'), stringify([
-      { id: 'mcp-client-mine', name: '@deepseek-ai/dsh-mcp-client', config: STDIO_SPEC },
+      { id: 'mcp-client-mine', name: '@open-harness/oh-mcp-client', config: STDIO_SPEC },
     ], { lineWidth: 0 }))
     void mockListTools.mockResolvedValue(listing('booted'))
 
@@ -171,7 +171,7 @@ describe('mcp-manager', () => {
 
   it('fails the boot loud on a persisted file naming a foreign plugin', async () => {
     await writeFile(join(dir, 'bad.cordis.yml'), stringify([
-      { id: 'x', name: '@deepseek-ai/dsh-commands', config: {} },
+      { id: 'x', name: '@open-harness/oh-commands', config: {} },
     ], { lineWidth: 0 }))
     await expect(mountHarness(dir)).rejects.toThrow(/must hold a single @deepseek-ai\/dsh-mcp-client entry/)
     ctx = undefined as unknown as Context
@@ -196,7 +196,7 @@ describe('mcp-manager', () => {
     await vi.waitFor(() => { expect(ctx.tools.get('mcp__http__remote')).toBeDefined() })
 
     const raw = await (await import('node:fs/promises')).readFile(join(dir, 'http.cordis.yml'), 'utf8')
-    expect(raw).toContain('name: "@deepseek-ai/dsh-mcp-client"')
+    expect(raw).toContain('name: "@open-harness/oh-mcp-client"')
     expect(raw).toContain('url: http://127.0.0.1:1/mcp')
     expect(ctx.mcpManager.userServers()).toEqual(['http'])
     expect(ctx.mcpManager.servers()[0]).toEqual({
@@ -208,7 +208,7 @@ describe('mcp-manager', () => {
 
   it('translates sparse specs through the config defaults before mounting', async () => {
     ({ ctx, managerFiber } = await mountHarness(dir))
-    const { DEFAULT_TOOL_CALL_TIMEOUT_MS } = await import('@deepseek-ai/dsh-mcp-client')
+    const { DEFAULT_TOOL_CALL_TIMEOUT_MS } = await import('@open-harness/oh-mcp-client')
     const realPlugin = ctx.plugin.bind(ctx)
     const clientConfigs: unknown[] = []
     const pluginSpy = vi.spyOn(ctx, 'plugin').mockImplementation(((...args: unknown[]) => {

@@ -1,13 +1,13 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { boot } from '@deepseek-ai/dsh-app-boot'
-import { Inbox } from '@deepseek-ai/dsh-agent'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import { Session, SessionId } from '@deepseek-ai/dsh-session'
-import type {} from '@deepseek-ai/dsh-fs-e2b'
-import type {} from '@deepseek-ai/dsh-bash-local'
-import type {} from '@deepseek-ai/dsh-lsp-stdio'
-import type {} from '@deepseek-ai/dsh-terminal-bash'
+import { boot } from '@open-harness/oh-app-boot'
+import { Inbox } from '@open-harness/oh-agent'
+import type { Agent } from '@open-harness/oh-agent'
+import { Session, SessionId } from '@open-harness/oh-session'
+import type {} from '@open-harness/oh-fs-e2b'
+import type {} from '@open-harness/oh-bash-local'
+import type {} from '@open-harness/oh-lsp-stdio'
+import type {} from '@open-harness/oh-terminal-bash'
 
 const configPath = process.argv[2]
 if (configPath === undefined) throw new Error('usage: bin.ts <cordis.yml>')

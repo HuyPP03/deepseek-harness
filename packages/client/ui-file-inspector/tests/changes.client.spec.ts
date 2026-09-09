@@ -3,7 +3,7 @@
 // narrowing, and the extension-to-grammar map.
 
 import { describe, expect, it } from 'vitest'
-import type { ConversationNode, ToolResultNode } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ConversationNode, ToolResultNode } from '@open-harness/oh-client-runtime/client'
 import { langForPath, latestFileDiffs, previewKindForPath, resolveDiffPath } from '../src/client/changes.ts'
 
 // The view seats take untyped material: the malformed-payload tests pass wire

@@ -10,10 +10,10 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
-import type { SessionEvent } from '@deepseek-ai/dsh-session'
-import InvariantRegistry from '@deepseek-ai/dsh-invariants'
-import * as WorkspaceReferencesInvariant from '@deepseek-ai/dsh-workspace-references/invariant'
+import SessionStore, { SessionId } from '@open-harness/oh-session'
+import type { SessionEvent } from '@open-harness/oh-session'
+import InvariantRegistry from '@open-harness/oh-invariants'
+import * as WorkspaceReferencesInvariant from '@open-harness/oh-workspace-references/invariant'
 
 let root: string
 let work: string

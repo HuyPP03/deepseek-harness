@@ -7,8 +7,8 @@
  * call this, so the hunks they show are derived once.
  * @module
  */
-import type { DiffBlockLabels, DiffBlockProps, DiffHunk } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { CommonKeyOf, Translate } from '@deepseek-ai/dsh-client-ui-slots'
+import type { DiffBlockLabels, DiffBlockProps, DiffHunk } from '@open-harness/oh-client-ui-primitives'
+import type { CommonKeyOf, Translate } from '@open-harness/oh-client-ui-slots'
 import type { ToolCallBlock } from './tool-call-model.ts'
 
 /**

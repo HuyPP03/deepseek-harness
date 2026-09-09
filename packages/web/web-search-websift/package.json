@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-web-search-websift",
+  "name": "@open-harness/oh-web-search-websift",
   "description": "Websift-backed search provider (keyless DuckDuckGo or self-hosted SearXNG, in-process TS library) for the Open Harness web capability seam (ctx.web)",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,9 +32,9 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-settings": "workspace:^",
-    "@deepseek-ai/dsh-web": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-settings": "workspace:^",
+    "@open-harness/oh-web": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "dependencies": {
@@ -42,9 +42,9 @@
     "websift": "^2.0.0"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-settings": "workspace:^",
-    "@deepseek-ai/dsh-web": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-settings": "workspace:^",
+    "@open-harness/oh-web": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

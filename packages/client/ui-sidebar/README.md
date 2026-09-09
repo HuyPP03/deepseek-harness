@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-sidebar
+# @open-harness/oh-client-ui-sidebar
 
 English | [中文](README.zh.md)
 

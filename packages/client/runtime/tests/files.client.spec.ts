@@ -5,7 +5,7 @@
  * suite steers the response without a server.
  */
 import { describe, expect, it, vi } from 'vitest'
-import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
+import type { SessionId } from '@open-harness/oh-api-remotes/client'
 import {
   createFileBytesService,
   FileBytesError,

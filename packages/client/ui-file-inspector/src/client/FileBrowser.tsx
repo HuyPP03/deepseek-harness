@@ -8,7 +8,7 @@
 // 100-row bound.
 
 import { useEffect, useMemo, useState } from 'react'
-import type { FileEntry } from '@deepseek-ai/dsh-api-remotes/client'
+import type { FileEntry } from '@open-harness/oh-api-remotes/client'
 import { clsx } from 'clsx'
 import type { FileBrowserProps } from './contract/slots.ts'
 import css from './FileInspector.module.css'

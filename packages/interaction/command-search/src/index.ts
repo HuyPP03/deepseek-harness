@@ -9,13 +9,13 @@
  * command result only confirms the search is queued; the file list arrives
  * as the agent's reply.
  *
- * @module @deepseek-ai/dsh-command-search
+ * @module @open-harness/oh-command-search
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import type { CommandInvocation, CommandResult } from '@deepseek-ai/dsh-commands'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
-import type { MessageSource } from '@deepseek-ai/dsh-llm'
+import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'
+import { createUserMessage } from '@open-harness/oh-llm'
+import type { MessageSource } from '@open-harness/oh-llm'
 
 export const name = 'command-search'
 export const inject = ['commands']

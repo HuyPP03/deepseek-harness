@@ -11,13 +11,13 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { PROTOCOL_VERSION } from '@agentclientprotocol/sdk'
-import { SessionId } from '@deepseek-ai/dsh-session'
-import type { Session } from '@deepseek-ai/dsh-session'
-import WorkspaceReferenceService, { normalizeReferencePaths } from '@deepseek-ai/dsh-workspace-references'
+import { SessionId } from '@open-harness/oh-session'
+import type { Session } from '@open-harness/oh-session'
+import WorkspaceReferenceService, { normalizeReferencePaths } from '@open-harness/oh-workspace-references'
 import { makeBridgeHarness, type BridgeHarness } from './harness.ts'
 
-vi.mock('@deepseek-ai/dsh-workspace-references', async (importOriginal) => {
-  const original = await importOriginal<typeof import('@deepseek-ai/dsh-workspace-references')>()
+vi.mock('@open-harness/oh-workspace-references', async (importOriginal) => {
+  const original = await importOriginal<typeof import('@open-harness/oh-workspace-references')>()
   return { ...original, normalizeReferencePaths: vi.fn(original.normalizeReferencePaths) }
 })
 

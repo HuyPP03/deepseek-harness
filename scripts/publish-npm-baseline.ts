@@ -62,7 +62,7 @@ while time.monotonic() < deadline:
             output.extend(chunk)
 
     snapshot = bytes(output)
-    if not termination_sent and b"dsh web: http://127.0.0.1:" in snapshot:
+    if not termination_sent and b"oh web: http://127.0.0.1:" in snapshot:
         ready_seen = True
         os.kill(pid, signal.SIGTERM)
         termination_sent = True
@@ -77,11 +77,11 @@ if status is None:
     _, status = os.waitpid(pid, 0)
 sys.stdout.buffer.write(output)
 if not ready_seen:
-    sys.stderr.write("installed dsh web did not reach its ready URL\n")
+    sys.stderr.write("installed oh web did not reach its ready URL\n")
     sys.exit(124)
 actual_exit = os.waitstatus_to_exitcode(status)
 if actual_exit != 0:
-    sys.stderr.write(f"installed dsh web exited {actual_exit}, expected 0\n")
+    sys.stderr.write(f"installed oh web exited {actual_exit}, expected 0\n")
     sys.exit(125)
 `
 
@@ -209,7 +209,7 @@ class DetachedWorktree {
   ) {}
 
   static create(repositoryRoot: string, commit: string, runner: CommandRunner): DetachedWorktree {
-    const temporaryRoot = mkdtempSync(join(tmpdir(), 'dsh-npm-baseline-'))
+    const temporaryRoot = mkdtempSync(join(tmpdir(), 'oh-npm-baseline-'))
     const path = join(temporaryRoot, 'worktree')
     try {
       runner.run('git', ['worktree', 'add', '--detach', path, commit], repositoryRoot)
@@ -422,7 +422,7 @@ class ReleaseBundle {
   }
 }
 
-/** Installs one complete bundle outside the workspace and probes the shipped dsh entry. */
+/** Installs one complete bundle outside the workspace and probes the shipped oh entry. */
 class InstalledBundleSmoke {
   constructor(
     private readonly bundle: ReleaseBundle,
@@ -430,14 +430,14 @@ class InstalledBundleSmoke {
   ) {}
 
   run(): void {
-    const consumerRoot = mkdtempSync(join(tmpdir(), 'dsh-npm-consumer-'))
+    const consumerRoot = mkdtempSync(join(tmpdir(), 'oh-npm-consumer-'))
     try {
       const dependencies = Object.fromEntries(this.bundle.manifest.packages.map(pkg => [
         pkg.name,
         pathToFileURL(this.bundle.tarballPath(pkg)).href,
       ]))
       writeFileSync(resolve(consumerRoot, 'package.json'), `${JSON.stringify({
-        name: 'dsh-npm-baseline-consumer',
+        name: 'oh-npm-baseline-consumer',
         version: '0.0.0',
         private: true,
         dependencies,
@@ -465,12 +465,12 @@ class InstalledBundleSmoke {
       )
       if (version !== this.bundle.manifest.version) {
         throw new Error(
-          `installed dsh --version returned ${JSON.stringify(version)}; `
+          `installed oh --version returned ${JSON.stringify(version)}; `
           + `expected ${this.bundle.manifest.version}`,
         )
       }
       this.probeWeb(bin, consumerRoot, environment)
-      console.log('publish-npm-baseline: installed dsh entry and Web startup probes passed')
+      console.log('publish-npm-baseline: installed oh entry and Web startup probes passed')
     } finally {
       rmSync(consumerRoot, { recursive: true, force: true })
     }
@@ -478,7 +478,7 @@ class InstalledBundleSmoke {
 
   private probeWeb(bin: string, consumerRoot: string, environment: NodeJS.ProcessEnv): void {
     if (process.platform === 'win32') {
-      throw new Error('installed dsh Web probe requires a POSIX host with python3')
+      throw new Error('installed oh Web probe requires a POSIX host with python3')
     }
     const result = this.runner.result(
       'python3',
@@ -487,7 +487,7 @@ class InstalledBundleSmoke {
       environment,
     )
     if (result.status !== 0) {
-      throw commandFailure('python3', ['installed-dsh-web-probe'], result)
+      throw commandFailure('python3', ['installed-oh-web-probe'], result)
     }
   }
 }

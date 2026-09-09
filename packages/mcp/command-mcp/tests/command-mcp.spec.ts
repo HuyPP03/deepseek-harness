@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import CommandRuntime from '@deepseek-ai/dsh-commands'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@deepseek-ai/dsh-session'
-import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
-import type { McpServerView } from '@deepseek-ai/dsh-mcp-registry'
-import * as commandMcp from '@deepseek-ai/dsh-command-mcp'
+import type { Agent } from '@open-harness/oh-agent'
+import CommandRuntime from '@open-harness/oh-commands'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@open-harness/oh-session'
+import McpRegistry from '@open-harness/oh-mcp-registry'
+import type { McpServerView } from '@open-harness/oh-mcp-registry'
+import * as commandMcp from '@open-harness/oh-command-mcp'
 
 interface Harness {
   readonly ctx: Context
@@ -56,7 +56,7 @@ async function run(test: Harness, line: string): Promise<NonNullable<Awaited<Ret
   return result
 }
 
-describe('@deepseek-ai/dsh-command-mcp registration', () => {
+describe('@open-harness/oh-command-mcp registration', () => {
   it('registers the command with an optional server input and disposes it', async () => {
     const test = await harness()
     expect(test.ctx.commands.list(test.agent)).toContainEqual({

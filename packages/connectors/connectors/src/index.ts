@@ -21,21 +21,21 @@
  * composes it fine; the operations that need the missing seam refuse with a
  * named error instead of degrading silently.
  *
- * @module @deepseek-ai/dsh-connectors
+ * @module @open-harness/oh-connectors
  */
 
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
-import { ohHomePath, expandHomePath } from '@deepseek-ai/dsh-home-paths'
-import { credentialRef, type CredentialProvider } from '@deepseek-ai/dsh-credentials'
-import type { ServerValue as McpServerValue } from '@deepseek-ai/dsh-mcp-client'
-import { UnknownPresetError } from '@deepseek-ai/dsh-agent-presets'
-import type {} from '@deepseek-ai/dsh-agent-presets'
-import type {} from '@deepseek-ai/dsh-credentials-oauth-tokens'
-import { McpServerExistsError, type McpServerSpec, type StdioServerSpec, type StreamableHttpServerSpec } from '@deepseek-ai/dsh-mcp-manager'
+import { writeFileAtomic } from '@open-harness/oh-atomic-write'
+import { ohHomePath, expandHomePath } from '@open-harness/oh-home-paths'
+import { credentialRef, type CredentialProvider } from '@open-harness/oh-credentials'
+import type { ServerValue as McpServerValue } from '@open-harness/oh-mcp-client'
+import { UnknownPresetError } from '@open-harness/oh-agent-presets'
+import type {} from '@open-harness/oh-agent-presets'
+import type {} from '@open-harness/oh-credentials-oauth-tokens'
+import { McpServerExistsError, type McpServerSpec, type StdioServerSpec, type StreamableHttpServerSpec } from '@open-harness/oh-mcp-manager'
 import { parseConnectorManifest, CUSTOM_CONNECTOR_ID } from './manifest.ts'
 import type {
   AddCustomSpec,

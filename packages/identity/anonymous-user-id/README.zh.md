@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-anonymous-user-id
+# @open-harness/oh-anonymous-user-id
 
 [English](README.md) | 中文
 

@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-tool-fs-search",
+  "name": "@open-harness/oh-tool-fs-search",
   "description": "Model-facing filesystem discovery tools (glob, grep) backed by the packaged ripgrep binary (@vscode/ripgrep)",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -36,29 +36,29 @@
     "@deepseek-ai/schemastery": "workspace:^"
   },
   "peerDependencies": {
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-output-retention": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-spill": "workspace:^",
-    "@deepseek-ai/dsh-subprocess": "workspace:^",
-    "@deepseek-ai/dsh-system-prompt": "workspace:^",
-    "@deepseek-ai/dsh-timeout": "workspace:^",
-    "@deepseek-ai/dsh-tools": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-output-retention": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-spill": "workspace:^",
+    "@open-harness/oh-subprocess": "workspace:^",
+    "@open-harness/oh-system-prompt": "workspace:^",
+    "@open-harness/oh-timeout": "workspace:^",
+    "@open-harness/oh-tools": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-subprocess": "workspace:^",
-    "@deepseek-ai/dsh-subprocess-local": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-output-retention": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-spill": "workspace:^",
-    "@deepseek-ai/dsh-system-prompt": "workspace:^",
-    "@deepseek-ai/dsh-timeout": "workspace:^",
-    "@deepseek-ai/dsh-tools": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-subprocess": "workspace:^",
+    "@open-harness/oh-subprocess-local": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-output-retention": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-spill": "workspace:^",
+    "@open-harness/oh-system-prompt": "workspace:^",
+    "@open-harness/oh-timeout": "workspace:^",
+    "@open-harness/oh-tools": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

@@ -32,7 +32,7 @@ describe('release families', () => {
 
   it('rejects a family whose members disagree on the shared version', () => {
     const dsh = releaseFamily('dsh')
-    const members = [member('apps/cli', 'oh'), { ...member('apps/web', '@deepseek-ai/dsh-web-frontend'), version: '0.0.2' }]
+    const members = [member('apps/cli', 'oh'), { ...member('apps/web', '@open-harness/oh-web-frontend'), version: '0.0.2' }]
 
     expect(() => { dsh.verifyVersions(members) }).toThrow(/must share one version/)
     expect(() => { dsh.verifyVersions([members[0]!]) }).not.toThrow()
@@ -52,23 +52,23 @@ describe('release families', () => {
   it('publishes a dependency before its consumer, and orders ties by name', () => {
     const dsh = releaseFamily('dsh')
     const members = [
-      member('packages/a/consumer', '@deepseek-ai/dsh-consumer', { dependencies: { '@deepseek-ai/dsh-library': 'workspace:^' } }),
-      member('packages/a/library', '@deepseek-ai/dsh-library'),
-      member('packages/a/zebra', '@deepseek-ai/dsh-zebra'),
+      member('packages/a/consumer', '@open-harness/oh-consumer', { dependencies: { '@open-harness/oh-library': 'workspace:^' } }),
+      member('packages/a/library', '@open-harness/oh-library'),
+      member('packages/a/zebra', '@open-harness/oh-zebra'),
     ]
 
     expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
-      '@deepseek-ai/dsh-library',
-      '@deepseek-ai/dsh-consumer',
-      '@deepseek-ai/dsh-zebra',
+      '@open-harness/oh-library',
+      '@open-harness/oh-consumer',
+      '@open-harness/oh-zebra',
     ])
   })
 
   it('reports a runtime dependency cycle instead of emitting an arbitrary order', () => {
     const dsh = releaseFamily('dsh')
     const members = [
-      member('packages/a/left', '@deepseek-ai/dsh-left', { dependencies: { '@deepseek-ai/dsh-right': 'workspace:^' } }),
-      member('packages/a/right', '@deepseek-ai/dsh-right', { dependencies: { '@deepseek-ai/dsh-left': 'workspace:^' } }),
+      member('packages/a/left', '@open-harness/oh-left', { dependencies: { '@open-harness/oh-right': 'workspace:^' } }),
+      member('packages/a/right', '@open-harness/oh-right', { dependencies: { '@open-harness/oh-left': 'workspace:^' } }),
     ]
 
     expect(() => { dsh.publishOrder(members) }).toThrow(/dependency cycle/)
@@ -77,44 +77,44 @@ describe('release families', () => {
   it('publishes a peer before its consumer', () => {
     const dsh = releaseFamily('dsh')
     const members = [
-      member('packages/a/consumer', '@deepseek-ai/dsh-consumer', { peerDependencies: { '@deepseek-ai/dsh-zebra': 'workspace:^' } }),
-      member('packages/a/zebra', '@deepseek-ai/dsh-zebra'),
+      member('packages/a/consumer', '@open-harness/oh-consumer', { peerDependencies: { '@open-harness/oh-zebra': 'workspace:^' } }),
+      member('packages/a/zebra', '@open-harness/oh-zebra'),
     ]
 
     // Name order alone would place the consumer first; the peer edge moves it.
     expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
-      '@deepseek-ai/dsh-zebra',
-      '@deepseek-ai/dsh-consumer',
+      '@open-harness/oh-zebra',
+      '@open-harness/oh-consumer',
     ])
   })
 
   it('orders around a peer cycle rather than refusing to publish, and reports the edge it dropped', () => {
     const dsh = releaseFamily('dsh')
     const members = [
-      member('packages/a/left', '@deepseek-ai/dsh-left', { peerDependencies: { '@deepseek-ai/dsh-right': 'workspace:^' } }),
-      member('packages/a/right', '@deepseek-ai/dsh-right', { peerDependencies: { '@deepseek-ai/dsh-left': 'workspace:^' } }),
+      member('packages/a/left', '@open-harness/oh-left', { peerDependencies: { '@open-harness/oh-right': 'workspace:^' } }),
+      member('packages/a/right', '@open-harness/oh-right', { peerDependencies: { '@open-harness/oh-left': 'workspace:^' } }),
     ]
 
     // Sibling packages declare each other as peers, and npm treats an unmet peer
     // as a warning, so this pair has to publish rather than fail the release.
     const plan = dsh.publishOrder(members)
     expect(plan.order.map(entry => entry.name)).toEqual([
-      '@deepseek-ai/dsh-right',
-      '@deepseek-ai/dsh-left',
+      '@open-harness/oh-right',
+      '@open-harness/oh-left',
     ])
     // One of the two edges has to give, and which one it is belongs in the log.
     expect(plan.droppedPeerEdges).toEqual([
-      { consumer: '@deepseek-ai/dsh-right', peer: '@deepseek-ai/dsh-left' },
+      { consumer: '@open-harness/oh-right', peer: '@open-harness/oh-left' },
     ])
   })
 
   it('honours an install edge even when a peer cycle surrounds it', () => {
     const dsh = releaseFamily('dsh')
     const members = [
-      member('packages/a/base', '@deepseek-ai/dsh-base', { peerDependencies: { '@deepseek-ai/dsh-consumer': 'workspace:^' } }),
-      member('packages/a/consumer', '@deepseek-ai/dsh-consumer', {
-        dependencies: { '@deepseek-ai/dsh-base': 'workspace:^' },
-        peerDependencies: { '@deepseek-ai/dsh-base': 'workspace:^' },
+      member('packages/a/base', '@open-harness/oh-base', { peerDependencies: { '@open-harness/oh-consumer': 'workspace:^' } }),
+      member('packages/a/consumer', '@open-harness/oh-consumer', {
+        dependencies: { '@open-harness/oh-base': 'workspace:^' },
+        peerDependencies: { '@open-harness/oh-base': 'workspace:^' },
       }),
     ]
 
@@ -122,20 +122,20 @@ describe('release families', () => {
     // would reverse it is the one dropped.
     const plan = dsh.publishOrder(members)
     expect(plan.order.map(entry => entry.name)).toEqual([
-      '@deepseek-ai/dsh-base',
-      '@deepseek-ai/dsh-consumer',
+      '@open-harness/oh-base',
+      '@open-harness/oh-consumer',
     ])
     expect(plan.droppedPeerEdges).toEqual([
-      { consumer: '@deepseek-ai/dsh-base', peer: '@deepseek-ai/dsh-consumer' },
+      { consumer: '@open-harness/oh-base', peer: '@open-harness/oh-consumer' },
     ])
   })
 
   it('refuses an order that would publish a consumer before a dependency it installs', () => {
     const dsh = releaseFamily('dsh')
     const members = [
-      member('packages/a/alpha', '@deepseek-ai/dsh-alpha', { peerDependencies: { '@deepseek-ai/dsh-bravo': 'workspace:^' } }),
-      member('packages/a/bravo', '@deepseek-ai/dsh-bravo', { peerDependencies: { '@deepseek-ai/dsh-charlie': 'workspace:^' } }),
-      member('packages/a/charlie', '@deepseek-ai/dsh-charlie', { dependencies: { '@deepseek-ai/dsh-alpha': 'workspace:^' } }),
+      member('packages/a/alpha', '@open-harness/oh-alpha', { peerDependencies: { '@open-harness/oh-bravo': 'workspace:^' } }),
+      member('packages/a/bravo', '@open-harness/oh-bravo', { peerDependencies: { '@open-harness/oh-charlie': 'workspace:^' } }),
+      member('packages/a/charlie', '@open-harness/oh-charlie', { dependencies: { '@open-harness/oh-alpha': 'workspace:^' } }),
     ]
 
     // A cycle of two peer edges closed by one install edge: dropping a peer edge
@@ -148,22 +148,22 @@ describe('release families', () => {
   it('ignores devDependencies when ordering', () => {
     const dsh = releaseFamily('dsh')
     const members = [
-      member('packages/a/alpha', '@deepseek-ai/dsh-alpha', { devDependencies: { '@deepseek-ai/dsh-zebra': 'workspace:^' } }),
-      member('packages/a/zebra', '@deepseek-ai/dsh-zebra'),
+      member('packages/a/alpha', '@open-harness/oh-alpha', { devDependencies: { '@open-harness/oh-zebra': 'workspace:^' } }),
+      member('packages/a/zebra', '@open-harness/oh-zebra'),
     ]
 
     // A dev dependency is absent from the published package, so it must not move
     // the consumer behind it.
     expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
-      '@deepseek-ai/dsh-alpha',
-      '@deepseek-ai/dsh-zebra',
+      '@open-harness/oh-alpha',
+      '@open-harness/oh-zebra',
     ])
   })
 
   it('applies the harness payload policy to dsh and keeps upstream payloads for vendored packages', () => {
     const dsh = releaseFamily('dsh')
     const vendor = releaseFamily('vendor')
-    const harness = member('packages/a/library', '@deepseek-ai/dsh-library')
+    const harness = member('packages/a/library', '@open-harness/oh-library')
     const vendored = member('vendor/cordis', '@deepseek-ai/cordis')
 
     expect(() => { dsh.validatePayload(harness, ['package/lib/index.js', 'package/src/index.ts']) })
@@ -256,7 +256,7 @@ describe('payload change judgement', () => {
     // unnecessary patch bump, while under-reporting fails the next publish on a
     // version whose bytes moved.
     expect(reachesPayload(sourceShipping, 'vendor/cosmokit/README.i18n.yaml')).toBe(true)
-    expect(reachesPayload(member('packages/a/library', '@deepseek-ai/dsh-library', { files: ['lib/index.js'] }),
+    expect(reachesPayload(member('packages/a/library', '@open-harness/oh-library', { files: ['lib/index.js'] }),
       'packages/a/library/tests/library.spec.ts')).toBe(false)
   })
 })

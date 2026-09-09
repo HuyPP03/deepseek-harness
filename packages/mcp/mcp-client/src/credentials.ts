@@ -12,9 +12,9 @@
  * @module
  */
 import type { Context } from '@deepseek-ai/cordis'
-import { credentialRef } from '@deepseek-ai/dsh-credentials'
-import type {} from '@deepseek-ai/dsh-credentials'
-import type {} from '@deepseek-ai/dsh-credentials-oauth-tokens'
+import { credentialRef } from '@open-harness/oh-credentials'
+import type {} from '@open-harness/oh-credentials'
+import type {} from '@open-harness/oh-credentials-oauth-tokens'
 import type { Config } from './index.ts'
 
 /** One `{$cred: REF}` reference carried by a server env or header value. */

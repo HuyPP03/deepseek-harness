@@ -1,11 +1,11 @@
 /**
  * Incremental projection of durable agent inbox events.
  *
- * @module @deepseek-ai/dsh-agent/inbox
+ * @module @open-harness/oh-agent/inbox
  */
 
-import type { MessageId } from '@deepseek-ai/dsh-llm'
-import type { Session, SessionEventMap, UserMessage } from '@deepseek-ai/dsh-session'
+import type { MessageId } from '@open-harness/oh-llm'
+import type { Session, SessionEventMap, UserMessage } from '@open-harness/oh-session'
 import type { InboxTarget } from './types.ts'
 
 /** Mutable state privately owned by an {@link Inbox}. */

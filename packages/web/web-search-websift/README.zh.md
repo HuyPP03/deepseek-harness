@@ -1,10 +1,10 @@
-# @deepseek-ai/dsh-web-search-websift
+# @open-harness/oh-web-search-websift
 
 [English](README.md) | 中文
 
 由 [websift](https://www.npmjs.com/package/websift) 支持的 `WebSearchProvider`，用于 harness [web 能力 seam](../web/README.md)（`ctx.web`）。它把 websift TypeScript 库以进程内方式嵌入——没有 MCP 边车，也没有独立传输进程——驱动其无需密钥的后端：`ddgs`（DuckDuckGo HTML 搜索，零配置）与 `searxng`（位于 `baseUrl` 之后的自有 SearXNG 实例）。
 
-这是一个**实现**包：它向 `ctx.web` 注册提供方，拥有无需密钥的后端允许列表与设置分节，不注册面向模型的工具。与 `@deepseek-ai/dsh-web-search-deepseek` 一样，它是函数／命名空间插件（`inject: ['web']`）。
+这是一个**实现**包：它向 `ctx.web` 注册提供方，拥有无需密钥的后端允许列表与设置分节，不注册面向模型的工具。与 `@open-harness/oh-web-search-deepseek` 一样，它是函数／命名空间插件（`inject: ['web']`）。
 
 ## 配置
 
@@ -16,7 +16,7 @@
 
 ```yaml
 - id: web-search-websift
-  name: '@deepseek-ai/dsh-web-search-websift'
+  name: '@open-harness/oh-web-search-websift'
   config:
     provider: searxng
     baseUrl: http://searxng.internal:8080
@@ -46,4 +46,4 @@ websift 不返回模型生成的答案，因此 `content` 被省略。`sources[]
 - **无 `publishedAt`** — websift 的无需密钥后端不返回发布日期，因此工具渲染的源不带日期后缀。
 - **带密钥的后端被推迟** — websift 的 `brave`／`exa`／`serper`／`tavily` 提供方携带 API 密钥，但其 `ProviderHttpClient` 会跟随重定向（`redirect: "follow"`），违反本包组对携带凭据的提供方请求的"拒绝重定向"规则。带密钥的后端将在上游客户端能在触碰 `Location` 目标之前拒绝重定向时落地。
 - **`ddgs` 是 DuckDuckGo HTML 抓取** — 无需密钥但受速率限制且可能被地区封锁；自托管 SearXNG 端点是稳定替代，SearXNG 后端在端点不可达时会在搜索时响亮失败。
-- **仅搜索；fetch 位于姊妹包** — 本包不暴露 fetch 路线。该库的页面抓取（SSRF 安全、HTML→markdown、PDF→文本）以 [`@deepseek-ai/dsh-web-fetch-websift`](../web-fetch-websift/README.md) 交付，base 挂载它、把 `web.fetchProvider` 指向它，并启用 `web_fetch`。
+- **仅搜索；fetch 位于姊妹包** — 本包不暴露 fetch 路线。该库的页面抓取（SSRF 安全、HTML→markdown、PDF→文本）以 [`@open-harness/oh-web-fetch-websift`](../web-fetch-websift/README.md) 交付，base 挂载它、把 `web.fetchProvider` 指向它，并启用 `web_fetch`。

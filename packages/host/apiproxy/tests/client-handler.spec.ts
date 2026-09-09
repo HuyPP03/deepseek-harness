@@ -6,9 +6,9 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import type { SessionId } from '@deepseek-ai/dsh-session'
-import type { ApiProxy, GoalRef, HostFrame, MuxFrame, RpcMessage, RpcRequest, RpcResponse } from '@deepseek-ai/dsh-host-apiproxy'
-import { InProcessApiClient, RpcId, toFetchHandler } from '@deepseek-ai/dsh-host-apiproxy'
+import type { SessionId } from '@open-harness/oh-session'
+import type { ApiProxy, GoalRef, HostFrame, MuxFrame, RpcMessage, RpcRequest, RpcResponse } from '@open-harness/oh-host-apiproxy'
+import { InProcessApiClient, RpcId, toFetchHandler } from '@open-harness/oh-host-apiproxy'
 
 const sid = (id: string): SessionId => id as SessionId
 

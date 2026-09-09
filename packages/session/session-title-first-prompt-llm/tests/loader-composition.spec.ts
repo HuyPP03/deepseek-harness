@@ -6,11 +6,11 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import LlmRuntime, { createUserMessage, LlmAdapter  } from '@deepseek-ai/dsh-llm'
-import type { GenerateOptions, StreamChunk } from '@deepseek-ai/dsh-llm'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
-import SessionTitleService from '@deepseek-ai/dsh-session-title'
-import * as providerPlugin from '@deepseek-ai/dsh-session-title-first-prompt-llm'
+import LlmRuntime, { createUserMessage, LlmAdapter  } from '@open-harness/oh-llm'
+import type { GenerateOptions, StreamChunk } from '@open-harness/oh-llm'
+import SessionStore, { SessionId } from '@open-harness/oh-session'
+import SessionTitleService from '@open-harness/oh-session-title'
+import * as providerPlugin from '@open-harness/oh-session-title-first-prompt-llm'
 
 let root: string | undefined
 let context: Context | undefined
@@ -36,14 +36,14 @@ async function loadComposition(): Promise<Context> {
   root = await mkdtemp(join(tmpdir(), 'dsh-title-loader-'))
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, [
-    "- name: '@deepseek-ai/dsh-llm'",
-    "- name: '@deepseek-ai/dsh-session'",
-    "- name: '@deepseek-ai/dsh-session-title'",
+    "- name: '@open-harness/oh-llm'",
+    "- name: '@open-harness/oh-session'",
+    "- name: '@open-harness/oh-session-title'",
     '  config:',
     '    fallbackMaxWords: 5',
     '    fallbackMaxBytes: 40',
     '    maxTitleBytes: 80',
-    "- name: '@deepseek-ai/dsh-session-title-first-prompt-llm'",
+    "- name: '@open-harness/oh-session-title-first-prompt-llm'",
     '  config:',
     '    targetWords: 5',
     '    targetCjkCharacters: 10',
@@ -60,10 +60,10 @@ async function loadComposition(): Promise<Context> {
   await context.plugin(Loader)
   context.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
-    ['@deepseek-ai/dsh-llm', LlmRuntime],
-    ['@deepseek-ai/dsh-session', SessionStore],
-    ['@deepseek-ai/dsh-session-title', SessionTitleService],
-    ['@deepseek-ai/dsh-session-title-first-prompt-llm', providerPlugin],
+    ['@open-harness/oh-llm', LlmRuntime],
+    ['@open-harness/oh-session', SessionStore],
+    ['@open-harness/oh-session-title', SessionTitleService],
+    ['@open-harness/oh-session-title-first-prompt-llm', providerPlugin],
   ])
   context.loader.internal = {
     version: 'v2',

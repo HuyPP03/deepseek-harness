@@ -21,12 +21,12 @@ export type {
   McpApi, McpServerRow, McpServerSpec, McpServerStatus, McpStdioServerSpec, McpStreamableHttpServerSpec, McpToolRow,
   SubagentsApi, SubagentAddress, SubagentCatalog, SubagentListEntry, SubagentPromptReceipt,
   JobsApi, JobLogView, JobView,
-} from '@deepseek-ai/dsh-host-apiproxy/api'
-export type { ToolCallView, ToolResultView } from '@deepseek-ai/dsh-tools/presentation'
+} from '@open-harness/oh-host-apiproxy/api'
+export type { ToolCallView, ToolResultView } from '@open-harness/oh-tools/presentation'
 export type {
   RpcRequest, RpcResponse, RpcResult, RpcError, RpcErrorCode,
   ClientRequest, ServerResponse, ServerRequest, ClientResponse, RpcMessage, RpcReceipt,
-} from '@deepseek-ai/dsh-host-apiproxy/api'
+} from '@open-harness/oh-host-apiproxy/api'
 // transportError lives in the apiproxy api layer (beside RpcResult, its
 // subject); re-exported here so connection consumers keep one contract
 // entry point.
@@ -35,17 +35,17 @@ export {
   RpcId,
   SESSION_SEARCH_RESULT_LIMIT,
   transportError,
-} from '@deepseek-ai/dsh-host-apiproxy/api'
-export { AbstractApiClient } from '@deepseek-ai/dsh-host-apiproxy/client'
-export type { IApiClient } from '@deepseek-ai/dsh-host-apiproxy/client'
-export type { SessionId, SessionEvent } from '@deepseek-ai/dsh-session/types'
-export type { MessageId } from '@deepseek-ai/dsh-llm/brand'
-export type { ContentBlock, StreamChunk } from '@deepseek-ai/dsh-llm/types'
+} from '@open-harness/oh-host-apiproxy/api'
+export { AbstractApiClient } from '@open-harness/oh-host-apiproxy/client'
+export type { IApiClient } from '@open-harness/oh-host-apiproxy/client'
+export type { SessionId, SessionEvent } from '@open-harness/oh-session/types'
+export type { MessageId } from '@open-harness/oh-llm/brand'
+export type { ContentBlock, StreamChunk } from '@open-harness/oh-llm/types'
 
 /** Successful value returned by the connection-generation host handshake. */
-export type HostDescription = import('@deepseek-ai/dsh-host-apiproxy/api').ResponseValue<'host.describe'>
+export type HostDescription = import('@open-harness/oh-host-apiproxy/api').ResponseValue<'host.describe'>
 
-import type { RpcResponse, RpcResult } from '@deepseek-ai/dsh-host-apiproxy/api'
+import type { RpcResponse, RpcResult } from '@open-harness/oh-host-apiproxy/api'
 
 /**
  * Unwrap a unary response: RpcResponse<T> -> RpcResult<T> (business code only

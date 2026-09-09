@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-mcp-manager
+# @open-harness/oh-mcp-manager
 
 English | [中文](README.zh.md)
 
@@ -10,7 +10,7 @@ Mounted in the base composition (`packages/bundle/base/cordis.patch.yml`):
 
 ```yaml
 - id: mcp-manager
-  name: '@deepseek-ai/dsh-mcp-manager'
+  name: '@open-harness/oh-mcp-manager'
 ```
 
 ### Persisted server documents
@@ -20,7 +20,7 @@ One file per user server, holding a single `mcp-client` entry:
 ```yaml
 # $OH_HOME/.mcp/websift.cordis.yml
 - id: mcp-client-websift
-  name: "@deepseek-ai/dsh-mcp-client"
+  name: "@open-harness/oh-mcp-client"
   config:
     serverName: websift
     transport: streamable-http

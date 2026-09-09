@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-settings-file`.
- * @module @deepseek-ai/dsh-settings-file/invariant
+ * Package-owned invariant companion for `@open-harness/oh-settings-file`.
+ * @module @open-harness/oh-settings-file/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-settings-file'
+const PACKAGE_NAME = '@open-harness/oh-settings-file'
 
 /** Cordis companion plugin name. */
 export const name = 'settings-file-invariant'
@@ -17,7 +17,7 @@ export const inject = ['invariants']
 /**
  * No runtime invariant: this provider's contracts are file round-trip,
  * watcher timing, and atomic-write behavior — IO effects proven by package
- * tests; the in-process commit relation is owned by `@deepseek-ai/dsh-settings`.
+ * tests; the in-process commit relation is owned by `@open-harness/oh-settings`.
  */
 const install: InvariantInstaller = () => {}
 

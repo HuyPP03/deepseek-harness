@@ -7,7 +7,7 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
+import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
 import type { SidebarRootComponentProps, SidebarSectionOwnerProps } from '../src/client/contract/slots.ts'
 import { SidebarRoot } from '../src/client/SidebarRoot.tsx'
 import { en } from '../src/client/locales.ts'

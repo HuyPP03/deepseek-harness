@@ -1,10 +1,10 @@
-# @deepseek-ai/dsh-web-search-websift
+# @open-harness/oh-web-search-websift
 
 English | [中文](README.zh.md)
 
 A [websift](https://www.npmjs.com/package/websift)-backed `WebSearchProvider` for the harness [web capability seam](../web/README.md) (`ctx.web`). It embeds the websift TypeScript library in-process — no MCP sidecar, no separate transport process — and drives its keyless backends: `ddgs` (DuckDuckGo HTML search, zero configuration) and `searxng` (your own SearXNG instance behind `baseUrl`).
 
-This is an **implementation** package: it registers a provider into `ctx.web`, owns the keyless backend allowlist and the settings section, and does not register a model-facing tool. Like `@deepseek-ai/dsh-web-search-deepseek`, it is a function/namespace plugin (`inject: ['web']`).
+This is an **implementation** package: it registers a provider into `ctx.web`, owns the keyless backend allowlist and the settings section, and does not register a model-facing tool. Like `@open-harness/oh-web-search-deepseek`, it is a function/namespace plugin (`inject: ['web']`).
 
 ## Config
 
@@ -16,7 +16,7 @@ This is an **implementation** package: it registers a provider into `ctx.web`, o
 
 ```yaml
 - id: web-search-websift
-  name: '@deepseek-ai/dsh-web-search-websift'
+  name: '@open-harness/oh-web-search-websift'
   config:
     provider: searxng
     baseUrl: http://searxng.internal:8080
@@ -46,4 +46,4 @@ No direct invalidation; the named consumer owns any request-prefix changes.
 - **No `publishedAt`** — websift's keyless backends return no publication date, so the tool renders sources without the date suffix.
 - **Keyed backends deferred** — websift's `brave`/`exa`/`serper`/`tavily` providers carry API keys, but its `ProviderHttpClient` follows redirects (`redirect: "follow"`), violating this package group's reject-redirects rule for credential-bearing provider requests. Keyed backends land when the upstream client can reject redirects before the `Location` target is contacted.
 - **`ddgs` is DuckDuckGo HTML scraping** — keyless but rate-limited and region-blocked; a self-hosted SearXNG endpoint is the stable alternative, and the SearXNG backend fails loud at search time when its endpoint is unreachable.
-- **Search only; fetch lives in a sibling package** — this package exposes no fetch route. The library's page fetch (SSRF-safe, HTML-to-markdown, PDF-to-text) ships as [`@deepseek-ai/dsh-web-fetch-websift`](../web-fetch-websift/README.md), which the base mounts and points `web.fetchProvider` at with `web_fetch` enabled.
+- **Search only; fetch lives in a sibling package** — this package exposes no fetch route. The library's page fetch (SSRF-safe, HTML-to-markdown, PDF-to-text) ships as [`@open-harness/oh-web-fetch-websift`](../web-fetch-websift/README.md), which the base mounts and points `web.fetchProvider` at with `web_fetch` enabled.

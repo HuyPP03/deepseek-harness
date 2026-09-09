@@ -5,10 +5,10 @@
 // diff and read rows use); the folder reveal keeps the Host opener.
 
 import { useLayoutEffect, useRef, useState } from 'react'
-import type { HostDescriptionSource } from '@deepseek-ai/dsh-client-connection/client'
-import { IconBrowseOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { InjectFace, PropsLocale } from '@deepseek-ai/dsh-client-ui-slots'
-import type { TurnTailOwnerProps } from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type { HostDescriptionSource } from '@open-harness/oh-client-connection/client'
+import { IconBrowseOutline16 } from '@open-harness/oh-client-ui-primitives'
+import type { InjectFace, PropsLocale } from '@open-harness/oh-client-ui-slots'
+import type { TurnTailOwnerProps } from '@open-harness/oh-client-ui-conversation/client'
 import { basename } from './turn-deliverables.ts'
 import type { NS } from './locales.ts'
 import css from './ProducedFiles.module.css'

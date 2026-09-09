@@ -14,8 +14,8 @@ import {
   escalationHintMarker,
   sandboxDenialMarker,
   validateEscalationArgs,
-} from '@deepseek-ai/dsh-sandbox'
-import type { EscalationApprover, EscalationOutcome } from '@deepseek-ai/dsh-sandbox'
+} from '@open-harness/oh-sandbox'
+import type { EscalationApprover, EscalationOutcome } from '@open-harness/oh-sandbox'
 
 describe('the strictly-wider ladder', () => {
   it('each mode escalates only to the modes strictly wider than it', () => {

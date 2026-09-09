@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from 'vitest'
 import { McpSectionController, blankDraft, draftBlocker, specOf } from '../src/client/section-store.ts'
-import type { McpServerRow } from '@deepseek-ai/dsh-api-remotes/client'
+import type { McpServerRow } from '@open-harness/oh-api-remotes/client'
 
 /** One roster row for the fakes. */
 const ROWS: McpServerRow[] = [

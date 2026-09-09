@@ -12,16 +12,16 @@
  * are loopback-agnostic.
  */
 
-import type { ConnectionHandle, McpServerRow } from '@deepseek-ai/dsh-api-remotes/client'
+import type { ConnectionHandle, McpServerRow } from '@open-harness/oh-api-remotes/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
-import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type {} from '@open-harness/oh-client-locale/client'
 // Type-only: pulls the command surface contract (the /mcp decoration face).
-import type { CommandUiContract } from '@deepseek-ai/dsh-client-ui-commands/client'
+import type { CommandUiContract } from '@open-harness/oh-client-ui-commands/client'
 // Type-only: pulls the settings shell's SlotMap merge (the 'settings.section'
 // entry) and the panel controller's Context merge (ctx.settingsPanel).
-import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
-import type {} from '@deepseek-ai/dsh-client-ui-settings-general/client'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type {} from '@open-harness/oh-client-ui-settings/client'
+import type {} from '@open-harness/oh-client-ui-settings-general/client'
+import type { ClientContext } from '@open-harness/oh-client-runtime/client'
 import { McpSection } from './McpSection.tsx'
 import type { McpSectionInjected } from './McpSection.tsx'
 import { McpSectionController } from './section-store.ts'

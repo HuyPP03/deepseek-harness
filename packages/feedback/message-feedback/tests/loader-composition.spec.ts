@@ -6,12 +6,12 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Include from '@deepseek-ai/cordis-plugin-include'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
-import SessionStore, { SessionId } from '@deepseek-ai/dsh-session'
-import JsonlSessionPersistence from '@deepseek-ai/dsh-session-persistence-jsonl'
-import Storage from '@deepseek-ai/dsh-storage'
-import * as StorageDomain from '@deepseek-ai/dsh-storage-domain'
-import * as StorageJson from '@deepseek-ai/dsh-storage-json'
-import { remoteMethods } from '@deepseek-ai/dsh-typert-protocol'
+import SessionStore, { SessionId } from '@open-harness/oh-session'
+import JsonlSessionPersistence from '@open-harness/oh-session-persistence-jsonl'
+import Storage from '@open-harness/oh-storage'
+import * as StorageDomain from '@open-harness/oh-storage-domain'
+import * as StorageJson from '@open-harness/oh-storage-json'
+import { remoteMethods } from '@open-harness/oh-typert-protocol'
 import MessageFeedbackService from '../src/index.ts'
 import { appendMessageFixture } from './helpers.ts'
 
@@ -30,12 +30,12 @@ async function loadComposition(configPath: string): Promise<Context> {
   await ctx.plugin(Loader)
   ctx.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
-    ['@deepseek-ai/dsh-session', SessionStore],
-    ['@deepseek-ai/dsh-session-persistence-jsonl', JsonlSessionPersistence],
-    ['@deepseek-ai/dsh-storage', Storage],
-    ['@deepseek-ai/dsh-storage-json', StorageJson],
-    ['@deepseek-ai/dsh-storage-domain', StorageDomain],
-    ['@deepseek-ai/dsh-message-feedback', MessageFeedbackService],
+    ['@open-harness/oh-session', SessionStore],
+    ['@open-harness/oh-session-persistence-jsonl', JsonlSessionPersistence],
+    ['@open-harness/oh-storage', Storage],
+    ['@open-harness/oh-storage-json', StorageJson],
+    ['@open-harness/oh-storage-domain', StorageDomain],
+    ['@open-harness/oh-message-feedback', MessageFeedbackService],
   ])
   ctx.loader.internal = {
     version: 'v2',
@@ -61,20 +61,20 @@ describe('message feedback through a real Loader composition', () => {
     root = await mkdtemp(join(tmpdir(), 'dsh-message-feedback-loader-'))
     const configPath = join(root, 'cordis.yml')
     await writeFile(configPath, [
-      "- name: '@deepseek-ai/dsh-session'",
-      "- name: '@deepseek-ai/dsh-session-persistence-jsonl'",
+      "- name: '@open-harness/oh-session'",
+      "- name: '@open-harness/oh-session-persistence-jsonl'",
       '  config:',
       `    root: ${JSON.stringify(join(root, 'sessions'))}`,
       '    compression: none',
       '    writeBatchMaxDelayMs: 1',
-      "- name: '@deepseek-ai/dsh-storage'",
-      "- name: '@deepseek-ai/dsh-storage-json'",
+      "- name: '@open-harness/oh-storage'",
+      "- name: '@open-harness/oh-storage-json'",
       '  config:',
       `    root: ${JSON.stringify(join(root, 'storage'))}`,
-      "- name: '@deepseek-ai/dsh-storage-domain'",
+      "- name: '@open-harness/oh-storage-domain'",
       '  config:',
       '    backend: json',
-      "- name: '@deepseek-ai/dsh-message-feedback'",
+      "- name: '@open-harness/oh-message-feedback'",
       '  config:',
       '    maxNoteBytes: 32',
       '',

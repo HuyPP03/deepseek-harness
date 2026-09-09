@@ -78,9 +78,9 @@ MINIMAL_SNAPSHOT_FILENAMES = ("model-visible.json",)
 RUNTIME_CONTEXT_PREFIX = "Current runtime context"
 CUSTOM_CORDIS = """\
 - id: sdk-jsonrpc-server
-  name: '@deepseek-ai/dsh-sdk-jsonrpc-server'
+  name: '@open-harness/oh-sdk-jsonrpc-server'
 - id: agent-core
-  name: '@deepseek-ai/dsh-agent-spine-demo'
+  name: '@open-harness/oh-agent-spine-demo'
   config:
     workspaceContext: false
     skills:
@@ -89,32 +89,32 @@ CUSTOM_CORDIS = """\
     tools:
       mode: both
 - id: sessions
-  name: '@deepseek-ai/dsh-session-persistence-jsonl'
+  name: '@open-harness/oh-session-persistence-jsonl'
   config:
     root: !!js process.env.OH_SESSION_ROOT
     compression: 'none'
 - id: code-runtime
-  name: '@deepseek-ai/dsh-code-runtime-worker-thread'
+  name: '@open-harness/oh-code-runtime-worker-thread'
 - id: subagents
-  name: '@deepseek-ai/dsh-subagent'
+  name: '@open-harness/oh-subagent'
 - id: subagent-spawn-in-process
-  name: '@deepseek-ai/dsh-subagent-spawn-in-process'
+  name: '@open-harness/oh-subagent-spawn-in-process'
   config:
     providerName: spawn
 - id: subagent-tool
-  name: '@deepseek-ai/dsh-tool-subagent'
+  name: '@open-harness/oh-tool-subagent'
   config:
     provider: spawn
 - id: workflow-engine
-  name: '@deepseek-ai/dsh-workflow-worker-thread'
+  name: '@open-harness/oh-workflow-worker-thread'
   config:
     provider: spawn
 - id: workflow-tool
-  name: '@deepseek-ai/dsh-tool-workflow'
+  name: '@open-harness/oh-tool-workflow'
 - id: cordis-host-runner
-  name: '@deepseek-ai/dsh-cordis-host-runner'
+  name: '@open-harness/oh-cordis-host-runner'
 - id: cordis-tool
-  name: '@deepseek-ai/dsh-tool-cordis'
+  name: '@open-harness/oh-tool-cordis'
 """
 class MockModelHandler(BaseHTTPRequestHandler):
     """Return deterministic text, worker, and orchestration completions."""

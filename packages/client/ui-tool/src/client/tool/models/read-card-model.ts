@@ -13,8 +13,8 @@
  * until the result arrives.
  * @module
  */
-import type { ReadBlockLabels, ReadBlockLine, ReadBlockProps } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { CommonKeyOf, Translate } from '@deepseek-ai/dsh-client-ui-slots'
+import type { ReadBlockLabels, ReadBlockLine, ReadBlockProps } from '@open-harness/oh-client-ui-primitives'
+import type { CommonKeyOf, Translate } from '@open-harness/oh-client-ui-slots'
 import { relativizeToCwd, type ToolCallBlock } from './tool-call-model.ts'
 
 /**

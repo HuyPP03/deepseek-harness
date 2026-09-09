@@ -2,8 +2,8 @@
 
 import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import InvariantRegistry from '@deepseek-ai/dsh-invariants'
-import * as ConnectorsInvariant from '@deepseek-ai/dsh-client-ui-connectors/invariant'
+import InvariantRegistry from '@open-harness/oh-invariants'
+import * as ConnectorsInvariant from '@open-harness/oh-client-ui-connectors/invariant'
 
 describe('invariant companion', () => {
   it('reserves package ownership with an empty installer', async () => {
@@ -14,7 +14,7 @@ describe('invariant companion', () => {
   })
 
   it('has an empty node half', async () => {
-    const { apply } = await import('@deepseek-ai/dsh-client-ui-connectors')
+    const { apply } = await import('@open-harness/oh-client-ui-connectors')
 
     // The host body exists only so the plugin appears in the host cordis.yml;
     // every surface this package ships lives in the browser half.

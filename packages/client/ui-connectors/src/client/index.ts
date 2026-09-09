@@ -9,14 +9,14 @@
  * binds the controller's snapshot store through the inject `hooks`
  * compartment. Export discipline: packages/client/AGENTS.md.
  */
-import { createSnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
-import type { ConnectionHandle } from '@deepseek-ai/dsh-api-remotes/client'
+import { createSnapshotStore } from '@open-harness/oh-client-runtime/client'
+import type { ClientContext } from '@open-harness/oh-client-runtime/client'
+import type { ConnectionHandle } from '@open-harness/oh-api-remotes/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
-import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type {} from '@open-harness/oh-client-locale/client'
 // Type-only: pulls the layout plugin's Context merge (ctx.layout), so a
 // provider chat opened from the directory can dismiss the overlay.
-import type {} from '@deepseek-ai/dsh-client-ui-layout/client'
+import type {} from '@open-harness/oh-client-ui-layout/client'
 import type { ConnectedProvidersListInjected, ConnectorsDirectoryInjected } from './contract/slots.ts'
 import { ConnectorsSectionController } from './controller.ts'
 import { ConnectedProvidersList } from './ConnectedProvidersList.tsx'
@@ -31,7 +31,7 @@ export type { ConnectorsKey } from './locales.ts'
 export type { ConnectTokenDialog, ConnectorsSectionState, RowOpError } from './controller.ts'
 export { ConnectorsSectionController } from './controller.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** The connectors directory, list, and dialog copy. */
     connectors: ConnectorsKey

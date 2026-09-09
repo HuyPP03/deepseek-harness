@@ -6,7 +6,7 @@
 
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { FileEntry, SessionId } from '@deepseek-ai/dsh-api-remotes/client'
+import type { FileEntry, SessionId } from '@open-harness/oh-api-remotes/client'
 import { FileBrowser } from '../src/client/FileBrowser.tsx'
 import type { FileBrowserProps } from '../src/client/FileBrowser.tsx'
 import { zh } from '../src/client/locales.ts'

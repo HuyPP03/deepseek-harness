@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-workspace
+# @open-harness/oh-client-ui-workspace
 
 [English](README.md) | 中文
 

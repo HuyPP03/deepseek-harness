@@ -1,13 +1,13 @@
 /**
- * Package-owned invariant companion for `@deepseek-ai/dsh-session-query`.
- * @module @deepseek-ai/dsh-session-query/invariant
+ * Package-owned invariant companion for `@open-harness/oh-session-query`.
+ * @module @open-harness/oh-session-query/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-session-query'
+const PACKAGE_NAME = '@open-harness/oh-session-query'
 
 /** Cordis companion plugin name. */
 export const name = 'session-query-invariant'

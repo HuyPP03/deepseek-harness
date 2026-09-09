@@ -12,8 +12,8 @@
  * a running call always takes the generic path.
  * @module
  */
-import type { WebBlockLabels, WebBlockProps } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { CommonKeyOf, Translate } from '@deepseek-ai/dsh-client-ui-slots'
+import type { WebBlockLabels, WebBlockProps } from '@open-harness/oh-client-ui-primitives'
+import type { CommonKeyOf, Translate } from '@open-harness/oh-client-ui-slots'
 import type { ToolCallBlock } from './tool-call-model.ts'
 
 /**

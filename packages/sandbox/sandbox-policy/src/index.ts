@@ -15,17 +15,17 @@
  * reads session state once at each operation boundary; executors and providers
  * remain session-free.
  *
- * @module @deepseek-ai/dsh-sandbox-policy
+ * @module @open-harness/oh-sandbox-policy
  */
 
 import { resolve as resolvePath } from 'node:path'
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import type {} from '@deepseek-ai/dsh-agent'
-import { canonicalPath, type SandboxExecutionPolicy, type SandboxMode } from '@deepseek-ai/dsh-sandbox'
-import type { Session } from '@deepseek-ai/dsh-session'
-import type {} from '@deepseek-ai/dsh-system-prompt'
-import { referencesOf } from '@deepseek-ai/dsh-workspace-references'
+import type {} from '@open-harness/oh-agent'
+import { canonicalPath, type SandboxExecutionPolicy, type SandboxMode } from '@open-harness/oh-sandbox'
+import type { Session } from '@open-harness/oh-session'
+import type {} from '@open-harness/oh-system-prompt'
+import { referencesOf } from '@open-harness/oh-workspace-references'
 import { SANDBOX_MODES, effectiveSandboxMode } from './session-mode.ts'
 
 export { SANDBOX_MODES, effectiveSandboxMode, setSandboxMode } from './session-mode.ts'

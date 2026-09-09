@@ -14,12 +14,12 @@
  * from the menu.
  */
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
-import type {} from '@deepseek-ai/dsh-client-locale/client'
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
-import type { CommandUiContract } from '@deepseek-ai/dsh-client-ui-commands/client'
+import type {} from '@open-harness/oh-client-locale/client'
+import type { ClientContext } from '@open-harness/oh-client-runtime/client'
+import type { CommandUiContract } from '@open-harness/oh-client-ui-commands/client'
 import { en, NS, vi, zh, type SlashToolsKey } from './locales.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** Slash tool copy (/clear, /help). */
     slashTools: SlashToolsKey

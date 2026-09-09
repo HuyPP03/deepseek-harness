@@ -22,8 +22,8 @@ import {
   WEBSIFT_FETCH_PROVIDER_ID,
   WebsiftFetchProvider,
   type WebsiftFetchProviderOptions,
-} from '@deepseek-ai/dsh-web-fetch-websift'
-import WebRuntime, { type WebFetchResult } from '@deepseek-ai/dsh-web'
+} from '@open-harness/oh-web-fetch-websift'
+import WebRuntime, { type WebFetchResult } from '@open-harness/oh-web'
 
 /** A public, non-blocked IPv4 literal: it passes the SSRF preflight without DNS. */
 const PUBLIC_IP_URL = 'https://93.184.216.34/'

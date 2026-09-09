@@ -1,7 +1,7 @@
 /**
  * Model-facing PowerShell Consumer of the `ctx.shell` capability seam. Intended for
  * Windows compositions where a PowerShell executor (e.g.
- * `@deepseek-ai/dsh-pwsh-local`) backs `ctx.shell`; the tool contract is
+ * `@open-harness/oh-pwsh-local`) backs `ctx.shell`; the tool contract is
  * PowerShell-dialect: native `C:\...` paths and `$env:NAME` variables.
  *
  * Behavior mirrors `dsh-tool-bash` call-for-call: foreground and
@@ -14,32 +14,32 @@
  * `ctx.approval`), and the bash marker/truncation rendering story. UI
  * presentation mirrors the bash tool's too: a completed foreground call is
  * a terminal card with the parsed exit-status pill, using the shared
- * exit-status parse from `@deepseek-ai/dsh-shell`.
+ * exit-status parse from `@open-harness/oh-shell`.
  *
- * @module @deepseek-ai/dsh-tool-pwsh
+ * @module @open-harness/oh-tool-pwsh
  */
 
 import { isAbsolute, resolve as resolvePath } from 'node:path'
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { defineTool, TOOL_ABORTED } from '@deepseek-ai/dsh-tools'
-import type { GenericCallView, TerminalCallView, ToolExecution, ToolResult, ToolResultView } from '@deepseek-ai/dsh-tools'
-import { HarnessError } from '@deepseek-ai/dsh-llm'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import type {} from '@deepseek-ai/dsh-system-prompt'
-import type {} from '@deepseek-ai/dsh-jobs'
-import type {} from '@deepseek-ai/dsh-shell-env'
-import type {} from '@deepseek-ai/dsh-user-approval'
-import type { SandboxExecutionPolicy, SandboxMode } from '@deepseek-ai/dsh-sandbox'
-import { ESCALATION_TARGETS, approveEscalation, validateEscalationArgs } from '@deepseek-ai/dsh-sandbox'
-import type { SandboxPolicyService } from '@deepseek-ai/dsh-sandbox-policy'
-import type { ShellRunResult } from '@deepseek-ai/dsh-shell'
-import { parseExitStatus } from '@deepseek-ai/dsh-shell'
+import { defineTool, TOOL_ABORTED } from '@open-harness/oh-tools'
+import type { GenericCallView, TerminalCallView, ToolExecution, ToolResult, ToolResultView } from '@open-harness/oh-tools'
+import { HarnessError } from '@open-harness/oh-llm'
+import type { Agent } from '@open-harness/oh-agent'
+import type {} from '@open-harness/oh-system-prompt'
+import type {} from '@open-harness/oh-jobs'
+import type {} from '@open-harness/oh-shell-env'
+import type {} from '@open-harness/oh-user-approval'
+import type { SandboxExecutionPolicy, SandboxMode } from '@open-harness/oh-sandbox'
+import { ESCALATION_TARGETS, approveEscalation, validateEscalationArgs } from '@open-harness/oh-sandbox'
+import type { SandboxPolicyService } from '@open-harness/oh-sandbox-policy'
+import type { ShellRunResult } from '@open-harness/oh-shell'
+import { parseExitStatus } from '@open-harness/oh-shell'
 import { processOutcome } from './background.ts'
 import { renderPwshProcessRead, renderPwshResult } from './render.ts'
 import type { RenderablePwshResult } from './render.ts'
 
-declare module '@deepseek-ai/dsh-jobs' {
+declare module '@open-harness/oh-jobs' {
   interface JobKindMap {
     pwsh: 'pwsh'
   }
@@ -370,7 +370,7 @@ export function apply(ctx: Context, config: Config = {}): void {
         }
         const jobs = ctx.get('jobs')
         if (jobs === undefined) {
-          throw new Error('background jobs unavailable: load @deepseek-ai/dsh-jobs and @deepseek-ai/dsh-tool-jobs')
+          throw new Error('background jobs unavailable: load @open-harness/oh-jobs and @open-harness/oh-tool-jobs')
         }
         // The caller owns cancellation until ctx.jobs commits detached ownership.
         if (exec.signal.aborted) {

@@ -1,7 +1,7 @@
 /** Registers the sidebar shell into the layout-owned slot. */
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ClientContext } from '@open-harness/oh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
-import type {} from '@deepseek-ai/dsh-client-locale/client'
+import type {} from '@open-harness/oh-client-locale/client'
 import type { SidebarRootInjected } from './contract/slots.ts'
 import { SidebarRoot } from './SidebarRoot.tsx'
 import { createSidebarStore } from './stores.ts'
@@ -13,7 +13,7 @@ export type {
 } from './contract/slots.ts'
 export type { SidebarKey } from './locales.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** Sidebar shell controls copy. */
     sidebar: SidebarKey

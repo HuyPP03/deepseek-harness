@@ -2,9 +2,9 @@
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
-import type { InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-client-ui-workflow-run'
+const PACKAGE_NAME = '@open-harness/oh-client-ui-workflow-run'
 
 /** Cordis companion plugin name. */
 export const name = 'client-ui-workflow-run-invariant'

@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { clsx } from 'clsx'
-import { grammarLoadCount, highlightLines, subscribeGrammarLoaded, type HighlightSpan } from '@deepseek-ai/dsh-client-ui-primitives'
+import { grammarLoadCount, highlightLines, subscribeGrammarLoaded, type HighlightSpan } from '@open-harness/oh-client-ui-primitives'
 import css from './FileInspector.module.css'
 
 /** One layout row (must match `--insp-line-height` in the module sheet). */

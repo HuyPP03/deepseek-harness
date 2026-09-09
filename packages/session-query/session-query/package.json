@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-session-query",
+  "name": "@open-harness/oh-session-query",
   "description": "Combined session query service contract with concrete reads, traces, and filters",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,26 +32,26 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-brand": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-session-title": "workspace:^",
-    "@deepseek-ai/dsh-session-persistence": "workspace:^",
+    "@open-harness/oh-brand": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-session-title": "workspace:^",
+    "@open-harness/oh-session-persistence": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "peerDependenciesMeta": {
-    "@deepseek-ai/dsh-session-persistence": {
+    "@open-harness/oh-session-persistence": {
       "optional": true
     }
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-brand": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-session-title": "workspace:^",
-    "@deepseek-ai/dsh-session-persistence": "workspace:^",
+    "@open-harness/oh-brand": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-session-title": "workspace:^",
+    "@open-harness/oh-session-persistence": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

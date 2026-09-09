@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-file-mention
+# @open-harness/oh-client-ui-file-mention
 
 [English](README.md) | 中文
 

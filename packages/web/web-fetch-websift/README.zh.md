@@ -1,14 +1,14 @@
-# @deepseek-ai/dsh-web-fetch-websift
+# @open-harness/oh-web-fetch-websift
 
 [English](README.md) | 中文
 
 基于 [websift](https://www.npmjs.com/package/websift) 的 `WebFetchProvider`，服务于 harness [web 能力 seam](../web/README.md)（`ctx.web`）。它在进程内嵌入 websift TypeScript 库，让每个目标 URL 都经过库的 SSRF 安全获取：环回、私有与链路本地地址在任何请求离开进程之前就被拒绝，随后页面被转换为 markdown（或按 PDF 读取为文本）。它是 [base bundle](../../bundle/base/README.md) 随 `web_fetch` 启用而交付的 fetch 路线——第一条可以"开着交付"的无密钥 fetch 路线，因为其安全墙是硬不变量，而不是推迟工作。
 
-这是一个**实现**包：它向 `ctx.web` 注册提供方，不拥有该键，也不注册面向模型的工具。与 [`@deepseek-ai/dsh-web-search-websift`](../web-search-websift/README.md) 一样，它是函数／命名空间插件（`inject: ['web']`）。
+这是一个**实现**包：它向 `ctx.web` 注册提供方，不拥有该键，也不注册面向模型的工具。与 [`@open-harness/oh-web-search-websift`](../web-search-websift/README.md) 一样，它是函数／命名空间插件（`inject: ['web']`）。
 
 ## 职责拆分
 
-提供方拥有 **SSRF 安全获取**：URL 验证、scheme 策略、非全局地址拒绝、传输（字节上限、同进程重定向边界、超时）与提取（HTML→markdown、PDF→文本、渲染页面上限）。[`@deepseek-ai/dsh-tool-web`](../tool-web/README.md) 拥有**呈现**：它原样透传该提供方的渲染文本，按自身输出上限截断，并用工具的错误格式包装提供方失败。
+提供方拥有 **SSRF 安全获取**：URL 验证、scheme 策略、非全局地址拒绝、传输（字节上限、同进程重定向边界、超时）与提取（HTML→markdown、PDF→文本、渲染页面上限）。[`@open-harness/oh-tool-web`](../tool-web/README.md) 拥有**呈现**：它原样透传该提供方的渲染文本，按自身输出上限截断，并用工具的错误格式包装提供方失败。
 
 与 [`dsh-web-fetch-http`](../web-fetch-http/README.md) 不同，这里的非 2xx HTTP 响应是*失败*而非*结果*：库对状态码分类（401/403/407 → `auth`，429 → `rate_limit`，5xx → `unavailable`，其他 4xx → `http_error`），提供方把每一类都以 `WEB_PROVIDER_ERROR` 连同库的净化消息呈现。
 
@@ -47,7 +47,7 @@
 
 ```yaml
 - id: web-fetch-websift
-  name: '@deepseek-ai/dsh-web-fetch-websift'
+  name: '@open-harness/oh-web-fetch-websift'
   config:
     allowHttp: true
 ```

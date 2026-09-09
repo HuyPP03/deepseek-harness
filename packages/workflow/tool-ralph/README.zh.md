@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-tool-ralph
+# @open-harness/oh-tool-ralph
 
 [English](README.md) | 中文
 

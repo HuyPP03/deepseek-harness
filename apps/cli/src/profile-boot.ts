@@ -28,8 +28,8 @@ import {
   PROFILE_PATCH_FILENAME,
   watchUserPatches,
   type Profile,
-} from '@deepseek-ai/dsh-app-boot'
-import { resolveOhHome } from '@deepseek-ai/dsh-home-paths'
+} from '@open-harness/oh-app-boot'
+import { resolveOhHome } from '@open-harness/oh-home-paths'
 
 /** Shipped agent-preset root: beside this app's own config, in both source and built layouts. */
 const SHIPPED_PRESET_ROOT = fileURLToPath(new URL('../config/agent-presets/', import.meta.url))
@@ -37,8 +37,8 @@ const SHIPPED_PRESET_ROOT = fileURLToPath(new URL('../config/agent-presets/', im
 /** Shipped connector catalog: beside this app's own config, in both source and built layouts. */
 const SHIPPED_CONNECTOR_CATALOG = fileURLToPath(new URL('../config/connectors/', import.meta.url))
 
-import { OH_LAUNCH_ENVIRONMENT_KEY, type LaunchEnvironmentSnapshot } from '@deepseek-ai/dsh-launch-environment'
-import { provideCmdline } from '@deepseek-ai/dsh-cmdline'
+import { OH_LAUNCH_ENVIRONMENT_KEY, type LaunchEnvironmentSnapshot } from '@open-harness/oh-launch-environment'
+import { provideCmdline } from '@open-harness/oh-cmdline'
 import { createProcessShutdown, type ProcessShutdown } from './process-shutdown.ts'
 
 const NAME = 'oh'

@@ -1,11 +1,11 @@
-/** Package-owned reference-project event invariants. @module @deepseek-ai/dsh-workspace-references/invariant */
+/** Package-owned reference-project event invariants. @module @open-harness/oh-workspace-references/invariant */
 
 import type { Context } from '@deepseek-ai/cordis'
 import { isAbsolute } from 'node:path'
-import type { Session, SessionEvent } from '@deepseek-ai/dsh-session'
-import type { InvariantFailure, InvariantInstaller } from '@deepseek-ai/dsh-invariants'
+import type { Session, SessionEvent } from '@open-harness/oh-session'
+import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@deepseek-ai/dsh-workspace-references'
+const PACKAGE_NAME = '@open-harness/oh-workspace-references'
 
 /** Cordis companion plugin name. */
 export const name = 'workspace-references-invariant'

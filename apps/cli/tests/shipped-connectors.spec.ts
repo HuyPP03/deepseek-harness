@@ -15,7 +15,7 @@ import { tmpdir } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { healProfilesModuleFallback, loadLayeredEnv } from '@deepseek-ai/dsh-app-boot'
+import { healProfilesModuleFallback, loadLayeredEnv } from '@open-harness/oh-app-boot'
 import { runProfile } from '../src/profile-boot.ts'
 
 const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url))

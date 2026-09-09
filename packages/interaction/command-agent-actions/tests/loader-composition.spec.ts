@@ -6,12 +6,12 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import { CallId } from '@deepseek-ai/dsh-llm'
-import CommandRuntime from '@deepseek-ai/dsh-commands'
-import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@deepseek-ai/dsh-session'
-import SubagentRuntime from '@deepseek-ai/dsh-subagent'
-import * as commandAgentActions from '@deepseek-ai/dsh-command-agent-actions'
+import type { Agent } from '@open-harness/oh-agent'
+import { CallId } from '@open-harness/oh-llm'
+import CommandRuntime from '@open-harness/oh-commands'
+import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@open-harness/oh-session'
+import SubagentRuntime from '@open-harness/oh-subagent'
+import * as commandAgentActions from '@open-harness/oh-command-agent-actions'
 import { ScriptedReviewer } from './scripted-reviewer'
 
 let root: string | undefined
@@ -28,9 +28,9 @@ async function compose(): Promise<void> {
   root = await mkdtemp(join(tmpdir(), 'dsh-command-agent-actions-loader-'))
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, [
-    "- name: '@deepseek-ai/dsh-commands'",
-    "- name: '@deepseek-ai/dsh-subagent'",
-    "- name: '@deepseek-ai/dsh-command-agent-actions'",
+    "- name: '@open-harness/oh-commands'",
+    "- name: '@open-harness/oh-subagent'",
+    "- name: '@open-harness/oh-command-agent-actions'",
     '',
   ].join('\n'))
 
@@ -39,9 +39,9 @@ async function compose(): Promise<void> {
   await context.plugin(Loader)
   context.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
-    ['@deepseek-ai/dsh-commands', CommandRuntime],
-    ['@deepseek-ai/dsh-subagent', SubagentRuntime],
-    ['@deepseek-ai/dsh-command-agent-actions', commandAgentActions],
+    ['@open-harness/oh-commands', CommandRuntime],
+    ['@open-harness/oh-subagent', SubagentRuntime],
+    ['@open-harness/oh-command-agent-actions', commandAgentActions],
   ])
   context.loader.internal = {
     version: 'v2',

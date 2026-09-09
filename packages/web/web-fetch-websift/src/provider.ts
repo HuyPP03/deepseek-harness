@@ -4,13 +4,13 @@
  * before any request leaves the process), HTML-to-markdown conversion, and
  * PDF-to-text. The library owns transport and extraction; this provider owns
  * the seam mapping, cancellation, and error vocabulary.
- * @module @deepseek-ai/dsh-web-fetch-websift/provider
+ * @module @open-harness/oh-web-fetch-websift/provider
  */
 
 import { AppSettings, fetchResultOk, WebSearchClient } from 'websift'
 import type { FetchResult } from 'websift'
-import { WebError } from '@deepseek-ai/dsh-web'
-import type { WebFetchProvider, WebFetchRequest, WebFetchResult } from '@deepseek-ai/dsh-web'
+import { WebError } from '@open-harness/oh-web'
+import type { WebFetchProvider, WebFetchRequest, WebFetchResult } from '@open-harness/oh-web'
 
 /** Stable id this provider registers under. */
 export const WEBSIFT_FETCH_PROVIDER_ID = 'websift'

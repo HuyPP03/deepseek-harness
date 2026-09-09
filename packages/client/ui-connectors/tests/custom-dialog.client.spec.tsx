@@ -5,8 +5,8 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import type { ConnectorView, IApiClient, RpcId, RpcResponse } from '@deepseek-ai/dsh-api-remotes/client'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
+import type { ConnectorView, IApiClient, RpcId, RpcResponse } from '@open-harness/oh-api-remotes/client'
+import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
 import { ConnectorsSectionController } from '../src/client/controller.ts'
 import { ConnectorsDirectory } from '../src/client/ConnectorsDirectory.tsx'
 import type { ConnectorsDirectoryProps } from '../src/client/contract/slots.ts'

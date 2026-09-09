@@ -7,13 +7,13 @@
  * sign-in settles or the window closes. A provider that reports the account
  * already signed in settles without a code. The engine never stores a
  * credential: the MCP server owns its token cache.
- * @module @deepseek-ai/dsh-connectors-device-flow
+ * @module @open-harness/oh-connectors-device-flow
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'
-import type { Connectors, DeviceFlowStart } from '@deepseek-ai/dsh-connectors'
-import { CallId, type ContentBlock } from '@deepseek-ai/dsh-llm'
-import type { McpManager } from '@deepseek-ai/dsh-mcp-manager'
+import type { Connectors, DeviceFlowStart } from '@open-harness/oh-connectors'
+import { CallId, type ContentBlock } from '@open-harness/oh-llm'
+import type { McpManager } from '@open-harness/oh-mcp-manager'
 import z from '@deepseek-ai/schemastery'
 
 /**

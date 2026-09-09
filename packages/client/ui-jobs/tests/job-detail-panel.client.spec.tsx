@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
-import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
-import type { JobView, SessionId, SessionListState } from '@deepseek-ai/dsh-client-runtime/client'
+import { makeTranslate } from '@open-harness/oh-client-test-runtime'
+import type { JobView, SessionId, SessionListState } from '@open-harness/oh-client-runtime/client'
 import { JobDetailPanel, type JobDetailPanelProps } from '../src/client/JobDetailPanel.tsx'
 import { JobNotFoundError } from '../src/client/job-view.ts'
 import { en } from '../src/client/locales.ts'

@@ -22,7 +22,7 @@ import {
   resolveProfileDir,
   writeProfileManifest,
   type ProfileManifest,
-} from '@deepseek-ai/dsh-app-boot'
+} from '@open-harness/oh-app-boot'
 import { INSTALL_ANCHOR } from './profile-boot.ts'
 
 const NAME = 'oh'

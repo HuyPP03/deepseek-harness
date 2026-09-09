@@ -1,16 +1,16 @@
 /**
- * `@deepseek-ai/dsh-web-fetch-websift`: registers a websift-backed
+ * `@open-harness/oh-web-fetch-websift`: registers a websift-backed
  * `WebFetchProvider` with `ctx.web`. A function/namespace plugin (NOT a
  * default-export service): it registers INTO the seam's fetch registry, like
- * `@deepseek-ai/dsh-web-fetch-http`. The websift library is the transport and
+ * `@open-harness/oh-web-fetch-http`. The websift library is the transport and
  * extraction owner (SSRF-safe retrieval, HTML-to-markdown, PDF-to-text); this
  * package owns the seam mapping and the fetch policy config.
- * @module @deepseek-ai/dsh-web-fetch-websift
+ * @module @open-harness/oh-web-fetch-websift
  */
 
 import type { Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import type {} from '@deepseek-ai/dsh-web'
+import type {} from '@open-harness/oh-web'
 import { WebsiftFetchProvider, type WebsiftFetchProviderOptions } from './provider.ts'
 
 export { WEBSIFT_FETCH_PROVIDER_ID, WebsiftFetchProvider } from './provider.ts'

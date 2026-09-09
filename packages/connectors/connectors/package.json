@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-connectors",
+  "name": "@open-harness/oh-connectors",
   "description": "Predefined software connectors: catalog, auth state machine, and MCP mounting over existing seams",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -37,13 +37,13 @@
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/dsh-agent-presets": "workspace:^",
-    "@deepseek-ai/dsh-atomic-write": "workspace:^",
-    "@deepseek-ai/dsh-credentials": "workspace:^",
-    "@deepseek-ai/dsh-credentials-oauth-tokens": "workspace:^",
-    "@deepseek-ai/dsh-home-paths": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-mcp-manager": "workspace:^"
+    "@open-harness/oh-agent-presets": "workspace:^",
+    "@open-harness/oh-atomic-write": "workspace:^",
+    "@open-harness/oh-credentials": "workspace:^",
+    "@open-harness/oh-credentials-oauth-tokens": "workspace:^",
+    "@open-harness/oh-home-paths": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-mcp-manager": "workspace:^"
   },
   "dependencies": {
     "@deepseek-ai/schemastery": "workspace:^",
@@ -51,16 +51,16 @@
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/dsh-agent-presets": "workspace:^",
-    "@deepseek-ai/dsh-atomic-write": "workspace:^",
-    "@deepseek-ai/dsh-credentials": "workspace:^",
-    "@deepseek-ai/dsh-credentials-local": "workspace:^",
-    "@deepseek-ai/dsh-credentials-oauth-tokens": "workspace:^",
-    "@deepseek-ai/dsh-home-paths": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-mcp-client": "workspace:^",
-    "@deepseek-ai/dsh-mcp-manager": "workspace:^",
-    "@deepseek-ai/dsh-mcp-registry": "workspace:^",
+    "@open-harness/oh-agent-presets": "workspace:^",
+    "@open-harness/oh-atomic-write": "workspace:^",
+    "@open-harness/oh-credentials": "workspace:^",
+    "@open-harness/oh-credentials-local": "workspace:^",
+    "@open-harness/oh-credentials-oauth-tokens": "workspace:^",
+    "@open-harness/oh-home-paths": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-mcp-client": "workspace:^",
+    "@open-harness/oh-mcp-manager": "workspace:^",
+    "@open-harness/oh-mcp-registry": "workspace:^",
     "@modelcontextprotocol/sdk": "1.29.0"
   }
 }

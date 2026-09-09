@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-spill",
+  "name": "@open-harness/oh-spill",
   "description": "Abstract spill storage seam (ctx.spillStore) for the Open Harness — save oversized tool text and return a retrieval locator",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,17 +32,17 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-brand": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
+    "@open-harness/oh-brand": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-brand": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-llm": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
+    "@open-harness/oh-brand": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-llm": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

@@ -14,8 +14,8 @@
  * @module
  */
 
-import type { ContentBlock } from '@deepseek-ai/dsh-llm'
-import type { JsonValue, ToolDefinition, ToolRunContext } from '@deepseek-ai/dsh-tools'
+import type { ContentBlock } from '@open-harness/oh-llm'
+import type { JsonValue, ToolDefinition, ToolRunContext } from '@open-harness/oh-tools'
 import type { McpServerView } from './types.ts'
 
 /** The public-name prefix every MCP tool carries (see the mcp-client naming contract). */

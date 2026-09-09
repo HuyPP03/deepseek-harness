@@ -10,8 +10,8 @@
 import { tmpdir } from 'node:os'
 import { describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
-import type { SandboxPolicy } from '@deepseek-ai/dsh-sandbox'
-import { LocalSandboxProvider } from '@deepseek-ai/dsh-sandbox-local'
+import type { SandboxPolicy } from '@open-harness/oh-sandbox'
+import { LocalSandboxProvider } from '@open-harness/oh-sandbox-local'
 
 const RO: SandboxPolicy = { mode: 'read-only', workspaceRoot: '/ws' }
 const WW: SandboxPolicy = { mode: 'workspace-write', workspaceRoot: '/ws' }

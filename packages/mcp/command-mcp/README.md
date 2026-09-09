@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-command-mcp
+# @open-harness/oh-command-mcp
 
 English | [中文](README.zh.md)
 
@@ -22,11 +22,11 @@ The command injects `commands` and `mcpRegistry`. The base bundle mounts both, s
 
 ```yaml
 - id: commands
-  name: '@deepseek-ai/dsh-commands'
+  name: '@open-harness/oh-commands'
 - id: mcp-registry
-  name: '@deepseek-ai/dsh-mcp-registry'
+  name: '@open-harness/oh-mcp-registry'
 - id: command-mcp
-  name: '@deepseek-ai/dsh-command-mcp'
+  name: '@open-harness/oh-command-mcp'
 ```
 
 Each [`mcp-client`](../mcp-client/README.md) instance reports itself into the mounted registry; plugin disposal drops the entry, so the listing follows the live instances.

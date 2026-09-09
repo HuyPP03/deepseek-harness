@@ -11,7 +11,7 @@ import {
   ohHomePath,
   expandHomePath,
   resolveOhHome,
-} from '@deepseek-ai/dsh-home-paths'
+} from '@open-harness/oh-home-paths'
 
 afterEach(() => {
   vi.unstubAllEnvs()

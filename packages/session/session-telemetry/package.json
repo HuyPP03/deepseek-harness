@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-session-telemetry",
+  "name": "@open-harness/oh-session-telemetry",
   "description": "SessionTelemetryBackend seam for the Open Harness: session-event capture, projection, redaction, and handoff to a reporting backend",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,15 +32,15 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

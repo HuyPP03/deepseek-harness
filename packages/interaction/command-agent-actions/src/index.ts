@@ -1,14 +1,14 @@
 /**
  * Human-facing `/simplify` and `/code-review` commands over agent steering
  * and one-shot subagent review.
- * @module @deepseek-ai/dsh-command-agent-actions
+ * @module @open-harness/oh-command-agent-actions
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
-import type { MessageSource } from '@deepseek-ai/dsh-llm'
-import type { CommandInvocation, CommandResult } from '@deepseek-ai/dsh-commands'
-import type { SubagentResult, SubagentRun } from '@deepseek-ai/dsh-subagent'
+import { createUserMessage } from '@open-harness/oh-llm'
+import type { MessageSource } from '@open-harness/oh-llm'
+import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'
+import type { SubagentResult, SubagentRun } from '@open-harness/oh-subagent'
 
 export const name = 'command-agent-actions'
 export const inject = ['commands', 'subagents']

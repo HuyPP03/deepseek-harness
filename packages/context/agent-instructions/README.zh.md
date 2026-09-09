@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-agent-instructions
+# @open-harness/oh-agent-instructions
 
 [English](README.md) | 中文
 

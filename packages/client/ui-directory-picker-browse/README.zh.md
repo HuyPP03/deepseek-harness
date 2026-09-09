@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-directory-picker-browse
+# @open-harness/oh-client-ui-directory-picker-browse
 
 [English](README.md) | 中文
 

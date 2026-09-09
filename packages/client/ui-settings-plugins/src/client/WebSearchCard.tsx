@@ -4,7 +4,7 @@
  * shipped DeepSeek key stays managed on the Models page.
  */
 
-import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { InjectFace, PropsLocale, PropsRuntime } from '@open-harness/oh-client-ui-slots'
 import { ValueField } from './fields.tsx'
 import { PluginCard } from './PluginCard.tsx'
 import type { WebSearchCardFace } from './web-search-card-controller.ts'

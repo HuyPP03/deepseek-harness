@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-subagent
+# @open-harness/oh-subagent
 
 English | [中文](README.zh.md)
 

@@ -23,8 +23,8 @@ import {
   WEBSIFT_PROVIDER_ID,
   WebsiftSearchProvider,
   type WebsiftSearchProviderOptions,
-} from '@deepseek-ai/dsh-web-search-websift'
-import WebRuntime, { type WebSearchResult } from '@deepseek-ai/dsh-web'
+} from '@open-harness/oh-web-search-websift'
+import WebRuntime, { type WebSearchResult } from '@open-harness/oh-web'
 
 /** A provider whose outcome is fixed; records the request it received. */
 class FakeProvider implements SearchProvider {

@@ -11,13 +11,13 @@
  */
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it } from 'vitest'
-import type { SessionId, WorkspaceId } from '@deepseek-ai/dsh-api-remotes/client'
-import { LocaleRuntime } from '@deepseek-ai/dsh-client-locale/client'
+import type { SessionId, WorkspaceId } from '@open-harness/oh-api-remotes/client'
+import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import type {
   CommandActionSpec, CommandContribution, CommandMenuRow, CommandPopupSelectSpec,
-} from '@deepseek-ai/dsh-client-ui-commands/client'
-import type { ClientSessionContext } from '@deepseek-ai/dsh-client-ui-input-trigger/client'
-import { TestSessions, TestWorkspaces, type Stabilizer } from '@deepseek-ai/dsh-client-test-runtime'
+} from '@open-harness/oh-client-ui-commands/client'
+import type { ClientSessionContext } from '@open-harness/oh-client-ui-input-trigger/client'
+import { TestSessions, TestWorkspaces, type Stabilizer } from '@open-harness/oh-client-test-runtime'
 import { apply, inject } from '../src/client/index.ts'
 
 const sid = (key: string): SessionId => key as SessionId

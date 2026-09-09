@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-typert-loader
+# @open-harness/oh-typert-loader
 
 [English](README.md) | 中文
 

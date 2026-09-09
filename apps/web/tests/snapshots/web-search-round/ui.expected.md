@@ -18,10 +18,10 @@
 - text: Use web_search to search exactly "Open Harness snapshot search". Then reply exactly SEARCH_DONE and stop. {{clock}}
 - button "Copy":
   - img
-- button "Context injection @deepseek-ai/dsh-system-prompt":
+- button "Context injection @open-harness/oh-system-prompt":
   - img
   - img
-  - text: Context injection @deepseek-ai/dsh-system-prompt
+  - text: Context injection @open-harness/oh-system-prompt
 - button "Context injection skill-catalog":
   - img
   - img

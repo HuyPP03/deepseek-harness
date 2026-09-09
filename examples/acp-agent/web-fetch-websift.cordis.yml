@@ -11,10 +11,10 @@
     patches:
       - insert:
           - id: web
-            name: '@deepseek-ai/dsh-web'
+            name: '@open-harness/oh-web'
           - id: web-fetch-websift
-            name: '@deepseek-ai/dsh-web-fetch-websift'
+            name: '@open-harness/oh-web-fetch-websift'
           - id: tool-web
-            name: '@deepseek-ai/dsh-tool-web'
+            name: '@open-harness/oh-tool-web'
             config:
               search: false

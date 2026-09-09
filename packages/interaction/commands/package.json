@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-commands",
+  "name": "@open-harness/oh-commands",
   "description": "Plugin-owned human command registry for Open Harness UIs",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -53,24 +53,24 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-brand": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-scope": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-typert-protocol": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-brand": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-scope": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-typert-protocol": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "dependencies": {
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-agent": "workspace:^",
-    "@deepseek-ai/dsh-brand": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-scope": "workspace:^",
-    "@deepseek-ai/dsh-session": "workspace:^",
-    "@deepseek-ai/dsh-typert-protocol": "workspace:^",
+    "@open-harness/oh-agent": "workspace:^",
+    "@open-harness/oh-brand": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-scope": "workspace:^",
+    "@open-harness/oh-session": "workspace:^",
+    "@open-harness/oh-typert-protocol": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

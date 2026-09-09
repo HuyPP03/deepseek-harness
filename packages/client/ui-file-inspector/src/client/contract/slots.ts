@@ -5,14 +5,14 @@
  * absolute path plus the display-only workspace root); this package's
  * occupant reads the bytes through the runtime's file-bytes service and
  * derives the Changes tab from the session snapshot's diff cards.
- * @module @deepseek-ai/dsh-client-ui-file-inspector/client/contract
+ * @module @open-harness/oh-client-ui-file-inspector/client/contract
  */
 
-import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { PropsLocale, PropsRuntime } from '@open-harness/oh-client-ui-slots'
 // Type-only: pulls the ui-conversation SlotMap merge (the seat's owner params).
-import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type {} from '@open-harness/oh-client-ui-conversation/client'
 // Type-only: the files.list RPC row shape the browser lists through.
-import type { FileEntry } from '@deepseek-ai/dsh-api-remotes/client'
+import type { FileEntry } from '@open-harness/oh-api-remotes/client'
 
 /** The seat's full props: the owner share, the standard locale seat, and the injected read face. */
 export type FileInspectorProps = PropsRuntime<'conversation.details.file'> & PropsLocale<'fileInspector'> & FileInspectorInjected

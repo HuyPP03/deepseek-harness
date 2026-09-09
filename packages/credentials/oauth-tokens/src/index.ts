@@ -19,7 +19,7 @@
  * removes it, and consumers read the current bundle at each use, so a
  * rotated grant reaches the next use without a restart.
  *
- * @module @deepseek-ai/dsh-credentials-oauth-tokens
+ * @module @open-harness/oh-credentials-oauth-tokens
  */
 
 import { mkdir, readFile, stat } from 'node:fs/promises'
@@ -27,8 +27,8 @@ import { dirname, join, resolve } from 'node:path'
 import { watch as chokidarWatch } from 'chokidar'
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
-import { withFileLock, writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
-import { canonicalizeWatchPath, resolveOhHome } from '@deepseek-ai/dsh-home-paths'
+import { withFileLock, writeFileAtomic } from '@open-harness/oh-atomic-write'
+import { canonicalizeWatchPath, resolveOhHome } from '@open-harness/oh-home-paths'
 import type { OAuthTokenBundle } from './types.ts'
 export type { OAuthTokenBundle } from './types.ts'
 

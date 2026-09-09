@@ -6,7 +6,7 @@
  * and one-shot permission decisions; presentation and human-interaction
  * features stay with the harness's UI modules.
  *
- * @module @deepseek-ai/dsh-acp
+ * @module @open-harness/oh-acp
  */
 
 import type { Context } from '@deepseek-ai/cordis'
@@ -14,7 +14,7 @@ import { randomUUID } from 'node:crypto'
 import { isAbsolute } from 'node:path'
 import { Readable, Writable } from 'node:stream'
 import Schema from '@deepseek-ai/schemastery'
-import { createUserMessage, errorChain } from '@deepseek-ai/dsh-llm'
+import { createUserMessage, errorChain } from '@open-harness/oh-llm'
 import {
   AgentSideConnection,
   ndJsonStream,
@@ -33,14 +33,14 @@ import {
   type StopReason,
   type Stream,
 } from '@agentclientprotocol/sdk'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import { SessionId, type SessionEvent, type TurnEndReason } from '@deepseek-ai/dsh-session'
+import type { Agent } from '@open-harness/oh-agent'
+import { SessionId, type SessionEvent, type TurnEndReason } from '@open-harness/oh-session'
 // Side-effect type import: declaration-merges the approval waterfall answered below.
-import type {} from '@deepseek-ai/dsh-user-approval'
+import type {} from '@open-harness/oh-user-approval'
 // Value import: normalizeReferencePaths pre-validates additionalDirectories
 // before the session commits; the package root also carries the
 // ctx.workspaceReferences Context merge.
-import { normalizeReferencePaths } from '@deepseek-ai/dsh-workspace-references'
+import { normalizeReferencePaths } from '@open-harness/oh-workspace-references'
 import { AcpContentError, admitAcpPrompt, assistantBlockToAcp, supportsAcpImagePrompts } from './content.ts'
 import { turnEndToStopReason } from './codec.ts'
 
@@ -322,7 +322,7 @@ export function apply(ctx: Context, config: AcpConfig): void {
           : undefined
         if (referenceDirs !== undefined && referenceDirs.length > 0) {
           if (references === undefined) {
-            throw invalidParams('additionalDirectories requires a deployment that mounts @deepseek-ai/dsh-workspace-references')
+            throw invalidParams('additionalDirectories requires a deployment that mounts @open-harness/oh-workspace-references')
           }
           try {
             await normalizeReferencePaths(referenceDirs, params.cwd, references.maxReferences)
@@ -333,7 +333,7 @@ export function apply(ctx: Context, config: AcpConfig): void {
         // No preset composition: the ACP bundle keeps the model-facing rows in
         // the host plane, so this agent reads them from the global layer. A
         // deployment that configures a roster has to join one here first
-        // (@deepseek-ai/dsh-agent-presets README, "Composing a child agent").
+        // (@open-harness/oh-agent-presets README, "Composing a child agent").
         const handle = await agents.create({
           sessionId,
           meta: { cwd: params.cwd },

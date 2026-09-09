@@ -1,11 +1,11 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
-import type { SessionId, SessionListState, WorkspaceId, WorkspaceListState, WorkspaceView } from '@deepseek-ai/dsh-client-runtime/client'
-import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
-import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
+import type { SessionId, SessionListState, WorkspaceId, WorkspaceListState, WorkspaceView } from '@open-harness/oh-client-runtime/client'
+import { makeTranslate } from '@open-harness/oh-client-test-runtime'
+import { zh as commonZh } from '@open-harness/oh-client-locale/src/locales/zh.ts'
 import type { DirectoryFlowOwnerProps, WorkspacePickerProps } from '../src/client/contract/slots.ts'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
+import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
 import { WorkspacePickFlow, WorkspacePicker } from '../src/client/WorkspacePicker.tsx'
 import { zh } from '../src/client/locales.ts'
 

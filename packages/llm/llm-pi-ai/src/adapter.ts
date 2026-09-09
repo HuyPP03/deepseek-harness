@@ -38,7 +38,7 @@ import {
   LlmError,
   ReasoningEffortId,
   toolCallPhaseAfter,
-} from '@deepseek-ai/dsh-llm'
+} from '@open-harness/oh-llm'
 import type {
   GenerateOptions,
   LlmModelInfo,
@@ -47,9 +47,9 @@ import type {
   ReasoningEffortId as ReasoningEffortIdType,
   ResolvedRetryPolicy,
   StreamChunk,
-} from '@deepseek-ai/dsh-llm'
-import type { AttachmentStore } from '@deepseek-ai/dsh-attachment'
-import { idleWatchdog, timeoutOf } from '@deepseek-ai/dsh-timeout'
+} from '@open-harness/oh-llm'
+import type { AttachmentStore } from '@open-harness/oh-attachment'
+import { idleWatchdog, timeoutOf } from '@open-harness/oh-timeout'
 import type { ResolvedPiAiProviderProfile } from './config.ts'
 import { toPiContext } from './context.ts'
 import { toStreamChunks } from './stream.ts'

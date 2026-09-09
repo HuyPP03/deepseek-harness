@@ -1,8 +1,8 @@
-# @deepseek-ai/dsh-client-ui-slash-tools
+# @open-harness/oh-client-ui-slash-tools
 
 [English](README.md) | 中文
 
-Web 斜杠工具插件：向 `ctx.commandUi` 贡献两个 client 端表面——`/clear` 动作与 `/help` 弹层。`/mode` 预设切换弹层位于 [`@deepseek-ai/dsh-client-ui-agent-preset`](../ui-agent-preset/README.md)，名册的显示文案由该包持有。
+Web 斜杠工具插件：向 `ctx.commandUi` 贡献两个 client 端表面——`/clear` 动作与 `/help` 弹层。`/mode` 预设切换弹层位于 [`@open-harness/oh-client-ui-agent-preset`](../ui-agent-preset/README.md)，名册的显示文案由该包持有。
 
 `/clear`：斜杠菜单条目（以及裸 `/clear` 回车）在当前会话所在的 Workspace 与预设下新建一个空会话并打开它。原会话保留在列表中，不受影响；其引用工作区不会带过去。该动作只在非空当前会话上提供——空会话没有可清空的对话——并在执行时二次检查空状态，因此菜单扫描与选中之间变空的会话会直接 no-op。工作区归属从工作区列表快照按会话记账读取（与 New Session 复用扫描同一规则）；chat 会话不归属任何工作区，创建请求因此不带工作区。会话摘要中的 `agentPreset` 存在时随创建请求携带，使新会话运行与它相同的组成。命令面的 action 类型没有结果通道：创建或打开失败由命令服务记录日志、从不向用户展示——对“可以从菜单重试的便利快捷键”而言这正是合适语义。
 

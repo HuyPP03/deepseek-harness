@@ -11,11 +11,11 @@ import type { AddressInfo } from 'node:net'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import type { Fiber } from '@deepseek-ai/cordis'
-import { SettingsProvider } from '@deepseek-ai/dsh-settings'
-import type { SettingsNamespace } from '@deepseek-ai/dsh-settings'
-import WebRuntime from '@deepseek-ai/dsh-web'
-import * as websiftPlugin from '@deepseek-ai/dsh-web-search-websift'
-import { WEBSIFT_SETTINGS_NAMESPACE } from '@deepseek-ai/dsh-web-search-websift'
+import { SettingsProvider } from '@open-harness/oh-settings'
+import type { SettingsNamespace } from '@open-harness/oh-settings'
+import WebRuntime from '@open-harness/oh-web'
+import * as websiftPlugin from '@open-harness/oh-web-search-websift'
+import { WEBSIFT_SETTINGS_NAMESPACE } from '@open-harness/oh-web-search-websift'
 
 /** The smallest real provider: one in-memory document, always writable. */
 class MemorySettings extends SettingsProvider {

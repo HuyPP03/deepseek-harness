@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-client-ui-user-questions
+# @open-harness/oh-client-ui-user-questions
 
 English | [中文](README.zh.md)
 

@@ -14,15 +14,15 @@
  * appears as a stale row that detaches on toggle.
  */
 import { useEffect, useMemo, useState } from 'react'
-import type { RpcResult } from '@deepseek-ai/dsh-api-remotes/client'
+import type { RpcResult } from '@open-harness/oh-api-remotes/client'
 import type {
   UseProjection, WorkspaceId,
-} from '@deepseek-ai/dsh-client-runtime/client'
+} from '@open-harness/oh-client-runtime/client'
 // Type-only: the root module carries the `workspaceReferences` projection
 // key merge (the /types subpath does not).
-import type {} from '@deepseek-ai/dsh-workspace-references'
-import { IconFolderClose16, Menu, type MenuEntry } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { HostObservable, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type {} from '@open-harness/oh-workspace-references'
+import { IconFolderClose16, Menu, type MenuEntry } from '@open-harness/oh-client-ui-primitives'
+import type { HostObservable, PropsLocale, PropsRuntime } from '@open-harness/oh-client-ui-slots'
 import type { ConnectorChatsHooks } from './contract/slots.ts'
 import css from './ReferenceProjectsChip.module.css'
 

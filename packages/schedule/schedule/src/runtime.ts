@@ -1,11 +1,11 @@
 /**
  * Disposable live timer projection for one exact root agent.
- * @module @deepseek-ai/dsh-schedule
+ * @module @open-harness/oh-schedule
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import type { Agent } from '@deepseek-ai/dsh-agent'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
+import type { Agent } from '@open-harness/oh-agent'
+import { createUserMessage } from '@open-harness/oh-llm'
 import type { EveryScheduleRecord, OneShotScheduleRecord } from './types.ts'
 import {
   foldScheduleEvents,

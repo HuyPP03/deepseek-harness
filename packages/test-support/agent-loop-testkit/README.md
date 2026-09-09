@@ -1,4 +1,4 @@
-# `@deepseek-ai/dsh-agent-loop-testkit`
+# `@open-harness/oh-agent-loop-testkit`
 
 English | [中文](README.zh.md)
 
@@ -8,8 +8,8 @@ The caller registers adapters and optional plugins, mounts `AgentLoop` with the 
 
 ```ts
 import { Context } from '@deepseek-ai/cordis'
-import AgentLoop from '@deepseek-ai/dsh-agent-loop'
-import { mountAgentLoopTestDependencies } from '@deepseek-ai/dsh-agent-loop-testkit'
+import AgentLoop from '@open-harness/oh-agent-loop'
+import { mountAgentLoopTestDependencies } from '@open-harness/oh-agent-loop-testkit'
 
 const ctx = new Context()
 

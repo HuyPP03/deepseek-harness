@@ -1,4 +1,4 @@
-# `@deepseek-ai/dsh-headless`
+# `@open-harness/oh-headless`
 
 [English](README.md) | 中文
 

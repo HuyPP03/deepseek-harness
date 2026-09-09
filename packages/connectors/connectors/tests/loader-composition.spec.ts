@@ -14,13 +14,13 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
-import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
-import ToolRuntime from '@deepseek-ai/dsh-tools'
-import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
-import McpManager from '@deepseek-ai/dsh-mcp-manager'
-import LocalCredentialProvider from '@deepseek-ai/dsh-credentials-local'
-import OAuthTokenStore from '@deepseek-ai/dsh-credentials-oauth-tokens'
-import AgentPresets from '@deepseek-ai/dsh-agent-presets'
+import SystemPrompt from '@open-harness/oh-system-prompt'
+import ToolRuntime from '@open-harness/oh-tools'
+import McpRegistry from '@open-harness/oh-mcp-registry'
+import McpManager from '@open-harness/oh-mcp-manager'
+import LocalCredentialProvider from '@open-harness/oh-credentials-local'
+import OAuthTokenStore from '@open-harness/oh-credentials-oauth-tokens'
+import AgentPresets from '@open-harness/oh-agent-presets'
 import Connectors, { ConnectorAuthUnavailableError } from '../src/index.ts'
 
 const sdk = vi.hoisted(() => {
@@ -101,28 +101,28 @@ async function boot(catalogFiles: readonly [string, string][]): Promise<void> {
 
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, [
-    "- name: '@deepseek-ai/dsh-system-prompt'",
-    "- name: '@deepseek-ai/dsh-tools'",
-    "- name: '@deepseek-ai/dsh-mcp-registry'",
-    "- name: '@deepseek-ai/dsh-mcp-manager'",
+    "- name: '@open-harness/oh-system-prompt'",
+    "- name: '@open-harness/oh-tools'",
+    "- name: '@open-harness/oh-mcp-registry'",
+    "- name: '@open-harness/oh-mcp-manager'",
     '  config:',
     '    mcpDir: ' + JSON.stringify(mcpDir),
-    "- name: '@deepseek-ai/dsh-credentials-local'",
+    "- name: '@open-harness/oh-credentials-local'",
     '  config:',
     '    path: ' + JSON.stringify(join(root, '.credentials.yaml')),
     '    watch: false',
-    "- name: '@deepseek-ai/dsh-credentials-oauth-tokens'",
+    "- name: '@open-harness/oh-credentials-oauth-tokens'",
     '  config:',
     '    path: ' + JSON.stringify(join(root, 'tokens.json')),
     '    watch: false',
-    "- name: '@deepseek-ai/dsh-agent-presets'",
+    "- name: '@open-harness/oh-agent-presets'",
     '  config:',
     '    default: custom',
     '    roots:',
     '      - path: ' + JSON.stringify(systemPresets),
     '        trust: system',
     '    includeUserRoot: true',
-    "- name: '@deepseek-ai/dsh-connectors'",
+    "- name: '@open-harness/oh-connectors'",
     '  config:',
     '    catalogDir: ' + JSON.stringify(catalogDir),
     '    userDir: ' + JSON.stringify(userDir),
@@ -134,14 +134,14 @@ async function boot(catalogFiles: readonly [string, string][]): Promise<void> {
   await context.plugin(Loader)
   context.loader.builtins.include = Include
   const modules = new Map<string, unknown>([
-    ['@deepseek-ai/dsh-system-prompt', SystemPrompt],
-    ['@deepseek-ai/dsh-tools', ToolRuntime],
-    ['@deepseek-ai/dsh-mcp-registry', McpRegistry],
-    ['@deepseek-ai/dsh-mcp-manager', McpManager],
-    ['@deepseek-ai/dsh-credentials-local', LocalCredentialProvider],
-    ['@deepseek-ai/dsh-credentials-oauth-tokens', OAuthTokenStore],
-    ['@deepseek-ai/dsh-agent-presets', AgentPresets],
-    ['@deepseek-ai/dsh-connectors', Connectors],
+    ['@open-harness/oh-system-prompt', SystemPrompt],
+    ['@open-harness/oh-tools', ToolRuntime],
+    ['@open-harness/oh-mcp-registry', McpRegistry],
+    ['@open-harness/oh-mcp-manager', McpManager],
+    ['@open-harness/oh-credentials-local', LocalCredentialProvider],
+    ['@open-harness/oh-credentials-oauth-tokens', OAuthTokenStore],
+    ['@open-harness/oh-agent-presets', AgentPresets],
+    ['@open-harness/oh-connectors', Connectors],
   ])
   context.loader.internal = {
     version: 'v2',

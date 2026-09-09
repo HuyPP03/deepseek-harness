@@ -15,16 +15,16 @@
  * composition input); an `add` whose mount fails deletes the file it just
  * wrote, so a failed add leaves no trace.
  *
- * @module @deepseek-ai/dsh-mcp-manager
+ * @module @open-harness/oh-mcp-manager
  */
 
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { Context, type Fiber, Service } from '@deepseek-ai/cordis'
-import * as mcpClient from '@deepseek-ai/dsh-mcp-client'
-import type { Config as McpClientConfig } from '@deepseek-ai/dsh-mcp-client'
-import { ohHomePath, expandHomePath } from '@deepseek-ai/dsh-home-paths'
-import type { McpServerView } from '@deepseek-ai/dsh-mcp-registry'
+import * as mcpClient from '@open-harness/oh-mcp-client'
+import type { Config as McpClientConfig } from '@open-harness/oh-mcp-client'
+import { ohHomePath, expandHomePath } from '@open-harness/oh-home-paths'
+import type { McpServerView } from '@open-harness/oh-mcp-registry'
 import z from '@deepseek-ai/schemastery'
 import { parse, stringify } from 'yaml'
 
@@ -63,7 +63,7 @@ export class McpServerNotManagedError extends Error {
 }
 
 /** The npm specifier persisted in user server documents, matching the profile form. */
-const MCP_CLIENT_PACKAGE = '@deepseek-ai/dsh-mcp-client'
+const MCP_CLIENT_PACKAGE = '@open-harness/oh-mcp-client'
 
 /** The mcp-client runtime the manager mounts for every user server. */
 const MCP_CLIENT_RUNTIME = {

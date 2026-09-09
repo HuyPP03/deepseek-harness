@@ -11,15 +11,15 @@
 import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
-import { Button, IconPlusOutline16, Modal, RiskConfirmation } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { McpServerStatus } from '@deepseek-ai/dsh-api-remotes/client'
-import type { SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
-import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import { Button, IconPlusOutline16, Modal, RiskConfirmation } from '@open-harness/oh-client-ui-primitives'
+import type { McpServerStatus } from '@open-harness/oh-api-remotes/client'
+import type { SnapshotStore } from '@open-harness/oh-client-runtime/client'
+import type { InjectFace, PropsLocale, PropsRuntime } from '@open-harness/oh-client-ui-slots'
 import { draftBlocker, type AddDraft, type McpSectionState } from './section-store.ts'
 import type { McpKey } from './locales.ts'
 import css from './McpSection.module.css'
 
-declare module '@deepseek-ai/dsh-client-ui-slots' {
+declare module '@open-harness/oh-client-ui-slots' {
   interface LocaleNamespaceMap {
     /** MCP section copy. */
     'settings.mcp': McpKey

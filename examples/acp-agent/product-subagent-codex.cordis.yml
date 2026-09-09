@@ -8,9 +8,9 @@
     patches:
       - insert:
           - id: subagent-codex
-            name: '@deepseek-ai/dsh-subagent-codex'
+            name: '@open-harness/oh-subagent-codex'
           - id: tool-subagent-codex
-            name: '@deepseek-ai/dsh-tool-subagent'
+            name: '@open-harness/oh-tool-subagent'
             config:
               provider: codex
               toolName: subagent_codex

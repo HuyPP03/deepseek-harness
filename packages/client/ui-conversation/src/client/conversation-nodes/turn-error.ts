@@ -1,12 +1,12 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type {
   ConversationMatch, ConversationNodeContext, ConversationNodeDefinition, TurnErrorNode,
-} from '@deepseek-ai/dsh-client-runtime/client'
-import { displayFailureMessage } from '@deepseek-ai/dsh-client-runtime/client'
-import type {} from '@deepseek-ai/dsh-llm-retry/types'
+} from '@open-harness/oh-client-runtime/client'
+import { displayFailureMessage } from '@open-harness/oh-client-runtime/client'
+import type {} from '@open-harness/oh-llm-retry/types'
 import { chatNode } from './common.ts'
 
-declare module '@deepseek-ai/dsh-client-ui-conversation/client' {
+declare module '@open-harness/oh-client-ui-conversation/client' {
   interface ChatNodeDataMap {
     /** Terminal turn failure not superseded by retry. */
     'turn-error': TurnErrorNode

@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-sdk-protocol
+# @open-harness/oh-sdk-protocol
 
 [English](README.md) | 中文
 

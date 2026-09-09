@@ -5,8 +5,8 @@
 
 import { cleanup, render, screen, fireEvent } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { SessionId } from '@deepseek-ai/dsh-api-remotes/client'
-import type { SessionListState } from '@deepseek-ai/dsh-client-runtime/client'
+import type { SessionId } from '@open-harness/oh-api-remotes/client'
+import type { SessionListState } from '@open-harness/oh-client-runtime/client'
 import { FilesAction } from '../src/client/FilesAction.tsx'
 import type { FilesActionProps } from '../src/client/FilesAction.tsx'
 import { zh } from '../src/client/locales.ts'

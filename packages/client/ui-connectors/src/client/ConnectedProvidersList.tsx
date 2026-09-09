@@ -8,7 +8,7 @@
 import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
-import { Button, IconLinkOutline16, StateDot, Tooltip } from '@deepseek-ai/dsh-client-ui-primitives'
+import { Button, IconLinkOutline16, StateDot, Tooltip } from '@open-harness/oh-client-ui-primitives'
 import type { ConnectedProvidersListProps } from './contract/slots.ts'
 import css from './ConnectedProvidersList.module.css'
 

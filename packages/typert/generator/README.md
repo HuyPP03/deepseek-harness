@@ -1,4 +1,4 @@
-# @deepseek-ai/dsh-typert-generator
+# @open-harness/oh-typert-generator
 
 English | [中文](README.zh.md)
 

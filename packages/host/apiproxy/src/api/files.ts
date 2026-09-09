@@ -8,7 +8,7 @@
  * (the client's live @ token); it is a filter, not a path the host resolves.
  */
 
-import type { SessionId } from '@deepseek-ai/dsh-session/types'
+import type { SessionId } from '@open-harness/oh-session/types'
 import type { RpcRequest, RpcResponse } from './rpc.ts'
 
 /** One mentionable entry: a file or directory under the session's cwd or an attached reference project. */

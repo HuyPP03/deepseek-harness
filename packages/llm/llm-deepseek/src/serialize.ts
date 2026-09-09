@@ -7,8 +7,8 @@
  * @module dsh-llm-deepseek/serialize
  */
 
-import { contentHasImage, LlmError } from '@deepseek-ai/dsh-llm'
-import type { ContentBlock, GenerateOptions, Message } from '@deepseek-ai/dsh-llm'
+import { contentHasImage, LlmError } from '@open-harness/oh-llm'
+import type { ContentBlock, GenerateOptions, Message } from '@open-harness/oh-llm'
 import type { WireMessage, WireRequest, WireTool } from './types.ts'
 
 /** Adapter-level request defaults (from plugin config). */

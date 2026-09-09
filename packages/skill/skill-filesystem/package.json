@@ -1,5 +1,5 @@
 {
-  "name": "@deepseek-ai/dsh-skill-filesystem",
+  "name": "@open-harness/oh-skill-filesystem",
   "description": "Local filesystem skill provider for the Open Harness",
   "version": "0.1.0-rc.7",
   "publishConfig": {
@@ -32,10 +32,10 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/dsh-fs": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-home-paths": "workspace:^",
-    "@deepseek-ai/dsh-skill": "workspace:^",
+    "@open-harness/oh-fs": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-home-paths": "workspace:^",
+    "@open-harness/oh-skill": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   },
   "dependencies": {
@@ -44,10 +44,10 @@
     "yaml": "^2.4.2"
   },
   "devDependencies": {
-    "@deepseek-ai/dsh-fs": "workspace:^",
-    "@deepseek-ai/dsh-invariants": "workspace:^",
-    "@deepseek-ai/dsh-home-paths": "workspace:^",
-    "@deepseek-ai/dsh-skill": "workspace:^",
+    "@open-harness/oh-fs": "workspace:^",
+    "@open-harness/oh-invariants": "workspace:^",
+    "@open-harness/oh-home-paths": "workspace:^",
+    "@open-harness/oh-skill": "workspace:^",
     "@deepseek-ai/cordis": "workspace:^"
   }
 }

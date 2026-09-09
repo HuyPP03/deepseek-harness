@@ -1,9 +1,9 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, createEvent, fireEvent, render, screen } from '@testing-library/react'
-import type { SessionId, WorkspaceId } from '@deepseek-ai/dsh-client-runtime/client'
-import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
-import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
+import type { SessionId, WorkspaceId } from '@open-harness/oh-client-runtime/client'
+import { makeTranslate } from '@open-harness/oh-client-test-runtime'
+import { zh as commonZh } from '@open-harness/oh-client-locale/src/locales/zh.ts'
 import type { RowDragProps } from '../src/client/rows/Rows.tsx'
 import { ProjectRowItem, SearchResultItem, SessionNodeItem } from '../src/client/rows/Rows.tsx'
 import type { GroupNode, SearchResultNode, SessionNode } from '../src/client/tree.ts'

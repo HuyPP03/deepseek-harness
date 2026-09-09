@@ -4,18 +4,18 @@
  * Each search is one direct HTTP exchange — no auxiliary model turn. The
  * library is the transport owner; this provider owns the seam mapping,
  * availability, cancellation, and error vocabulary.
- * @module @deepseek-ai/dsh-web-search-websift/provider
+ * @module @open-harness/oh-web-search-websift/provider
  */
 
 import { WebSearchClient } from 'websift'
 import type { SearchResponse } from 'websift'
-import { WebError } from '@deepseek-ai/dsh-web'
+import { WebError } from '@open-harness/oh-web'
 import type {
   WebSearchProvider,
   WebSearchRequest,
   WebSearchResult,
   WebSearchSource,
-} from '@deepseek-ai/dsh-web'
+} from '@open-harness/oh-web'
 
 /** Stable id this provider registers under. */
 export const WEBSIFT_PROVIDER_ID = 'websift'

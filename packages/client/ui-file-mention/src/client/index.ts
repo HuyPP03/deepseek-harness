@@ -36,11 +36,11 @@
  * call time).
  */
 
-import type { ConnectionHandle, FileEntry, SessionId } from '@deepseek-ai/dsh-api-remotes/client'
-import type { ClientContext, ISessions, SnapshotStore } from '@deepseek-ai/dsh-client-runtime/client'
+import type { ConnectionHandle, FileEntry, SessionId } from '@open-harness/oh-api-remotes/client'
+import type { ClientContext, ISessions, SnapshotStore } from '@open-harness/oh-client-runtime/client'
 import type {
   InputTriggerCandidate, InputTriggerServiceContract, InputTriggerSource,
-} from '@deepseek-ai/dsh-client-ui-input-trigger/client'
+} from '@open-harness/oh-client-ui-input-trigger/client'
 
 /** Required services: the trigger source face, the connection RPC, and the session projections. */
 export const inject = ['inputTriggers', 'connection', 'sessions']

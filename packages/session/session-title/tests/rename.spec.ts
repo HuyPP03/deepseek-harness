@@ -3,13 +3,13 @@
 // revision; explicit refresh stays the unpin).
 import { Context } from '@deepseek-ai/cordis'
 import { describe, expect, it, vi } from 'vitest'
-import { createUserMessage } from '@deepseek-ai/dsh-llm'
-import SessionStore, { Session, SessionId } from '@deepseek-ai/dsh-session'
+import { createUserMessage } from '@open-harness/oh-llm'
+import SessionStore, { Session, SessionId } from '@open-harness/oh-session'
 import SessionTitleService, {
   SessionTitleProviderId,
   foldSessionTitle,
   type SessionTitleProviderRequest,
-} from '@deepseek-ai/dsh-session-title'
+} from '@open-harness/oh-session-title'
 
 const CONFIG = {
   fallbackMaxWords: 5,

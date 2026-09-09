@@ -6,24 +6,24 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render } from '@testing-library/react'
-import { bindSnapshotSelector } from '@deepseek-ai/dsh-client-web-react'
+import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
 import {
   createSnapshotStore, EMPTY_CONVERSATION_VIEWS,
-} from '@deepseek-ai/dsh-client-runtime/client'
+} from '@open-harness/oh-client-runtime/client'
 import type {
   ConversationSnapshot, RunningToolCall, SessionId, SessionListState, ToolResultNode, WorkspaceListState,
-} from '@deepseek-ai/dsh-client-runtime/client'
-import type { ToolCallView, ToolResultView } from '@deepseek-ai/dsh-api-remotes/client'
-import type { SelectionTarget } from '@deepseek-ai/dsh-client-ui-conversation/client'
-import { makeTranslate } from '@deepseek-ai/dsh-client-test-runtime'
-import { zh as commonZh } from '@deepseek-ai/dsh-client-locale/src/locales/zh.ts'
+} from '@open-harness/oh-client-runtime/client'
+import type { ToolCallView, ToolResultView } from '@open-harness/oh-api-remotes/client'
+import type { SelectionTarget } from '@open-harness/oh-client-ui-conversation/client'
+import { makeTranslate } from '@open-harness/oh-client-test-runtime'
+import { zh as commonZh } from '@open-harness/oh-client-locale/src/locales/zh.ts'
 import { terminalCardModel, terminalFailed } from '../src/client/tool/models/terminal-card-model.ts'
-import { createChatStore } from '@deepseek-ai/dsh-client-ui-conversation/src/client/stores.ts'
+import { createChatStore } from '@open-harness/oh-client-ui-conversation/src/client/stores.ts'
 import { GenericToolCard, type GenericToolCardProps } from '../src/client/tool/toolviews/GenericToolCard.tsx'
-import { DetailsPanel } from '@deepseek-ai/dsh-client-ui-conversation/src/client/skeleton/DetailsPanel.tsx'
+import { DetailsPanel } from '@open-harness/oh-client-ui-conversation/src/client/skeleton/DetailsPanel.tsx'
 import { BashRow } from '../src/client/tool/toolviews/bash-sample.tsx'
 import { renderToolDetails, SessionProviderStub, toolChatSnapshot } from './tool-details-render.client.tsx'
-import { zh } from '@deepseek-ai/dsh-client-ui-conversation/src/client/locales.ts'
+import { zh } from '@open-harness/oh-client-ui-conversation/src/client/locales.ts'
 
 type BashRowProps = Parameters<typeof BashRow>[0]
 

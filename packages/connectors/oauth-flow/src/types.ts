@@ -3,7 +3,7 @@
  * start result that crosses the wire and the engine's Cordis context
  * declaration. Types only — no runtime code.
  *
- * @module @deepseek-ai/dsh-connectors-oauth-flow/types
+ * @module @open-harness/oh-connectors-oauth-flow/types
  */
 
 /** The started browser flow the client opens; the loopback exchange completes server-side. */
