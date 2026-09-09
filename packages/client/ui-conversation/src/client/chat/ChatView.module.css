@@ -76,11 +76,11 @@
   white-space: nowrap;
   background: linear-gradient(
     90deg,
-    var(--oh-static-brand-500) 0%,
-    var(--oh-static-brand-500) 40%,
-    var(--oh-static-brand-200) 50%,
-    var(--oh-static-brand-500) 60%,
-    var(--oh-static-brand-500) 100%
+    var(--oh-alias-state-business-primary) 0%,
+    var(--oh-alias-state-business-primary) 40%,
+    color-mix(in srgb, var(--oh-alias-state-business-primary) 55%, #ffffff) 50%,
+    var(--oh-alias-state-business-primary) 60%,
+    var(--oh-alias-state-business-primary) 100%
   );
   background-position: 100% 0;
   background-size: 250% 100%;

@@ -20,7 +20,7 @@
   max-height: min(60vh, 520px);
   padding: 0 0 10px;
   border: 1px solid var(--oh-alias-border-l2-darkmode-thin);
-  border-radius: 20px;
+  border-radius: 12px;
   background: var(--oh-specific-input-major);
   box-shadow: var(--oh-shadow-lv2);
   color: var(--oh-alias-label-primary);

@@ -18,7 +18,7 @@
   width: 100%;
   max-width: var(--oh-chat-content-width);
   border: 1px solid var(--oh-alias-state-warn-secondary);
-  border-radius: 20px;
+  border-radius: 12px;
   background: var(--oh-specific-input-major);
   box-shadow: var(--oh-shadow-lv2);
   /* Elevated surface in dark, same as the menus: `.body` inside scrolls once

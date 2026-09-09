@@ -1,8 +1,8 @@
-/* Ongoing blue has no alias token (state-business-primary is the 500 step,
- * not this 450) — component-level var pinned to the static scale instead. */
+/* The ongoing state rides the business accent alias so it follows the
+ * theme (teal in dark, red in light). */
 .dot,
 .matrix {
-  --oh-state-ongoing: var(--oh-static-brand-450);
+  --oh-state-ongoing: var(--oh-alias-state-business-primary);
 }
 
 /* Solid states: same-color halo via a 0.10-opacity outer layer (::before)

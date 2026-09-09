@@ -54,7 +54,7 @@
   height: 28px;
   padding: 6px;
   border: none;
-  border-radius: 28px;
+  border-radius: 8px;
   background: transparent;
   color: var(--oh-alias-label-tertiary);
   cursor: pointer;

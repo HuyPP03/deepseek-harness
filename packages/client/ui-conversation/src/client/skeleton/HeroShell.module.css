@@ -51,7 +51,7 @@
   margin-left: -3px;
   padding: 1px 7px 0;
   border: 1px solid var(--oh-alias-interactive-bg-hover);
-  border-radius: 24px;
+  border-radius: 10px;
   background: var(--oh-alias-state-business-tertiary);
   color: var(--oh-alias-label-primary-bluish);
   font-family: var(--ds-font-family-code);
@@ -178,7 +178,7 @@
   height: 44px;
   padding: 7px 14px;
   border: 1px solid var(--oh-alias-border-l2);
-  border-radius: 22px;
+  border-radius: 14px;
   outline: none;
   background: transparent;
   font-size: 14px;
