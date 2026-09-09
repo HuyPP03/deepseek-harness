@@ -163,7 +163,8 @@ export function apply(ctx: ClientContext): void {
   // The in-session reference-project chip: session context sits between the
   // process work (subagent catalog, job list) and the composition seat
   // (agent preset). The chip hides itself when the projection is uncomposed
-  // or the session has no owning workspace.
+  // or the session is a plain chat; a workspace-owned or provider (connector)
+  // session gets it, listing every registered workspace but its own.
   ctx.slots.inject('conversation.session.header.actions', () => ctx.slots.register({
     name: 'conversation.session.header.actions',
     id: 'reference-projects',
@@ -177,6 +178,9 @@ export function apply(ctx: ClientContext): void {
         if (session === undefined) throw new Error(`unknown session "${sessionId}"`)
         return session.setReferences(referenceWorkspaceIds)
       },
+      // Provider eligibility: plain chats are refused the same way by the
+      // Host's references-unavailable gate on the wire.
+      hooks: { connectorPresetIds },
     }),
   }, ReferenceProjectsChip))
 }

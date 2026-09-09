@@ -567,6 +567,26 @@ function referencesUnsupported(request: RpcRequest<unknown>, sessionId: SessionI
 }
 
 /**
+ * The session was refused: reference projects need a project surface, which
+ * only a workspace session or a connector (provider) session carries. A plain
+ * chat has no project, so its control surface hides the chip and a direct
+ * call is refused here — the enforcement point every caller shares.
+ */
+function referencesUnavailable(request: RpcRequest<unknown>, sessionId: SessionId): RpcResponse<never> {
+  return err(request, {
+    code: 'references-unavailable',
+    message: 'reference projects require a workspace session or a connector session; a plain chat has no project to reference',
+    details: { sessionId },
+  })
+}
+
+/** Whether a preset id runs a connector (provider) session. */
+function isProviderPreset(ctx: Context, presetId: string | undefined): boolean {
+  const connectors = ctx.get('connectors')
+  return presetId !== undefined && connectors !== undefined && connectors.presetIds().has(presetId)
+}
+
+/**
  * Settle a session-read failure: a missing session is the named wire error;
  * anything else is an internal failure over the same read.
  */
@@ -2421,19 +2441,19 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         const requestedReferences = request.payload.referenceWorkspaceIds
         let referenceSet: string[] | undefined
         if (requestedReferences !== undefined && requestedReferences.length > 0) {
-          // Reference projects are anchored to the session's own workspace:
-          // a workspace-less session (a chat) has no directory to compare
-          // against, and its surfaces hide the control, so a direct call is
-          // refused before the create commits.
-          if (workspace === undefined) {
-            return err(request, {
-              code: 'references-require-workspace',
-              message: 'reference projects require a session workspace; a session without one cannot attach them',
-              details: { sessionId },
-            })
-          }
           if (referencesService === undefined) {
             return referencesUnsupported(request, sessionId)
+          }
+          // Eligibility: a workspace-attached session, or a session that runs
+          // a provider preset (the request's preset, else an adopted session's
+          // log, else the deployment default — the preset ensureSession
+          // commits below).
+          if (workspace === undefined) {
+            const live = ctx.agents.get(sessionId)
+            const running = requestedPreset
+              ?? (live === undefined ? undefined : resolveSessionPreset(live.session))
+              ?? ctx.get('agentPresets')?.defaultId
+            if (!isProviderPreset(ctx, running)) return referencesUnavailable(request, sessionId)
           }
           const resolved = resolveReferencePaths(ctx, requestedReferences)
           if ('notFound' in resolved) {
@@ -2547,17 +2567,14 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         if (references === undefined) {
           return referencesUnsupported(request, sessionId)
         }
-        // Reference projects are anchored to the session's own workspace: a
-        // workspace-less session (a chat) has no directory to compare
-        // against. A non-empty attach is refused; the empty whole value is
-        // the idempotent detach-all and stays a no-op.
+        // Eligibility: a workspace-owned session, or a provider session (the
+        // log resolves the preset a /mode switch may have landed on).
+        const session = found.agent.session
+        const workspaceOwned = ctx.workspaceRegistry.list()
+          .some(workspace => workspace.sessionIds.includes(sessionId))
         if (referenceWorkspaceIds.length > 0
-          && !ctx.workspaceRegistry.list().some(entry => entry.sessionIds.includes(sessionId))) {
-          return err(request, {
-            code: 'references-require-workspace',
-            message: `session "${sessionId}" has no workspace to attach reference projects to`,
-            details: { sessionId },
-          })
+          && !workspaceOwned && !isProviderPreset(ctx, resolveSessionPreset(session))) {
+          return referencesUnavailable(request, sessionId)
         }
         const resolved = resolveReferencePaths(ctx, referenceWorkspaceIds)
         if ('notFound' in resolved) {

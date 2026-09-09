@@ -40,9 +40,8 @@ export interface RpcErrorDetailsMap {
   'workspace-attach-failed': { sessionId: SessionId; workspaceId: string }
   'workspace-not-found': { workspaceId: string }
   'references-unsupported': { sessionId: SessionId }
+  'references-unavailable': { sessionId: SessionId }
   'references-invalid': { sessionId: SessionId; reason: string }
-  /** A reference-project set was requested for a session without a workspace; chat sessions have no directory to compare against. */
-  'references-require-workspace': { sessionId: SessionId }
   'workspace-invalid-path': { path: string }
   'workspace-name-conflict': { name: string }
   'workspace-move-invalid': { workspaceId: string; sessionId: SessionId; beforeSessionId?: SessionId }
