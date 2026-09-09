@@ -67,7 +67,7 @@
 
 # ── web-only host rows, the transport layer, and the browser roster ─────────
 
-# `dsh.client` rows are the browser roster the modules node half scans into
+# `oh.client` rows are the browser roster the modules node half scans into
 # window.__OH_BOOT__; the modules row is simultaneously a host row.
 - insert:
     - id: code-runtime
@@ -173,7 +173,7 @@
     - id: client-hmr
       name: '@deepseek-ai/dsh-client-hmr'
 
-    # ── browser plugin roster (dsh.client rows; node halves are layer-2 hosts) ──
+    # ── browser plugin roster (oh.client rows; node halves are layer-2 hosts) ──
 
     # Dual-face: the node half scans this tree, composes window.__OH_BOOT__,
     # and serves /plugins/<id>/client.js; the browser half is the module table

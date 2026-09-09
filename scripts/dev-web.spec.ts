@@ -5,13 +5,13 @@ import { expect, it } from 'vitest'
 import type { TsdownBundle } from 'tsdown'
 import { discoverPluginDirs, watchClientPlugins } from './dev-web.ts'
 
-it('discovers dsh.client packages with sibling roles', async () => {
+it('discovers oh.client packages with sibling roles', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dsh-dev-web-discovery-'))
   try {
     const current = join(root, 'packages', 'client', 'current')
     await mkdir(current, { recursive: true })
     await writeFile(join(current, 'package.json'), JSON.stringify({
-      dsh: {
+      oh: {
         bundle: { patch: './cordis.patch.yml' },
         client: { platform: 'web' },
         profile: { bundles: [] },

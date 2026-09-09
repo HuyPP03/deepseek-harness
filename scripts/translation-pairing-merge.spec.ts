@@ -76,7 +76,7 @@ function startMergeWithFakeNode(
   chmodSync(fakeNode, 0o755)
   git(fixture, [
     'config',
-    'merge.dsh-translation-pairing.driver',
+    'merge.oh-translation-pairing.driver',
     `${shellQuote(driverLauncher)} %O %A %B %P`,
   ])
   return spawnSync('git', ['-C', fixture.root, 'merge', '--no-commit', 'master'], {
@@ -404,7 +404,7 @@ describe('translation pairing merge composition', { timeout: 15_000 }, () => {
     installFixtureRuntime(fixture.root)
     git(fixture, [
       'config',
-      'merge.dsh-translation-pairing.driver',
+      'merge.oh-translation-pairing.driver',
       'scripts/merge-translation-pairing-driver.sh %O %A %B %P',
     ])
 
@@ -483,7 +483,7 @@ describe('translation pairing merge composition', { timeout: 15_000 }, () => {
     installFixtureRuntime(fixture.root)
     git(fixture, [
       'config',
-      'merge.dsh-translation-pairing.driver',
+      'merge.oh-translation-pairing.driver',
       'scripts/merge-translation-pairing-driver.sh %O %A %B %P',
     ])
     const hooks = join(fixture.root, 'hooks')

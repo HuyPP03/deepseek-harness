@@ -220,10 +220,10 @@ const wordmark = readFileSync(resolve(import.meta.dirname, '../public/wordmark.s
  * stay behind a query only Firefox answers.
  */
 const siteStyle = `
-.dsh-lockup { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
-.dsh-wordmark { display: block; height: 22px; width: auto; color: var(--vp-c-text-1); }
-.dsh-wordmark-text { font-size: 15px; font-weight: 600; color: var(--vp-c-text-1); white-space: nowrap; }
-.dsh-tag {
+.oh-lockup { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.oh-wordmark { display: block; height: 22px; width: auto; color: var(--vp-c-text-1); }
+.oh-wordmark-text { font-size: 15px; font-weight: 600; color: var(--vp-c-text-1); white-space: nowrap; }
+.oh-tag {
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--vp-c-brand-soft);

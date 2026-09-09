@@ -235,7 +235,7 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
       expect(existsSync(hooksPath(fixture, fixture.main))).toBe(false)
       expect(existsSync(join(common, 'config.worktree'))).toBe(false)
       expect(gitResult(fixture, fixture.main, [
-        'config', '--get', 'merge.dsh-translation-pairing.driver',
+        'config', '--get', 'merge.oh-translation-pairing.driver',
       ]).status).toBe(1)
     })
   }
@@ -257,10 +257,10 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
     expect(git(fixture, fixture.main, ['config', '--worktree', '--get', 'core.hooksPath'])).toBe(mainHooks)
     expect(git(fixture, fixture.linked, ['config', '--worktree', '--get', 'core.hooksPath'])).toBe(linkedHooks)
     expect(git(fixture, fixture.main, [
-      'config', '--worktree', '--get', 'merge.dsh-translation-pairing.driver',
+      'config', '--worktree', '--get', 'merge.oh-translation-pairing.driver',
     ])).toBe(pairingMergeDriver)
     expect(git(fixture, fixture.linked, [
-      'config', '--worktree', '--get', 'merge.dsh-translation-pairing.driver',
+      'config', '--worktree', '--get', 'merge.oh-translation-pairing.driver',
     ])).toBe(pairingMergeDriver)
 
     const mainHook = readFileSync(join(mainHooks, 'pre-commit'), 'utf8')
@@ -706,7 +706,7 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
     expect(readFileSync(sentinel, 'utf8')).toBe('#!/bin/sh\n# command-scope sentinel\n')
     expect(gitResult(fixture, fixture.main, ['config', '--get', 'core.hooksPath']).status).toBe(1)
     expect(gitResult(fixture, fixture.main, [
-      'config', '--get', 'merge.dsh-translation-pairing.driver',
+      'config', '--get', 'merge.oh-translation-pairing.driver',
     ]).status).toBe(1)
     expect(existsSync(hooksPath(fixture, fixture.main))).toBe(false)
   })
@@ -717,15 +717,15 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
     git(fixture, fixture.main, ['config', '--file', commonConfig, 'core.repositoryFormatVersion', '1'])
     git(fixture, fixture.main, ['config', '--file', commonConfig, 'extensions.worktreeConfig', 'true'])
     git(fixture, fixture.main, [
-      'config', '--worktree', 'merge.dsh-translation-pairing.driver', 'custom-driver %A',
+      'config', '--worktree', 'merge.oh-translation-pairing.driver', 'custom-driver %A',
     ])
 
     const result = await runInstaller(fixture, fixture.main)
 
     expect(result.status).toBe(1)
-    expect(result.stderr).toContain('refusing to replace worktree merge.dsh-translation-pairing.driver')
+    expect(result.stderr).toContain('refusing to replace worktree merge.oh-translation-pairing.driver')
     expect(git(fixture, fixture.main, [
-      'config', '--worktree', '--get', 'merge.dsh-translation-pairing.driver',
+      'config', '--worktree', '--get', 'merge.oh-translation-pairing.driver',
     ])).toBe('custom-driver %A')
     expect(gitResult(fixture, fixture.main, ['config', '--get', 'core.hooksPath']).status).toBe(1)
   })
@@ -733,18 +733,18 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
   it('never masks an inherited custom pairing merge driver', async () => {
     const fixture = createFixture()
     git(fixture, fixture.main, [
-      'config', '--local', 'merge.dsh-translation-pairing.driver', 'inherited-driver %A',
+      'config', '--local', 'merge.oh-translation-pairing.driver', 'inherited-driver %A',
     ])
 
     const result = await runInstaller(fixture, fixture.main)
 
     expect(result.status).toBe(1)
-    expect(result.stderr).toContain('refusing to mask inherited merge.dsh-translation-pairing.driver')
+    expect(result.stderr).toContain('refusing to mask inherited merge.oh-translation-pairing.driver')
     expect(git(fixture, fixture.main, [
-      'config', '--local', '--get', 'merge.dsh-translation-pairing.driver',
+      'config', '--local', '--get', 'merge.oh-translation-pairing.driver',
     ])).toBe('inherited-driver %A')
     expect(gitResult(fixture, fixture.main, [
-      'config', '--worktree', '--get', 'merge.dsh-translation-pairing.driver',
+      'config', '--worktree', '--get', 'merge.oh-translation-pairing.driver',
     ]).status).toBe(1)
     expect(gitResult(fixture, fixture.main, ['config', '--get', 'core.hooksPath']).status).toBe(1)
   })
@@ -799,10 +799,10 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
     expect(gitResult(fixture, fixture.main, ['config', '--worktree', '--get', 'core.hooksPath']).status).toBe(1)
     expect(gitResult(fixture, fixture.main, ['config', '--get', 'core.hooksPath']).status).toBe(1)
     expect(gitResult(fixture, fixture.main, [
-      'config', '--worktree', '--get', 'merge.dsh-translation-pairing.name',
+      'config', '--worktree', '--get', 'merge.oh-translation-pairing.name',
     ]).status).toBe(1)
     expect(gitResult(fixture, fixture.main, [
-      'config', '--worktree', '--get', 'merge.dsh-translation-pairing.driver',
+      'config', '--worktree', '--get', 'merge.oh-translation-pairing.driver',
     ]).status).toBe(1)
     expect(readFileSync(legacyHook, 'utf8')).toBe('#!/bin/sh\n# legacy pre-push\n')
   })
@@ -817,7 +817,7 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
     expect(result.stderr).toContain('merge-translation-pairing.ts --probe failed')
     expect(gitResult(fixture, fixture.main, ['config', '--get', 'core.hooksPath']).status).toBe(1)
     expect(gitResult(fixture, fixture.main, [
-      'config', '--get', 'merge.dsh-translation-pairing.driver',
+      'config', '--get', 'merge.oh-translation-pairing.driver',
     ]).status).toBe(1)
   })
 
@@ -834,7 +834,7 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
     expect(result.stderr).toContain('exit status 77')
     expect(result.stderr).toContain('worktree integration rollback also failed')
     expect(result.stderr).toContain('git config --worktree --unset-all core.hooksPath failed')
-    expect(result.stderr).toContain('git config --worktree --unset-all merge.dsh-translation-pairing.driver failed')
+    expect(result.stderr).toContain('git config --worktree --unset-all merge.oh-translation-pairing.driver failed')
   })
 
   it('refuses an unowned directory at the reserved worktree hook path', async () => {

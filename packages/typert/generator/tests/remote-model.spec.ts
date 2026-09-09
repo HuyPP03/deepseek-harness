@@ -365,7 +365,7 @@ export interface RemainingSchema {
       exports: Record<string, unknown>
       files: string[]
     }
-    manifest.dsh = { client: {} }
+    manifest.oh = { client: {} }
     manifest.exports['./client'] = './src/client.ts'
     manifest.exports['./client/typert'] = {
       types: './lib/typert.client.d.ts',

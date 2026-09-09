@@ -17,7 +17,7 @@
             maxBytes: 65536
             dshHome: !!js process.cwd() + '/.oh'
             projectRootMarkers:
-              - .dsh-project
+              - .oh-project
           persona: |
             You are a coding assistant powered by the {{model}} model. Your working directory is {{cwd}}.
 
