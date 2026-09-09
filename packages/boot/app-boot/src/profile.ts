@@ -51,7 +51,7 @@ export interface OhProfileManifest {
 }
 
 /**
- * The profile-launcher slice of the `dsh`-owned package.json section. A
+ * The profile-launcher slice of the `oh`-owned package.json section. A
  * manifest may declare both roles; other consumers own additional keys.
  */
 export interface OhManifestSection {
@@ -66,7 +66,7 @@ export interface ProfileManifest {
   name?: string
   dependencies?: Record<string, string>
   peerDependencies?: Record<string, string>
-  dsh?: OhManifestSection
+  oh?: OhManifestSection
 }
 
 /** One resolved bundle layer of a profile. */

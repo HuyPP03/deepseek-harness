@@ -37,7 +37,7 @@ export function discoverPluginDirs(root = repoRoot): string[] {
   const dirs: string[] = []
   for (const manifestPath of globSync('packages/*/*/package.json', { cwd: root }).sort()) {
     const manifest = JSON.parse(readFileSync(join(root, manifestPath), 'utf8')) as {
-      dsh?: { client?: { platform?: unknown } }
+      oh?: { client?: { platform?: unknown } }
     }
     if (manifest.oh?.client?.platform === 'web') dirs.push(dirname(manifestPath).split(sep).join('/'))
   }
