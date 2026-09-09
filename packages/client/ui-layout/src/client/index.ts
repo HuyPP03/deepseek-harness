@@ -63,8 +63,16 @@ declare module '@open-harness/oh-client-ui-slots' {
     'conversation': { kind: 'single'; scope: 'session-maybe'; owner: ConvOwnerProps }
     /**
      * The full-column overlay above the center column, rendered while the
-     * layout store's centerView is 'connectors' (the sidebar's connectors
-     * tab drives it). OCCUPIED by ui-connectors' connectors directory — the
+     * layout store's centerView is 'chats' (the header's Chats tab drives
+     * it). OCCUPIED by ui-workspace's chat dashboard — the recent-chat list
+     * with the New chat call to action. The conversation underneath stays
+     * mounted, so switching back restores it in place.
+     */
+    'main.chats': { kind: 'single'; scope: 'root' }
+    /**
+     * The full-column overlay above the center column, rendered while the
+     * layout store's centerView is 'connectors' (the header's Connectors tab
+     * drives it). OCCUPIED by ui-connectors' connectors directory — the
      * big browse cards and the selected provider's detail. The conversation
      * underneath stays mounted, so switching views back and forth keeps its
      * state.
@@ -146,6 +154,7 @@ export function apply(ctx: ClientContext): void {
         'shell.header': { kind: 'single', scope: 'root' },
         'sidebar': { kind: 'single', scope: 'root' },
         'conversation': { kind: 'single', scope: 'session-maybe' },
+        'main.chats': { kind: 'single', scope: 'root' },
         'main.connectors': { kind: 'single', scope: 'root' },
         'details': { kind: 'single', scope: 'session' },
         'shell.overlay': { kind: 'list', scope: 'root' },

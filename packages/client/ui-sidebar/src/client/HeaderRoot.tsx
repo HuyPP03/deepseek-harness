@@ -8,8 +8,20 @@
 import { useEffect } from 'react'
 import clsx from 'clsx'
 import { OpenMark } from '@open-harness/oh-client-ui-primitives'
+import type { CenterView } from '@open-harness/oh-client-ui-layout/client'
 import type { HeaderRootComponentProps } from './contract/slots.ts'
 import css from './HeaderRoot.module.css'
+
+/**
+ * The center view each browsing tab shows: Chats its dashboard, Connectors
+ * the directory overlay; Workspaces keeps the conversation until the
+ * workspace dashboard exists.
+ */
+function viewForTab(tab: 'chats' | 'workspaces' | 'connectors'): CenterView {
+  if (tab === 'connectors') return 'connectors'
+  if (tab === 'chats') return 'chats'
+  return 'conversation'
+}
 
 /**
  * Render the header bar (brand + primary navigation).
@@ -22,23 +34,31 @@ export function HeaderRoot({
   setCenterView,
   t,
   useStore,
+  useSessions,
   actions,
 }: HeaderRootComponentProps) {
   const tab = useStore(state => state.tab)
-  // The browsing tab drives the center column's full-column view: the
-  // connectors tab shows the directory overlay over the conversation, the
-  // other tabs the conversation. An effect (not the click handler) so the
-  // persisted tab restored on mount syncs too.
+  const currentSession = useSessions(state => state.current)
+  // The browsing tab drives the center column's full-column view: Chats its
+  // dashboard, Connectors the directory overlay, Workspaces the conversation.
+  // An effect (not the click handler) so the persisted tab restored on mount
+  // syncs too.
   useEffect(() => {
-    setCenterView(tab === 'connectors' ? 'connectors' : 'conversation')
+    setCenterView(viewForTab(tab))
   }, [tab, setCenterView])
+  // Opening a session yields any dashboard to the conversation (the row
+  // click, the brand shortcut, or a provider chat from the directory); the
+  // declared last so a mount with a current session lands on it.
+  useEffect(() => {
+    if (currentSession !== undefined) setCenterView('conversation')
+  }, [currentSession, setCenterView])
   // A tab click re-asserts the center view even when the tab is already
-  // active: opening a provider chat from the directory switches the center
-  // view back to the conversation while the tab stays on connectors, so the
-  // next click on that tab must bring the directory back.
+  // active: opening a session from the dashboard switches the center view
+  // back to the conversation while the tab stays on Chats, so the next click
+  // on that tab must bring the dashboard back.
   const selectTab = (candidate: 'chats' | 'workspaces' | 'connectors'): void => {
     if (tab !== candidate) actions.setTab(candidate)
-    setCenterView(candidate === 'connectors' ? 'connectors' : 'conversation')
+    setCenterView(viewForTab(candidate))
   }
   // The brand doubles as a New shortcut for the active tab: Chats mints the
   // ungrouped blank chat, Workspaces starts a session. The connectors tab

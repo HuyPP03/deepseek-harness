@@ -15,11 +15,11 @@ import {
 
 /**
  * The full-column view the center column shows: the resident conversation,
- * or the connectors directory overlay. The sidebar's browsing tab is the
- * driver (its shell syncs the value through the layout face); the frame
- * renders against it.
+ * the chats dashboard overlay, or the connectors directory overlay. The
+ * header's primary navigation is the driver (it syncs the value through the
+ * layout face); the frame renders against it.
  */
-export type CenterView = 'conversation' | 'connectors'
+export type CenterView = 'conversation' | 'chats' | 'connectors'
 
 /**
  * Layout store state: panel width preferences in px (0 = closed), the center

@@ -20,7 +20,7 @@ import css from './AppFrame.module.css'
 /** Full composed props: runtime share + child-slot render share + store share. */
 export type AppFrameProps =
   & PropsRuntime<'root'>
-  & PropsRenderSlots<'shell.header' | 'sidebar' | 'conversation' | 'main.connectors' | 'details' | 'shell.overlay'>
+  & PropsRenderSlots<'shell.header' | 'sidebar' | 'conversation' | 'main.chats' | 'main.connectors' | 'details' | 'shell.overlay'>
   & PropsStore<ReturnType<typeof createLayoutStore>>
 
 /** Center column grid item (session-body building block). */
@@ -197,11 +197,16 @@ export function AppFrame({
               without the seat those values compete at frame level and paint
               over the z-index 1 connectors overlay. */}
           <div className={css.conversationSeat}>{renderSlot('conversation', {})}</div>
-          {/* The connectors directory rides the center column as a full-column
-              overlay: the conversation underneath stays mounted, so switching
-              the browsing tab back and forth keeps its state. The store's
-              centerView is the single show/hide decision (the sidebar's
-              browsing tab writes it through the layout face). */}
+          {/* The full-column dashboard overlays ride the center column: the
+              conversation underneath stays mounted, so switching the
+              browsing tab back and forth keeps its state. The store's
+              centerView is the single show/hide decision (the header's
+              primary navigation writes it through the layout face). */}
+          {panels.centerView === 'chats' && (
+            <div className={css.centerOverlay} data-center-view="chats">
+              {renderSlot('main.chats', {})}
+            </div>
+          )}
           {panels.centerView === 'connectors' && (
             <div className={css.centerOverlay} data-center-view="connectors">
               {renderSlot('main.connectors', {})}

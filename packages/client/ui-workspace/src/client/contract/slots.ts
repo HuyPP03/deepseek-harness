@@ -189,3 +189,26 @@ export type WorkspacePickerProps =
   & DirectoryPickingHooks
   & ConnectorChatsHooks
   & PropsLocale<'workspace'>
+
+/**
+ * Chat-dashboard injected share (arrives via the register inject factory):
+ * the center dashboard's row clicks and New chat CTA drive these session
+ * actions. Data reads use the global framework hooks.
+ */
+export type ChatDashboardInjected = ConnectorChatsInjected & {
+  /** Open the session (row click); the header's session-open sync then carries the center back to the conversation. */
+  openSession: (sessionId: SessionId) => void
+  /** Start a new chat: reuse-or-create the ungrouped blank chat and open it. */
+  startChat: () => void
+}
+
+/**
+ * Full chat-dashboard props: the root-scope global seats (useSessions /
+ * useWorkspaces), the injected actions, the bound connector-preset hook, and
+ * the workspace-namespace locale seat.
+ */
+export type ChatDashboardProps =
+  PropsRuntime<'main.chats'>
+  & Omit<ChatDashboardInjected, 'hooks'>
+  & ConnectorChatsHooks
+  & PropsLocale<'workspace'>

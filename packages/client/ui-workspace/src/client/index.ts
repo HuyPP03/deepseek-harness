@@ -13,14 +13,16 @@ import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client
 import type { ClientContext } from '@open-harness/oh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@open-harness/oh-client-locale/client'
-import type { WorkspaceBrowserInjected, WorkspacePickerInjected } from './contract/slots.ts'
+import type { ChatDashboardInjected, WorkspaceBrowserInjected, WorkspacePickerInjected } from './contract/slots.ts'
 import { createWorkspaceViewStore } from './stores.ts'
+import { ChatDashboard } from './ChatDashboard.tsx'
 import { WorkspaceBrowser } from './WorkspaceBrowser.tsx'
 import { ReferenceProjectsChip, type ReferenceProjectsChipInjected } from './ReferenceProjectsChip.tsx'
 import { WorkspacePicker } from './WorkspacePicker.tsx'
 import { en, vi, zh, type WorkspaceKey } from './locales.ts'
 
 export type {
+  ChatDashboardInjected, ChatDashboardProps,
   DirectoryFlowOwnerProps, DirectoryFlowSlotName, DirectoryPickingHooks, DirectoryPickingInjected,
   WorkspaceBrowserInjected, WorkspaceBrowserProps, WorkspacePickerInjected, WorkspacePickerProps,
 } from './contract/slots.ts'
@@ -159,6 +161,22 @@ export function apply(ctx: ClientContext): void {
     },
     WorkspacePicker,
   ))
+
+  // The full-column chat dashboard (the header's Chats tab). It lists the
+  // recent ungrouped chats — the same row derivation as the sidebar's Chats
+  // tab — with the New chat call to action.
+  ctx.slots.inject('main.chats', () => ctx.slots.register({
+    name: 'main.chats',
+    locale: NS,
+    inject: (): ChatDashboardInjected => ({
+      openSession: (sessionId) => { ctx.sessions.open(sessionId) },
+      startChat: () => {
+        ctx.workspaces.startChat()
+          .then((sessionId) => { ctx.sessions.open(sessionId) })
+      },
+      hooks: { connectorPresetIds },
+    }),
+  }, ChatDashboard))
 
   // The in-session reference-project chip: session context sits between the
   // process work (subagent catalog, job list) and the composition seat

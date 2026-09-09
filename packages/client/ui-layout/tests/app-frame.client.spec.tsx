@@ -61,6 +61,7 @@ function mountFrame() {
     if (key === 'shell.header') return <div data-testid="header-content" />
     if (key === 'sidebar') return <div data-testid="sidebar-content" />
     if (key === 'conversation') return <div data-testid="center-content" />
+    if (key === 'main.chats') return <div data-testid="center-chats-content" />
     if (key === 'main.connectors') return <div data-testid="center-connectors-content" />
     if (key === 'details') return <div data-testid="details-content" />
     if (key === 'conversation.empty') return <div data-testid="empty-content" />
@@ -170,6 +171,21 @@ describe('AppFrame', () => {
 
     act(() => { instance.actions.setCenterView('conversation') })
     expect(queryByTestId('center-connectors-content')).toBeNull()
+    expect(getByTestId('center-content')).toBeTruthy()
+  })
+
+  it('renders the chats dashboard overlay only while centerView is chats; the conversation stays mounted', () => {
+    const { instance, getByTestId, queryByTestId, slotCalls } = mountFrame()
+    expect(queryByTestId('center-chats-content')).toBeNull()
+    expect(slotCalls.map(c => c.key)).not.toContain('main.chats')
+
+    act(() => { instance.actions.setCenterView('chats') })
+    expect(getByTestId('center-chats-content')).toBeTruthy()
+    expect(getByTestId('center-content')).toBeTruthy()
+    expect(slotCalls.find(c => c.key === 'main.chats')!.props).toEqual({})
+
+    act(() => { instance.actions.setCenterView('conversation') })
+    expect(queryByTestId('center-chats-content')).toBeNull()
     expect(getByTestId('center-content')).toBeTruthy()
   })
 

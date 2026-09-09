@@ -20,27 +20,37 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-// The header never reads the global hooks itself, but they ride the standard
-// props share; stub them as never-called functions.
-const neverHook = (() => { throw new Error('header must not read global hooks') }) as never
-
-function mountHeader({ tab = 'workspaces' }: {
+function mountHeader({ tab = 'workspaces', currentSession }: {
   tab?: 'chats' | 'workspaces' | 'connectors'
+  currentSession?: { current: unknown }
 } = {}) {
   const startSession = vi.fn()
   const startChat = vi.fn()
   const setCenterView = vi.fn()
   const store = createSidebarStore().create()
   store.actions.setTab(tab)
-  const view = render(
+  // An absent argument means "a session is current" (the realistic mount);
+  // pass { current: undefined } for the session-less dashboard state.
+  const sessionState = { current: currentSession === undefined ? 'session-1' : currentSession.current }
+  const useSessions = ((sel: (s: typeof sessionState) => unknown) => sel(sessionState)) as never
+  const useWorkspaces = (() => { throw new Error('header must not read useWorkspaces') }) as never
+  // A fresh element per render: React bails out on a re-render with the same
+  // element reference, so the re-render after mutating the mutable
+  // sessionState closure needs a new object to take effect.
+  const makeElement = () => (
     <HeaderRoot
-      useSessions={neverHook} useWorkspaces={neverHook}
+      useSessions={useSessions} useWorkspaces={useWorkspaces}
       startSession={startSession} startChat={startChat} setCenterView={setCenterView}
       t={t}
       useStore={bindSnapshotSelector(store)} actions={store.actions}
-    />,
+    />
   )
-  return { startSession, startChat, setCenterView, store, ...view }
+  const view = render(makeElement())
+  const result: typeof view & { rerender: () => void } = {
+    ...view,
+    rerender: () => { view.rerender(makeElement()) },
+  }
+  return { startSession, startChat, setCenterView, store, sessionState, ...result }
 }
 
 describe('HeaderRoot', () => {
@@ -85,8 +95,8 @@ describe('HeaderRoot', () => {
     cleanup()
   })
 
-  it('mirrors the browsing tab into the center view (connectors shows the directory)', () => {
-    const b = mountHeader()
+  it('mirrors the browsing tab into the center view (no session current)', () => {
+    const b = mountHeader({ currentSession: { current: undefined } })
     // Mount syncs the persisted tab (workspaces) to the conversation view,
     // and exactly once — an unchanged tab issues no further writes.
     expect(b.setCenterView).toHaveBeenCalledTimes(1)
@@ -98,12 +108,35 @@ describe('HeaderRoot', () => {
     expect(b.setCenterView).toHaveBeenLastCalledWith('connectors')
     expect(b.setCenterView).toHaveBeenCalledTimes(3)
     fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
-    expect(b.setCenterView).toHaveBeenLastCalledWith('conversation')
+    expect(b.setCenterView).toHaveBeenLastCalledWith('chats')
     expect(b.setCenterView).toHaveBeenCalledTimes(5)
+    fireEvent.click(screen.getByRole('tab', { name: 'Workspaces' }))
+    expect(b.setCenterView).toHaveBeenLastCalledWith('conversation')
+    expect(b.setCenterView).toHaveBeenCalledTimes(7)
     cleanup()
 
-    // A cold mount on the connectors tab syncs the directory view too.
-    const c = mountHeader({ tab: 'connectors' })
-    expect(c.setCenterView).toHaveBeenCalledWith('connectors')
+    // Cold mounts sync the persisted tab too: Chats its dashboard, Connectors
+    // the directory.
+    const c = mountHeader({ tab: 'chats', currentSession: { current: undefined } })
+    expect(c.setCenterView).toHaveBeenCalledWith('chats')
+    cleanup()
+    const d = mountHeader({ tab: 'connectors', currentSession: { current: undefined } })
+    expect(d.setCenterView).toHaveBeenCalledWith('connectors')
+  })
+
+  it('yields a dashboard to the conversation when a session becomes current', () => {
+    // Cold mount on Chats with a current session: the session sync (declared
+    // after the tab sync) lands the center on the conversation.
+    const a = mountHeader({ tab: 'chats' })
+    expect(a.setCenterView).toHaveBeenLastCalledWith('conversation')
+    cleanup()
+
+    // The dashboard showing, then a session opens (row click, brand shortcut,
+    // or provider chat): the center follows the session.
+    const b = mountHeader({ tab: 'chats', currentSession: { current: undefined } })
+    expect(b.setCenterView).toHaveBeenLastCalledWith('chats')
+    b.sessionState.current = 'session-2'
+    b.rerender()
+    expect(b.setCenterView).toHaveBeenLastCalledWith('conversation')
   })
 })
