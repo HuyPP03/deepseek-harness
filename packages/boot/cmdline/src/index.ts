@@ -1,5 +1,5 @@
 /**
- * @open-harness/oh-cmdline — the command line a dsh launcher hands to the app
+ * @open-harness/oh-cmdline — the command line a oh launcher hands to the app
  * it boots.
  *
  * The launcher parses only its own flags (`--profile`, `--patch`, the config

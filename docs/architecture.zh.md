@@ -8,9 +8,9 @@
 
 ## Cordis
 
-[Cordis](cordis-primer.md) 是 dsh 底层的框架：插件向共享上下文贡献服务、类型化事件和可逆的副作用。产品的每一部分都是插件，包括模型适配器、工具注册表、会话日志，以及 agent loop（智能体循环）本身，因此每一部分都可以从配置替换。
+[Cordis](cordis-primer.md) 是 oh 底层的框架：插件向共享上下文贡献服务、类型化事件和可逆的副作用。产品的每一部分都是插件，包括模型适配器、工具注册表、会话日志，以及 agent loop（智能体循环）本身，因此每一部分都可以从配置替换。
 
-不存在需要打补丁的特权内核：扩展 dsh 的方式是把插件挂载到其他插件旁边，而各项注册都是副作用，会在其插件卸载时撤销。
+不存在需要打补丁的特权内核：扩展 oh 的方式是把插件挂载到其他插件旁边，而各项注册都是副作用，会在其插件卸载时撤销。
 
 ## Profile 与组合包
 
@@ -20,7 +20,7 @@
 
 **组合包**是 Cordis 配置项及其挂载代码的分发格式，因此它插入的内容始终可被其上各层 patch。
 
-两者都在各自的 `package.json` 中通过 `dsh` 字段声明自己：`oh.profile` 列出一个 profile 的组合包，`oh.bundle` 指向一个组合包的 patch 文件。
+两者都在各自的 `package.json` 中通过 `oh` 字段声明自己：`oh.profile` 列出一个 profile 的组合包，`oh.bundle` 指向一个组合包的 patch 文件。
 
 [`oh-base`](../packages/bundle/base/README.md) 是每个 profile 的第一层：模型适配器、工具、持久化、沙箱与审批策略、设置、凭据、遥测。[`oh-web-app`](../packages/bundle/web-app/README.md) 增加浏览器应用；[`oh-headless`](../packages/bundle/headless/README.md) 增加一次性运行器，且完全不带服务器。
 

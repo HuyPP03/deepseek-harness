@@ -8,7 +8,7 @@ To use a fresh source checkout instead, complete the [run-from-source section](.
 
 ## Two concepts, two manifests
 
-Installation is built on two concepts. Both are described by a `package.json`, but they carry different kinds of manifest under the `dsh` key, and they answer different questions:
+Installation is built on two concepts. Both are described by a `package.json`, but they carry different kinds of manifest under the `oh` key, and they answer different questions:
 
 - A **bundle** is an npm package that ships a configuration layer. Its manifest declares `oh.bundle`, answering "what does this package contribute?": a patch file that inserts or overrides plugin rows.
 - A **profile** is a directory under `$OH_HOME/profiles/<name>` describing one runnable composition. Its manifest declares `oh.profile`, answering "which bundles compose this setup, in what order?".
@@ -125,7 +125,7 @@ Later layers win per row, and a patch replaces a row's entire `config` value rat
 - Your patch can override rows from earlier layers by `id` — the same way [the `oh-web-app` bundle](../../../../packages/bundle/web-app/cordis.patch.yml) overrides `oh-base` rows — but must restate every key the row needs, not just the changed one.
 - Users can override your rows in their profile's `cordis.patch.yml` without touching your package, so prefer configuration defaults users are likely to keep and let the schema carry the rest.
 
-In-box bundle names always resolve from the dsh installation itself; pnpm manages only out-of-tree packages, so your bundle can rely on `@open-harness/oh-base` being present and current.
+In-box bundle names always resolve from the oh installation itself; pnpm manages only out-of-tree packages, so your bundle can rely on `@open-harness/oh-base` being present and current.
 
 ## Give a surface bundle its own command line
 

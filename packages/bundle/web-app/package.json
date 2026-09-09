@@ -1,6 +1,6 @@
 {
   "name": "@open-harness/oh-web-app",
-  "description": "The dsh browser-surface bundle: the web patch layer over oh-base plus the runtime glue plugin (frontend dist serving, web-surface prompt, bash runtime variables, URL line)",
+  "description": "The oh browser-surface bundle: the web patch layer over oh-base plus the runtime glue plugin (frontend dist serving, web-surface prompt, bash runtime variables, URL line)",
   "version": "0.1.0-rc.7",
   "publishConfig": {
     "access": "public"

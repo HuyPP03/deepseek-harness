@@ -175,10 +175,10 @@ describe('FileSystemSkillProvider', () => {
     await mkdir(join(project, '.git'), { recursive: true })
 
     await writeSkill(join(home, '.agents/skills'), 'same', 'user agents skill')
-    await writeSkill(join(home, '.oh/skills'), 'same', 'user dsh skill')
+    await writeSkill(join(home, '.oh/skills'), 'same', 'user oh skill')
     await writeSkill(custom, 'same', 'custom skill')
     await writeSkill(join(project, '.agents/skills'), 'same', 'project agents skill')
-    await writeSkill(join(project, '.oh/skills'), 'same', 'project dsh skill')
+    await writeSkill(join(project, '.oh/skills'), 'same', 'project oh skill')
     await writeSkill(custom, 'custom-only', 'custom only')
     await writeSkill(join(home, '.oh/skills/.system'), 'hidden-system', 'hidden system')
 
@@ -194,8 +194,8 @@ describe('FileSystemSkillProvider', () => {
       'same',
     ])
     expect(skills.find(skill => skill.name === 'custom-only')?.description).toBe('custom only')
-    expect(skills.find(skill => skill.name === 'same')?.description).toBe('project dsh skill')
-    expect(skills.find(skill => skill.name === 'same')?.source).toBe('project-dsh')
+    expect(skills.find(skill => skill.name === 'same')?.description).toBe('project oh skill')
+    expect(skills.find(skill => skill.name === 'same')?.source).toBe('project-oh')
     expect(skills.find(skill => skill.name === 'hidden-system')).toBeUndefined()
     expect(skills.find(skill => skill.name === 'bundled-only')).toMatchObject({ source: 'bundled' })
     expect((await ctx.skills.get('bundled-only'))?.content).toBe('Use the skill.')
@@ -457,7 +457,7 @@ describe('FileSystemSkillProvider', () => {
 
     expect((await ctx.skills.list({ cwd: nestedCwd })).map(skill => [skill.name, skill.source])).toEqual([
       ['backend-root', 'project-agents'],
-      ['text-skill', 'user-dsh'],
+      ['text-skill', 'user-oh'],
     ])
     expect(fs.listDirCalls).toBeGreaterThan(0)
     expect(await ctx.skills.get('binary-skill')).toBeUndefined()
@@ -848,7 +848,7 @@ describe('FileSystemSkillProvider', () => {
       expect((await isolated.skills.list()).map(skill => skill.name)).toEqual(['custom-isolated-skill'])
       await isolated.fiber.dispose()
 
-      process.env.OH_HOME = join(envHome, 'empty-dsh')
+      process.env.OH_HOME = join(envHome, 'empty-oh')
       delete process.env.OH_BUNDLED_SKILL_DIR
       process.env.OH_AGENTS_HOME = join(envHome, 'empty-agents')
       const empty = new Context()
@@ -860,7 +860,7 @@ describe('FileSystemSkillProvider', () => {
       expect(new SkillFileSystem.FileSystemSkillProvider(empty, {
         signal: new AbortController().signal,
         invalidate() {},
-      }, { ohHome: join(envHome, 'empty-dsh') }).name).toBe('filesystem')
+      }, { ohHome: join(envHome, 'empty-oh') }).name).toBe('filesystem')
     } finally {
       if (previousDshHome === undefined) {
         delete process.env.OH_HOME

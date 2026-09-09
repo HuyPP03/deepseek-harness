@@ -402,7 +402,7 @@ describe('web e2e: workspace management (create / rename / tabs / hover affordan
     await page.getByRole('button', { name: 'View options' }).click()
     await expect.poll(() => page.getByRole('menuitem', { name: 'Manual' }).count(), { timeout: 5_000 }).toBe(1)
     await page.getByRole('menuitem', { name: 'Manual' }).click()
-    expect(await page.evaluate(() => localStorage.getItem('dsh.workspace.view.v6'))).toContain('manual')
+    expect(await page.evaluate(() => localStorage.getItem('oh.workspace.view.v6'))).toContain('manual')
     // The chats tab lists the seeded session flat, with no group headers.
     await switchToTab('Chats')
     const chatsTree = page.getByRole('tree', { name: 'Chats' })
@@ -417,7 +417,7 @@ describe('web e2e: workspace management (create / rename / tabs / hover affordan
       { timeout: 15_000 },
     ).toBe('true')
     await expect.poll(() => chatsTree.getByRole('treeitem').count(), { timeout: 15_000 }).toBeGreaterThanOrEqual(1)
-    expect(await page.evaluate(() => localStorage.getItem('dsh.workspace.view.v6'))).toContain('manual')
+    expect(await page.evaluate(() => localStorage.getItem('oh.workspace.view.v6'))).toContain('manual')
     expect(tripwire.pageErrors).toEqual([])
   }, 90_000)
 

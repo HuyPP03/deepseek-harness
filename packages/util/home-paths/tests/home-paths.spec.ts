@@ -17,7 +17,7 @@ afterEach(() => {
   vi.unstubAllEnvs()
 })
 
-describe('dsh path helpers', () => {
+describe('oh path helpers', () => {
   it('owns the shared default Open Harness home directory name', () => {
     expect(OH_HOME_DIR_NAME).toBe('.oh')
     expect(DEFAULT_OH_HOME_DISPLAY).toBe('~/.oh')
@@ -33,10 +33,10 @@ describe('dsh path helpers', () => {
   })
 
   it('resolves explicit path before OH_HOME and the default', () => {
-    const envHome = join(homedir(), 'env-dsh')
+    const envHome = join(homedir(), 'env-oh')
 
-    expect(resolveOhHome('/tmp/explicit-dsh', { OH_HOME: '~/env-dsh' })).toBe(resolve('/tmp/explicit-dsh'))
-    expect(resolveOhHome(undefined, { OH_HOME: '~/env-dsh' })).toBe(envHome)
+    expect(resolveOhHome('/tmp/explicit-oh', { OH_HOME: '~/env-oh' })).toBe(resolve('/tmp/explicit-oh'))
+    expect(resolveOhHome(undefined, { OH_HOME: '~/env-oh' })).toBe(envHome)
     expect(resolveOhHome(undefined, {})).toBe(defaultDshHome())
   })
 
@@ -46,9 +46,9 @@ describe('dsh path helpers', () => {
   })
 
   it('joins child segments onto the resolved OH_HOME', () => {
-    vi.stubEnv('OH_HOME', '~/env-dsh')
-    expect(ohHomePath()).toBe(join(homedir(), 'env-dsh'))
-    expect(ohHomePath('storages', 'cache')).toBe(join(homedir(), 'env-dsh', 'storages', 'cache'))
+    vi.stubEnv('OH_HOME', '~/env-oh')
+    expect(ohHomePath()).toBe(join(homedir(), 'env-oh'))
+    expect(ohHomePath('storages', 'cache')).toBe(join(homedir(), 'env-oh', 'storages', 'cache'))
   })
 
   it('labels a resolved home by whether it is the default root', () => {

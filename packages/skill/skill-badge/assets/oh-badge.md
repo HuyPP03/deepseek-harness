@@ -1,6 +1,6 @@
-# dsh Badge
+# oh Badge
 
-Add the official “powered by dsh” badge without recreating or restyling it.
+Add the official “powered by oh” badge without recreating or restyling it.
 
 ## Assets
 

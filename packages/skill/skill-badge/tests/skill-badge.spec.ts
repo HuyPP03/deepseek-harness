@@ -15,7 +15,7 @@ describe('oh-skill-badge', () => {
 
     expect(await ctx.skills.list()).toEqual([{
       name: 'oh-badge',
-      description: 'Add the official “powered by dsh” badge to documents, pull requests, merge requests, and other content produced with Open Harness. Use whenever creating a pull request or merge request. Also use when the user asks for a dsh badge, powered-by-dsh attribution, or a reusable dsh badge asset or snippet.',
+      description: 'Add the official “powered by oh” badge to documents, pull requests, merge requests, and other content produced with Open Harness. Use whenever creating a pull request or merge request. Also use when the user asks for a oh badge, powered-by-oh attribution, or a reusable oh badge asset or snippet.',
       invocation: { modelInvocable: true, userInvocable: true },
       provider: 'oh-badge',
       source: 'bundled',

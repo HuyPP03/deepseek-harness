@@ -8,7 +8,7 @@
 
 ## 两个概念，两种 manifest
 
-安装机制建立在两个概念之上。二者都由一份 `package.json` 描述，但它们在 `dsh` 键下携带的 manifest（元数据清单）种类不同，回答的问题也不同：
+安装机制建立在两个概念之上。二者都由一份 `package.json` 描述，但它们在 `oh` 键下携带的 manifest（元数据清单）种类不同，回答的问题也不同：
 
 - **组合包**是附带一个配置层的 npm 包。它的 manifest 声明 `oh.bundle`，回答的是"这个包贡献什么？"：一个插入或覆盖插件行的 patch 文件。
 - **profile** 是位于 `$OH_HOME/profiles/<name>` 下、描述一份可启动组合的目录。它的 manifest 声明 `oh.profile`，回答的是"这套配置由哪些组合包按什么顺序组成？"。
@@ -125,7 +125,7 @@ oh --profile demo
 - 你的 patch 可以按 `id` 覆盖前面各层的行——就像 [`oh-web-app` 组合包](../../../../packages/bundle/web-app/cordis.patch.yml)覆盖 `oh-base` 的行那样——但必须重述该行需要的每一个键，而不是只写改动的那个。
 - 用户可以在自己 profile 的 `cordis.patch.yml` 中覆盖你的行，无需改动你的包，所以优先给出用户大概率会保留的配置默认值，其余交给 schema 承担。
 
-内置组合包名称始终从 dsh 安装目录本身解析；pnpm 只管理树外的包，所以你的组合包可以放心依赖 `@open-harness/oh-base` 存在且与安装保持一致。
+内置组合包名称始终从 oh 安装目录本身解析；pnpm 只管理树外的包，所以你的组合包可以放心依赖 `@open-harness/oh-base` 存在且与安装保持一致。
 
 ## 让表层组合包持有自己的命令行
 

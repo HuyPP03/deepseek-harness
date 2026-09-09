@@ -42,7 +42,7 @@ afterEach(async () => {
 describe('shipped connector catalog', () => {
   it('boots in the web profile and lists every shipped connector', { timeout: 120_000 }, async () => {
     const { ctx, shutdown } = await runProfile({
-      environment: loadLayeredEnv('dsh'),
+      environment: loadLayeredEnv('oh'),
       profile: 'web',
       patchFiles: [],
       args: ['--port', '0'],

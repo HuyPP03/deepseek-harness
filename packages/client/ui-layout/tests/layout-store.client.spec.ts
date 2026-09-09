@@ -12,7 +12,7 @@ import {
   SIDEBAR_DEFAULT, SIDEBAR_MAX, SIDEBAR_MIN,
 } from '@open-harness/oh-client-ui-layout/src/client/columns.ts'
 
-const PERSIST_KEY = 'dsh.layout.panels'
+const PERSIST_KEY = 'oh.layout.panels'
 
 beforeEach(() => { localStorage.clear() })
 

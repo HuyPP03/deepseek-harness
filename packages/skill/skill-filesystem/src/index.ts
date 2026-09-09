@@ -243,14 +243,14 @@ export class FileSystemSkillProvider implements SkillProvider {
     if (this.includeDefaultRoots && cwd !== undefined) {
       const projectRoot = await findProjectRoot(resolve(cwd), optionalFileSystem(this.ctx))
       roots.push(
-        { path: join(projectRoot, '.oh/skills'), source: 'project-dsh', rank: PROJECT_OH_RANK, projectRoot },
+        { path: join(projectRoot, '.oh/skills'), source: 'project-oh', rank: PROJECT_OH_RANK, projectRoot },
         { path: join(projectRoot, '.agents/skills'), source: 'project-agents', rank: PROJECT_AGENTS_RANK, projectRoot },
       )
     }
     roots.push(...this.customSkillDirs.map(path => ({ path, source: 'custom' as const, rank: CUSTOM_RANK })))
     if (this.includeDefaultRoots) {
       roots.push(
-        { path: join(this.ohHome, 'skills'), source: 'user-dsh', rank: USER_OH_RANK, skipSystem: true },
+        { path: join(this.ohHome, 'skills'), source: 'user-oh', rank: USER_OH_RANK, skipSystem: true },
         { path: join(this.agentsHome, 'skills'), source: 'user-agents', rank: USER_AGENTS_RANK },
       )
     }

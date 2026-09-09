@@ -753,9 +753,9 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
     const fixture = createFixture()
 
     const result = await runInstaller(fixture, fixture.main, {
-      OH_TEST_FORBIDDEN_GIT_CONFIG_KEY: 'dsh.testSentinel',
+      OH_TEST_FORBIDDEN_GIT_CONFIG_KEY: 'oh.testSentinel',
       GIT_CONFIG_COUNT: '1',
-      GIT_CONFIG_KEY_0: 'dsh.testSentinel',
+      GIT_CONFIG_KEY_0: 'oh.testSentinel',
       GIT_CONFIG_VALUE_0: 'must-not-reach-lefthook',
     })
 

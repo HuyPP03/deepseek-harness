@@ -26,7 +26,7 @@
   name: '@open-harness/oh-command-search'
 ```
 
-随附 `dsh` 预设把它挂载在 `standard` 与 `code` agent 预设中；`chat` 预设不挂载，因为 chat 会话没有可搜索的项目目录。插件处置会先注销 `/search`，再等待所有已开始的处理器结算，因此根级 teardown 不会越过仍在运行的处理器。
+随附 `oh` 预设把它挂载在 `standard` 与 `code` agent 预设中；`chat` 预设不挂载，因为 chat 会话没有可搜索的项目目录。插件处置会先注销 `/search`，再等待所有已开始的处理器结算，因此根级 teardown 不会越过仍在运行的处理器。
 
 ## 模型体验
 

@@ -38,13 +38,13 @@ export const PROFILES_DIR = 'profiles'
 /** The user patch layer inside a profile directory (hot-reloaded on long-lived surfaces). */
 export const PROFILE_PATCH_FILENAME = 'cordis.patch.yml'
 
-/** The bundle half of the `dsh` manifest section: what a bundle package exports. */
+/** The bundle half of the `oh` manifest section: what a bundle package exports. */
 export interface OhBundleManifest {
   /** The patch layer this bundle exports, relative to its package root. */
   patch: string
 }
 
-/** The profile half of the `dsh` manifest section: what a profile directory composes. */
+/** The profile half of the `oh` manifest section: what a profile directory composes. */
 export interface OhProfileManifest {
   /** Ordered bundle layer list (package names). */
   bundles?: string[]
@@ -383,7 +383,7 @@ export function loadProfile(
     initProfile(dir, template)
   }
   const manifest = normalizeShippedProfile(name, dir, readProfileManifest(binName, dir))
-  // A hand-written profile manifest may omit the dsh section entirely.
+  // A hand-written profile manifest may omit the oh section entirely.
   const bundles = manifest.oh?.profile?.bundles ?? []
   const layers = bundles.map((packageName): ProfileLayer => {
     const packageDir = resolveBundleDir(binName, packageName, installAnchor, dir)

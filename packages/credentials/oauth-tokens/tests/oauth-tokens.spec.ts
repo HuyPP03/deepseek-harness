@@ -58,8 +58,8 @@ describe('resolveSpec', () => {
   })
 
   it('lets an explicit path win over the home', () => {
-    const spec = resolveSpec({ path: '/etc/dsh/tokens.json', ohHome: '/ignored', watch: false, debounceMs: 5 })
-    expect(spec).toEqual({ filename: resolve('/etc/dsh/tokens.json'), watch: false, debounceMs: 5 })
+    const spec = resolveSpec({ path: '/etc/oh/tokens.json', ohHome: '/ignored', watch: false, debounceMs: 5 })
+    expect(spec).toEqual({ filename: resolve('/etc/oh/tokens.json'), watch: false, debounceMs: 5 })
   })
 })
 

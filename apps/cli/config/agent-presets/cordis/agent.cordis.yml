@@ -185,7 +185,7 @@
         toolName: subagent_fork
         backgroundMode: continuable
 
-    # Production dsh does not install these optional providers. An opting-in
+    # Production oh does not install these optional providers. An opting-in
     # Profile mounts each provider once on the host plane; copy this preset,
     # then remove `disabled` from the matching tool row.
     - id: tool-subagent-codex

@@ -1,6 +1,6 @@
 {
   "name": "@open-harness/oh-client-ui-workflow-run",
-  "description": "Durable workflow-run Conversation Node and nested member disclosure for dsh web",
+  "description": "Durable workflow-run Conversation Node and nested member disclosure for oh web",
   "version": "0.1.0-rc.7",
   "publishConfig": {
     "access": "public"

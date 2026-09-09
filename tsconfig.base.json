@@ -42,7 +42,7 @@
       // pre-rebrand @deepseek-ai/dsh-* module ids. Redirect those specs to the
       // same local sources as the @open-harness/oh-* paths so declaration
       // merging and branded ids unify instead of resolving through the parent
-      // workspace's stale published dsh-* packages.
+      // workspace's stale published oh-* packages.
       "@deepseek-ai/dsh-typert-protocol": ["./packages/typert/protocol/src/index.ts"],
       "@deepseek-ai/dsh-session/types": ["./packages/core/session/src/types.ts"],
       "@deepseek-ai/dsh-cordis-host-runner/types": ["./packages/extensions/cordis-host-runner/src/types.ts"],

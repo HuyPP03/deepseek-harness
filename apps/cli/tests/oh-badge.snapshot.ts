@@ -7,10 +7,10 @@ const defaultConfigPath = fileURLToPath(new URL('./fixtures/oh-badge/default.cor
 const tsconfigPath = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url))
 const badgeAssetsPath = fileURLToPath(new URL('../../../packages/skill/skill-badge/assets/', import.meta.url))
 
-describe('dsh badge assembled snapshot', () => {
+describe('oh badge assembled snapshot', () => {
   it('advertises and loads the opt-in bundled skill through the shipped app', async () => {
     const disabled = await runLoaderSmoke({
-      label: 'disabled dsh badge skill snapshot',
+      label: 'disabled oh badge skill snapshot',
       tempDirPrefix: 'headless-snapshot-oh-badge-disabled-',
       binScript,
       libBinScript: binScript,
@@ -18,7 +18,7 @@ describe('dsh badge assembled snapshot', () => {
       tsconfigPath,
     })
     const enabled = await runLoaderSmoke({
-      label: 'dsh badge skill snapshot',
+      label: 'oh badge skill snapshot',
       tempDirPrefix: 'headless-snapshot-oh-badge-',
       binScript,
       libBinScript: binScript,
@@ -58,7 +58,7 @@ describe('dsh badge assembled snapshot', () => {
       A skill is a reusable set of task-specific instructions. The following skills are available in this session:
 
       <available_skills>
-      - \`oh-badge\`: Add the official “powered by dsh” badge to documents, pull requests, merge requests, and other content produced with Open Harness. Use whenever creating a pull request or merge request. Also use when the user asks for a dsh badge, powered-by-dsh attribution, or a reusable dsh badge asset or snippet.
+      - \`oh-badge\`: Add the official “powered by oh” badge to documents, pull requests, merge requests, and other content produced with Open Harness. Use whenever creating a pull request or merge request. Also use when the user asks for a oh badge, powered-by-oh attribution, or a reusable oh badge asset or snippet.
       </available_skills>
 
       If the user names a skill, or the task clearly matches a skill's description, call the \`skill\` tool with the exact skill name before taking task actions. Load all applicable skills, then follow their full instructions. This catalog contains summaries only; do not infer or follow a skill's instructions until it has been loaded.
@@ -77,9 +77,9 @@ describe('dsh badge assembled snapshot', () => {
       </skill_resources>
 
       <skill_instructions>
-      # dsh Badge
+      # oh Badge
 
-      Add the official “powered by dsh” badge without recreating or restyling it.
+      Add the official “powered by oh” badge without recreating or restyling it.
 
       ## Assets
 
@@ -116,9 +116,9 @@ describe('dsh badge assembled snapshot', () => {
           ],
           "isError": false,
           "value": {
-            "content": "# dsh Badge
+            "content": "# oh Badge
 
-      Add the official “powered by dsh” badge without recreating or restyling it.
+      Add the official “powered by oh” badge without recreating or restyling it.
 
       ## Assets
 
@@ -157,7 +157,7 @@ describe('dsh badge assembled snapshot', () => {
           },
         },
         "summary": {
-          "description": "Add the official “powered by dsh” badge to documents, pull requests, merge requests, and other content produced with Open Harness. Use whenever creating a pull request or merge request. Also use when the user asks for a dsh badge, powered-by-dsh attribution, or a reusable dsh badge asset or snippet.",
+          "description": "Add the official “powered by oh” badge to documents, pull requests, merge requests, and other content produced with Open Harness. Use whenever creating a pull request or merge request. Also use when the user asks for a oh badge, powered-by-oh attribution, or a reusable oh badge asset or snippet.",
           "invocation": {
             "modelInvocable": true,
             "userInvocable": true,

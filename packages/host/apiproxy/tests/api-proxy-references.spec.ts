@@ -419,7 +419,7 @@ describe('session.setReferences', () => {
     function dispatch(api: ReturnType<typeof createApiProxy>, payload: unknown) {
       const handler = toFetchHandler(api)
       return handler.fetch(
-        new URL('/api/session.setReferences', 'http://dsh.internal'),
+        new URL('/api/session.setReferences', 'http://oh.internal'),
         {
           method: 'POST',
           headers: { 'content-type': 'application/json' },

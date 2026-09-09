@@ -15,7 +15,7 @@ export type { ScopeLayer } from './store.ts'
 export type ScopeKey = object
 
 /** Context tag written by {@link createScope}. */
-const kScope = Symbol('dsh.scope')
+const kScope = Symbol('oh.scope')
 
 declare const ScopedBrand: unique symbol
 

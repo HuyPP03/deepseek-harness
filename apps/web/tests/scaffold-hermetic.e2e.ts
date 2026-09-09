@@ -25,7 +25,7 @@ it('isolates replay skill discovery from every ambient host root', async () => {
   const agentsHome = join(ambient, 'agents-home')
   const bundled = join(ambient, 'bundled')
   await Promise.all([
-    writeSkill(join(ohHome, 'skills'), 'ambient-dsh'),
+    writeSkill(join(ohHome, 'skills'), 'ambient-oh'),
     writeSkill(join(agentsHome, 'skills'), 'ambient-agents'),
     writeSkill(bundled, 'ambient-bundled'),
   ])
@@ -52,7 +52,7 @@ it('isolates replay skill discovery from every ambient host root', async () => {
       const skills = ctx.get('skills')
       if (skills === undefined) throw new Error('the composition mounts no skill registry')
       const names = (await skills.list({ cwd: scaffold.workspaceCwd, scope: handle.agent })).map(skill => skill.name)
-      expect(names).not.toContain('ambient-dsh')
+      expect(names).not.toContain('ambient-oh')
       expect(names).not.toContain('ambient-agents')
       expect(names).not.toContain('ambient-bundled')
     } finally {

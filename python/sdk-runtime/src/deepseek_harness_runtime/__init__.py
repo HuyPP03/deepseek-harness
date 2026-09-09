@@ -134,7 +134,7 @@ def _node_launch_args() -> tuple[str, str]:
         node_root
         / "node_modules"
         / "@deepseek-ai"
-        / "dsh-sdk-jsonrpc-demo"
+        / "oh-sdk-jsonrpc-demo"
         / "lib"
         / "packaged-bin.js"
     )

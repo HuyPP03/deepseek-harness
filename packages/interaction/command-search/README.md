@@ -26,7 +26,7 @@ The command injects `commands`. Mount the command registry and this plugin:
   name: '@open-harness/oh-command-search'
 ```
 
-The shipped `dsh` presets mount it in the `standard` and `code` agent presets; the `chat` preset does not, because a chat session has no project directory to search. Plugin disposal first unregisters `/search`, then drains every handler that already started, so root teardown cannot outlive a handler that is still running.
+The shipped `oh` presets mount it in the `standard` and `code` agent presets; the `chat` preset does not, because a chat session has no project directory to search. Plugin disposal first unregisters `/search`, then drains every handler that already started, so root teardown cannot outlive a handler that is still running.
 
 ## Model Experience
 

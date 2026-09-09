@@ -30,7 +30,7 @@ The plugin injects `commands` and `subagents`. Mount the command registry, the s
   name: '@open-harness/oh-command-agent-actions'
 ```
 
-`/code-review` starts its children on the `provider` config field's provider (default `spawn`); deployments that register another review transport set that field on this row. The shipped `dsh` presets mount it in the `standard` and `code` agent presets; the `chat` preset does not, because a chat session has no code changes to review or simplify. Plugin disposal first unregisters both commands, then drains every handler that already started, so root teardown cannot outlive a review that is still running.
+`/code-review` starts its children on the `provider` config field's provider (default `spawn`); deployments that register another review transport set that field on this row. The shipped `oh` presets mount it in the `standard` and `code` agent presets; the `chat` preset does not, because a chat session has no code changes to review or simplify. Plugin disposal first unregisters both commands, then drains every handler that already started, so root teardown cannot outlive a review that is still running.
 
 ## Model Experience
 

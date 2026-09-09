@@ -45,7 +45,7 @@ describe('web e2e: the Vietnamese locale from the browser, and the three-locale 
     await page.getByRole('button', { name: 'Cài đặt', exact: true }).click()
     const dialog = page.getByRole('dialog', { name: 'Cài đặt' })
     await dialog.waitFor({ timeout: 10_000 })
-    expect(await page.evaluate(() => localStorage.getItem('dsh.locale'))).toBeNull()
+    expect(await page.evaluate(() => localStorage.getItem('oh.locale'))).toBeNull()
     await expect.poll(() => dialog.getByText('Chung', { exact: true }).count(), { timeout: 5_000 }).toBe(1)
     await expect.poll(() => dialog.getByText('Ngôn ngữ', { exact: true }).count(), { timeout: 5_000 }).toBe(1)
     // The selector pill shows the active locale's own name.

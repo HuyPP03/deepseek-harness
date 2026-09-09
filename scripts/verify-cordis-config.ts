@@ -5,7 +5,7 @@
  * activate, against that plugin context) and the entry `disabled` field (at
  * every mount decision, against the loader context). Every other entry
  * metadata field stays static, so an expression there remains truthy data and
- * silently changes composition. Example configs and the dsh Web composition
+ * silently changes composition. Example configs and the oh Web composition
  * resolve named plugins from their owning workspace manifests. Local example
  * packages must also be in the root TypeScript project graph.
  */
@@ -31,7 +31,7 @@ interface PluginReference {
 }
 
 const root = resolve(import.meta.dirname, '..')
-// These example files are overlays consumed by the built dsh app, so their bare
+// These example files are overlays consumed by the built oh app, so their bare
 // specifiers resolve from apps/cli rather than the examples workspace.
 const appOverlayFiles = new Set([
   'examples/web-cordis/cordis.yml',
@@ -261,7 +261,7 @@ function validateExampleResolution(): string[] {
 function validateAppResolution(): string[] {
   const violations: string[] = []
   // App overlays (and any config left under apps/cli/config) resolve from the
-  // dsh app's own dependency surface — the profile module fallback mirrors it.
+  // oh app's own dependency surface — the profile module fallback mirrors it.
   const appDependencies = {
     ...readManifest('apps/cli/package.json').dependencies,
     // The fallback also links every bundle's own dependencies (healProfilesModuleFallback).
@@ -290,7 +290,7 @@ function validateAppResolution(): string[] {
 
 /**
  * Every configured specifier of a local workspace package must resolve through
- * the tsconfig `paths` facade to a `.ts`/`.tsx` source file. The `dsh` source
+ * the tsconfig `paths` facade to a `.ts`/`.tsx` source file. The `oh` source
  * launch (tsx) and vitest resolve in the source plane; without a `paths` match
  * they fall back to package `exports`, which reach built `lib/` — present on a
  * built dev tree, absent on a clean one — so a missing mapping boots locally

@@ -6,8 +6,8 @@ Profile bundles: npm packages whose manifest declares `"oh": { "bundle": { "patc
 
 | Package | Role | ctx key |
 |---|---|---|
-| [`base/`](base/README.md) | The shared dsh core every profile applies first | — (patch only) |
+| [`base/`](base/README.md) | The shared oh core every profile applies first | — (patch only) |
 | [`web-app/`](web-app/README.md) | Browser surface: web patch layer + runtime glue plugin | mounts rows |
 | [`headless/`](headless/README.md) | Direct one-shot task mode over base, with no Host or Web layer | mounts `headless-runner` |
 
-In-box bundles resolve from the dsh installation; out-of-tree bundles install into a profile through `oh plugin --profile <name> add <package>`.
+In-box bundles resolve from the oh installation; out-of-tree bundles install into a profile through `oh plugin --profile <name> add <package>`.

@@ -69,7 +69,7 @@ function construct(packageNames: string[]): ClientModuleRegistry {
 }
 
 describe('client bundle activation', () => {
-  it('allows sibling dsh roles', () => {
+  it('allows sibling oh roles', () => {
     const currentName = '@fixture/current-client-field'
     const clientPath = writePackage(currentName, {
       oh: {

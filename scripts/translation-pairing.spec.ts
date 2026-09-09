@@ -56,7 +56,7 @@ describe('translation pairing snapshots', () => {
 
       expect(objectId).toBe(gitBlobHash(content))
       expect(execFileSync('git', [
-        '-C', root, 'rev-parse', `refs/dsh/translation-pairing/snapshots/${objectId}`,
+        '-C', root, 'rev-parse', `refs/oh/translation-pairing/snapshots/${objectId}`,
       ], { encoding: 'utf8' }).trim()).toBe(objectId)
       execFileSync('git', ['-C', root, 'gc', '--prune=now'])
       expect(execFileSync('git', ['-C', root, 'cat-file', '-p', objectId])).toEqual(content)

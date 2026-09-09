@@ -2,5 +2,5 @@
 # side as of the last confirmed-consistent state. Both languages carry equal authority;
 # after editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write docs/graph-atlas.md
-graph-atlas.md: 1da995e8ff6b47e0a83f0308342c5f45ccbd3835
-graph-atlas.zh.md: 780e5295f74f10ee4fe762e280e5c1c820c481c4
+graph-atlas.md: 835b85a5e41ececae954dc8957d2ad2ff9a4dbd4
+graph-atlas.zh.md: 632175a91a67f6e24a42282275655d1e0d9596c9
