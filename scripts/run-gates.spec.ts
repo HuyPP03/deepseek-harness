@@ -88,7 +88,7 @@ describe('gate graph validation', () => {
     (mode) => {
       const ids = withPnpmEntrypoint(() => gatesForMode(mode).map(subject => subject.id))
 
-      expect(ids).toContain('dsh-package-licenses')
+      expect(ids).toContain('oh-package-licenses')
     },
   )
 
