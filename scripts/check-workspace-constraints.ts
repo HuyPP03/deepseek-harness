@@ -270,7 +270,7 @@ function checkWorkspace({ dir, manifest }: WorkspaceManifest): string[] {
     return errors
   }
 
-  if (manifest.name === 'oh' || manifest.name?.startsWith('@deepseek-ai/')) {
+  if (manifest.name === 'oh' || manifest.name?.startsWith('@deepseek-ai/') || manifest.name?.startsWith('@open-harness/')) {
     const allowedSources = publicationSourceAllowlist[manifest.name] ?? []
     for (const file of manifest.files ?? []) {
       if (isForbiddenPublicationFile(file) && !allowedSources.includes(file)) {

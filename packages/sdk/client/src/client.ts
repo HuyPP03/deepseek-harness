@@ -6,7 +6,7 @@
  * quiescence through a private EOF → SIGTERM → SIGKILL ladder. The design
  * twin is the Python SDK's `HarnessClient` (`python/sdk`); both drive the
  * same runtime protocol. This client runs OUTSIDE any harness context, so it
- * spawns directly rather than through the `dsh-subprocess` service — the
+ * spawns directly rather than through the `oh-subprocess` service — the
  * seam's documented exception for SDK-managed transports.
  *
  * @module @open-harness/oh-sdk-client/client

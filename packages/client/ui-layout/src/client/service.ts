@@ -27,6 +27,7 @@ export interface ILayout {
    * Switch the center column's full-column view (the resident conversation
    * and the connectors directory overlay). The sidebar's browsing tab is the
    * driver; the frame renders against the store value.
+   * @param view - the full-column view to show in the center column.
    */
   setCenterView(view: CenterView): void
   /** Open the details panel (no-op when already open). */

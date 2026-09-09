@@ -35,7 +35,7 @@ Provider failures surface as `WebError` `WEB_PROVIDER_ERROR` — websift's struc
 
 ## Model Experience
 
-Indirectly, through [`dsh-tool-web`](../tool-web/README.md), which retains this provider's `maxResults`-bounded URLs, titles, and snippets or its exact `websift search failed: <error>`, `websift search failed (<category>)`, and `websift search aborted` failures under the consumer's error wrapper while provider-private fields remain outside context.
+Indirectly, through [`oh-tool-web`](../tool-web/README.md), which retains this provider's `maxResults`-bounded URLs, titles, and snippets or its exact `websift search failed: <error>`, `websift search failed (<category>)`, and `websift search aborted` failures under the consumer's error wrapper while provider-private fields remain outside context.
 
 #### KV Cache effect
 

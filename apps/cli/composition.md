@@ -3,185 +3,185 @@
 
 # Open Harness Base Composition
 
-The dsh-base bundle patch every profile applies first; mode bundles (dsh-web-app, dsh-headless) and the user's profile layer patch over it.
+The oh-base bundle patch every profile applies first; mode bundles (oh-web-app, oh-headless) and the user's profile layer patch over it.
 
 ```mermaid
 flowchart LR
   cfg["packages/bundle/base/cordis.patch.yml<br/>cordis.yml"]
-  plugin_dsh_base_timer["timer<br/>@deepseek-ai/cordis-plugin-timer"]
-  cfg --> plugin_dsh_base_timer
-  plugin_dsh_base_hmr["hmr<br/>@deepseek-ai/cordis-plugin-hmr"]
-  cfg --> plugin_dsh_base_hmr
-  plugin_dsh_base_llm["llm<br/>@open-harness/oh-llm"]
-  cfg --> plugin_dsh_base_llm
-  plugin_dsh_base_session["session<br/>@open-harness/oh-session"]
-  cfg --> plugin_dsh_base_session
-  plugin_dsh_base_typert["typert<br/>@open-harness/oh-typert-registry"]
-  cfg --> plugin_dsh_base_typert
-  plugin_dsh_base_typert_loader["typert-loader<br/>@open-harness/oh-typert-loader"]
-  cfg --> plugin_dsh_base_typert_loader
-  plugin_dsh_base_typert_gateway["typert-gateway<br/>@open-harness/oh-api-gateway"]
-  cfg --> plugin_dsh_base_typert_gateway
-  plugin_dsh_base_session_title["session-title<br/>@open-harness/oh-session-title"]
-  cfg --> plugin_dsh_base_session_title
-  plugin_dsh_base_session_title_llm["session-title-llm<br/>@open-harness/oh-session-title-first-prompt-llm"]
-  cfg --> plugin_dsh_base_session_title_llm
-  plugin_dsh_base_user_questions["user-questions<br/>@open-harness/oh-user-questions"]
-  cfg --> plugin_dsh_base_user_questions
-  plugin_dsh_base_agent["agent<br/>@open-harness/oh-agent"]
-  cfg --> plugin_dsh_base_agent
-  plugin_dsh_base_agent_default_model["agent-default-model<br/>@open-harness/oh-agent-default-model"]
-  cfg --> plugin_dsh_base_agent_default_model
-  plugin_dsh_base_jobs["jobs<br/>@open-harness/oh-jobs-local"]
-  cfg --> plugin_dsh_base_jobs
-  plugin_dsh_base_llm_retry["llm-retry<br/>@open-harness/oh-llm-retry"]
-  cfg --> plugin_dsh_base_llm_retry
-  plugin_dsh_base_settings["settings<br/>@open-harness/oh-settings-file"]
-  cfg --> plugin_dsh_base_settings
-  plugin_dsh_base_credentials["credentials<br/>@open-harness/oh-credentials-local"]
-  cfg --> plugin_dsh_base_credentials
-  plugin_dsh_base_llm_pi_ai["llm-pi-ai<br/>@open-harness/oh-llm-pi-ai"]
-  cfg --> plugin_dsh_base_llm_pi_ai
-  plugin_dsh_base_session_persistence_jsonl["session-persistence-jsonl<br/>@open-harness/oh-session-persistence-jsonl"]
-  cfg --> plugin_dsh_base_session_persistence_jsonl
-  plugin_dsh_base_attachment_local["attachment-local<br/>@open-harness/oh-attachment-local"]
-  cfg --> plugin_dsh_base_attachment_local
-  plugin_dsh_base_session_query_sqlite["session-query-sqlite<br/>@open-harness/oh-session-query-sqlite"]
-  cfg --> plugin_dsh_base_session_query_sqlite
-  plugin_dsh_base_session_projection["session-projection<br/>@open-harness/oh-session-projection"]
-  cfg --> plugin_dsh_base_session_projection
-  plugin_dsh_base_session_telemetry_otel["session-telemetry-otel<br/>@open-harness/oh-session-telemetry-otel"]
-  cfg --> plugin_dsh_base_session_telemetry_otel
-  plugin_dsh_base_subprocess["subprocess<br/>@open-harness/oh-subprocess-local"]
-  cfg --> plugin_dsh_base_subprocess
-  plugin_dsh_base_sandbox["sandbox<br/>@open-harness/oh-sandbox-local"]
-  cfg --> plugin_dsh_base_sandbox
-  plugin_dsh_base_sandbox_policy["sandbox-policy<br/>@open-harness/oh-sandbox-policy"]
-  cfg --> plugin_dsh_base_sandbox_policy
-  plugin_dsh_base_bash_sandbox["bash-sandbox<br/>@open-harness/oh-bash-sandbox"]
-  cfg --> plugin_dsh_base_bash_sandbox
-  plugin_dsh_base_pwsh_sandbox["pwsh-sandbox<br/>@open-harness/oh-pwsh-sandbox"]
-  cfg --> plugin_dsh_base_pwsh_sandbox
-  plugin_dsh_base_approval["approval<br/>@open-harness/oh-user-approval"]
-  cfg --> plugin_dsh_base_approval
-  plugin_dsh_base_permission["permission<br/>Write All"]
-  cfg --> plugin_dsh_base_permission
-  plugin_dsh_base_shell_env["shell-env<br/>@open-harness/oh-shell-env"]
-  cfg --> plugin_dsh_base_shell_env
-  plugin_dsh_base_tool_bash["tool-bash<br/>@open-harness/oh-tool-bash"]
-  cfg --> plugin_dsh_base_tool_bash
-  plugin_dsh_base_tool_pwsh["tool-pwsh<br/>@open-harness/oh-tool-pwsh"]
-  cfg --> plugin_dsh_base_tool_pwsh
-  plugin_dsh_base_tool_jobs["tool-jobs<br/>@open-harness/oh-tool-jobs"]
-  cfg --> plugin_dsh_base_tool_jobs
-  plugin_dsh_base_fs_observation_policy["fs-observation-policy<br/>@open-harness/oh-fs-observation-policy"]
-  cfg --> plugin_dsh_base_fs_observation_policy
-  plugin_dsh_base_tool_fs["tool-fs<br/>@open-harness/oh-tool-fs"]
-  cfg --> plugin_dsh_base_tool_fs
-  plugin_dsh_base_tool_fs_search["tool-fs-search<br/>@open-harness/oh-tool-fs-search"]
-  cfg --> plugin_dsh_base_tool_fs_search
-  plugin_dsh_base_agent_instructions["agent-instructions<br/>@open-harness/oh-agent-instructions"]
-  cfg --> plugin_dsh_base_agent_instructions
-  plugin_dsh_base_skill["skill<br/>@open-harness/oh-skill"]
-  cfg --> plugin_dsh_base_skill
-  plugin_dsh_base_skill_filesystem["skill-filesystem<br/>@open-harness/oh-skill-filesystem"]
-  cfg --> plugin_dsh_base_skill_filesystem
-  plugin_dsh_base_skill_badge["skill-badge<br/>@open-harness/oh-skill-badge"]
-  cfg --> plugin_dsh_base_skill_badge
-  plugin_dsh_base_tool_skill["tool-skill<br/>@open-harness/oh-tool-skill"]
-  cfg --> plugin_dsh_base_tool_skill
-  plugin_dsh_base_commands["commands<br/>@open-harness/oh-commands"]
-  cfg --> plugin_dsh_base_commands
-  plugin_dsh_base_command_feedback["command-feedback<br/>@open-harness/oh-command-feedback"]
-  cfg --> plugin_dsh_base_command_feedback
-  plugin_dsh_base_goal["goal<br/>@open-harness/oh-goal"]
-  cfg --> plugin_dsh_base_goal
-  plugin_dsh_base_goal_round_driver["goal-round-driver<br/>@open-harness/oh-goal-round-driver"]
-  cfg --> plugin_dsh_base_goal_round_driver
-  plugin_dsh_base_command_goal["command-goal<br/>@open-harness/oh-command-goal"]
-  cfg --> plugin_dsh_base_command_goal
-  plugin_dsh_base_plan_mode["plan-mode<br/>@open-harness/oh-plan-mode"]
-  cfg --> plugin_dsh_base_plan_mode
-  plugin_dsh_base_token_meter["token-meter<br/>@open-harness/oh-token-meter"]
-  cfg --> plugin_dsh_base_token_meter
-  plugin_dsh_base_compaction_basic["compaction-basic<br/>@open-harness/oh-compaction-basic"]
-  cfg --> plugin_dsh_base_compaction_basic
-  plugin_dsh_base_command_compact["command-compact<br/>@open-harness/oh-command-compact"]
-  cfg --> plugin_dsh_base_command_compact
-  plugin_dsh_base_mcp_registry["mcp-registry<br/>@open-harness/oh-mcp-registry"]
-  cfg --> plugin_dsh_base_mcp_registry
-  plugin_dsh_base_command_mcp["command-mcp<br/>@open-harness/oh-command-mcp"]
-  cfg --> plugin_dsh_base_command_mcp
-  plugin_dsh_base_mcp_manager["mcp-manager<br/>@open-harness/oh-mcp-manager"]
-  cfg --> plugin_dsh_base_mcp_manager
-  plugin_dsh_base_connectors["connectors<br/>@open-harness/oh-connectors"]
-  cfg --> plugin_dsh_base_connectors
-  plugin_dsh_base_oauth_tokens["oauth-tokens<br/>@open-harness/oh-credentials-oauth-tokens"]
-  cfg --> plugin_dsh_base_oauth_tokens
-  plugin_dsh_base_oauth_flow["oauth-flow<br/>@open-harness/oh-connectors-oauth-flow"]
-  cfg --> plugin_dsh_base_oauth_flow
-  plugin_dsh_base_device_flow["device-flow<br/>@open-harness/oh-connectors-device-flow"]
-  cfg --> plugin_dsh_base_device_flow
-  plugin_dsh_base_subagent["subagent<br/>@open-harness/oh-subagent"]
-  cfg --> plugin_dsh_base_subagent
-  plugin_dsh_base_subagent_spawn_in_process["subagent-spawn-in-process<br/>@open-harness/oh-subagent-spawn-in-process"]
-  cfg --> plugin_dsh_base_subagent_spawn_in_process
-  plugin_dsh_base_subagent_fork_in_process["subagent-fork-in-process<br/>@open-harness/oh-subagent-fork-in-process"]
-  cfg --> plugin_dsh_base_subagent_fork_in_process
-  plugin_dsh_base_tool_subagent_control["tool-subagent-control<br/>@open-harness/oh-tool-subagent-control"]
-  cfg --> plugin_dsh_base_tool_subagent_control
-  plugin_dsh_base_tool_subagent_list_agents["tool-subagent-list-agents<br/>@open-harness/oh-tool-subagent-control/list-agents"]
-  cfg --> plugin_dsh_base_tool_subagent_list_agents
-  plugin_dsh_base_tool_subagent["tool-subagent<br/>@open-harness/oh-tool-subagent"]
-  cfg --> plugin_dsh_base_tool_subagent
-  plugin_dsh_base_tool_subagent_fork["tool-subagent-fork<br/>@open-harness/oh-tool-subagent"]
-  cfg --> plugin_dsh_base_tool_subagent_fork
-  plugin_dsh_base_tool_subagent_report["tool-subagent-report<br/>@open-harness/oh-tool-subagent-report"]
-  cfg --> plugin_dsh_base_tool_subagent_report
-  plugin_dsh_base_workflow_worker_thread["workflow-worker-thread<br/>@open-harness/oh-workflow-worker-thread"]
-  cfg --> plugin_dsh_base_workflow_worker_thread
-  plugin_dsh_base_tool_workflow["tool-workflow<br/>@open-harness/oh-tool-workflow"]
-  cfg --> plugin_dsh_base_tool_workflow
-  plugin_dsh_base_timeout_policy["timeout-policy<br/>@open-harness/oh-tool-call-timeout-policy"]
-  cfg --> plugin_dsh_base_timeout_policy
-  plugin_dsh_base_spill_local["spill-local<br/>@open-harness/oh-spill-local"]
-  cfg --> plugin_dsh_base_spill_local
-  plugin_dsh_base_spill_policy["spill-policy<br/>@open-harness/oh-spill-policy"]
-  cfg --> plugin_dsh_base_spill_policy
-  plugin_dsh_base_session_checkpoint_policy["session-checkpoint-policy<br/>@open-harness/oh-session-checkpoint-policy"]
-  cfg --> plugin_dsh_base_session_checkpoint_policy
-  plugin_dsh_base_tool_result_pruner["tool-result-pruner<br/>@open-harness/oh-compaction-tool-result-pruner"]
-  cfg --> plugin_dsh_base_tool_result_pruner
-  plugin_dsh_base_tool_todo["tool-todo<br/>@open-harness/oh-tool-todo"]
-  cfg --> plugin_dsh_base_tool_todo
-  plugin_dsh_base_tool_goal["tool-goal<br/>@open-harness/oh-tool-goal"]
-  cfg --> plugin_dsh_base_tool_goal
-  plugin_dsh_base_tool_ralph["tool-ralph<br/>@open-harness/oh-tool-ralph"]
-  cfg --> plugin_dsh_base_tool_ralph
-  plugin_dsh_base_tool_str_replace_editor["tool-str-replace-editor<br/>@open-harness/oh-tool-str-replace-editor"]
-  cfg --> plugin_dsh_base_tool_str_replace_editor
-  plugin_dsh_base_repeat_tool_reminder["repeat-tool-reminder<br/>@open-harness/oh-repeat-tool-reminder"]
-  cfg --> plugin_dsh_base_repeat_tool_reminder
-  plugin_dsh_base_web["web<br/>@open-harness/oh-web"]
-  cfg --> plugin_dsh_base_web
-  plugin_dsh_base_web_search_websift["web-search-websift<br/>@open-harness/oh-web-search-websift"]
-  cfg --> plugin_dsh_base_web_search_websift
-  plugin_dsh_base_web_fetch_websift["web-fetch-websift<br/>@open-harness/oh-web-fetch-websift"]
-  cfg --> plugin_dsh_base_web_fetch_websift
-  plugin_dsh_base_web_search_deepseek["web-search-deepseek<br/>@open-harness/oh-web-search-deepseek"]
-  cfg --> plugin_dsh_base_web_search_deepseek
-  plugin_dsh_base_tool_web["tool-web<br/>@open-harness/oh-tool-web"]
-  cfg --> plugin_dsh_base_tool_web
-  plugin_dsh_base_tools["tools<br/>@open-harness/oh-tools"]
-  cfg --> plugin_dsh_base_tools
-  plugin_dsh_base_system_prompt["system-prompt<br/>@open-harness/oh-system-prompt"]
-  cfg --> plugin_dsh_base_system_prompt
-  plugin_dsh_base_agent_loop["agent-loop<br/>@open-harness/oh-agent-loop"]
-  cfg --> plugin_dsh_base_agent_loop
-  plugin_dsh_base_fs_sandbox["fs-sandbox<br/>@open-harness/oh-fs-sandbox"]
-  cfg --> plugin_dsh_base_fs_sandbox
-  plugin_dsh_base_llm_deepseek["llm-deepseek<br/>@open-harness/oh-llm-deepseek"]
-  cfg --> plugin_dsh_base_llm_deepseek
+  plugin_oh_base_timer["timer<br/>@deepseek-ai/cordis-plugin-timer"]
+  cfg --> plugin_oh_base_timer
+  plugin_oh_base_hmr["hmr<br/>@deepseek-ai/cordis-plugin-hmr"]
+  cfg --> plugin_oh_base_hmr
+  plugin_oh_base_llm["llm<br/>@open-harness/oh-llm"]
+  cfg --> plugin_oh_base_llm
+  plugin_oh_base_session["session<br/>@open-harness/oh-session"]
+  cfg --> plugin_oh_base_session
+  plugin_oh_base_typert["typert<br/>@open-harness/oh-typert-registry"]
+  cfg --> plugin_oh_base_typert
+  plugin_oh_base_typert_loader["typert-loader<br/>@open-harness/oh-typert-loader"]
+  cfg --> plugin_oh_base_typert_loader
+  plugin_oh_base_typert_gateway["typert-gateway<br/>@open-harness/oh-api-gateway"]
+  cfg --> plugin_oh_base_typert_gateway
+  plugin_oh_base_session_title["session-title<br/>@open-harness/oh-session-title"]
+  cfg --> plugin_oh_base_session_title
+  plugin_oh_base_session_title_llm["session-title-llm<br/>@open-harness/oh-session-title-first-prompt-llm"]
+  cfg --> plugin_oh_base_session_title_llm
+  plugin_oh_base_user_questions["user-questions<br/>@open-harness/oh-user-questions"]
+  cfg --> plugin_oh_base_user_questions
+  plugin_oh_base_agent["agent<br/>@open-harness/oh-agent"]
+  cfg --> plugin_oh_base_agent
+  plugin_oh_base_agent_default_model["agent-default-model<br/>@open-harness/oh-agent-default-model"]
+  cfg --> plugin_oh_base_agent_default_model
+  plugin_oh_base_jobs["jobs<br/>@open-harness/oh-jobs-local"]
+  cfg --> plugin_oh_base_jobs
+  plugin_oh_base_llm_retry["llm-retry<br/>@open-harness/oh-llm-retry"]
+  cfg --> plugin_oh_base_llm_retry
+  plugin_oh_base_settings["settings<br/>@open-harness/oh-settings-file"]
+  cfg --> plugin_oh_base_settings
+  plugin_oh_base_credentials["credentials<br/>@open-harness/oh-credentials-local"]
+  cfg --> plugin_oh_base_credentials
+  plugin_oh_base_llm_pi_ai["llm-pi-ai<br/>@open-harness/oh-llm-pi-ai"]
+  cfg --> plugin_oh_base_llm_pi_ai
+  plugin_oh_base_session_persistence_jsonl["session-persistence-jsonl<br/>@open-harness/oh-session-persistence-jsonl"]
+  cfg --> plugin_oh_base_session_persistence_jsonl
+  plugin_oh_base_attachment_local["attachment-local<br/>@open-harness/oh-attachment-local"]
+  cfg --> plugin_oh_base_attachment_local
+  plugin_oh_base_session_query_sqlite["session-query-sqlite<br/>@open-harness/oh-session-query-sqlite"]
+  cfg --> plugin_oh_base_session_query_sqlite
+  plugin_oh_base_session_projection["session-projection<br/>@open-harness/oh-session-projection"]
+  cfg --> plugin_oh_base_session_projection
+  plugin_oh_base_session_telemetry_otel["session-telemetry-otel<br/>@open-harness/oh-session-telemetry-otel"]
+  cfg --> plugin_oh_base_session_telemetry_otel
+  plugin_oh_base_subprocess["subprocess<br/>@open-harness/oh-subprocess-local"]
+  cfg --> plugin_oh_base_subprocess
+  plugin_oh_base_sandbox["sandbox<br/>@open-harness/oh-sandbox-local"]
+  cfg --> plugin_oh_base_sandbox
+  plugin_oh_base_sandbox_policy["sandbox-policy<br/>@open-harness/oh-sandbox-policy"]
+  cfg --> plugin_oh_base_sandbox_policy
+  plugin_oh_base_bash_sandbox["bash-sandbox<br/>@open-harness/oh-bash-sandbox"]
+  cfg --> plugin_oh_base_bash_sandbox
+  plugin_oh_base_pwsh_sandbox["pwsh-sandbox<br/>@open-harness/oh-pwsh-sandbox"]
+  cfg --> plugin_oh_base_pwsh_sandbox
+  plugin_oh_base_approval["approval<br/>@open-harness/oh-user-approval"]
+  cfg --> plugin_oh_base_approval
+  plugin_oh_base_permission["permission<br/>Write All"]
+  cfg --> plugin_oh_base_permission
+  plugin_oh_base_shell_env["shell-env<br/>@open-harness/oh-shell-env"]
+  cfg --> plugin_oh_base_shell_env
+  plugin_oh_base_tool_bash["tool-bash<br/>@open-harness/oh-tool-bash"]
+  cfg --> plugin_oh_base_tool_bash
+  plugin_oh_base_tool_pwsh["tool-pwsh<br/>@open-harness/oh-tool-pwsh"]
+  cfg --> plugin_oh_base_tool_pwsh
+  plugin_oh_base_tool_jobs["tool-jobs<br/>@open-harness/oh-tool-jobs"]
+  cfg --> plugin_oh_base_tool_jobs
+  plugin_oh_base_fs_observation_policy["fs-observation-policy<br/>@open-harness/oh-fs-observation-policy"]
+  cfg --> plugin_oh_base_fs_observation_policy
+  plugin_oh_base_tool_fs["tool-fs<br/>@open-harness/oh-tool-fs"]
+  cfg --> plugin_oh_base_tool_fs
+  plugin_oh_base_tool_fs_search["tool-fs-search<br/>@open-harness/oh-tool-fs-search"]
+  cfg --> plugin_oh_base_tool_fs_search
+  plugin_oh_base_agent_instructions["agent-instructions<br/>@open-harness/oh-agent-instructions"]
+  cfg --> plugin_oh_base_agent_instructions
+  plugin_oh_base_skill["skill<br/>@open-harness/oh-skill"]
+  cfg --> plugin_oh_base_skill
+  plugin_oh_base_skill_filesystem["skill-filesystem<br/>@open-harness/oh-skill-filesystem"]
+  cfg --> plugin_oh_base_skill_filesystem
+  plugin_oh_base_skill_badge["skill-badge<br/>@open-harness/oh-skill-badge"]
+  cfg --> plugin_oh_base_skill_badge
+  plugin_oh_base_tool_skill["tool-skill<br/>@open-harness/oh-tool-skill"]
+  cfg --> plugin_oh_base_tool_skill
+  plugin_oh_base_commands["commands<br/>@open-harness/oh-commands"]
+  cfg --> plugin_oh_base_commands
+  plugin_oh_base_command_feedback["command-feedback<br/>@open-harness/oh-command-feedback"]
+  cfg --> plugin_oh_base_command_feedback
+  plugin_oh_base_goal["goal<br/>@open-harness/oh-goal"]
+  cfg --> plugin_oh_base_goal
+  plugin_oh_base_goal_round_driver["goal-round-driver<br/>@open-harness/oh-goal-round-driver"]
+  cfg --> plugin_oh_base_goal_round_driver
+  plugin_oh_base_command_goal["command-goal<br/>@open-harness/oh-command-goal"]
+  cfg --> plugin_oh_base_command_goal
+  plugin_oh_base_plan_mode["plan-mode<br/>@open-harness/oh-plan-mode"]
+  cfg --> plugin_oh_base_plan_mode
+  plugin_oh_base_token_meter["token-meter<br/>@open-harness/oh-token-meter"]
+  cfg --> plugin_oh_base_token_meter
+  plugin_oh_base_compaction_basic["compaction-basic<br/>@open-harness/oh-compaction-basic"]
+  cfg --> plugin_oh_base_compaction_basic
+  plugin_oh_base_command_compact["command-compact<br/>@open-harness/oh-command-compact"]
+  cfg --> plugin_oh_base_command_compact
+  plugin_oh_base_mcp_registry["mcp-registry<br/>@open-harness/oh-mcp-registry"]
+  cfg --> plugin_oh_base_mcp_registry
+  plugin_oh_base_command_mcp["command-mcp<br/>@open-harness/oh-command-mcp"]
+  cfg --> plugin_oh_base_command_mcp
+  plugin_oh_base_mcp_manager["mcp-manager<br/>@open-harness/oh-mcp-manager"]
+  cfg --> plugin_oh_base_mcp_manager
+  plugin_oh_base_connectors["connectors<br/>@open-harness/oh-connectors"]
+  cfg --> plugin_oh_base_connectors
+  plugin_oh_base_oauth_tokens["oauth-tokens<br/>@open-harness/oh-credentials-oauth-tokens"]
+  cfg --> plugin_oh_base_oauth_tokens
+  plugin_oh_base_oauth_flow["oauth-flow<br/>@open-harness/oh-connectors-oauth-flow"]
+  cfg --> plugin_oh_base_oauth_flow
+  plugin_oh_base_device_flow["device-flow<br/>@open-harness/oh-connectors-device-flow"]
+  cfg --> plugin_oh_base_device_flow
+  plugin_oh_base_subagent["subagent<br/>@open-harness/oh-subagent"]
+  cfg --> plugin_oh_base_subagent
+  plugin_oh_base_subagent_spawn_in_process["subagent-spawn-in-process<br/>@open-harness/oh-subagent-spawn-in-process"]
+  cfg --> plugin_oh_base_subagent_spawn_in_process
+  plugin_oh_base_subagent_fork_in_process["subagent-fork-in-process<br/>@open-harness/oh-subagent-fork-in-process"]
+  cfg --> plugin_oh_base_subagent_fork_in_process
+  plugin_oh_base_tool_subagent_control["tool-subagent-control<br/>@open-harness/oh-tool-subagent-control"]
+  cfg --> plugin_oh_base_tool_subagent_control
+  plugin_oh_base_tool_subagent_list_agents["tool-subagent-list-agents<br/>@open-harness/oh-tool-subagent-control/list-agents"]
+  cfg --> plugin_oh_base_tool_subagent_list_agents
+  plugin_oh_base_tool_subagent["tool-subagent<br/>@open-harness/oh-tool-subagent"]
+  cfg --> plugin_oh_base_tool_subagent
+  plugin_oh_base_tool_subagent_fork["tool-subagent-fork<br/>@open-harness/oh-tool-subagent"]
+  cfg --> plugin_oh_base_tool_subagent_fork
+  plugin_oh_base_tool_subagent_report["tool-subagent-report<br/>@open-harness/oh-tool-subagent-report"]
+  cfg --> plugin_oh_base_tool_subagent_report
+  plugin_oh_base_workflow_worker_thread["workflow-worker-thread<br/>@open-harness/oh-workflow-worker-thread"]
+  cfg --> plugin_oh_base_workflow_worker_thread
+  plugin_oh_base_tool_workflow["tool-workflow<br/>@open-harness/oh-tool-workflow"]
+  cfg --> plugin_oh_base_tool_workflow
+  plugin_oh_base_timeout_policy["timeout-policy<br/>@open-harness/oh-tool-call-timeout-policy"]
+  cfg --> plugin_oh_base_timeout_policy
+  plugin_oh_base_spill_local["spill-local<br/>@open-harness/oh-spill-local"]
+  cfg --> plugin_oh_base_spill_local
+  plugin_oh_base_spill_policy["spill-policy<br/>@open-harness/oh-spill-policy"]
+  cfg --> plugin_oh_base_spill_policy
+  plugin_oh_base_session_checkpoint_policy["session-checkpoint-policy<br/>@open-harness/oh-session-checkpoint-policy"]
+  cfg --> plugin_oh_base_session_checkpoint_policy
+  plugin_oh_base_tool_result_pruner["tool-result-pruner<br/>@open-harness/oh-compaction-tool-result-pruner"]
+  cfg --> plugin_oh_base_tool_result_pruner
+  plugin_oh_base_tool_todo["tool-todo<br/>@open-harness/oh-tool-todo"]
+  cfg --> plugin_oh_base_tool_todo
+  plugin_oh_base_tool_goal["tool-goal<br/>@open-harness/oh-tool-goal"]
+  cfg --> plugin_oh_base_tool_goal
+  plugin_oh_base_tool_ralph["tool-ralph<br/>@open-harness/oh-tool-ralph"]
+  cfg --> plugin_oh_base_tool_ralph
+  plugin_oh_base_tool_str_replace_editor["tool-str-replace-editor<br/>@open-harness/oh-tool-str-replace-editor"]
+  cfg --> plugin_oh_base_tool_str_replace_editor
+  plugin_oh_base_repeat_tool_reminder["repeat-tool-reminder<br/>@open-harness/oh-repeat-tool-reminder"]
+  cfg --> plugin_oh_base_repeat_tool_reminder
+  plugin_oh_base_web["web<br/>@open-harness/oh-web"]
+  cfg --> plugin_oh_base_web
+  plugin_oh_base_web_search_websift["web-search-websift<br/>@open-harness/oh-web-search-websift"]
+  cfg --> plugin_oh_base_web_search_websift
+  plugin_oh_base_web_fetch_websift["web-fetch-websift<br/>@open-harness/oh-web-fetch-websift"]
+  cfg --> plugin_oh_base_web_fetch_websift
+  plugin_oh_base_web_search_deepseek["web-search-deepseek<br/>@open-harness/oh-web-search-deepseek"]
+  cfg --> plugin_oh_base_web_search_deepseek
+  plugin_oh_base_tool_web["tool-web<br/>@open-harness/oh-tool-web"]
+  cfg --> plugin_oh_base_tool_web
+  plugin_oh_base_tools["tools<br/>@open-harness/oh-tools"]
+  cfg --> plugin_oh_base_tools
+  plugin_oh_base_system_prompt["system-prompt<br/>@open-harness/oh-system-prompt"]
+  cfg --> plugin_oh_base_system_prompt
+  plugin_oh_base_agent_loop["agent-loop<br/>@open-harness/oh-agent-loop"]
+  cfg --> plugin_oh_base_agent_loop
+  plugin_oh_base_fs_sandbox["fs-sandbox<br/>@open-harness/oh-fs-sandbox"]
+  cfg --> plugin_oh_base_fs_sandbox
+  plugin_oh_base_llm_deepseek["llm-deepseek<br/>@open-harness/oh-llm-deepseek"]
+  cfg --> plugin_oh_base_llm_deepseek
 ```
 
 | Plugin id | Package / module |

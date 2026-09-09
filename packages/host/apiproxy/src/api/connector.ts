@@ -13,8 +13,8 @@
  */
 
 import type { RpcRequest, RpcResponse } from './rpc.ts'
-// The /types outlet, not the package root: the root's value graph (dsh-mcp-client
-// → dsh-tools → dsh-session) drags the host cordis Context merges into every
+// The /types outlet, not the package root: the root's value graph (oh-mcp-client
+// → oh-tools → oh-session) drags the host cordis Context merges into every
 // client-side program that imports this wire contract (session-projection's
 // types outlet is the precedent).
 import type { AddCustomSpec, ConnectorConfigureFields, ConnectorView } from '@open-harness/oh-connectors/types'

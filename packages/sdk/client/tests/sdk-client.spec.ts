@@ -308,7 +308,7 @@ describe('HarnessClient', () => {
   })
 
   it('fails fast when the command does not exist', async () => {
-    const client = new HarnessClient({ command: join(tmpdir(), 'dsh-no-such-runtime-bin') })
+    const client = new HarnessClient({ command: join(tmpdir(), 'oh-no-such-runtime-bin') })
     cleanups.push(() => client.close())
     await expect(client.request('initialize', {}, 1_000)).rejects.toThrow(TransportClosedError)
   })

@@ -83,7 +83,7 @@ afterEach(async () => {
 })
 
 async function tempDir(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'dsh-oauth-tokens-watch-'))
+  const dir = await mkdtemp(join(tmpdir(), 'oh-oauth-tokens-watch-'))
   cleanups.push(() => rm(dir, { recursive: true, force: true }))
   return dir
 }

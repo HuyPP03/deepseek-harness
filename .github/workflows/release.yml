@@ -4,7 +4,7 @@
 #
 # Pack runs without credentials on every pull request and master push, so a
 # pull request proves the whole publish set still packs. Publication is a
-# manual dispatch from a dsh-v* tag and consumes exactly the packed bytes.
+# manual dispatch from a oh-v* tag and consumes exactly the packed bytes.
 name: Release (dsh)
 
 on:
@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       publish:
-        description: Publish the packed tarballs to npm. Must run from a dsh-v* tag.
+        description: Publish the packed tarballs to npm. Must run from a oh-v* tag.
         required: true
         type: boolean
         default: false
@@ -88,7 +88,7 @@ jobs:
       - name: Pack the vendored framework for verification
         run: pnpm run release:pack --family vendor --out dist/npm-vendor
 
-      # dsh-sandbox-local declares the Landlock entry as a runtime dependency, so
+      # oh-sandbox-local declares the Landlock entry as a runtime dependency, so
       # the verification needs its tarball. Its platform packages stay out: they
       # are optional, and building them needs a musl toolchain per architecture.
       - name: Pack the Landlock entry for verification
@@ -101,7 +101,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: dsh-npm-tarballs
+          name: oh-npm-tarballs
           path: dist/npm/*
           if-no-files-found: error
           retention-days: 7
@@ -140,7 +140,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: dsh-npm-tarballs
+          name: oh-npm-tarballs
           path: dist/npm
 
       - name: Publish tarballs

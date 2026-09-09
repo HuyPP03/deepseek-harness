@@ -25,7 +25,7 @@ afterEach(async () => {
 })
 
 async function compose(): Promise<void> {
-  root = await mkdtemp(join(tmpdir(), 'dsh-command-agent-actions-loader-'))
+  root = await mkdtemp(join(tmpdir(), 'oh-command-agent-actions-loader-'))
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, [
     "- name: '@open-harness/oh-commands'",

@@ -22,7 +22,7 @@ afterEach(async () => {
 })
 
 async function compose(): Promise<void> {
-  root = await mkdtemp(join(tmpdir(), 'dsh-command-search-loader-'))
+  root = await mkdtemp(join(tmpdir(), 'oh-command-search-loader-'))
   const configPath = join(root, 'cordis.yml')
   await writeFile(configPath, [
     "- name: '@open-harness/oh-commands'",
@@ -60,7 +60,7 @@ describe('command-search real Loader composition', () => {
     const header: SessionHeader = { version: SESSION_FORMAT_VERSION, id, createdAt: 0 }
     const session = Session.create(id, [], {
       ...header,
-      cwd: '/tmp/dsh-search-cwd',
+      cwd: '/tmp/oh-search-cwd',
     })
     const agent = {
       session,

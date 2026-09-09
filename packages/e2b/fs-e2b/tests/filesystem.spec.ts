@@ -540,7 +540,7 @@ describe('E2BFileSystem atomic writes and edits', () => {
     const outcome = await fs.writeText(target, 'one\r\ntwo\rthree', { kind: 'createIfAbsent' })
     expect(outcome).toMatchObject({ operation: 'create', before: null, after: 'one\ntwo\rthree' })
     expect(remote.nodes.get('/workspace/new.txt')?.mode).toBe(0o600)
-    expect(remote.nodes.get('/workspace/new.txt')?.metadata?.['dsh-version']).toBeDefined()
+    expect(remote.nodes.get('/workspace/new.txt')?.metadata?.['oh-version']).toBeDefined()
     expect(remote.writeParentModes).toEqual([0o700])
     expect(remote.links).toHaveLength(1)
     const stagingDirectory = posix.dirname(remote.writes[0]!.path)

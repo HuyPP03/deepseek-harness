@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-工具无关的 shell 环境插件：拥有 `ctx.shellEnv` 注册表，管理受信任的、每次执行收集的 `OH_*` 变量，供模型可见的 shell 工具（`dsh-tool-bash`、`dsh-tool-pwsh`）收集进每次 shell 调用的环境。内置 shell 事实（`OH_HOME`、`OH_SHELL=1`、`OH_SESSION_ID`）归注册表自身所有；其他插件可以注册额外的可枚举事实，注册随插件纤维（fiber）释放，重复所有权或未声明的运行时键会响亮失败。
+工具无关的 shell 环境插件：拥有 `ctx.shellEnv` 注册表，管理受信任的、每次执行收集的 `OH_*` 变量，供模型可见的 shell 工具（`oh-tool-bash`、`oh-tool-pwsh`）收集进每次 shell 调用的环境。内置 shell 事实（`OH_HOME`、`OH_SHELL=1`、`OH_SESSION_ID`）归注册表自身所有；其他插件可以注册额外的可枚举事实，注册随插件纤维（fiber）释放，重复所有权或未声明的运行时键会响亮失败。
 
 包根导出 Cordis 插件约定（`name`、`inject`、`Config`、`apply`）以及 `ShellEnvRegistry` 服务类及其 contributor 类型；消费方在加载本插件后使用 `ctx.shellEnv`。
 
@@ -40,7 +40,7 @@ export function apply(ctx: Context): void {
 
 ## Model Experience
 
-通过 shell 工具（`dsh-tool-bash`、`dsh-tool-pwsh`）间接产生影响；这些工具会把该注册表的受管 `OH_*` 快照收集进每次 shell 工具调用。
+通过 shell 工具（`oh-tool-bash`、`oh-tool-pwsh`）间接产生影响；这些工具会把该注册表的受管 `OH_*` 快照收集进每次 shell 工具调用。
 
 #### KV Cache effect
 

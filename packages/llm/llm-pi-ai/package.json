@@ -1,6 +1,6 @@
 {
   "name": "@open-harness/oh-llm-pi-ai",
-  "description": "pi-ai-backed DeepSeek adapter for the Open Harness LLM seam (design-verification twin of dsh-llm-deepseek)",
+  "description": "pi-ai-backed DeepSeek adapter for the Open Harness LLM seam (design-verification twin of oh-llm-deepseek)",
   "version": "0.1.0-rc.7",
   "publishConfig": {
     "access": "public"

@@ -6,7 +6,7 @@ import { isTokenDelta } from '@open-harness/oh-llm/message'
 import type { SessionEvent } from '@open-harness/oh-session/types'
 import type { AssistantTiming } from './conversation.ts'
 
-// The first-token predicate lives beside the StreamChunk type in dsh-llm;
+// The first-token predicate lives beside the StreamChunk type in oh-llm;
 // re-exported here so Chat Definitions keep their client-runtime import.
 export { isTokenDelta } from '@open-harness/oh-llm/message'
 

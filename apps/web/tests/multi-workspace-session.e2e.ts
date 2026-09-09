@@ -37,7 +37,7 @@ describe('web e2e: multi-workspace session', () => {
   let referenceSessionId: SessionId
 
   beforeAll(async () => {
-    replayDir = await mkdtemp(join(tmpdir(), 'dsh-multi-workspace-replay-'))
+    replayDir = await mkdtemp(join(tmpdir(), 'oh-multi-workspace-replay-'))
     const replayOverride = join(replayDir, 'replay.override.json')
     // The first model call (the reference session's prompt) replays the
     // primary override; the plain-chat turn replays the recorded child.

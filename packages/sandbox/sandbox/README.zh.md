@@ -18,7 +18,7 @@
 
 #### 模型看到的内容
 
-通过 [`dsh-bash-sandbox`](../../shell/bash-sandbox/README.md) 和 [`dsh-tool-bash`](../../shell/tool-bash/README.md)，无法强制执行所请求模式时会产生错误码 `SANDBOX_UNAVAILABLE` 及以下精确错误。执行期 runner 失败会追加 ` Runner failure: <detail>`。
+通过 [`oh-bash-sandbox`](../../shell/bash-sandbox/README.md) 和 [`oh-tool-bash`](../../shell/tool-bash/README.md)，无法强制执行所请求模式时会产生错误码 `SANDBOX_UNAVAILABLE` 及以下精确错误。执行期 runner 失败会追加 ` Runner failure: <detail>`。
 
 ##### 精确错误
 

@@ -1,4 +1,4 @@
-/** Canonical tool-definition fixtures for repository tests. @module dsh-tools/testing */
+/** Canonical tool-definition fixtures for repository tests. @module oh-tools/testing */
 
 import type { ContentBlock } from '@open-harness/oh-llm'
 import type { JsonValue } from '@open-harness/oh-session'

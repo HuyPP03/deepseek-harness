@@ -1,8 +1,8 @@
-# dsh-connectors-oauth-flow
+# oh-connectors-oauth-flow
 
 [English](README.md) | 中文
 
-连接器 OAuth 流程引擎（`ctx.oauthFlow`）：[dsh-connectors](../connectors/README.md) 连接器上 `oauth` 认证方式的宿主侧部分。`begin` 探测提供商的 MCP 端点，顺着它的 401 质询走到 RFC 9728 受保护资源元数据，再到 RFC 8414 授权服务器元数据，注册客户端（动态客户端注册，或 `byoApp` 方式下用户预注册的应用），启动 PKCE，并打开一个回环回调服务器。浏览器重定向回来后，引擎用授权码换取 token 包，存入以连接器 id 为属主的 [`dsh-credentials-oauth-tokens`](../../credentials/oauth-tokens/README.md) 存储——mcp-client 凭证接缝会把它作为该连接器服务器的 bearer 出示。`ensureFresh` 在挂载前刷新临近过期的包，因此只有当提供商的授权确实失效时才会要求重新授权。
+连接器 OAuth 流程引擎（`ctx.oauthFlow`）：[oh-connectors](../connectors/README.md) 连接器上 `oauth` 认证方式的宿主侧部分。`begin` 探测提供商的 MCP 端点，顺着它的 401 质询走到 RFC 9728 受保护资源元数据，再到 RFC 8414 授权服务器元数据，注册客户端（动态客户端注册，或 `byoApp` 方式下用户预注册的应用），启动 PKCE，并打开一个回环回调服务器。浏览器重定向回来后，引擎用授权码换取 token 包，存入以连接器 id 为属主的 [`oh-credentials-oauth-tokens`](../../credentials/oauth-tokens/README.md) 存储——mcp-client 凭证接缝会把它作为该连接器服务器的 bearer 出示。`ensureFresh` 在挂载前刷新临近过期的包，因此只有当提供商的授权确实失效时才会要求重新授权。
 
 ## Config
 

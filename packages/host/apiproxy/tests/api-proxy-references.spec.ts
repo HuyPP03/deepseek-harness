@@ -68,7 +68,7 @@ function stubAgent(session: Session): Agent {
 
 /** Compose the API over real Session, Agent, Storage, Domain, Workspace, and reference services. */
 async function harness(
-  root = realpathSync.native(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-refs-'))),
+  root = realpathSync.native(mkdtempSync(join(tmpdir(), 'oh-apiproxy-refs-'))),
   options: { withReferences?: boolean; providerPreset?: string } = {},
 ) {
   const ctx = new Context()

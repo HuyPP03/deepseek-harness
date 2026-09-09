@@ -1,8 +1,8 @@
-# dsh-connectors-oauth-flow
+# oh-connectors-oauth-flow
 
 English | [中文](README.zh.md)
 
-The connector OAuth flow engine (`ctx.oauthFlow`): the host-side half of an `oauth` auth method on a [dsh-connectors](../connectors/README.md) connector. `begin` probes the provider MCP endpoint, follows its 401 challenge to the RFC 9728 protected-resource metadata and then to the RFC 8414 authorization-server metadata, registers a client (dynamic client registration, or the user's pre-registered app for `byoApp` methods), starts PKCE, and opens a loopback callback server. When the browser redirects back, the engine exchanges the code for a token bundle in the [`dsh-credentials-oauth-tokens`](../../credentials/oauth-tokens/README.md) store under the connector id, which the mcp-client credential seam presents as the bearer for the connector's servers. `ensureFresh` refreshes an expiring bundle before a mount, so a re-authorization only happens when the provider's grant actually lapsed.
+The connector OAuth flow engine (`ctx.oauthFlow`): the host-side half of an `oauth` auth method on a [oh-connectors](../connectors/README.md) connector. `begin` probes the provider MCP endpoint, follows its 401 challenge to the RFC 9728 protected-resource metadata and then to the RFC 8414 authorization-server metadata, registers a client (dynamic client registration, or the user's pre-registered app for `byoApp` methods), starts PKCE, and opens a loopback callback server. When the browser redirects back, the engine exchanges the code for a token bundle in the [`oh-credentials-oauth-tokens`](../../credentials/oauth-tokens/README.md) store under the connector id, which the mcp-client credential seam presents as the bearer for the connector's servers. `ensureFresh` refreshes an expiring bundle before a mount, so a re-authorization only happens when the provider's grant actually lapsed.
 
 ## Config
 

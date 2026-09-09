@@ -1,8 +1,8 @@
-# dsh-connectors-device-flow
+# oh-connectors-device-flow
 
 English | [中文](README.zh.md)
 
-The connector device-code flow engine (`ctx.deviceFlow`): the host-side half of a `device` auth method on a [dsh-connectors](../connectors/README.md) connector. `begin` drives the provider's server-side login tool on the connector's mounted MCP server; when the provider returns a device-code instruction (a sign-in URL and a one-time code), the engine polls the provider's server-side verify tool in the background until the sign-in settles or the window closes. A provider that reports the account already signed in settles without a code. The engine never stores a credential: the MCP server owns its token cache.
+The connector device-code flow engine (`ctx.deviceFlow`): the host-side half of a `device` auth method on a [oh-connectors](../connectors/README.md) connector. `begin` drives the provider's server-side login tool on the connector's mounted MCP server; when the provider returns a device-code instruction (a sign-in URL and a one-time code), the engine polls the provider's server-side verify tool in the background until the sign-in settles or the window closes. A provider that reports the account already signed in settles without a code. The engine never stores a credential: the MCP server owns its token cache.
 
 ## Config
 

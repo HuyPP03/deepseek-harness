@@ -30,7 +30,7 @@ function stubAgent(session: Session): Agent {
 }
 
 async function harness(defaults: Record<string, unknown>): Promise<{ api: ReturnType<typeof createApiProxy>; ctx: Context }> {
-  const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-chatcwd-')))
+  const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-chatcwd-')))
   const ctx = new Context()
   await ctx.plugin(SessionStore)
   await ctx.plugin(AgentRegistry)
@@ -64,7 +64,7 @@ async function harness(defaults: Record<string, unknown>): Promise<{ api: Return
 
 describe('chat session default project directory', () => {
   it('maps a workspace-less, cwd-less create to chatCwdFor and creates the sandbox directory', async () => {
-    const home = mkdtempSync(join(tmpdir(), 'dsh-apiproxy-chathome-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-apiproxy-chathome-'))
     const { api, ctx } = await harness({
       chatCwdFor: (sessionId: SessionId) => join(home, 'chat', sessionId),
     })
@@ -77,7 +77,7 @@ describe('chat session default project directory', () => {
   })
 
   it('keeps the explicit create cwd over the chat mapping', async () => {
-    const explicit = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-chatcwd-explicit-')))
+    const explicit = realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-chatcwd-explicit-')))
     const { api, ctx } = await harness({
       chatCwdFor: (sessionId: SessionId) => join('/unused', 'chat', sessionId),
     })
@@ -99,7 +99,7 @@ describe('chat session default project directory', () => {
   })
 
   it('maps the gateway chat sandbox under the harness home', () => {
-    const home = mkdtempSync(join(tmpdir(), 'dsh-apiproxy-chathome-env-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-apiproxy-chathome-env-'))
     const previous = process.env.OH_HOME
     process.env.OH_HOME = home
     try {

@@ -22,7 +22,7 @@ import type { SubprocessHandle, SubprocessOutputReader, SubprocessSpawnSpec } fr
 import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'
 import type { ShellProcess } from '@open-harness/oh-shell'
 
-const spillDir = mkdtempSync(join(tmpdir(), 'dsh-pwsh-exec-spec-'))
+const spillDir = mkdtempSync(join(tmpdir(), 'oh-pwsh-exec-spec-'))
 
 // The probe follows the executor's own resolution (Program Files installs on
 // Windows are found even when bare `pwsh` is not on PATH).
@@ -113,7 +113,7 @@ describe('resolvePwshPath and candidatePwshPaths (pure, every platform)', () => 
   })
 
   it('returns the first EXISTING win32 candidate, else pwsh', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'dsh-pwsh-resolve-'))
+    const dir = mkdtempSync(join(tmpdir(), 'oh-pwsh-resolve-'))
     const store = join(dir, 'store')
     mkdirSync(store, { recursive: true })
     writeFileSync(join(store, 'pwsh.exe'), '')
@@ -130,7 +130,7 @@ describe('resolvePwshPath and candidatePwshPaths (pure, every platform)', () => 
   it('accepts a link-shaped PATH candidate whose target cannot be stat-ed', () => {
     // Store app execution aliases stat as EACCES but lstat as a link; a
     // dangling symlink reproduces that split on every platform.
-    const dir = mkdtempSync(join(tmpdir(), 'dsh-pwsh-resolve-link-'))
+    const dir = mkdtempSync(join(tmpdir(), 'oh-pwsh-resolve-link-'))
     const store = join(dir, 'store')
     mkdirSync(store, { recursive: true })
     const link = join(store, 'pwsh.exe')
@@ -140,7 +140,7 @@ describe('resolvePwshPath and candidatePwshPaths (pure, every platform)', () => 
   })
 
   it('skips a directory candidate and falls through to the PATH-resolution default', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'dsh-pwsh-resolve-dir-'))
+    const dir = mkdtempSync(join(tmpdir(), 'oh-pwsh-resolve-dir-'))
     const store = join(dir, 'store')
     mkdirSync(join(store, 'pwsh.exe'), { recursive: true })
     expect(resolvePwshPath(undefined, {
@@ -199,8 +199,8 @@ describe.skipIf(!hasPwsh)('PwshLocalExecutor.run', () => {
   })
 
   it('uses config cwd, overridable per call', async () => {
-    const first = mkdtempSync(join(tmpdir(), 'dsh-pwsh-cwd-a-'))
-    const second = mkdtempSync(join(tmpdir(), 'dsh-pwsh-cwd-b-'))
+    const first = mkdtempSync(join(tmpdir(), 'oh-pwsh-cwd-a-'))
+    const second = mkdtempSync(join(tmpdir(), 'oh-pwsh-cwd-b-'))
     const { bash } = await setup({ cwd: first })
     const fromConfig = await bash.run(bash.resolve({ command: '(Get-Location).Path' }))
     expect(samePath(fromConfig.stdout.text.trim(), first)).toBe(true)
@@ -298,14 +298,14 @@ describe.skipIf(!hasPwsh)('PwshLocalExecutor.run', () => {
       command: '$s = ([Console]::In.ReadToEnd()).TrimEnd(); Write-Output $s; Write-Output "[$env:SEAM_VAR][$env:OH_SEAM_VAR]"',
       stdin: 'piped\n',
       env: { SEAM_VAR: 'env-ok' },
-      ohEnv: { OH_SEAM_VAR: 'dsh-ok' },
+      ohEnv: { OH_SEAM_VAR: 'oh-ok' },
     })
     // resolve() keeps the optional input/environment fields verbatim.
     expect(spec.stdin).toBe('piped\n')
     expect(spec.env).toEqual({ SEAM_VAR: 'env-ok' })
-    expect(spec.ohEnv).toEqual({ OH_SEAM_VAR: 'dsh-ok' })
+    expect(spec.ohEnv).toEqual({ OH_SEAM_VAR: 'oh-ok' })
     const result = await bash.run(spec)
-    expect(lf(result.stdout.text)).toBe('piped\n[env-ok][dsh-ok]\n')
+    expect(lf(result.stdout.text)).toBe('piped\n[env-ok][oh-ok]\n')
   })
 
   it('resolve() omits stdin/env/ohEnv when the request supplies none', async () => {
@@ -337,12 +337,12 @@ describe.skipIf(!hasPwsh)('PwshLocalExecutor.start (background process handles)'
       command: '$s = ([Console]::In.ReadToEnd()).TrimEnd(); Write-Output $s; Write-Output "[$env:BG_VAR][$env:OH_BG_VAR]"',
       stdin: 'bg-stdin\n',
       env: { BG_VAR: 'bg-env' },
-      ohEnv: { OH_BG_VAR: 'bg-dsh-env' },
+      ohEnv: { OH_BG_VAR: 'bg-oh-env' },
     }))
-    const partialOutput = await readUntil(proc, '[bg-env][bg-dsh-env]')
+    const partialOutput = await readUntil(proc, '[bg-env][bg-oh-env]')
     await proc.done
     const output = partialOutput + lf(proc.readOutput().delta)
-    expect(output).toBe('bg-stdin\n[bg-env][bg-dsh-env]\n')
+    expect(output).toBe('bg-stdin\n[bg-env][bg-oh-env]\n')
     expect(proc.exitCode).toBe(0)
   })
 

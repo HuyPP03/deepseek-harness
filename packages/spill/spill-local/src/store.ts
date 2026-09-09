@@ -2,7 +2,7 @@
  * Cordis-free storage mechanics for the local spill backend: private
  * session-scoped directory selection, safe-name derivation, path-traversal
  * protection, and the exclusive owner-only write. Kept out of the service class
- * (like `dsh-bash-local`'s `run.ts`) so the filesystem behavior is unit-testable
+ * (like `oh-bash-local`'s `run.ts`) so the filesystem behavior is unit-testable
  * without a `ctx` and without the OS temp dir.
  *
  * @module @open-harness/oh-spill-local/store
@@ -25,7 +25,7 @@ let defaultRoot: string | undefined
  * @returns The lazily-created private spill root.
  */
 export function privateRoot(): string {
-  defaultRoot ??= mkdtempSync(join(tmpdir(), 'dsh-spill-'))
+  defaultRoot ??= mkdtempSync(join(tmpdir(), 'oh-spill-'))
   return defaultRoot
 }
 

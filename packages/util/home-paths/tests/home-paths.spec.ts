@@ -7,7 +7,7 @@ import {
   OH_HOME_DIR_NAME,
   canonicalizeWatchPath,
   defaultDshHome,
-  dshHomeDisplay,
+  ohHomeDisplay,
   ohHomePath,
   expandHomePath,
   resolveOhHome,
@@ -52,12 +52,12 @@ describe('dsh path helpers', () => {
   })
 
   it('labels a resolved home by whether it is the default root', () => {
-    expect(dshHomeDisplay(resolve(defaultDshHome()))).toBe('~/.oh')
-    expect(dshHomeDisplay('/some/other/root')).toBe('$OH_HOME')
+    expect(ohHomeDisplay(resolve(defaultDshHome()))).toBe('~/.oh')
+    expect(ohHomeDisplay('/some/other/root')).toBe('$OH_HOME')
   })
 
   it('canonicalizes a watcher ancestor while preserving a missing suffix', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'dsh-watch-path-'))
+    const root = await mkdtemp(join(tmpdir(), 'oh-watch-path-'))
     const target = join(root, 'target')
     const alias = join(root, 'alias')
     try {

@@ -10,9 +10,9 @@
 
 提供方拥有 **SSRF 安全获取**：URL 验证、scheme 策略、非全局地址拒绝、传输（字节上限、同进程重定向边界、超时）与提取（HTML→markdown、PDF→文本、渲染页面上限）。[`@open-harness/oh-tool-web`](../tool-web/README.md) 拥有**呈现**：它原样透传该提供方的渲染文本，按自身输出上限截断，并用工具的错误格式包装提供方失败。
 
-与 [`dsh-web-fetch-http`](../web-fetch-http/README.md) 不同，这里的非 2xx HTTP 响应是*失败*而非*结果*：库对状态码分类（401/403/407 → `auth`，429 → `rate_limit`，5xx → `unavailable`，其他 4xx → `http_error`），提供方把每一类都以 `WEB_PROVIDER_ERROR` 连同库的净化消息呈现。
+与 [`oh-web-fetch-http`](../web-fetch-http/README.md) 不同，这里的非 2xx HTTP 响应是*失败*而非*结果*：库对状态码分类（401/403/407 → `auth`，429 → `rate_limit`，5xx → `unavailable`，其他 4xx → `http_error`），提供方把每一类都以 `WEB_PROVIDER_ERROR` 连同库的净化消息呈现。
 
-提供方的 `timeoutMs` 是直接 `ctx.web.fetch()` 调用方与配置有误的部署所用的资源兜底，不是面向模型的工具调用预算。[`dsh-tool-call-timeout-policy`](../../guard/timeout-policy/README.md) 通过让 `exec.signal` 在超时时触发来拥有 `web_fetch` 工具调用预算，提供方把它映射为 `WEB_ABORTED`。
+提供方的 `timeoutMs` 是直接 `ctx.web.fetch()` 调用方与配置有误的部署所用的资源兜底，不是面向模型的工具调用预算。[`oh-tool-call-timeout-policy`](../../guard/timeout-policy/README.md) 通过让 `exec.signal` 在超时时触发来拥有 `web_fetch` 工具调用预算，提供方把它映射为 `WEB_ABORTED`。
 
 ## SSRF 墙
 
@@ -42,7 +42,7 @@
 | 配置键 | 默认值 | 含义 |
 |---|---|---|
 | `allowHttp` | `false` | 允许 `http://`（非 TLS）目标 URL；非全局地址墙仍然生效。 |
-| `timeoutMs` | `30_000` | 提供方 fetch 超时（毫秒），换算为库的秒数——直接 `ctx.web.fetch()` 调用方的资源兜底，不是面向模型的工具调用预算（那是 `dsh-tool-call-timeout-policy`）。 |
+| `timeoutMs` | `30_000` | 提供方 fetch 超时（毫秒），换算为库的秒数——直接 `ctx.web.fetch()` 调用方的资源兜底，不是面向模型的工具调用预算（那是 `oh-tool-call-timeout-policy`）。 |
 | `maxPageChars` | `128_000` | 渲染页面上限（字符）；超出时库截断页面文本（结果仍然成功，标记 `truncated`）。原始字节下载上限是另一个库常量，超出会失败（`WEB_FETCH_TOO_LARGE`）。 |
 
 ```yaml
@@ -56,7 +56,7 @@ base bundle 以默认值挂载该条目，并把 `web.fetchProvider` 指向 `web
 
 ## 模型体验
 
-间接，通过 [`dsh-tool-web`](../tool-web/README.md)：它在该提供方的渲染 markdown（连同库的截断标记）或其精确失败——被拒 URL 的 `Error: Blocked: …`、非 2xx 响应的 `Error: Failed to fetch URL: HTTP <status>`、`Error: websift fetch failed: <error>`——之下保留消费方的错误包装，而提供方私有字段（字节数、重定向次数、内容类型）留在上下文之外。
+间接，通过 [`oh-tool-web`](../tool-web/README.md)：它在该提供方的渲染 markdown（连同库的截断标记）或其精确失败——被拒 URL 的 `Error: Blocked: …`、非 2xx 响应的 `Error: Failed to fetch URL: HTTP <status>`、`Error: websift fetch failed: <error>`——之下保留消费方的错误包装，而提供方私有字段（字节数、重定向次数、内容类型）留在上下文之外。
 
 #### KV 缓存影响
 
@@ -64,7 +64,7 @@ base bundle 以默认值挂载该条目，并把 `web.fetchProvider` 指向 `web
 
 ## 已知限制与推迟工作
 
-- **非 2xx 响应永远不会作为结果到达模型**——模型看到的是库净化的状态消息，而不是状态码或响应主体，这比 `dsh-web-fetch-http` 的"带状态码的结果"是更粗糙的信号（代价换来的是这条路线可以开着交付）。
+- **非 2xx 响应永远不会作为结果到达模型**——模型看到的是库净化的状态消息，而不是状态码或响应主体，这比 `oh-web-fetch-http` 的"带状态码的结果"是更粗糙的信号（代价换来的是这条路线可以开着交付）。
 - **地址墙没有旁路**——环回与私有目标总是被拒绝；本地开发服务器按设计不可达。库的更细粒度开关（`allowedPorts`、`allowedDomains`、`deniedDomains`）未暴露。
 - **提取跟随 websift 库版本**——HTML→markdown 质量、PDF 支持（50 页 / 128,000 字符）、10 MiB 下载上限与 5 跳重定向边界来自库的传输基线（`AppSettings.create()` 默认值，绝不用其环境变量）；本包只暴露上面三个配置键。
-- **没有 UI 设置区**——与 `dsh-web-fetch-http` 对等；可调项是 per-composition 的 `cordis.yml` 配置，而不是 per-user 设置卡片。
+- **没有 UI 设置区**——与 `oh-web-fetch-http` 对等；可调项是 per-composition 的 `cordis.yml` 配置，而不是 per-user 设置卡片。

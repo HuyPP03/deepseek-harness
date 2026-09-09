@@ -10,9 +10,9 @@ This is an **implementation** package: it registers a provider into `ctx.web` an
 
 The provider owns **SSRF-safe retrieval**: URL validation, the scheme policy, the non-global-address refusal, transport (byte caps, same-process redirect bounds, timeout), and extraction (HTML→markdown, PDF→text, rendered-page cap). [`@open-harness/oh-tool-web`](../tool-web/README.md) owns **presentation**: it passes this provider's rendered text through unchanged, truncates at its own output bound, and wraps provider failures in the tool's error format.
 
-Unlike [`dsh-web-fetch-http`](../web-fetch-http/README.md), a non-2xx HTTP response is a *failure* here, not a result: the library classifies the status (401/403/407 → `auth`, 429 → `rate_limit`, 5xx → `unavailable`, other 4xx → `http_error`) and the provider surfaces each as `WEB_PROVIDER_ERROR` with the library's sanitized message.
+Unlike [`oh-web-fetch-http`](../web-fetch-http/README.md), a non-2xx HTTP response is a *failure* here, not a result: the library classifies the status (401/403/407 → `auth`, 429 → `rate_limit`, 5xx → `unavailable`, other 4xx → `http_error`) and the provider surfaces each as `WEB_PROVIDER_ERROR` with the library's sanitized message.
 
-The provider's `timeoutMs` is a resource backstop for direct `ctx.web.fetch()` callers and misconfigured deployments, not the model-facing tool-call budget. [`dsh-tool-call-timeout-policy`](../../guard/timeout-policy/README.md) owns the `web_fetch` tool-call budget by arming `exec.signal`, which the provider maps to `WEB_ABORTED`.
+The provider's `timeoutMs` is a resource backstop for direct `ctx.web.fetch()` callers and misconfigured deployments, not the model-facing tool-call budget. [`oh-tool-call-timeout-policy`](../../guard/timeout-policy/README.md) owns the `web_fetch` tool-call budget by arming `exec.signal`, which the provider maps to `WEB_ABORTED`.
 
 ## The SSRF wall
 
@@ -42,7 +42,7 @@ An unexpected rejection from the library becomes `websift fetch failed: <error>`
 | Key | Default | Meaning |
 |---|---|---|
 | `allowHttp` | `false` | Allow `http://` (non-TLS) target URLs; the non-global-address wall still applies. |
-| `timeoutMs` | `30_000` | Provider fetch timeout in milliseconds, converted to the library's seconds — a resource backstop for direct `ctx.web.fetch()` callers, not the model-facing tool-call budget (that is `dsh-tool-call-timeout-policy`). |
+| `timeoutMs` | `30_000` | Provider fetch timeout in milliseconds, converted to the library's seconds — a resource backstop for direct `ctx.web.fetch()` callers, not the model-facing tool-call budget (that is `oh-tool-call-timeout-policy`). |
 | `maxPageChars` | `128_000` | Rendered page cap in characters; beyond it the library truncates the page text (the result still succeeds, flagged `truncated`). The raw byte download limit is a separate library constant that fails the fetch (`WEB_FETCH_TOO_LARGE`). |
 
 ```yaml
@@ -56,7 +56,7 @@ The base bundle mounts the row with the defaults and points `web.fetchProvider` 
 
 ## Model Experience
 
-Indirectly, through [`dsh-tool-web`](../tool-web/README.md), which retains this provider's rendered markdown (with the library's truncation marker) or its exact failures — `Error: Blocked: …` for a refused URL, `Error: Failed to fetch URL: HTTP <status>` for a non-2xx response, `Error: websift fetch failed: <error>` — under the consumer's error wrapper while provider-private fields (byte counts, redirect count, content type) remain outside context.
+Indirectly, through [`oh-tool-web`](../tool-web/README.md), which retains this provider's rendered markdown (with the library's truncation marker) or its exact failures — `Error: Blocked: …` for a refused URL, `Error: Failed to fetch URL: HTTP <status>` for a non-2xx response, `Error: websift fetch failed: <error>` — under the consumer's error wrapper while provider-private fields (byte counts, redirect count, content type) remain outside context.
 
 #### KV Cache effect
 
@@ -64,7 +64,7 @@ No direct invalidation; the named consumer owns any request-prefix changes.
 
 ## Known Limitations and Deferred Work
 
-- **Non-2xx responses never reach the model as results** — the model sees the library's sanitized status message, not the status code or the response body, which is a coarser signal than `dsh-web-fetch-http`'s result-with-status-code (the trade is that this route can ship enabled).
+- **Non-2xx responses never reach the model as results** — the model sees the library's sanitized status message, not the status code or the response body, which is a coarser signal than `oh-web-fetch-http`'s result-with-status-code (the trade is that this route can ship enabled).
 - **The address wall has no bypass** — loopback and private targets are always refused; a local dev server is unreachable by design. The library's narrower knobs (`allowedPorts`, `allowedDomains`, `deniedDomains`) are not exposed.
 - **Extraction follows the websift library version** — HTML→markdown quality, PDF support (50 pages / 128,000 chars), the 10 MiB download cap, and the 5-hop redirect bound come from the library's transport baseline (`AppSettings.create()` defaults, never its environment); this package exposes only the three config keys above.
-- **No UI settings section** — parity with `dsh-web-fetch-http`; the tunables are per-composition `cordis.yml` config, not a per-user settings card.
+- **No UI settings section** — parity with `oh-web-fetch-http`; the tunables are per-composition `cordis.yml` config, not a per-user settings card.

@@ -13,7 +13,7 @@ import ToolRuntime from '@open-harness/oh-tools'
 import WebRuntime from '@open-harness/oh-web'
 import * as toolWeb from '@open-harness/oh-tool-web'
 
-describe('dsh-tool-web real-load-path guard', () => {
+describe('oh-tool-web real-load-path guard', () => {
   it('has no default export and keeps name/inject/Config through unwrapExports', () => {
     expect('default' in toolWeb).toBe(false)
 

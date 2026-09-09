@@ -6,7 +6,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 // Type-only: resolves the `system-prompt/assemble` waterfall this companion
-// joins, and the `agent` field `dsh-agent` merges into its context.
+// joins, and the `agent` field `oh-agent` merges into its context.
 import type {} from '@open-harness/oh-system-prompt'
 import type {} from '@open-harness/oh-agent'
 // Imported through the package name, not `./mount.ts`: a module shared between

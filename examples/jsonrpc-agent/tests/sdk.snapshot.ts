@@ -1,6 +1,6 @@
 /**
  * Keyless snapshot coverage for the TypeScript SDK path: each scenario spawns
- * the REAL `dsh-jsonrpc-agent` runtime (per `OH_EXAMPLE_MODE`) through the
+ * the REAL `oh-jsonrpc-agent` runtime (per `OH_EXAMPLE_MODE`) through the
  * REAL `@open-harness/oh-sdk-client`, drives one turn over stdio JSON-RPC,
  * and pins the SDK `RunResult`, the complete notification stream, and the
  * persisted session logs. Replay serves recorded model

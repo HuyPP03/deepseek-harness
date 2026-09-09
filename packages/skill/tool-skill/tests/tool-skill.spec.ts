@@ -16,7 +16,7 @@ import * as toolSkill from '@open-harness/oh-tool-skill'
 const testToolSignal = new AbortController().signal
 
 async function tempDir(name: string): Promise<string> {
-  return await import('node:fs/promises').then(fs => fs.mkdtemp(join(tmpdir(), `dsh-${name}-`)))
+  return await import('node:fs/promises').then(fs => fs.mkdtemp(join(tmpdir(), `oh-${name}-`)))
 }
 
 async function writeSkill(root: string, name: string, description: string, body: string): Promise<void> {
@@ -156,7 +156,7 @@ async function mintAgentScope(ctx: Context, subject: string | Agent): Promise<{ 
   return { agent, scope }
 }
 
-describe('dsh-tool-skill', () => {
+describe('oh-tool-skill', () => {
   it('registers the skill tool schema and removes it on dispose', async () => {
     const ctx = new Context()
     await ctx.plugin(SystemPrompt)
@@ -520,7 +520,7 @@ describe('dsh-tool-skill', () => {
     }), { surfaceOp: 'append' })
     session.append('user/message', createUserMessage({
       content: catalogContent(['- `resumed-skill`: Resumed skill']),
-      source: { kind: 'plugin', plugin: 'dsh-tool-skill' },
+      source: { kind: 'plugin', plugin: 'oh-tool-skill' },
     }), { surfaceOp: 'append' })
 
     await fireStep(ctx, agent, 1, 1)

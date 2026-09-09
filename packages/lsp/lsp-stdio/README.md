@@ -46,11 +46,11 @@ The provider trusts its configured server and claims no sandbox confinement. It 
 
 ## Model Experience
 
-Indirectly, through `dsh-tool-lsp`, which surfaces this provider's normalized results; this host contributes no prompt or schema itself.
+Indirectly, through `oh-tool-lsp`, which surfaces this provider's normalized results; this host contributes no prompt or schema itself.
 
 #### KV Cache effect
 
-No direct invalidation; `dsh-tool-lsp` owns request-prefix changes.
+No direct invalidation; `oh-tool-lsp` owns request-prefix changes.
 
 ## Known Limitations and Deferred Work
 

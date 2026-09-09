@@ -52,9 +52,9 @@ export type Config = LocalConfig
 
 /**
  * Sandbox-enforcing filesystem backend. Registers as `ctx.fs` (loading it
- * INSTEAD OF `dsh-fs-local`, together with a `ctx.sandboxPolicy`, is the whole
+ * INSTEAD OF `oh-fs-local`, together with a `ctx.sandboxPolicy`, is the whole
  * swap — the model-facing tools are untouched). Its configured default mode is
- * the capability fact exposed by {@link sandboxMode}; `dsh-tool-fs` resolves
+ * the capability fact exposed by {@link sandboxMode}; `oh-tool-fs` resolves
  * each session's mode and cwd into a policy for every mutation, while an
  * approved escalation may stamp a strictly wider mode for one call.
  */

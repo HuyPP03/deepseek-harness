@@ -26,7 +26,7 @@ Controllers and listeners are layered by the scope that registered them, in the 
 
 ## Model Experience
 
-Indirectly, through producer plugins and [`dsh-tool-jobs`](../tool-jobs/README.md), which render job ids, output, status, cancellation, and completion notices.
+Indirectly, through producer plugins and [`oh-tool-jobs`](../tool-jobs/README.md), which render job ids, output, status, cancellation, and completion notices.
 
 #### KV Cache effect
 

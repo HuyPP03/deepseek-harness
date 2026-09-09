@@ -1,5 +1,5 @@
 # The `custom` agent preset: the template for user-defined connectors.
-# `dsh-connectors` copies it to a new preset id (the connector id) when a
+# `oh-connectors` copies it to a new preset id (the connector id) when a
 # custom connector is added, so a custom connector session starts from
 # the same working-directory-free assistant composition as the shipped
 # connector presets.

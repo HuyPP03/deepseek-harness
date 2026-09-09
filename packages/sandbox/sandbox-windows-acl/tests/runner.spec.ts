@@ -1,6 +1,6 @@
 /**
  * End-to-end runner tests: spawn the REAL runner entry through tsx (exactly
- * the argv shape dsh-sandbox-local's confine() builds), with piped stdio
+ * the argv shape oh-sandbox-local's confine() builds), with piped stdio
  * inherited through the runner into the confined child — the same chain a
  * production confined execution walks.
  */
@@ -48,10 +48,10 @@ describe.skipIf(!isWin32 || !pwshAvailable())('windows-acl runner', () => {
   let publicProbeDir: string | undefined
 
   beforeAll(() => {
-    scratchRoot = mkdtempSync(join(tmpdir(), 'dsh-acl-runner-'))
+    scratchRoot = mkdtempSync(join(tmpdir(), 'oh-acl-runner-'))
     writableDir = join(scratchRoot, 'writable')
     mkdirSync(writableDir)
-    isolatedTemp = mkdtempSync(join(tmpdir(), 'dsh-acl-runner-temp-'))
+    isolatedTemp = mkdtempSync(join(tmpdir(), 'oh-acl-runner-temp-'))
     secretFile = join(scratchRoot, 'secret.txt')
     writeFileSync(secretFile, 'top secret - must stay readable to prove the read boundary')
     escapeFile = join(scratchRoot, 'escaped.txt')
@@ -62,7 +62,7 @@ describe.skipIf(!isWin32 || !pwshAvailable())('windows-acl runner', () => {
       throw new Error(`icacls Everyone grant failed: ${worldGrant.stdout}\n${worldGrant.stderr}`)
     }
     try {
-      publicProbeDir = mkdtempSync(join(process.env.PUBLIC ?? 'C:\\Users\\Public', 'dsh-acl-public-'))
+      publicProbeDir = mkdtempSync(join(process.env.PUBLIC ?? 'C:\\Users\\Public', 'oh-acl-public-'))
     } catch {
       publicProbeDir = undefined
     }
@@ -536,7 +536,7 @@ describe('windows-acl runner ref args (runner-side failures before the Win32 ini
   // the Win32 bindings, so they hold on every platform: the runner must never
   // reach FFI with a malformed reference contract.
   it('rejects unpaired reference flags, reference grants in non-refs modes, and SID/path mismatches', () => {
-    const scratchRoot = mkdtempSync(join(tmpdir(), 'dsh-acl-refargs-'))
+    const scratchRoot = mkdtempSync(join(tmpdir(), 'oh-acl-refargs-'))
     try {
       const workspace = join(scratchRoot, 'workspace')
       mkdirSync(workspace)

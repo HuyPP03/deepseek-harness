@@ -107,6 +107,6 @@ export function ohHomePath(...segments: string[]): string {
  * @param resolvedHome - the absolute path returned by {@link resolveOhHome}.
  * @returns `~/.oh` for the default home, otherwise `$OH_HOME`.
  */
-export function dshHomeDisplay(resolvedHome: string): string {
+export function ohHomeDisplay(resolvedHome: string): string {
   return resolvedHome === resolve(defaultDshHome()) ? DEFAULT_OH_HOME_DISPLAY : `$${OH_HOME_ENV}`
 }

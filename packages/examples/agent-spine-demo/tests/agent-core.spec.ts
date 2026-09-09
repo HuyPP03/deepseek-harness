@@ -65,8 +65,8 @@ async function composePrefix(ctx: Context, cwd: string): Promise<Message[]> {
 async function mount(config: agentCore.Config, withBash = false): Promise<Context> {
   const oldDshHome = process.env.OH_HOME
   const oldAgentsHome = process.env.OH_AGENTS_HOME
-  process.env.OH_HOME = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-home-'))
-  process.env.OH_AGENTS_HOME = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-agents-'))
+  process.env.OH_HOME = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-home-'))
+  process.env.OH_AGENTS_HOME = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-agents-'))
   const ctx = new Context()
   if (withBash) {
     ctx.provide('shell', {
@@ -99,8 +99,8 @@ async function mount(config: agentCore.Config, withBash = false): Promise<Contex
 async function withIsolatedSkillHomes<T>(run: () => Promise<T>): Promise<T> {
   const oldDshHome = process.env.OH_HOME
   const oldAgentsHome = process.env.OH_AGENTS_HOME
-  process.env.OH_HOME = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-home-'))
-  process.env.OH_AGENTS_HOME = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-agents-'))
+  process.env.OH_HOME = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-home-'))
+  process.env.OH_AGENTS_HOME = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-agents-'))
   try {
     return await run()
   } finally {
@@ -144,7 +144,7 @@ class TransientOnceAdapter extends LlmAdapter {
   }
 }
 
-describe('dsh-agent-spine-demo bundle', () => {
+describe('oh-agent-spine-demo bundle', () => {
   it('brings up the full default spine', async () => {
     const ctx = await mount({ workspaceContext: false })
     // One service from each layer of the spine proves the children loaded.
@@ -353,7 +353,7 @@ describe('dsh-agent-spine-demo bundle', () => {
   })
 
   it('loads workspace instructions into requests through the bundled spine', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-workspace-context-'))
+    const root = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-workspace-context-'))
     try {
       await mkdir(join(root, '.git'), { recursive: true })
       await writeFile(join(root, 'AGENTS.md'), 'bundled project rule')
@@ -385,7 +385,7 @@ describe('dsh-agent-spine-demo bundle', () => {
   })
 
   it('forwards agent-instructions config to the bundled loader', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-workspace-context-disabled-'))
+    const root = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-workspace-context-disabled-'))
     try {
       await mkdir(join(root, '.git'), { recursive: true })
       await writeFile(join(root, 'AGENTS.md'), 'must not be injected')
@@ -415,9 +415,9 @@ describe('dsh-agent-spine-demo bundle', () => {
   })
 
   it('forwards skill config to the registry, local provider, and model-facing consumer', async () => {
-    const home = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-skill-home-'))
-    const agentsHome = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-skill-agents-'))
-    const custom = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-skill-custom-'))
+    const home = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-skill-home-'))
+    const agentsHome = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-skill-agents-'))
+    const custom = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-skill-custom-'))
     await mkdir(custom, { recursive: true })
     await writeFile(join(custom, 'custom-skill.md'), '---\nname: custom-skill\ndescription: Custom skill\n---\n\nCustom body.\n')
     const ctx = await mount({
@@ -439,8 +439,8 @@ describe('dsh-agent-spine-demo bundle', () => {
   })
 
   it('snapshots a created project skill through catalog refresh and progressive loading', { timeout: 15_000 }, async () => {
-    const root = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-skill-refresh-'))
-    const home = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-skill-refresh-home-'))
+    const root = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-skill-refresh-'))
+    const home = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-skill-refresh-home-'))
     try {
       await mkdir(join(root, '.git'), { recursive: true })
       const skillPath = '.agents/skills/hot-skill/SKILL.md'
@@ -590,8 +590,8 @@ describe('dsh-agent-spine-demo bundle', () => {
   })
 
   it('shares top-level ohHome between local skills and the managed bash environment', async () => {
-    const home = await mkdtemp(join(tmpdir(), 'dsh-agent-core-shared-home-'))
-    const agentsHome = await mkdtemp(join(tmpdir(), 'dsh-agent-core-shared-agents-'))
+    const home = await mkdtemp(join(tmpdir(), 'oh-agent-core-shared-home-'))
+    const agentsHome = await mkdtemp(join(tmpdir(), 'oh-agent-core-shared-agents-'))
     await mkdir(join(home, 'skills'), { recursive: true })
     await writeFile(join(home, 'skills', 'shared-skill.md'), '---\nname: shared-skill\ndescription: Shared home skill\n---\n\nShared body.\n')
 
@@ -604,9 +604,9 @@ describe('dsh-agent-spine-demo bundle', () => {
     expect((await ctx.skills.list()).map(skill => skill.name)).toEqual(['shared-skill'])
     const execution: ToolExecution = {
       signal: testToolSignal,
-      token: Symbol('agent-core-dsh-home-test') as ToolExecution['token'],
-      callId: CallId('agent-core-dsh-home'),
-      rootCallId: CallId('agent-core-dsh-home'),
+      token: Symbol('agent-core-oh-home-test') as ToolExecution['token'],
+      callId: CallId('agent-core-oh-home'),
+      rootCallId: CallId('agent-core-oh-home'),
       name: 'bash',
       arguments: { command: 'true' },
     }
@@ -617,15 +617,15 @@ describe('dsh-agent-spine-demo bundle', () => {
   it('rejects conflicting global and nested Open Harness home directories', () => {
     expect(() => {
       agentCore.apply(new Context(), {
-        ohHome: '/global-dsh-home',
+        ohHome: '/global-oh-home',
         workspaceContext: false,
-        skills: { filesystem: { ohHome: '/nested-dsh-home' } },
+        skills: { filesystem: { ohHome: '/nested-oh-home' } },
       })
     }).toThrow('agent-spine-demo: ohHome and skills.filesystem.ohHome must resolve to the same directory')
   })
 
   it('delivers workspace instructions ahead of the first-step skill catalog', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'dsh-agent-spine-demo-prefix-order-'))
+    const root = await mkdtemp(join(tmpdir(), 'oh-agent-spine-demo-prefix-order-'))
     try {
       await mkdir(join(root, '.git'), { recursive: true })
       await writeFile(join(root, 'AGENTS.md'), 'workspace rule before skills')
@@ -738,7 +738,7 @@ describe('dsh-agent-spine-demo bundle', () => {
       persona: 'You are merged.',
       toolOrder: ['zulu'],
       tools: { mode: 'native' as const },
-      ohHome: '/tmp/dsh-home',
+      ohHome: '/tmp/oh-home',
       sessionTitle: { fallbackMaxWords: 3, fallbackMaxBytes: 24, maxTitleBytes: 60 },
       workspaceContext: false as const,
       skills: { enabled: false },

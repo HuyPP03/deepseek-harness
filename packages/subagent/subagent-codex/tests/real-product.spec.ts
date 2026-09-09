@@ -57,7 +57,7 @@ async function realHarness(script: readonly ResponsesBehavior[]): Promise<{
   readonly harness: RealHarness
   readonly fixture: ResponsesFixture
 }> {
-  const root = mkdtempSync(join(tmpdir(), 'dsh-codex-real-'))
+  const root = mkdtempSync(join(tmpdir(), 'oh-codex-real-'))
   roots.push(root)
   const workspace = join(root, 'workspace')
   const codexHome = join(root, 'codex-home')
@@ -85,7 +85,7 @@ async function realHarness(script: readonly ResponsesBehavior[]): Promise<{
     '',
   ].join('\n'))
   const env = {
-    OPENAI_API_KEY: 'dsh-fake-openai-key',
+    OPENAI_API_KEY: 'oh-fake-openai-key',
     CODEX_HOME: codexHome,
     HOME: root,
     XDG_CONFIG_HOME: join(root, 'xdg'),
@@ -168,7 +168,7 @@ describe('real @openai/codex 0.147.0 product', () => {
     const recorded = fixture.requests[0]!
     expect(recorded.method).toBe('POST')
     expect(recorded.path).toBe('/v1/responses')
-    expect(recorded.headers.authorization).toBe('Bearer dsh-fake-openai-key')
+    expect(recorded.headers.authorization).toBe('Bearer oh-fake-openai-key')
     expect(responseInputTexts(recorded.body)).toContain(task)
     await expectQuiescent(harness.handles)
   }, 60_000)
@@ -220,7 +220,7 @@ describe('real @openai/codex 0.147.0 product', () => {
       tool.type === 'function' && tool.name === call.name
     )))).toBe(true)
     expect(fixture.requests.every(requestEntry =>
-      requestEntry.headers.authorization === 'Bearer dsh-fake-openai-key',
+      requestEntry.headers.authorization === 'Bearer oh-fake-openai-key',
     )).toBe(true)
     await expectQuiescent(harness.handles)
   }, 60_000)

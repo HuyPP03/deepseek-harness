@@ -26,7 +26,7 @@ afterEach(async () => {
 
 describe('command-mcp real Loader composition', () => {
   it('lists the servers a live reporter contributes to the shared registry', async () => {
-    root = await mkdtemp(join(tmpdir(), 'dsh-command-mcp-loader-'))
+    root = await mkdtemp(join(tmpdir(), 'oh-command-mcp-loader-'))
     const configPath = join(root, 'cordis.yml')
     await writeFile(configPath, [
       "- name: '@open-harness/oh-system-prompt'",

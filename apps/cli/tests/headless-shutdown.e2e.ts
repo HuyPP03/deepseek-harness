@@ -6,7 +6,7 @@ import { execa } from 'execa'
 import { describe, expect, it } from 'vitest'
 import { LOADER_SMOKE_TEST_TIMEOUT_MS, resolveExampleLaunch } from '@open-harness/oh-loader-smoke'
 
-const dshBinScript = fileURLToPath(new URL('../src/bin.ts', import.meta.url))
+const ohBinScript = fileURLToPath(new URL('../src/bin.ts', import.meta.url))
 const tsconfigPath = fileURLToPath(new URL('../../../tsconfig.json', import.meta.url))
 const neverDisposePlugin = pathToFileURL(
   fileURLToPath(new URL('./fixtures/never-dispose.mjs', import.meta.url)),
@@ -22,7 +22,7 @@ if pid == 0:
     os.chdir(cwd)
     os.execvpe(node, [node, *json.loads(launch_args_json)], env)
 
-markers = [b"dsh-test: never-dispose ready", b"dsh-test: never-dispose started"]
+markers = [b"oh-test: never-dispose ready", b"oh-test: never-dispose started"]
 output = bytearray()
 marker_index = 0
 deadline = time.monotonic() + float(timeout_seconds)
@@ -62,7 +62,7 @@ if actual_exit != 130:
 `
 
 async function runHeadlessPtySmoke(): Promise<string> {
-  const cwd = await mkdtemp(join(tmpdir(), 'dsh-headless-shutdown-'))
+  const cwd = await mkdtemp(join(tmpdir(), 'oh-headless-shutdown-'))
   try {
     const home = join(cwd, '.oh')
     // Pre-initialize the headless profile with the never-dispose row in its
@@ -70,7 +70,7 @@ async function runHeadlessPtySmoke(): Promise<string> {
     const profileDir = join(home, 'profiles', 'headless')
     await mkdir(profileDir, { recursive: true })
     await writeFile(join(profileDir, 'package.json'), JSON.stringify({
-      name: 'dsh-profile-headless',
+      name: 'oh-profile-headless',
       private: true,
       dependencies: {},
       oh: { profile: { bundles: ['@open-harness/oh-base', '@open-harness/oh-headless'] } },
@@ -82,7 +82,7 @@ async function runHeadlessPtySmoke(): Promise<string> {
       '',
     ].join('\n'))
     const launch = resolveExampleLaunch({
-      srcBin: dshBinScript,
+      srcBin: ohBinScript,
       configArgs: ['--profile', 'headless', 'never complete'],
       tsconfigPath,
       env: {
@@ -125,7 +125,7 @@ describe.skipIf(process.platform === 'win32')('headless process shutdown (real L
   it('lets a second Ctrl+C force exit while the first signal is draining', async () => {
     const output = await runHeadlessPtySmoke()
     expect(output).not.toContain('oh: observing at ')
-    expect(output).toContain('dsh-test: never-dispose ready')
-    expect(output).toContain('dsh-test: never-dispose started')
+    expect(output).toContain('oh-test: never-dispose ready')
+    expect(output).toContain('oh-test: never-dispose started')
   }, LOADER_SMOKE_TEST_TIMEOUT_MS)
 })

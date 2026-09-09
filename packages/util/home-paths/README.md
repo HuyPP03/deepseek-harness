@@ -1,4 +1,4 @@
-# dsh-home-paths
+# oh-home-paths
 
 English | [中文](README.zh.md)
 
@@ -10,7 +10,7 @@ Shared filesystem path helpers for Open Harness user data.
 
 `ohHomePath(...segments)` joins child segments onto that resolved home with Node's platform path rules. With no segments it returns the home itself.
 
-`dshHomeDisplay()` names an active root symbolically for user-facing paths: `~/.oh` for the default home, `$OH_HOME` for any configured home. It never leaks an absolute machine path.
+`ohHomeDisplay()` names an active root symbolically for user-facing paths: `~/.oh` for the default home, `$OH_HOME` for any configured home. It never leaks an absolute machine path.
 
 `OH_HOME_DIR_NAME` owns the default user-data directory name: `.oh`.
 

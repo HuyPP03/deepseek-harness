@@ -16,7 +16,7 @@ export const inject = ['invariants']
 
 /**
  * No runtime invariant: this is a browser-side surface plugin whose node half owns no event stream
- * or mutable runtime data; the connector state machine is host-side dsh-connectors territory.
+ * or mutable runtime data; the connector state machine is host-side oh-connectors territory.
  */
 const install: InvariantInstaller = () => {}
 

@@ -23,8 +23,8 @@ ACP（Agent Client Protocol）自动化服务器应用：默认 agent（智能�
 | `provider` | 必填 | 每个由 ACP 创建的 agent 所用的提供方路由。 |
 | `model` | 必填 | 每个由 ACP 创建的 agent 所用的模型。 |
 | `maxParallelToolCalls` | agent loop（智能体循环）默认值 | 正整数工具调用并发上限；`1` 表示串行。 |
-| `persona` | 无 | 供 `dsh-system-prompt` 使用的部署 persona 模板。 |
-| `toolOrder` | 字典序 | 供 `dsh-system-prompt` 使用的显式面向模型工具顺序。 |
+| `persona` | 无 | 供 `oh-system-prompt` 使用的部署 persona 模板。 |
+| `toolOrder` | 字典序 | 供 `oh-system-prompt` 使用的显式面向模型工具顺序。 |
 | `tools` | `{ mode: 'native' }` | Native、Code Mode 或组合式模型工具传输。 |
 | `ohHome` | `$OH_HOME` 或 `~/.oh` | bash 与本地 skill（技能）发现共享的 harness 主目录。 |
 | `sessionTitle` | 主干示例限制 | 持久后备标题限制；标题仍不会进入 ACP wire。 |
@@ -42,11 +42,11 @@ ACP（Agent Client Protocol）自动化服务器应用：默认 agent（智能�
 
 ## Bin
 
-`dsh-acp-demo [--config path-to-cordis.yml]`（短形式 `-c`；默认为 `./cordis.yml`）会加载 gitignore 排除的 `.env`，回放模式除外；`OH_SNAPSHOT=replay` 选择同级 `cordis.snapshot.yml`；stdin EOF 会在退出前 dispose（资源释放）上下文并刷新会话。Loader 已安装的可选对等依赖（peer dependency）`node-addon-require-builtin` 使纯 Node 下构建后的 bin 可以解析裸插件说明符。诊断使用 stderr，因为 stdout 是 ACP wire。
+`oh-acp-demo [--config path-to-cordis.yml]`（短形式 `-c`；默认为 `./cordis.yml`）会加载 gitignore 排除的 `.env`，回放模式除外；`OH_SNAPSHOT=replay` 选择同级 `cordis.snapshot.yml`；stdin EOF 会在退出前 dispose（资源释放）上下文并刷新会话。Loader 已安装的可选对等依赖（peer dependency）`node-addon-require-builtin` 使纯 Node 下构建后的 bin 可以解析裸插件说明符。诊断使用 stderr，因为 stdout 是 ACP wire。
 
 ## 模型体验
 
-模型体验由 `dsh-agent-spine-demo` 和叶节点的面向模型插件间接提供。ACP 提示词文本会成为普通的已记录用户消息；协议元数据与权限选择不会进入模型请求。
+模型体验由 `oh-agent-spine-demo` 和叶节点的面向模型插件间接提供。ACP 提示词文本会成为普通的已记录用户消息；协议元数据与权限选择不会进入模型请求。
 
 #### KV Cache 影响
 

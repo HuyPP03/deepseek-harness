@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-[`@open-harness/oh-subprocess`](../subprocess/README.md) seam 的本地 Service Provider。`LocalSubprocessRuntime` 解析本地可执行文件，以显式 stdio spawn 普通 detached 进程树，并通过 `node-pty` 加平台进程检查实现终端进程。该实现没有任何配置：每项处置方式、限制、终端尺寸、宽限期与目录都来自调用方能力 seam（[`dsh-bash-local`](../../shell/bash-local/README.md)、[`dsh-lsp-stdio`](../../lsp/lsp-stdio/README.md) 和 [`dsh-terminal-bash`](../../terminal/terminal-bash/README.md)）。
+[`@open-harness/oh-subprocess`](../subprocess/README.md) seam 的本地 Service Provider。`LocalSubprocessRuntime` 解析本地可执行文件，以显式 stdio spawn 普通 detached 进程树，并通过 `node-pty` 加平台进程检查实现终端进程。该实现没有任何配置：每项处置方式、限制、终端尺寸、宽限期与目录都来自调用方能力 seam（[`oh-bash-local`](../../shell/bash-local/README.md)、[`oh-lsp-stdio`](../../lsp/lsp-stdio/README.md) 和 [`oh-terminal-bash`](../../terminal/terminal-bash/README.md)）。
 
 ## 行为
 
@@ -17,7 +17,7 @@
 
 ## 模型体验
 
-通过 Consumer 间接影响（目前是 `dsh-tool-bash` 背后的 bash 执行器家族）；进程输出与生命周期面向模型的全部渲染归 Consumer 所有。
+通过 Consumer 间接影响（目前是 `oh-tool-bash` 背后的 bash 执行器家族）；进程输出与生命周期面向模型的全部渲染归 Consumer 所有。
 
 #### KV Cache 影响
 

@@ -1,4 +1,4 @@
-/** Unified JSON-value schema DSL, inference, compilation, and typed tool helper. @module dsh-tools/schema */
+/** Unified JSON-value schema DSL, inference, compilation, and typed tool helper. @module oh-tools/schema */
 
 import { HarnessError } from '@open-harness/oh-llm'
 import type { ContentBlock } from '@open-harness/oh-llm'

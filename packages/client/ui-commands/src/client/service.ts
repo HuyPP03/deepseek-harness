@@ -284,7 +284,12 @@ export class CommandUiRuntime extends Service implements CommandUiContract {
     return rows
   }
 
-  /** Merged slash-menu rows for one session (host catalog + available contributions), in menu order. */
+  /**
+   * Merged slash-menu rows for one session (host catalog + available contributions), in menu order.
+   * @param session - the session context whose available contributions merge in.
+   * @param signal - aborts the availability pass.
+   * @returns the menu rows in display order.
+   */
   async menuRows(session: ClientSessionContext, signal: AbortSignal): Promise<readonly CommandMenuRow[]> {
     return (await this.menuRowCandidates(session, signal)).map(row => ({ name: row.name, description: row.description ?? '' }))
   }

@@ -44,7 +44,7 @@ A child that resolves normally with a non-completed stop reason is not an infras
 
 ## Model Experience
 
-Indirectly, through `dsh-tool-workflow` and a workflow engine, which create child-agent requests and return a retained parent tool result.
+Indirectly, through `oh-tool-workflow` and a workflow engine, which create child-agent requests and return a retained parent tool result.
 
 #### KV Cache effect
 

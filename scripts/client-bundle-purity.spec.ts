@@ -41,7 +41,7 @@ function purityResolveId(): ResolveId {
   // package-invariants text check can see the invariant entry per package.
   const configs = clientConfigs()
   const plugins = (configs[0] as { plugins: { name: string; resolveId?: unknown }[] }).plugins
-  const gate = plugins.find(p => p.name === 'dsh-client-bundle-purity')
+  const gate = plugins.find(p => p.name === 'oh-client-bundle-purity')
   if (gate?.resolveId === undefined) throw new Error('purity plugin missing from client config')
   return gate.resolveId as ResolveId
 }
@@ -49,7 +49,7 @@ function purityResolveId(): ResolveId {
 function cssModulePlugin(): CssModulePlugin {
   const configs = clientConfigs()
   const plugins = (configs[0] as { plugins: CssModulePlugin[] }).plugins
-  const plugin = plugins.find(candidate => candidate.name === 'dsh-css-modules-inline')
+  const plugin = plugins.find(candidate => candidate.name === 'oh-css-modules-inline')
   if (plugin?.resolveId === undefined || plugin.load === undefined) {
     throw new Error('CSS Modules plugin missing from client config')
   }
@@ -84,7 +84,7 @@ describe('client bundle purity gate', () => {
     expect(() => resolveId('@open-harness/oh-goal/remote/nested')).toThrow(/purity/)
   })
 
-  it('throws on any other @deepseek-ai leak', () => {
+  it('throws on any other @open-harness leak', () => {
     expect(() => resolveId('@open-harness/oh-agent')).toThrow(/purity/)
     expect(() => resolveId('@open-harness/oh-client-web')).toThrow(/purity/)
   })
@@ -98,7 +98,7 @@ describe('client bundle purity gate', () => {
   it('carries exactly one documented temporary exemption: runtime/client (store engine pending rehoming)', () => {
     expect(resolveId('@open-harness/oh-client-runtime/client')).toBeNull()
     const clientChannels = CLIENT_EXTERNALS.filter(
-      entry => entry.startsWith('@deepseek-ai/') && entry.endsWith('/client'))
+      entry => entry.startsWith('@open-harness/') && entry.endsWith('/client'))
     expect(clientChannels).toEqual(['@open-harness/oh-client-runtime/client'])
   })
 })

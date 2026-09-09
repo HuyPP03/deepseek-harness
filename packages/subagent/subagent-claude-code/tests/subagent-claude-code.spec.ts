@@ -338,8 +338,8 @@ describe('task admission and package contracts', () => {
     await ctx.plugin(claudeCode, {
       env: {
         ANTHROPIC_API_KEY: 'provider-fake-key',
-        CLAUDE_CONFIG_DIR: '/private/tmp/dsh-claude-code-unit-config',
-        HOME: '/private/tmp/dsh-claude-code-unit-home',
+        CLAUDE_CONFIG_DIR: '/private/tmp/oh-claude-code-unit-config',
+        HOME: '/private/tmp/oh-claude-code-unit-home',
       },
       disposeGraceMs: 29,
     })

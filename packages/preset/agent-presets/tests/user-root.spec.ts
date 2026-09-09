@@ -1,7 +1,7 @@
 /**
  * The writable root is this package's own, not an assembly fact each app must
  * remember: a roster configured with only a `system` root still discovers and
- * authors into `<ohHome>/.agent-presets`, the way `dsh-skill-filesystem` owns
+ * authors into `<ohHome>/.agent-presets`, the way `oh-skill-filesystem` owns
  * `<ohHome>/skills`. `includeUserRoot: false` is how a deployment — or a test
  * pinning an exact roster — opts out.
  *
@@ -31,7 +31,7 @@ let home: string
 let previousHome: string | undefined
 
 beforeEach(async () => {
-  home = await mkdtemp(join(tmpdir(), 'dsh-preset-home-'))
+  home = await mkdtemp(join(tmpdir(), 'oh-preset-home-'))
   previousHome = process.env.OH_HOME
   process.env.OH_HOME = home
 })
@@ -115,7 +115,7 @@ describe('the harness-home preset root', () => {
   })
 
   it('yields to a configured user root for authoring, which writableRoot takes first', async () => {
-    const explicit = await mkdtemp(join(tmpdir(), 'dsh-preset-explicit-'))
+    const explicit = await mkdtemp(join(tmpdir(), 'oh-preset-explicit-'))
     const ctx = await roster({
       roots: [
         { path: SYSTEM_ROOT, trust: 'system' as const },

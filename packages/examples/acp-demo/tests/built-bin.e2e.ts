@@ -30,7 +30,7 @@ const repoRoot = fileURLToPath(new URL('../../../../', import.meta.url))
 const acpBin = join(repoRoot, 'packages/examples/acp-demo/lib/bin.js')
 const decompress = promisify(zstdDecompress)
 
-const dshPackages = [
+const ohPackages = [
   'examples/agent-spine-demo', 'core/agent', 'core/session', 'core/system-prompt',
   'core/tools', 'core/agent-loop', 'llm/llm', 'shell/shell',
   'shell/bash-local', 'shell/tool-bash', 'subprocess/subprocess', 'subprocess/subprocess-local', 'context/agent-instructions', 'runtime-diagnostics/invariants', 'boot/app-boot',
@@ -62,7 +62,7 @@ async function link(target: string, name: string, nm: string): Promise<void> {
 async function makeConsumer(): Promise<string> {
   const dir = await mkdtemp(join(tmpdir(), 'acp-built-bin-'))
   const nm = join(dir, 'node_modules')
-  for (const rel of dshPackages) {
+  for (const rel of ohPackages) {
     const abs = join(repoRoot, 'packages', rel)
     await link(abs, await pkgName(abs), nm)
   }
@@ -131,7 +131,7 @@ afterEach(async () => {
   consumer = undefined
 })
 
-describe.skipIf(!existsSync(acpBin))('dsh-acp-demo BUILT bin (node lib/bin.js, no tsx)', () => {
+describe.skipIf(!existsSync(acpBin))('oh-acp-demo BUILT bin (node lib/bin.js, no tsx)', () => {
   it('boots the published bin, completes a turn, and writes default Zstandard persistence', async () => {
     consumer = await makeConsumer()
     child = spawn(process.execPath, [acpBin, '--config', './cordis.yml'], {

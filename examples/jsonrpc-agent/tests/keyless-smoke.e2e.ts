@@ -51,7 +51,7 @@ describe('jsonrpc-agent keyless smoke', () => {
     { label: 'reports max-token turns with mapping enabled through env', envValue: 'true' },
     { label: 'reports max-token turns with mapping disabled through env', envValue: 'false' },
   ])('$label', async ({ envValue }) => {
-    const root = await mkdtemp(join(tmpdir(), 'dsh-jsonrpc-agent-smoke-'))
+    const root = await mkdtemp(join(tmpdir(), 'oh-jsonrpc-agent-smoke-'))
     const modelRequests: Record<string, unknown>[] = []
     const modelServer = createServer((request, response) => {
       let body = ''

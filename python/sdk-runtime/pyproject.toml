@@ -20,7 +20,7 @@ Source = "https://github.com/deepseek-ai/deepseek-harness"
 # Include the injected executable and default config; exclude the dev-only node
 # closure from wheels and sdists.
 [tool.hatch.build]
-artifacts = ["src/deepseek_harness_runtime/runtime/dsh-jsonrpc-agent-*"]
+artifacts = ["src/deepseek_harness_runtime/runtime/oh-jsonrpc-agent-*"]
 exclude = ["src/deepseek_harness_runtime/runtime/node"]
 
 [tool.hatch.build.targets.wheel]

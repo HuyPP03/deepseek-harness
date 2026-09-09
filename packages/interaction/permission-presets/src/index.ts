@@ -12,7 +12,7 @@
  * to the configured read-only preset at creation and refuse the `/permission`
  * switch: their mode is fixed by composition, not user-selectable.
  *
- * @module dsh-permission-presets
+ * @module oh-permission-presets
  */
 
 import { Context, Service } from '@deepseek-ai/cordis'

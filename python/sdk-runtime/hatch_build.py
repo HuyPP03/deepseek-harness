@@ -66,7 +66,7 @@ class RuntimeBuildHook(BuildHookInterface):
             )
         expected_executable = matches[0][1]
         runtime_dir = Path(self.root) / "src" / "deepseek_harness_runtime" / "runtime"
-        runtime_files = sorted(runtime_dir.glob("dsh-jsonrpc-agent-pkg-*") if runtime_dir.is_dir() else [])
+        runtime_files = sorted(runtime_dir.glob("oh-jsonrpc-agent-pkg-*") if runtime_dir.is_dir() else [])
         expected_files = [expected_executable]
         if "-macos-" in expected_executable:
             expected_files.append(f"{expected_executable}-spawn-helper")

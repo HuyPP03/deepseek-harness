@@ -18,7 +18,7 @@ Implementations: [`@open-harness/oh-sandbox-local`](../sandbox-local/) (Linux: `
 
 #### What the model sees
 
-Through [`dsh-bash-sandbox`](../../shell/bash-sandbox/README.md) and [`dsh-tool-bash`](../../shell/tool-bash/README.md), failure to enforce a requested mode produces code `SANDBOX_UNAVAILABLE` and the exact error below. An execution-time runner failure adds ` Runner failure: <detail>`.
+Through [`oh-bash-sandbox`](../../shell/bash-sandbox/README.md) and [`oh-tool-bash`](../../shell/tool-bash/README.md), failure to enforce a requested mode produces code `SANDBOX_UNAVAILABLE` and the exact error below. An execution-time runner failure adds ` Runner failure: <detail>`.
 
 ##### Exact error
 

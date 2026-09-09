@@ -14,7 +14,7 @@ import { describe, expect, it } from 'vitest'
  */
 
 const repoRoot = fileURLToPath(new URL('../../../', import.meta.url))
-const dshSourceBin = 'apps/cli/src/bin.ts'
+const ohSourceBin = 'apps/cli/src/bin.ts'
 
 describe('dsh SOURCE launcher (node --import tsx/esm)', () => {
   it('launches the source CLI without building', async () => {
@@ -25,7 +25,7 @@ describe('dsh SOURCE launcher (node --import tsx/esm)', () => {
   })
 
   it('boots the source entry and requires a profile', async () => {
-    const result = await execa(process.execPath, ['--import', 'tsx/esm', dshSourceBin], {
+    const result = await execa(process.execPath, ['--import', 'tsx/esm', ohSourceBin], {
       cwd: repoRoot,
       input: '',
       timeout: 25_000,

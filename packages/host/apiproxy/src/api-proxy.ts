@@ -1553,7 +1553,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
   // same state reference for every event, so no change frames are ever
   // pushed — baselines alone carry the value — and clients pre-check intake
   // and label upload affordances from it. Registered here, not in the
-  // attachment Service Definition: dsh-llm depends on dsh-attachment, so the
+  // attachment Service Definition: oh-llm depends on oh-attachment, so the
   // seam package cannot reference the projection registry without a cycle,
   // and the per-message rules the value describes are this proxy's own
   // admission checks. The child activates only while both seams are composed.
@@ -3500,7 +3500,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         }
       },
 
-      // Authoring is privileged (see PRIVILEGED_METHODS in dsh-client-connection):
+      // Authoring is privileged (see PRIVILEGED_METHODS in oh-client-connection):
       // a composition names the plugins a session runs, so reading one is
       // reconnaissance, and copy/remove/openDocument manage the roster and
       // drive the host desktop.
@@ -3587,7 +3587,7 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         const presets = ctx.get('agentPresets')
         const scoped = live === undefined ? undefined : presets?.serviceFor(live, 'skills')
         // Same stance as the commands domain: a missing service means no
-        // composition mounts dsh-skill, not an empty catalog. `ctx.get` also
+        // composition mounts oh-skill, not an empty catalog. `ctx.get` also
         // keeps this handler independent of the gateway plugin's inject list
         // (an undeclared `ctx.skills` property read fails the reflect proxy).
         const skillRegistry = scoped ?? ctx.get('skills')

@@ -24,7 +24,7 @@ let refA: string
 let refB: string
 
 beforeAll(() => {
-  root = mkdtempSync(join(tmpdir(), 'dsh-workspace-refs-proj-'))
+  root = mkdtempSync(join(tmpdir(), 'oh-workspace-refs-proj-'))
   for (const name of ['work', 'ref-a', 'ref-b']) mkdirSync(join(root, name))
   work = join(root, 'work')
   refA = join(root, 'ref-a')

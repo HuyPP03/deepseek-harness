@@ -13,7 +13,7 @@ import { canonicalPath, writableRoots } from '@open-harness/oh-sandbox'
 
 describe('canonicalPath', () => {
   it('resolves symlinks (an existing path realpaths)', () => {
-    const dir = mkdtempSync(join(tmpdir(), 'dsh-roots-'))
+    const dir = mkdtempSync(join(tmpdir(), 'oh-roots-'))
     expect(canonicalPath(dir)).toBe(realpathSync.native(dir))
   })
 
@@ -28,7 +28,7 @@ describe('writableRoots', () => {
   })
 
   it('workspace-write grants the workspace root plus the platform temp areas, canonical and deduplicated', () => {
-    const ws = mkdtempSync(join(tmpdir(), 'dsh-ws-'))
+    const ws = mkdtempSync(join(tmpdir(), 'oh-ws-'))
     const roots = writableRoots({ mode: 'workspace-write', workspaceRoot: ws })
     expect(roots).toContain(realpathSync.native(ws))
     expect(roots).toContain(canonicalPath('/tmp'))
@@ -38,7 +38,7 @@ describe('writableRoots', () => {
   })
 
   it('workspace-refs-write grants the workspace root, the attached reference roots, and the platform temp areas', () => {
-    const ws = mkdtempSync(join(tmpdir(), 'dsh-ws-refs-'))
+    const ws = mkdtempSync(join(tmpdir(), 'oh-ws-refs-'))
     const roots = writableRoots({ mode: 'workspace-refs-write', workspaceRoot: ws, referenceRoots: ['/refs/one', '/refs/two'] })
     expect(roots).toContain(realpathSync.native(ws))
     expect(roots).toContain('/refs/one')
@@ -48,7 +48,7 @@ describe('writableRoots', () => {
   })
 
   it('workspace-refs-write without a reference set grants exactly the workspace-write roots', () => {
-    const ws = mkdtempSync(join(tmpdir(), 'dsh-ws-refs-empty-'))
+    const ws = mkdtempSync(join(tmpdir(), 'oh-ws-refs-empty-'))
     expect(writableRoots({ mode: 'workspace-refs-write', workspaceRoot: ws })).toEqual(
       writableRoots({ mode: 'workspace-write', workspaceRoot: ws }),
     )

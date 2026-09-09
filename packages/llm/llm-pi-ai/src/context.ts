@@ -1,7 +1,7 @@
 /**
  * Harness request-history conversion into pi-ai's Context vocabulary.
  *
- * @module dsh-llm-pi-ai/context
+ * @module oh-llm-pi-ai/context
  */
 
 import { CallId, contentHasImage, LlmError } from '@open-harness/oh-llm'

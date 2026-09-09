@@ -8,7 +8,7 @@ import LocalSubprocessRuntime from '@open-harness/oh-subprocess-local'
 import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'
 import type { ShellProcess } from '@open-harness/oh-shell'
 
-const spillDir = mkdtempSync(join(tmpdir(), 'dsh-bash-exec-spec-'))
+const spillDir = mkdtempSync(join(tmpdir(), 'oh-bash-exec-spec-'))
 
 async function setup(config: ConstructorParameters<typeof LocalBashExecutor>[1] = {}) {
   const ctx = new Context()
@@ -139,14 +139,14 @@ describe('LocalBashExecutor.run', () => {
       command: 'cat; echo "[$SEAM_VAR][$OH_SEAM_VAR]"',
       stdin: 'piped\n',
       env: { SEAM_VAR: 'env-ok' },
-      ohEnv: { OH_SEAM_VAR: 'dsh-ok' },
+      ohEnv: { OH_SEAM_VAR: 'oh-ok' },
     })
     // resolve() keeps the optional input/environment fields verbatim.
     expect(spec.stdin).toBe('piped\n')
     expect(spec.env).toEqual({ SEAM_VAR: 'env-ok' })
-    expect(spec.ohEnv).toEqual({ OH_SEAM_VAR: 'dsh-ok' })
+    expect(spec.ohEnv).toEqual({ OH_SEAM_VAR: 'oh-ok' })
     const result = await bash.run(spec)
-    expect(result.stdout.text).toBe('piped\n[env-ok][dsh-ok]\n')
+    expect(result.stdout.text).toBe('piped\n[env-ok][oh-ok]\n')
   })
 
   it('resolve() omits stdin/env/ohEnv when the request supplies none', async () => {
@@ -176,9 +176,9 @@ describe('LocalBashExecutor.start (background process handles)', () => {
       command: 'cat; echo "[$BG_VAR][$OH_BG_VAR]"',
       stdin: 'bg-stdin\n',
       env: { BG_VAR: 'bg-env' },
-      ohEnv: { OH_BG_VAR: 'bg-dsh-env' },
+      ohEnv: { OH_BG_VAR: 'bg-oh-env' },
     }))
-    const output = await readUntil(proc, '[bg-env][bg-dsh-env]')
+    const output = await readUntil(proc, '[bg-env][bg-oh-env]')
     expect(output).toContain('bg-stdin')
     await proc.done
     expect(proc.exitCode).toBe(0)

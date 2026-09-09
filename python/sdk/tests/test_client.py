@@ -922,7 +922,7 @@ def _install_fake_bundled_runtime(
 
     Returns the fake bundled default config path.
     """
-    runtime = tmp_path / "dsh-jsonrpc-agent"
+    runtime = tmp_path / "oh-jsonrpc-agent"
     runtime.write_text(
         """#!/usr/bin/env python3
 import json

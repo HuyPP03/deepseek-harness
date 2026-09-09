@@ -20,7 +20,7 @@ let work: string
 let refA: string
 
 beforeAll(() => {
-  root = mkdtempSync(join(tmpdir(), 'dsh-workspace-refs-inv-'))
+  root = mkdtempSync(join(tmpdir(), 'oh-workspace-refs-inv-'))
   mkdirSync(join(root, 'work'))
   mkdirSync(join(root, 'ref-a'))
   work = join(root, 'work')

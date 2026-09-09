@@ -25,7 +25,7 @@ const TEST_USER_ID = '00000000-0000-4000-8000-000000000001' as AnonymousUserId
 let testHome: string
 
 beforeEach(() => {
-  testHome = mkdtempSync(join(tmpdir(), 'dsh-llm-deepseek-'))
+  testHome = mkdtempSync(join(tmpdir(), 'oh-llm-deepseek-'))
   vi.stubEnv('OH_HOME', testHome)
 })
 

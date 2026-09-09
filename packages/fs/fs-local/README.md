@@ -27,7 +27,7 @@ The package-root SDK API is the default/named `LocalFileSystem` class plus `Conf
 
 ## Model Experience
 
-Indirectly, through [`dsh-tool-fs`](../tool-fs/README.md), which renders this provider's line-windowed UTF-8 content, mutation acknowledgements, and exact provider messages in capped retained results while versions, atomic-write mechanics, and directory metadata remain internal.
+Indirectly, through [`oh-tool-fs`](../tool-fs/README.md), which renders this provider's line-windowed UTF-8 content, mutation acknowledgements, and exact provider messages in capped retained results while versions, atomic-write mechanics, and directory metadata remain internal.
 
 #### KV Cache effect
 

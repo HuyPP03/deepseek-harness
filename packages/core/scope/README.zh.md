@@ -1,4 +1,4 @@
-# dsh-scope
+# oh-scope
 
 [English](README.md) | 中文
 

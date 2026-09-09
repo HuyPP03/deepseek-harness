@@ -94,9 +94,9 @@ async function pollUntil(predicate: () => boolean, timeoutMs = 5_000): Promise<v
 
 describe('bash tool through the agent loop', () => {
   it('first-turn bash receives session identity before the lazy JSONL file materializes', async () => {
-    const root = mkdtempSync(join(tmpdir(), 'dsh-bash-session-env-'))
+    const root = mkdtempSync(join(tmpdir(), 'oh-bash-session-env-'))
     dirs.push(root)
-    const ohHome = join(root, 'dsh-home')
+    const ohHome = join(root, 'oh-home')
     vi.stubEnv('OH_STALE_PARENT', 'stale')
     const adapter = new MockAdapter([
       toolCallResponse('call-1', 'bash', {
@@ -181,7 +181,7 @@ describe('bash tool through the agent loop', () => {
     // claim, which folds the notice into a turn whose scripted reply is final:
     // the turn then closes with an empty next-step inbox and the collection
     // entries are never reached.
-    const dir = mkdtempSync(join(tmpdir(), 'dsh-bg-'))
+    const dir = mkdtempSync(join(tmpdir(), 'oh-bg-'))
     dirs.push(dir)
     const sentinel = join(dir, 'release')
     // The job id is deterministic (a fresh LocalJobRegistry counts per kind from 1),

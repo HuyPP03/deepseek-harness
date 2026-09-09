@@ -34,7 +34,7 @@ hello-plugin/
 
 ```json
 {
-  "name": "dsh-hello-plugin",
+  "name": "oh-hello-plugin",
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
@@ -58,7 +58,7 @@ export function apply() {
 ```yaml
 - insert:
     - id: hello
-      name: dsh-hello-plugin
+      name: oh-hello-plugin
 ```
 
 没有 `oh.bundle` 声明的包仍然可以安装，但只作为普通依赖：`oh plugin` 会打印警告，且不激活任何层。如果一个库供插件包 import，而不是供用户启用，就使用这种包格式。
@@ -84,16 +84,16 @@ oh plugin --profile demo add ./hello-plugin
 
 ```json
 {
-  "name": "dsh-profile-demo",
+  "name": "oh-profile-demo",
   "private": true,
   "dependencies": {
-    "dsh-hello-plugin": "link:/path/to/hello-plugin"
+    "oh-hello-plugin": "link:/path/to/hello-plugin"
   },
   "oh": {
     "profile": {
       "bundles": [
         "@open-harness/oh-base",
-        "dsh-hello-plugin"
+        "oh-hello-plugin"
       ]
     }
   }
@@ -103,11 +103,11 @@ oh plugin --profile demo add ./hello-plugin
 先不启动、只验证该层，再启动：
 
 ```sh
-oh --profile demo --dump-config   # shows a "# == dsh-hello-plugin" layer
+oh --profile demo --dump-config   # shows a "# == oh-hello-plugin" layer
 oh --profile demo
 ```
 
-`oh plugin --profile demo remove dsh-hello-plugin` 会同时移除依赖和对应的层。
+`oh plugin --profile demo remove oh-hello-plugin` 会同时移除依赖和对应的层。
 
 ## 加载顺序
 
@@ -122,7 +122,7 @@ oh --profile demo
 
 后应用的层按行胜出，且 patch 会替换目标行的整个 `config` 值，而不是深度合并各键。这给组合包作者带来两个推论：
 
-- 你的 patch 可以按 `id` 覆盖前面各层的行——就像 [`dsh-web-app` 组合包](../../../../packages/bundle/web-app/cordis.patch.yml)覆盖 `dsh-base` 的行那样——但必须重述该行需要的每一个键，而不是只写改动的那个。
+- 你的 patch 可以按 `id` 覆盖前面各层的行——就像 [`oh-web-app` 组合包](../../../../packages/bundle/web-app/cordis.patch.yml)覆盖 `oh-base` 的行那样——但必须重述该行需要的每一个键，而不是只写改动的那个。
 - 用户可以在自己 profile 的 `cordis.patch.yml` 中覆盖你的行，无需改动你的包，所以优先给出用户大概率会保留的配置默认值，其余交给 schema 承担。
 
 内置组合包名称始终从 dsh 安装目录本身解析；pnpm 只管理树外的包，所以你的组合包可以放心依赖 `@open-harness/oh-base` 存在且与安装保持一致。
@@ -133,7 +133,7 @@ oh --profile demo
 
 ```yaml
 - id: hello-startup
-  name: 'dsh-hello-plugin/startup'
+  name: 'oh-hello-plugin/startup'
 ```
 
 该插件导出 `inject = ['cmdlineArgs']`，使用自己的 commander program 调用 [`@open-harness/oh-cmdline`](../../../../packages/boot/cmdline/README.md) 中的 `parseCmdline`，再在 program 自己的 action 中把应用自有服务提供出去。启动器把自身 flag 之后的同一份不可变参数交给每个插件，因此添加应用专属 flag 无需修改启动器，多个插件也可以解析该快照。Loader 行不需要启动器标记或特殊类型。
@@ -165,7 +165,7 @@ oh plugin --profile demo add github:you/hello-plugin
 
   ```yaml
   allowBuilds:
-    dsh-hello-plugin: true
+    oh-hello-plugin: true
   ```
 
   然后重新执行 `add`。

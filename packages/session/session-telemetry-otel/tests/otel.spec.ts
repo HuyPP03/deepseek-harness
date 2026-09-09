@@ -48,7 +48,7 @@ const servers: Server[] = []
 let tempHome: string
 let previousDshHome: string | undefined
 beforeAll(() => {
-  tempHome = mkdtempSync(join(tmpdir(), 'dsh-otel-home-'))
+  tempHome = mkdtempSync(join(tmpdir(), 'oh-otel-home-'))
   previousDshHome = process.env.OH_HOME
   process.env.OH_HOME = tempHome
 })
@@ -490,7 +490,7 @@ describe('OpenTelemetrySessionBackend config fails loud', () => {
   })
 })
 
-describe('dsh-session-telemetry-otel real-load-path guard', () => {
+describe('oh-session-telemetry-otel real-load-path guard', () => {
   it('keeps the Service class with inject/Config through unwrapExports', async () => {
     const module = await import('../src/index.ts')
     const loader = Object.create(Loader.prototype) as Loader

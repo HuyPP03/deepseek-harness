@@ -9,7 +9,7 @@ import type { AttachmentIdType, ImageAttachmentLimits, ImageAttachmentRef, Image
 import type { ContentBlock } from '@open-harness/oh-llm/types'
 import type { SessionEvent, SessionId } from '@open-harness/oh-session/types'
 // The pure-type outlet: api/ is browser-importable, and the package root's
-// cordis Context merge (via dsh-agent) must not enter client aggregates.
+// cordis Context merge (via oh-agent) must not enter client aggregates.
 import type { SessionProjectionMap } from '@open-harness/oh-session-projection/types'
 import type { RpcId, RpcRequest, RpcResponse } from './rpc.ts'
 import type { ToolEventView } from './events.ts'

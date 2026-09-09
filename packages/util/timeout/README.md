@@ -1,4 +1,4 @@
-# dsh-timeout
+# oh-timeout
 
 English | [中文](README.zh.md)
 
@@ -58,7 +58,7 @@ Local file `read`/`write`/`edit` take no `timeoutMs`: file IO runs untimed becau
 
 ## Model Experience
 
-Indirectly, through consumers such as `dsh-tool-call-timeout-policy`, which may replace a provider result with a retained timeout error or suppress a late result.
+Indirectly, through consumers such as `oh-tool-call-timeout-policy`, which may replace a provider result with a retained timeout error or suppress a late result.
 
 #### KV Cache effect
 

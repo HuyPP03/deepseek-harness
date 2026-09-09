@@ -15,9 +15,9 @@ import * as yaml from 'js-yaml'
 import { entryListSchema } from '@deepseek-ai/cordis-plugin-include'
 import { loadOverlayPatches, renderConfigDump } from '../src/index.ts'
 
-const NAME = 'dsh-test-bin'
+const NAME = 'oh-test-bin'
 
-const tmp = (): string => mkdtempSync(join(tmpdir(), 'dsh-config-dump-'))
+const tmp = (): string => mkdtempSync(join(tmpdir(), 'oh-config-dump-'))
 
 function writeBase(dir: string): string {
   const base = join(dir, 'base.yml')

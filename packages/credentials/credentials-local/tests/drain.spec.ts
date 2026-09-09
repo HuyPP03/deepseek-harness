@@ -39,7 +39,7 @@ afterEach(async () => {
 
 describe('write-drain teardown', () => {
   it('lets the in-flight write land and fails the queued one after disposal', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'dsh-credentials-drain-'))
+    const dir = await mkdtemp(join(tmpdir(), 'oh-credentials-drain-'))
     cleanups.push(() => rm(dir, { recursive: true, force: true }))
     const ctx = new Context()
     const fiber = ctx.plugin(LocalCredentialProvider, { path: join(dir, '.credentials.yaml'), watch: false })

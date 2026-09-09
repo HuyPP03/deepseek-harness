@@ -38,7 +38,7 @@ The mutation runs inside the backend's per-target lock either way, so an uncondi
 
 ## The `fs/*` policy events
 
-This package declares three events (see the generated region of [filesystem.md](../../../docs/subsystems/filesystem.md#cordis-surface)) so the emitter (`@open-harness/oh-tool-fs`) and the policy listener (`@open-harness/oh-fs-observation-policy`) share a vocabulary without the emitter depending on the policy plugin. `fs/write-intent` and `fs/edit-intent` are single-slot decision waterfalls (the listener fully decides, never calling `next()`); `fs/observed` is a fire-and-forget recording event carrying an `FsObservation` discriminated union: present with a version or confirmed absent. They carry only `dsh-fs` vocabulary plus an opaque `object` actor — no model-facing concepts and no agent/session owner structure.
+This package declares three events (see the generated region of [filesystem.md](../../../docs/subsystems/filesystem.md#cordis-surface)) so the emitter (`@open-harness/oh-tool-fs`) and the policy listener (`@open-harness/oh-fs-observation-policy`) share a vocabulary without the emitter depending on the policy plugin. `fs/write-intent` and `fs/edit-intent` are single-slot decision waterfalls (the listener fully decides, never calling `next()`); `fs/observed` is a fire-and-forget recording event carrying an `FsObservation` discriminated union: present with a version or confirmed absent. They carry only `oh-fs` vocabulary plus an opaque `object` actor — no model-facing concepts and no agent/session owner structure.
 
 ## A provider contract, not the policy layer
 
@@ -52,7 +52,7 @@ This package declares three events (see the generated region of [filesystem.md](
 
 ## Model Experience
 
-Indirectly, through `dsh-tool-fs`, which renders provider text and errors as bounded, retained filesystem tool results.
+Indirectly, through `oh-tool-fs`, which renders provider text and errors as bounded, retained filesystem tool results.
 
 #### KV Cache effect
 

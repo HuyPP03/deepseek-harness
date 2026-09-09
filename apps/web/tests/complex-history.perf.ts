@@ -827,7 +827,7 @@ async function launchPerformanceWorld(
     if (options.replay === undefined) {
       scaffold = await launchWebScaffold()
     } else {
-      replayDir = await mkdtemp(join(tmpdir(), 'dsh-web-perf-replay-'))
+      replayDir = await mkdtemp(join(tmpdir(), 'oh-web-perf-replay-'))
       const replayOverride = join(replayDir, 'replay.override.json')
       await writeFile(replayOverride, JSON.stringify(options.replay))
       scaffold = await launchWebScaffold({

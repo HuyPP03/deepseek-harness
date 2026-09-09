@@ -55,7 +55,7 @@ afterEach(() => {
 
 describe('readSessionFile containment', () => {
   it('admits the root directory itself through the equality arm (and classifies it)', async () => {
-    const dir = tempDir('dsh-files-read-root-')
+    const dir = tempDir('oh-files-read-root-')
 
     const outcome = await readSessionFile([dir], dir)
 
@@ -63,7 +63,7 @@ describe('readSessionFile containment', () => {
   })
 
   it('resolves a relative path against the process cwd and fails closed', async () => {
-    const dir = tempDir('dsh-files-read-rel-')
+    const dir = tempDir('oh-files-read-rel-')
     writeFileSync(join(dir, 'here.txt'), 'here\n')
 
     const outcome = await readSessionFile([dir], 'elsewhere.txt')
@@ -72,8 +72,8 @@ describe('readSessionFile containment', () => {
   })
 
   it('admits a file under a later root when the first does not contain it', async () => {
-    const first = tempDir('dsh-files-read-first-')
-    const second = tempDir('dsh-files-read-second-')
+    const first = tempDir('oh-files-read-first-')
+    const second = tempDir('oh-files-read-second-')
     const path = join(second, 'ref.txt')
     writeFileSync(path, 'ref\n')
 
@@ -85,7 +85,7 @@ describe('readSessionFile containment', () => {
 
 describe('readSessionFile OS failure arms', () => {
   it('maps a realpath EACCES rejection to file-unreadable', async () => {
-    const dir = tempDir('dsh-files-read-ea-')
+    const dir = tempDir('oh-files-read-ea-')
     const path = join(dir, 'x.txt')
     writeFileSync(path, 'x\n')
     vi.mocked(realpath).mockRejectedValueOnce(sysError('EACCES'))
@@ -96,7 +96,7 @@ describe('readSessionFile OS failure arms', () => {
   })
 
   it('maps a realpath EPERM rejection to file-unreadable', async () => {
-    const dir = tempDir('dsh-files-read-ep-')
+    const dir = tempDir('oh-files-read-ep-')
     const path = join(dir, 'x.txt')
     writeFileSync(path, 'x\n')
     vi.mocked(realpath).mockRejectedValueOnce(sysError('EPERM'))
@@ -107,7 +107,7 @@ describe('readSessionFile OS failure arms', () => {
   })
 
   it('rethrows an unexpected realpath rejection', async () => {
-    const dir = tempDir('dsh-files-read-ei-')
+    const dir = tempDir('oh-files-read-ei-')
     const path = join(dir, 'x.txt')
     writeFileSync(path, 'x\n')
     vi.mocked(realpath).mockRejectedValueOnce(sysError('EIO'))
@@ -116,7 +116,7 @@ describe('readSessionFile OS failure arms', () => {
   })
 
   it('maps an lstat ENOENT race to file-not-found', async () => {
-    const dir = tempDir('dsh-files-read-ln-')
+    const dir = tempDir('oh-files-read-ln-')
     const path = join(dir, 'x.txt')
     writeFileSync(path, 'x\n')
     vi.mocked(lstat).mockRejectedValueOnce(sysError('ENOENT'))
@@ -127,7 +127,7 @@ describe('readSessionFile OS failure arms', () => {
   })
 
   it('maps an lstat EACCES rejection to file-unreadable', async () => {
-    const dir = tempDir('dsh-files-read-le-')
+    const dir = tempDir('oh-files-read-le-')
     const path = join(dir, 'x.txt')
     writeFileSync(path, 'x\n')
     vi.mocked(lstat).mockRejectedValueOnce(sysError('EACCES'))
@@ -138,7 +138,7 @@ describe('readSessionFile OS failure arms', () => {
   })
 
   it('maps a stream ENOENT race to file-not-found', async () => {
-    const dir = tempDir('dsh-files-read-sn-')
+    const dir = tempDir('oh-files-read-sn-')
     const path = join(dir, 'x.txt')
     writeFileSync(path, 'x\n')
     vi.mocked(createReadStream).mockImplementationOnce(() => {
@@ -151,7 +151,7 @@ describe('readSessionFile OS failure arms', () => {
   })
 
   it('maps a stream EACCES rejection to file-unreadable', async () => {
-    const dir = tempDir('dsh-files-read-se-')
+    const dir = tempDir('oh-files-read-se-')
     const path = join(dir, 'x.txt')
     writeFileSync(path, 'x\n')
     vi.mocked(createReadStream).mockImplementationOnce(() => {
@@ -166,7 +166,7 @@ describe('readSessionFile OS failure arms', () => {
 
 describe('readSessionFile bound corners', () => {
   it('counts a trailing line without a newline', async () => {
-    const dir = tempDir('dsh-files-read-tl-')
+    const dir = tempDir('oh-files-read-tl-')
     const path = join(dir, 'short.txt')
     writeFileSync(path, 'abc')
 
@@ -176,7 +176,7 @@ describe('readSessionFile bound corners', () => {
   })
 
   it('serves an empty file with zero lines and no truncation', async () => {
-    const dir = tempDir('dsh-files-read-ef-')
+    const dir = tempDir('oh-files-read-ef-')
     const path = join(dir, 'empty.txt')
     writeFileSync(path, '')
 
@@ -186,7 +186,7 @@ describe('readSessionFile bound corners', () => {
   })
 
   it('keeps a byte-bound cut that lands exactly on a newline', async () => {
-    const dir = tempDir('dsh-files-read-bn-')
+    const dir = tempDir('oh-files-read-bn-')
     const path = join(dir, 'edge.txt')
     // The bound byte is a newline; the one byte past it is a partial line.
     writeFileSync(path, `${'a'.repeat(FILE_READ_MAX_BYTES - 1)}\nx`)
@@ -201,7 +201,7 @@ describe('readSessionFile bound corners', () => {
   })
 
   it('drops a whole bound-sized line when it carries no newline at all', async () => {
-    const dir = tempDir('dsh-files-read-ol-')
+    const dir = tempDir('oh-files-read-ol-')
     const path = join(dir, 'oneline.txt')
     writeFileSync(path, 'a'.repeat(FILE_READ_MAX_BYTES + 1))
 
@@ -211,7 +211,7 @@ describe('readSessionFile bound corners', () => {
   })
 
   it('keeps the byte cut when the line bound lands beyond it', async () => {
-    const dir = tempDir('dsh-files-read-both-')
+    const dir = tempDir('oh-files-read-both-')
     const path = join(dir, 'both.txt')
     // A newline-free head pushes the 20000th newline past the byte cut.
     writeFileSync(path, `${'a'.repeat(FILE_READ_MAX_BYTES)}\n${'x\n'.repeat(FILE_READ_MAX_LINES - 1)}`)
@@ -222,7 +222,7 @@ describe('readSessionFile bound corners', () => {
   })
 
   it('sniffs a NUL past the first chunk boundary (an 8 KiB-precise file)', async () => {
-    const dir = tempDir('dsh-files-read-nl-')
+    const dir = tempDir('oh-files-read-nl-')
     const path = join(dir, 'nul.bin')
     // No NUL in the first 8 KiB, a NUL at the sniff window's far edge.
     writeFileSync(path, Buffer.concat([Buffer.alloc(8 * 1024 - 1, 0x61), Buffer.from([0x00]), Buffer.from('tail')]))

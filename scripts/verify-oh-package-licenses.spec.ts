@@ -28,7 +28,7 @@ function createWorkspace(): string {
 }
 
 describe('Open Harness package license gate', () => {
-  it('checks root, unhyphenated CLI, and dsh-prefixed package names while ignoring other families', () => {
+  it('checks root, unhyphenated CLI, and oh-prefixed package names while ignoring other families', () => {
     const root = createWorkspace()
     writeManifest(root, 'apps/cli/package.json', { name: 'oh', license: 'MIT' })
     writeManifest(root, 'packages/core/agent/package.json', {

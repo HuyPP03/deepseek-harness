@@ -34,7 +34,7 @@ Create `hello-plugin/package.json`:
 
 ```json
 {
-  "name": "dsh-hello-plugin",
+  "name": "oh-hello-plugin",
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
@@ -58,7 +58,7 @@ Create `hello-plugin/cordis.patch.yml`. The patch is a YAML array like the `--pa
 ```yaml
 - insert:
     - id: hello
-      name: dsh-hello-plugin
+      name: oh-hello-plugin
 ```
 
 A package without the `oh.bundle` declaration still installs, but only as a plain dependency: `oh plugin` prints a warning and activates no layer. Use that package format for a library that plugin packages import rather than a plugin users enable.
@@ -84,16 +84,16 @@ The first use initializes the profile (with `@open-harness/oh-base` as its first
 
 ```json
 {
-  "name": "dsh-profile-demo",
+  "name": "oh-profile-demo",
   "private": true,
   "dependencies": {
-    "dsh-hello-plugin": "link:/path/to/hello-plugin"
+    "oh-hello-plugin": "link:/path/to/hello-plugin"
   },
   "oh": {
     "profile": {
       "bundles": [
         "@open-harness/oh-base",
-        "dsh-hello-plugin"
+        "oh-hello-plugin"
       ]
     }
   }
@@ -103,11 +103,11 @@ The first use initializes the profile (with `@open-harness/oh-base` as its first
 Verify the layer without booting, then boot:
 
 ```sh
-oh --profile demo --dump-config   # shows a "# == dsh-hello-plugin" layer
+oh --profile demo --dump-config   # shows a "# == oh-hello-plugin" layer
 oh --profile demo
 ```
 
-`oh plugin --profile demo remove dsh-hello-plugin` removes both the dependency and the layer.
+`oh plugin --profile demo remove oh-hello-plugin` removes both the dependency and the layer.
 
 ## The loading order
 
@@ -122,7 +122,7 @@ App arguments are not another patch layer. A surface bundle can resolve them thr
 
 Later layers win per row, and a patch replaces a row's entire `config` value rather than deep-merging keys. Two consequences for bundle authors:
 
-- Your patch can override rows from earlier layers by `id` — the same way [the `dsh-web-app` bundle](../../../../packages/bundle/web-app/cordis.patch.yml) overrides `dsh-base` rows — but must restate every key the row needs, not just the changed one.
+- Your patch can override rows from earlier layers by `id` — the same way [the `oh-web-app` bundle](../../../../packages/bundle/web-app/cordis.patch.yml) overrides `oh-base` rows — but must restate every key the row needs, not just the changed one.
 - Users can override your rows in their profile's `cordis.patch.yml` without touching your package, so prefer configuration defaults users are likely to keep and let the schema carry the rest.
 
 In-box bundle names always resolve from the dsh installation itself; pnpm manages only out-of-tree packages, so your bundle can rely on `@open-harness/oh-base` being present and current.
@@ -133,7 +133,7 @@ A bundle that defines a runnable app mounts an ordinary provider plugin:
 
 ```yaml
 - id: hello-startup
-  name: 'dsh-hello-plugin/startup'
+  name: 'oh-hello-plugin/startup'
 ```
 
 The plugin exports `inject = ['cmdlineArgs']`, calls `parseCmdline` from [`@open-harness/oh-cmdline`](../../../../packages/boot/cmdline/README.md) with its own commander program, and provides its app-owned service from the program's action. The launcher hands every plugin the same immutable arguments after launcher flags, so app-specific flags need no launcher change and multiple plugins may parse the snapshot. The Loader row needs no launcher marker or special kind.
@@ -165,7 +165,7 @@ But a git install fetches **sources, not built artifacts**: nothing runs your `b
 
   ```yaml
   allowBuilds:
-    dsh-hello-plugin: true
+    oh-hello-plugin: true
   ```
 
   and re-run the `add`.

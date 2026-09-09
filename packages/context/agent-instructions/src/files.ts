@@ -9,7 +9,7 @@ import { stat } from 'node:fs/promises'
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import type { FileSystem, FsInfo, FsTarget, FsVersion } from '@open-harness/oh-fs'
 import { assertNever } from '@open-harness/oh-llm'
-import { dshHomeDisplay } from '@open-harness/oh-home-paths'
+import { ohHomeDisplay } from '@open-harness/oh-home-paths'
 import { resolveConfig, resolveDiscoveryConfig, type ResolvedConfig } from './config.ts'
 import { trimmedInstructionDigest } from './digest.ts'
 import {
@@ -517,5 +517,5 @@ export async function readScopeInstruction(
 }
 
 function userGlobalDisplayPath(ohHome: string): string {
-  return `${dshHomeDisplay(ohHome)}/AGENTS.md`
+  return `${ohHomeDisplay(ohHome)}/AGENTS.md`
 }

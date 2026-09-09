@@ -18,7 +18,7 @@
 | 变量 | 用途 |
 |---|---|
 | `DEEPSEEK_API_KEY` | 传给 OpenAI 兼容宿主端点的凭据 |
-| `DEEPSEEK_BASE_URL` | `dsh-llm-deepseek` 使用的宿主端点 |
+| `DEEPSEEK_BASE_URL` | `oh-llm-deepseek` 使用的宿主端点 |
 | `OH_CWD` | bash 和文件系统工具使用的 agent workspace |
 | `OH_CONTEXT_WINDOW` | 极简变体中为 `OH_MODEL` 目录项记录的上下文容量 |
 | `OH_MAX_TOKENS_AS_SUCCESS` | `true`（默认）接受受 token 上限限制的结果；`false` 将其报告为错误 |

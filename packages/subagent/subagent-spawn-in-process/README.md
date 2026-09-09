@@ -40,7 +40,7 @@ Independent of the parent request cache. Child history grows append-only, while 
 
 #### What the model sees
 
-Through `dsh-tool-subagent`, the parent receives only the child's final output or stop-reason error.
+Through `oh-tool-subagent`, the parent receives only the child's final output or stop-reason error.
 
 #### Token effect
 

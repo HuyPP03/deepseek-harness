@@ -141,8 +141,8 @@ async function harness(options: HarnessOptions = {}): Promise<{
   home: string
   dispose: () => Promise<void>
 }> {
-  const root = await mkdtemp(join(tmpdir(), 'dsh-api-connectors-'))
-  const home = await mkdtemp(join(tmpdir(), 'dsh-api-connectors-home-'))
+  const root = await mkdtemp(join(tmpdir(), 'oh-api-connectors-'))
+  const home = await mkdtemp(join(tmpdir(), 'oh-api-connectors-home-'))
   vi.stubEnv('OH_HOME', home)
   const mcpDir = join(root, '.mcp')
   const catalogDir = join(root, 'catalog')

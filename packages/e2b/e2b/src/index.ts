@@ -138,13 +138,13 @@ export class E2BRuntime extends Service {
 
   private validate(): void {
     if (this.config.apiKey.length === 0) {
-      throw new Error('dsh-e2b: configure apiKey or set E2B_API_KEY')
+      throw new Error('oh-e2b: configure apiKey or set E2B_API_KEY')
     }
     if (!posix.isAbsolute(this.config.cwd)) {
-      throw new Error(`dsh-e2b: cwd must be an absolute Linux path: ${this.config.cwd}`)
+      throw new Error(`oh-e2b: cwd must be an absolute Linux path: ${this.config.cwd}`)
     }
     if (!Number.isFinite(this.config.timeoutMs) || this.config.timeoutMs <= 0) {
-      throw new Error('dsh-e2b: timeoutMs must be a positive finite number')
+      throw new Error('oh-e2b: timeoutMs must be a positive finite number')
     }
   }
 
@@ -160,7 +160,7 @@ export class E2BRuntime extends Service {
       await sandbox.files.makeDir(this.runtimeRoot)
       const runtimeRoot = await sandbox.files.getInfo(this.runtimeRoot)
       if (runtimeRoot.type !== FileType.DIR || runtimeRoot.symlinkTarget !== undefined) {
-        throw new Error(`dsh-e2b: runtime root must be a real directory: ${this.runtimeRoot}`)
+        throw new Error(`oh-e2b: runtime root must be a real directory: ${this.runtimeRoot}`)
       }
       await sandbox.commands.run(
         `chmod 700 -- ${quoteE2BShellArg(this.runtimeRoot)}`,

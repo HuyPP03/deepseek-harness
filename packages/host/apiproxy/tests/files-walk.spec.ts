@@ -19,7 +19,7 @@ let root: string
 const roots = (): readonly FileWalkRoot[] => [{ dir: root, root: 'workspace' }]
 
 beforeAll(() => {
-  root = mkdtempSync(join(tmpdir(), 'dsh-files-walk-'))
+  root = mkdtempSync(join(tmpdir(), 'oh-files-walk-'))
   // A small deterministic tree plus the skip-rule fixtures.
   writeFileSync(join(root, 'a.txt'), '')
   writeFileSync(join(root, 'b.txt'), '')
@@ -119,9 +119,9 @@ describe('walkFiles', () => {
   })
 
   it('caps the result at FILES_MAX_ROWS and stops the whole walk', async () => {
-    const big = mkdtempSync(join(tmpdir(), 'dsh-files-walk-big-'))
-    const a = mkdtempSync(join(tmpdir(), 'dsh-files-walk-a-'))
-    const b = mkdtempSync(join(tmpdir(), 'dsh-files-walk-b-'))
+    const big = mkdtempSync(join(tmpdir(), 'oh-files-walk-big-'))
+    const a = mkdtempSync(join(tmpdir(), 'oh-files-walk-a-'))
+    const b = mkdtempSync(join(tmpdir(), 'oh-files-walk-b-'))
     try {
       // Root 'big' alone overflows the result bound inside its one level.
       mkdirSync(join(big, 'many'), { recursive: true })
@@ -151,7 +151,7 @@ describe('walkFiles', () => {
   })
 
   it('reports truncation when the scan bound is hit', async () => {
-    const big = mkdtempSync(join(tmpdir(), 'dsh-files-walk-scan-'))
+    const big = mkdtempSync(join(tmpdir(), 'oh-files-walk-scan-'))
     try {
       // 2001 directories x 10 files = 20010 scanned entries: over the
       // FILES_MAX_SCAN bound with a query that matches nothing, so no row is
@@ -185,7 +185,7 @@ describe('walkFiles', () => {
   })
 
   it('skips a vanished subdirectory mid-walk', async () => {
-    const volatile = mkdtempSync(join(tmpdir(), 'dsh-files-walk-volatile-'))
+    const volatile = mkdtempSync(join(tmpdir(), 'oh-files-walk-volatile-'))
     try {
       mkdirSync(join(volatile, 'tempdir'), { recursive: true })
       writeFileSync(join(volatile, 'tempdir/gone.txt'), '')
@@ -207,7 +207,7 @@ describe('walkFiles', () => {
   })
 
   it('lists nothing for an empty root', async () => {
-    const empty = mkdtempSync(join(tmpdir(), 'dsh-files-walk-empty-'))
+    const empty = mkdtempSync(join(tmpdir(), 'oh-files-walk-empty-'))
     try {
       const { files, truncated } = await walkFiles([{ dir: empty, root: 'empty' }])
       expect(files).toEqual([])
@@ -303,8 +303,8 @@ describe('walkFiles query filtering', () => {
   })
 
   it('breaks key ties byte-wise and keeps equal relatives in walk order across roots', async () => {
-    const a = mkdtempSync(join(tmpdir(), 'dsh-files-walk-key-a-'))
-    const b = mkdtempSync(join(tmpdir(), 'dsh-files-walk-key-b-'))
+    const a = mkdtempSync(join(tmpdir(), 'oh-files-walk-key-a-'))
+    const b = mkdtempSync(join(tmpdir(), 'oh-files-walk-key-b-'))
     try {
       // Walk order emits the root files (aaaa.txt, cccc.txt) before the
       // subtree's b/bb.txt, so the ranked input is not key-sorted; the
@@ -331,7 +331,7 @@ describe('walkFiles query filtering', () => {
   })
 
   it('ranks over the full scan: a better-ranked deep match survives a full walk-order head', async () => {
-    const big = mkdtempSync(join(tmpdir(), 'dsh-files-walk-deep-'))
+    const big = mkdtempSync(join(tmpdir(), 'oh-files-walk-deep-'))
     try {
       // FILES_MAX_RESULTS+5 root-level substring-tier matches (walk order
       // emits them before any subtree), then a basename-prefix-tier match in

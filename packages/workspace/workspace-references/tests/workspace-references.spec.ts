@@ -30,7 +30,7 @@ let refC: string
 let refFile: string
 
 beforeAll(() => {
-  root = mkdtempSync(join(tmpdir(), 'dsh-workspace-references-'))
+  root = mkdtempSync(join(tmpdir(), 'oh-workspace-references-'))
   const mkdir = (name: string): string => {
     const path = join(root, name)
     mkdirSync(path)

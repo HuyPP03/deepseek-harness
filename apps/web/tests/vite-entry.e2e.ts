@@ -35,7 +35,7 @@ describe('Web development entry', () => {
   })
 
   it('rejects the standalone Vite server with the full-host correction', async () => {
-    const probeRoot = mkdtempSync(join(tmpdir(), 'dsh-vite-listen-probe-'))
+    const probeRoot = mkdtempSync(join(tmpdir(), 'oh-vite-listen-probe-'))
     const marker = join(probeRoot, 'listen-called')
     const port = await freePort()
     try {

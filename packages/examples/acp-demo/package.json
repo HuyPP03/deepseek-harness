@@ -14,7 +14,7 @@
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",
   "bin": {
-    "dsh-acp-demo": "lib/bin.js"
+    "oh-acp-demo": "lib/bin.js"
   },
   "exports": {
     ".": {

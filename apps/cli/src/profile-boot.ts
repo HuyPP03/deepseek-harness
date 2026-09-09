@@ -157,7 +157,7 @@ function composeProfile(
   const composedOverlays = [...overlays]
   // The SHIPPED root is the part of the roster only this app can resolve: it
   // sits beside this app's own config, in both the source and built layouts.
-  // The writable root the roster appends is `dsh-agent-presets`' own, so a
+  // The writable root the roster appends is `oh-agent-presets`' own, so a
   // launcher that never reaches this patch still finds a person's presets.
   if (rows.has('agent-presets')) {
     composedOverlays.push({
@@ -170,7 +170,7 @@ function composeProfile(
   }
   // The SHIPPED catalog is the part of the connector roster only this app can
   // resolve: it sits beside this app's own config, in both the source and built
-  // layouts. The writable user directory stays `dsh-connectors`' own default
+  // layouts. The writable user directory stays `oh-connectors`' own default
   // (`.connectors` under the harness home), so a launcher that never reaches
   // this patch still loads customs and overrides from the home.
   if (rows.has('connectors')) {

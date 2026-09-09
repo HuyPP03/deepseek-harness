@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-The tool-independent shell environment plugin: owns the `ctx.shellEnv` registry of trusted, per-execution `OH_*` variables that the model-facing shell tools (`dsh-tool-bash`, `dsh-tool-pwsh`) collect into every shell call's environment. Built-in shell facts (`OH_HOME`, `OH_SHELL=1`, `OH_SESSION_ID`) are owned by the registry itself; other plugins register additional enumerable facts with effect-scoped disposal, and duplicate ownership or undeclared runtime keys fail loudly.
+The tool-independent shell environment plugin: owns the `ctx.shellEnv` registry of trusted, per-execution `OH_*` variables that the model-facing shell tools (`oh-tool-bash`, `oh-tool-pwsh`) collect into every shell call's environment. Built-in shell facts (`OH_HOME`, `OH_SHELL=1`, `OH_SESSION_ID`) are owned by the registry itself; other plugins register additional enumerable facts with effect-scoped disposal, and duplicate ownership or undeclared runtime keys fail loudly.
 
 The package root exports the Cordis plugin contract (`name`, `inject`, `Config`, `apply`) plus the `ShellEnvRegistry` service class and its contributor types; consumers use `ctx.shellEnv` after loading this plugin.
 
@@ -40,7 +40,7 @@ The overlay is computed from the current `ToolExecution` and passed through the 
 
 ## Model Experience
 
-Indirectly, through the shell tools (`dsh-tool-bash`, `dsh-tool-pwsh`), which collect this registry's managed `OH_*` snapshot into every shell-tool call.
+Indirectly, through the shell tools (`oh-tool-bash`, `oh-tool-pwsh`), which collect this registry's managed `OH_*` snapshot into every shell-tool call.
 
 #### KV Cache effect
 

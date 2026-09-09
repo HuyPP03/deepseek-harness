@@ -25,7 +25,7 @@ let home: string | undefined
 let previousHome: string | undefined
 
 beforeEach(async () => {
-  home = await mkdtemp(join(tmpdir(), 'dsh-shipped-connectors-'))
+  home = await mkdtemp(join(tmpdir(), 'oh-shipped-connectors-'))
   previousHome = process.env.OH_HOME
   process.env.OH_HOME = home
   healProfilesModuleFallback(INSTALL_ANCHOR, home)

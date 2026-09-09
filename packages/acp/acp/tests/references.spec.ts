@@ -35,7 +35,7 @@ let refB: string
 let refC: string
 
 beforeAll(() => {
-  root = mkdtempSync(join(tmpdir(), 'dsh-acp-refs-'))
+  root = mkdtempSync(join(tmpdir(), 'oh-acp-refs-'))
   for (const name of ['work', 'ref-a', 'ref-b', 'ref-c']) mkdirSync(join(root, name))
   work = join(root, 'work')
   refA = join(root, 'ref-a')
@@ -124,7 +124,7 @@ describe('newSession additionalDirectories', () => {
     await harness.client.initialize({ protocolVersion: PROTOCOL_VERSION, clientCapabilities: {} })
     await expect(harness.client.newSession({
       cwd: work, mcpServers: [], additionalDirectories: [refA],
-    })).rejects.toThrow(/additionalDirectories requires a deployment that mounts @deepseek-ai\/dsh-workspace-references/)
+    })).rejects.toThrow(/additionalDirectories requires a deployment that mounts @open-harness\/oh-workspace-references/)
     expect(harness.ctx.sessions.list()).toHaveLength(0)
   })
 

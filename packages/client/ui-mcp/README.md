@@ -1,4 +1,4 @@
-# dsh-client-ui-mcp
+# oh-client-ui-mcp
 
 English | [中文](README.zh.md)
 
@@ -20,7 +20,7 @@ The read is loopback-agnostic; the writes are not. `mcp.add`, `mcp.remove`, and 
 
 ## Model Experience
 
-Indirectly, through the servers a user adds: their tools become model-visible as soon as the host registers them, and [`dsh-mcp-client`](../../mcp/mcp-client/README.md) owns what those tools look like in front of the model.
+Indirectly, through the servers a user adds: their tools become model-visible as soon as the host registers them, and [`oh-mcp-client`](../../mcp/mcp-client/README.md) owns what those tools look like in front of the model.
 
 #### KV Cache effect
 

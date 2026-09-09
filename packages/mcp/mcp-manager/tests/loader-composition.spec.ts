@@ -54,7 +54,7 @@ beforeEach(() => {
 
 describe('mcp-manager real Loader composition', () => {
   it('boots persisted user servers, adds, reconnects, and removes them while keeping profile servers intact', async () => {
-    root = await mkdtemp(join(tmpdir(), 'dsh-mcp-manager-loader-'))
+    root = await mkdtemp(join(tmpdir(), 'oh-mcp-manager-loader-'))
     const mcpDir = join(root, '.mcp')
     const configPath = join(root, 'cordis.yml')
     await mkdir(mcpDir, { recursive: true })

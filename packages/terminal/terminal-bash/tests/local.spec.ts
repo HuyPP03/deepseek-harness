@@ -50,7 +50,7 @@ async function harness(
   mode: 'danger-full-access' | 'workspace-write',
   timing: { idleSilenceMs?: number; handoffGraceMs?: number; timeoutMs?: number } = {},
 ) {
-  const root = mkdtempSync(join(tmpdir(), 'dsh-pty-local-'))
+  const root = mkdtempSync(join(tmpdir(), 'oh-pty-local-'))
   roots.push(root)
   const ctx = new Context()
   contexts.push(ctx)

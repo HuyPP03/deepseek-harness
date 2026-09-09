@@ -1,8 +1,8 @@
-# dsh-connectors
+# oh-connectors
 
 [English](README.md) | 中文
 
-连接器目录与状态机：预定义连接（Confluence、Figma、GitHub、Notion、Slack 等）与用户自定义连接器，每个都通过 [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md) 挂载一个或多个 MCP 服务器。
+连接器目录与状态机：预定义连接（Confluence、Figma、GitHub、Notion、Slack 等）与用户自定义连接器，每个都通过 [`oh-mcp-manager`](../../mcp/mcp-manager/README.md) 挂载一个或多个 MCP 服务器。
 
 一个连接器是一份清单：它要挂载的 MCP 服务器、如何为它们认证，以及带它的会话要组合的 agent 预设。状态**在读取时派生**，来源是权威 seam——凭据存储、OAuth 令牌存储、实时 MCP 注册表——因此连接器不可能声称 seam 没有显示的状态。
 
@@ -88,7 +88,7 @@ wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`m
 ## 已知限制与延迟工作
 
 - **启动时的凭据失败表现为服务器 down**——文档引用未配置凭据的已挂载服务器会在 mcp-client 连接尝试中失败（重连退避，状态 `down`）；产品层守卫（`connect` 预检）在挂载前大声失败，因此这只影响凭据被从下抽掉的服务器。
-- **没有 device-code 引擎**——M365 的 device-code 循环将在后续阶段落地；目前只组合了浏览器 OAuth 流程（[dsh-connectors-oauth-flow](../oauth-flow/README.md)）。
+- **没有 device-code 引擎**——M365 的 device-code 循环将在后续阶段落地；目前只组合了浏览器 OAuth 流程（[oh-connectors-oauth-flow](../oauth-flow/README.md)）。
 - **被动状态靠轮询**——没有连接器操作的注册表翻转（服务器掉线、重连）在下次 `list()` 时可见；不为它们发出事件。
 - **override 是 boot 时快照**——override 文档的外部编辑不会热重载。
 - **自定义连接器不能用 `$override` 槽**——`addCustom` 的 env 与 headers 只能是字面量，所以服务器需要 base URL 的自托管服务以目录清单形式发布（Confluence），而不是自定义连接器。

@@ -1,8 +1,8 @@
-# dsh-connectors-device-flow
+# oh-connectors-device-flow
 
 [English](README.md) | 中文
 
-连接器设备码流程引擎（`ctx.deviceFlow`）：[dsh-connectors](../connectors/README.md) 连接器上 `device` 认证方式的宿主侧部分。`begin` 驱动连接器已挂载 MCP 服务器上的登录工具；当提供商返回设备码指示（一个 URL 和一个一次性代码）时，引擎在后台轮询验证工具，直到登录结算或窗口关闭。报告账户已登录的提供商无需代码即结算。引擎从不存储凭证：MCP 服务器拥有自己的 token 缓存。
+连接器设备码流程引擎（`ctx.deviceFlow`）：[oh-connectors](../connectors/README.md) 连接器上 `device` 认证方式的宿主侧部分。`begin` 驱动连接器已挂载 MCP 服务器上的登录工具；当提供商返回设备码指示（一个 URL 和一个一次性代码）时，引擎在后台轮询验证工具，直到登录结算或窗口关闭。报告账户已登录的提供商无需代码即结算。引擎从不存储凭证：MCP 服务器拥有自己的 token 缓存。
 
 ## Config
 

@@ -604,7 +604,7 @@ function remotePackage(root: string): {
 }
 
 function copyFixture(sourceRoot = fixtureRoot): string {
-  const root = mkdtempSync(join(tmpdir(), 'dsh-typert-remote-model-'))
+  const root = mkdtempSync(join(tmpdir(), 'oh-typert-remote-model-'))
   cpSync(sourceRoot, root, { recursive: true })
   temporaryRoots.push(root)
   return root

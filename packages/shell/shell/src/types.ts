@@ -4,7 +4,7 @@
  * managed-environment and captured-output vocabulary is owned by the
  * subprocess seam and re-exported here so bash consumers keep one import
  * root.
- * @module dsh-shell/types
+ * @module oh-shell/types
  */
 
 import type { SandboxEnforcement, SandboxExecutionPolicy, SandboxMode } from '@open-harness/oh-sandbox'

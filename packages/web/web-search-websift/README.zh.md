@@ -35,7 +35,7 @@ websift 不返回模型生成的答案，因此 `content` 被省略。`sources[]
 
 ## 模型体验
 
-间接地，通过 [`dsh-tool-web`](../tool-web/README.md)：它保留该提供方经 `maxResults` 限定的 URL、标题与摘要，或其确切失败 `websift search failed: <error>`、`websift search failed (<category>)` 与 `websift search aborted`（置于消费者的错误包装之下），而提供方私有字段留在上下文之外。
+间接地，通过 [`oh-tool-web`](../tool-web/README.md)：它保留该提供方经 `maxResults` 限定的 URL、标题与摘要，或其确切失败 `websift search failed: <error>`、`websift search failed (<category>)` 与 `websift search aborted`（置于消费者的错误包装之下），而提供方私有字段留在上下文之外。
 
 #### KV 缓存影响
 

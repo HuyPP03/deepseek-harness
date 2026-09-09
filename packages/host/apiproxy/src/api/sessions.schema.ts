@@ -206,7 +206,7 @@ export const modelCatalogFailureSchema = z.object({
  * ToolEventView passthrough: lock only the `for` discriminant and the presence
  * of a card-tagged `view` object. The view interior is a host-computed product
  * the client reads without echoing back; deep-validating it would hand-copy
- * the dsh-tools vocabulary into this schema and drift with it.
+ * the oh-tools vocabulary into this schema and drift with it.
  */
 export const toolEventViewSchema = z.discriminatedUnion('for', [
   z.object({ for: z.literal('call'), view: z.looseObject({ card: z.string() }) }),

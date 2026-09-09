@@ -62,7 +62,7 @@ const EXPECTED_TOOLS = [
 ]
 
 /**
- * `glob` and `grep` come from `dsh-tool-fs-search`, which spawns the PACKAGED
+ * `glob` and `grep` come from `oh-tool-fs-search`, which spawns the PACKAGED
  * ripgrep binary (`@vscode/ripgrep`) through the subprocess seam, so the pair
  * is always present on every host — asserted as fixed members, not a host
  * dependency.
@@ -70,7 +70,7 @@ const EXPECTED_TOOLS = [
 const RIPGREP_TOOLS = ['glob', 'grep']
 
 /**
- * The lazy-MCP bridge rides the app scope: `dsh-mcp-registry` is a base-bundle
+ * The lazy-MCP bridge rides the app scope: `oh-mcp-registry` is a base-bundle
  * service and registers its three discovery tools regardless of which MCP
  * servers the deployment mounts, so the trio is a fixed member of every
  * composition — asserted on its own, like the ripgrep pair.

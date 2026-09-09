@@ -1,4 +1,4 @@
-# dsh-client-ui-settings-plugins
+# oh-client-ui-settings-plugins
 
 English | [中文](README.zh.md)
 

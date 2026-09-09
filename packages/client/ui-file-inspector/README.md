@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-The conversation file inspector: the occupant of the `conversation.details.file` seat (declared by `dsh-client-ui-conversation`'s details entry) that opens when the user selects a file — a diff card row, a read row, or a produced-files entry. One panel, up to three seats for the selected file:
+The conversation file inspector: the occupant of the `conversation.details.file` seat (declared by `oh-client-ui-conversation`'s details entry) that opens when the user selects a file — a diff card row, a read row, or a produced-files entry. One panel, up to three seats for the selected file:
 
 - **Preview** — for previewable extensions only: Markdown (`.md`/`.markdown`) renders through the shared `MarkdownText` pipeline over the read text; HTML (`.html`/`.htm`) loads through a sandboxed `<iframe>` (empty sandbox — an opaque origin, so a preview can never run its own scripts or reach the app's storage) pointed at the raw channel's own URL; images and SVG (`.svg` plus the common raster image types) point the `<img>` at the same URL so the browser decodes the bytes without a JS copy; docx (`.docx`) converts through mammoth into the same sandboxed-frame surface (`srcDoc`); and xlsx/csv (`.xlsx`/`.csv`) parse the first sheet through SheetJS into a table of display cells. The tab is the default seat when present and hidden otherwise.
 - **Changes** — the latest diff card touching that file in the current window (the settled result view of a write/edit call, top-level or a sub-dispatch of any depth; relative model-facing paths resolve against the session's workspace root), drawn through the shared `DiffBlock` with its gutters, highlighting, and intra-line marks. The tab is hidden when the window holds no diff for the file.

@@ -1,6 +1,6 @@
 /**
  * Host transport for the settings-namespace scope contract. The contract types
- * live in `dsh-client-runtime` (the common dependency of every feature that
+ * live in `oh-client-runtime` (the common dependency of every feature that
  * owns a preference); this file owns the wire behavior and the invalidation
  * subscription, both of which are Settings-surface concerns.
  */

@@ -206,7 +206,7 @@ const base = process.env.DOCS_BASE ?? '/'
  */
 const wordmark = readFileSync(resolve(import.meta.dirname, '../public/wordmark.svg'), 'utf8')
   .trim()
-  .replace('<svg ', '<svg class="dsh-wordmark" ')
+  .replace('<svg ', '<svg class="oh-wordmark" ')
 
 /**
  * Styles the default theme does not provide, carried inline because the site
@@ -281,7 +281,7 @@ const scrollbarScript = `
  * @returns Markup placed beside the navigation-bar home link.
  */
 function siteTitle(previewTag: string): string {
-  return `<span class="dsh-lockup">${wordmark}<span class="dsh-wordmark-text">Open Harness</span><span class="dsh-tag">${previewTag}</span></span>`
+  return `<span class="oh-lockup">${wordmark}<span class="oh-wordmark-text">Open Harness</span><span class="oh-tag">${previewTag}</span></span>`
 }
 
 export default withMermaid({

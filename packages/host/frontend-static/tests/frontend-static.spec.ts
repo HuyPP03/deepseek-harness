@@ -29,7 +29,7 @@ afterEach(async () => {
 
 /** Write a dist fixture and a two-row cordis.yml, then boot it through the real Loader. */
 async function loadComposition(): Promise<Context> {
-  root = await mkdtemp(join(tmpdir(), 'dsh-frontend-static-'))
+  root = await mkdtemp(join(tmpdir(), 'oh-frontend-static-'))
   const dist = join(root, 'dist')
   await mkdir(dist)
   const distIndex = join(dist, 'index.html')

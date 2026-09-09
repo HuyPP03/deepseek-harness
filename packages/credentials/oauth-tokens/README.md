@@ -1,4 +1,4 @@
-# dsh-credentials-oauth-tokens
+# oh-credentials-oauth-tokens
 
 English | [中文](README.zh.md)
 
@@ -46,7 +46,7 @@ The store is passive: it never refreshes, expires, or deletes a bundle on a time
 
 ## Storage discipline
 
-The discipline mirrors [`credentials-local`](../credentials-local/README.md): the document is written `0600` under an owner-only (`0700`) directory, a POSIX file readable beyond its owner fails before its contents are read, and every write re-reads the document under the cross-process writer lock of [`dsh-atomic-write`](../../util/atomic-write/README.md) before patching only its own owner — so a concurrent writer or an external edit inside the watcher's debounce window is folded in rather than overwritten.
+The discipline mirrors [`credentials-local`](../credentials-local/README.md): the document is written `0600` under an owner-only (`0700`) directory, a POSIX file readable beyond its owner fails before its contents are read, and every write re-reads the document under the cross-process writer lock of [`oh-atomic-write`](../../util/atomic-write/README.md) before patching only its own owner — so a concurrent writer or an external edit inside the watcher's debounce window is folded in rather than overwritten.
 
 External edits publish `oauth-tokens/updated` per changed owner after the snapshot is replaced **wholesale** — an owner deleted on disk never lingers in memory. The store's own writes are recognized by content and publish exactly their commit events; an unchanged re-commit publishes none.
 
@@ -66,4 +66,4 @@ None.
 
 - **Passive expiry** — an expired bundle stays readable until its owner refreshes or removes it; consumers must check `expiresAt` before presenting.
 - **Same-owner concurrent writes are last-write-wins** — the writer lock and read-modify-write keep concurrent writers from dropping each other's owners, but two writers editing one owner still resolve to the later write; there is no revision check.
-- **Atomic, not crash-durable** — inherited from `dsh-atomic-write`; the store re-reads on boot.
+- **Atomic, not crash-durable** — inherited from `oh-atomic-write`; the store re-reads on boot.

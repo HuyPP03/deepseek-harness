@@ -16,13 +16,13 @@ function member(directory: string, name: string, manifest: Record<string, unknow
 }
 
 describe('release families', () => {
-  it('names one tag for the whole dsh family and one per vendored package', () => {
-    const dsh = releaseFamily('dsh')
+  it('names one tag for the whole oh family and one per vendored package', () => {
+    const oh = releaseFamily('oh')
     const vendor = releaseFamily('vendor')
     const cli = member('apps/cli', 'oh')
     const cordis = { ...member('vendor/cordis', '@deepseek-ai/cordis'), version: '4.0.1' }
 
-    expect(dsh.tagFor(cli)).toBe('dsh-v0.0.1')
+    expect(oh.tagFor(cli)).toBe('oh-v0.0.1')
     expect(vendor.tagFor(cordis)).toBe('vendor-cordis-v4.0.1')
     // The prefix is constructed, not recovered from a tag: a version with a
     // hyphen would defeat any suffix-stripping.
@@ -31,11 +31,11 @@ describe('release families', () => {
   })
 
   it('rejects a family whose members disagree on the shared version', () => {
-    const dsh = releaseFamily('dsh')
+    const oh = releaseFamily('oh')
     const members = [member('apps/cli', 'oh'), { ...member('apps/web', '@open-harness/oh-web-frontend'), version: '0.0.2' }]
 
-    expect(() => { dsh.verifyVersions(members) }).toThrow(/must share one version/)
-    expect(() => { dsh.verifyVersions([members[0]!]) }).not.toThrow()
+    expect(() => { oh.verifyVersions(members) }).toThrow(/must share one version/)
+    expect(() => { oh.verifyVersions([members[0]!]) }).not.toThrow()
   })
 
   it('accepts independent vendored versions and rejects an unpublishable one', () => {
@@ -50,14 +50,14 @@ describe('release families', () => {
   })
 
   it('publishes a dependency before its consumer, and orders ties by name', () => {
-    const dsh = releaseFamily('dsh')
+    const oh = releaseFamily('oh')
     const members = [
       member('packages/a/consumer', '@open-harness/oh-consumer', { dependencies: { '@open-harness/oh-library': 'workspace:^' } }),
       member('packages/a/library', '@open-harness/oh-library'),
       member('packages/a/zebra', '@open-harness/oh-zebra'),
     ]
 
-    expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
+    expect(oh.publishOrder(members).order.map(entry => entry.name)).toEqual([
       '@open-harness/oh-library',
       '@open-harness/oh-consumer',
       '@open-harness/oh-zebra',
@@ -65,31 +65,31 @@ describe('release families', () => {
   })
 
   it('reports a runtime dependency cycle instead of emitting an arbitrary order', () => {
-    const dsh = releaseFamily('dsh')
+    const oh = releaseFamily('oh')
     const members = [
       member('packages/a/left', '@open-harness/oh-left', { dependencies: { '@open-harness/oh-right': 'workspace:^' } }),
       member('packages/a/right', '@open-harness/oh-right', { dependencies: { '@open-harness/oh-left': 'workspace:^' } }),
     ]
 
-    expect(() => { dsh.publishOrder(members) }).toThrow(/dependency cycle/)
+    expect(() => { oh.publishOrder(members) }).toThrow(/dependency cycle/)
   })
 
   it('publishes a peer before its consumer', () => {
-    const dsh = releaseFamily('dsh')
+    const oh = releaseFamily('oh')
     const members = [
       member('packages/a/consumer', '@open-harness/oh-consumer', { peerDependencies: { '@open-harness/oh-zebra': 'workspace:^' } }),
       member('packages/a/zebra', '@open-harness/oh-zebra'),
     ]
 
     // Name order alone would place the consumer first; the peer edge moves it.
-    expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
+    expect(oh.publishOrder(members).order.map(entry => entry.name)).toEqual([
       '@open-harness/oh-zebra',
       '@open-harness/oh-consumer',
     ])
   })
 
   it('orders around a peer cycle rather than refusing to publish, and reports the edge it dropped', () => {
-    const dsh = releaseFamily('dsh')
+    const oh = releaseFamily('oh')
     const members = [
       member('packages/a/left', '@open-harness/oh-left', { peerDependencies: { '@open-harness/oh-right': 'workspace:^' } }),
       member('packages/a/right', '@open-harness/oh-right', { peerDependencies: { '@open-harness/oh-left': 'workspace:^' } }),
@@ -97,7 +97,7 @@ describe('release families', () => {
 
     // Sibling packages declare each other as peers, and npm treats an unmet peer
     // as a warning, so this pair has to publish rather than fail the release.
-    const plan = dsh.publishOrder(members)
+    const plan = oh.publishOrder(members)
     expect(plan.order.map(entry => entry.name)).toEqual([
       '@open-harness/oh-right',
       '@open-harness/oh-left',
@@ -109,7 +109,7 @@ describe('release families', () => {
   })
 
   it('honours an install edge even when a peer cycle surrounds it', () => {
-    const dsh = releaseFamily('dsh')
+    const oh = releaseFamily('oh')
     const members = [
       member('packages/a/base', '@open-harness/oh-base', { peerDependencies: { '@open-harness/oh-consumer': 'workspace:^' } }),
       member('packages/a/consumer', '@open-harness/oh-consumer', {
@@ -120,7 +120,7 @@ describe('release families', () => {
 
     // The install edge is absolute: base publishes first, and the peer edge that
     // would reverse it is the one dropped.
-    const plan = dsh.publishOrder(members)
+    const plan = oh.publishOrder(members)
     expect(plan.order.map(entry => entry.name)).toEqual([
       '@open-harness/oh-base',
       '@open-harness/oh-consumer',
@@ -131,7 +131,7 @@ describe('release families', () => {
   })
 
   it('refuses an order that would publish a consumer before a dependency it installs', () => {
-    const dsh = releaseFamily('dsh')
+    const oh = releaseFamily('oh')
     const members = [
       member('packages/a/alpha', '@open-harness/oh-alpha', { peerDependencies: { '@open-harness/oh-bravo': 'workspace:^' } }),
       member('packages/a/bravo', '@open-harness/oh-bravo', { peerDependencies: { '@open-harness/oh-charlie': 'workspace:^' } }),
@@ -142,11 +142,11 @@ describe('release families', () => {
     // would order this, and the traversal drops the install edge instead. That
     // order would publish charlie before the alpha it installs, so it is refused
     // here rather than published.
-    expect(() => { dsh.publishOrder(members) }).toThrow(/no publish order honours @deepseek-ai\/dsh-charlie -> @deepseek-ai\/dsh-alpha/)
+    expect(() => { oh.publishOrder(members) }).toThrow(/no publish order honours @open-harness\/oh-charlie -> @open-harness\/oh-alpha/)
   })
 
   it('ignores devDependencies when ordering', () => {
-    const dsh = releaseFamily('dsh')
+    const oh = releaseFamily('oh')
     const members = [
       member('packages/a/alpha', '@open-harness/oh-alpha', { devDependencies: { '@open-harness/oh-zebra': 'workspace:^' } }),
       member('packages/a/zebra', '@open-harness/oh-zebra'),
@@ -154,26 +154,26 @@ describe('release families', () => {
 
     // A dev dependency is absent from the published package, so it must not move
     // the consumer behind it.
-    expect(dsh.publishOrder(members).order.map(entry => entry.name)).toEqual([
+    expect(oh.publishOrder(members).order.map(entry => entry.name)).toEqual([
       '@open-harness/oh-alpha',
       '@open-harness/oh-zebra',
     ])
   })
 
-  it('applies the harness payload policy to dsh and keeps upstream payloads for vendored packages', () => {
-    const dsh = releaseFamily('dsh')
+  it('applies the harness payload policy to oh and keeps upstream payloads for vendored packages', () => {
+    const oh = releaseFamily('oh')
     const vendor = releaseFamily('vendor')
     const harness = member('packages/a/library', '@open-harness/oh-library')
     const vendored = member('vendor/cordis', '@deepseek-ai/cordis')
 
-    expect(() => { dsh.validatePayload(harness, ['package/lib/index.js', 'package/src/index.ts']) })
+    expect(() => { oh.validatePayload(harness, ['package/lib/index.js', 'package/src/index.ts']) })
       .toThrow(/publishes source file/)
     expect(() => { vendor.validatePayload(vendored, ['package/lib/index.js', 'package/src/index.ts']) }).not.toThrow()
     expect(() => { vendor.validatePayload(vendored, []) }).toThrow(/empty tarball/)
   })
 
   it('drives the installed entry only for the family that publishes one', () => {
-    expect(releaseFamily('dsh').installedEntry).toEqual({ packageName: 'oh', binPath: 'lib/bin.js' })
+    expect(releaseFamily('oh').installedEntry).toEqual({ packageName: 'oh', binPath: 'lib/bin.js' })
     expect(releaseFamily('vendor').installedEntry).toBeUndefined()
   })
 

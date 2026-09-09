@@ -1,4 +1,4 @@
-# dsh-client-ui-mcp
+# oh-client-ui-mcp
 
 [English](README.md) | 中文
 
@@ -20,7 +20,7 @@ MCP 服务器界面：一个设置页面，列出所有向宿主上报的 MCP �
 
 ## 模型体验
 
-间接的，通过用户添加的服务器：它们的工具一经宿主注册就变为模型可见，而 [`dsh-mcp-client`](../../mcp/mcp-client/README.md) 负责这些工具在模型面前的样子。
+间接的，通过用户添加的服务器：它们的工具一经宿主注册就变为模型可见，而 [`oh-mcp-client`](../../mcp/mcp-client/README.md) 负责这些工具在模型面前的样子。
 
 #### KV 缓存影响
 

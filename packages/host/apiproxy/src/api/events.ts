@@ -18,7 +18,7 @@ import type { JobView } from './jobs.ts'
 import type { WorkspaceView } from './workspace.ts'
 
 // Client-side consumers take the render-intent vocabulary from the contract;
-// dsh-tools remains its owner.
+// oh-tools remains its owner.
 export type { ToolCallView, ToolResultView } from '@open-harness/oh-tools/presentation'
 
 /**

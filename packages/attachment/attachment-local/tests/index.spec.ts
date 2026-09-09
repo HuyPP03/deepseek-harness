@@ -25,7 +25,7 @@ describe('local attachment service', () => {
   })
 
   it('saves and reads through the service boundary', async () => {
-    const ohHome = await mkdtemp(join(tmpdir(), 'dsh-attachment-service-'))
+    const ohHome = await mkdtemp(join(tmpdir(), 'oh-attachment-service-'))
     try {
       const service = new LocalAttachmentStore(new Context(), { ohHome })
       const data = Uint8Array.from(Buffer.from(
@@ -40,7 +40,7 @@ describe('local attachment service', () => {
   })
 
   it('validates without persisting: a rejected image leaves no storage root behind', async () => {
-    const ohHome = await mkdtemp(join(tmpdir(), 'dsh-attachment-validate-'))
+    const ohHome = await mkdtemp(join(tmpdir(), 'oh-attachment-validate-'))
     try {
       const service = new LocalAttachmentStore(new Context(), { ohHome })
       await expect(service.validateImage({ data: Uint8Array.of(1, 2, 3), mediaType: 'image/png' }))

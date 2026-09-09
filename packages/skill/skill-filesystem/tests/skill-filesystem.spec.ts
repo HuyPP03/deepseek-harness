@@ -8,7 +8,7 @@ import { FileSystem, FsError, FsVersion, type FsDirEntry, type FsEditOutcome, ty
 import * as SkillFileSystem from '../src/index.ts'
 
 async function tempDir(name: string): Promise<string> {
-  return await import('node:fs/promises').then(fs => fs.mkdtemp(join(tmpdir(), `dsh-${name}-`)))
+  return await import('node:fs/promises').then(fs => fs.mkdtemp(join(tmpdir(), `oh-${name}-`)))
 }
 
 async function writeSkill(root: string, name: string, description: string, body = 'Use the skill.'): Promise<void> {
@@ -160,7 +160,7 @@ async function waitFor<T>(read: () => Promise<T>, accept: (value: T) => boolean)
   }
 }
 
-describe('dsh-skill-filesystem plugin exports', () => {
+describe('oh-skill-filesystem plugin exports', () => {
   it('declares stable plugin metadata', () => {
     expect(SkillFileSystem.name).toBe('skill-filesystem')
     expect(SkillFileSystem.inject).toEqual(['skills'])

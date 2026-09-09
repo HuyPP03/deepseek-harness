@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-User MCP server manager: the owner of the user-added MCP servers in one app. Each user server is persisted as one `<serverName>.cordis.yml` file under the harness home's `.mcp/` directory (default `$OH_HOME/.mcp`) holding a single `mcp-client` entry, and mounted as a live [`dsh-mcp-client`](../mcp-client/) instance at startup and on `add`. Servers declared in the profile or host composition are not user servers — the manager never touches them — but every server (both origins) reports into the shared [`dsh-mcp-registry`](../mcp-registry/), and the manager's `servers`/`reconnect` faces read that union directly.
+User MCP server manager: the owner of the user-added MCP servers in one app. Each user server is persisted as one `<serverName>.cordis.yml` file under the harness home's `.mcp/` directory (default `$OH_HOME/.mcp`) holding a single `mcp-client` entry, and mounted as a live [`oh-mcp-client`](../mcp-client/) instance at startup and on `add`. Servers declared in the profile or host composition are not user servers — the manager never touches them — but every server (both origins) reports into the shared [`oh-mcp-registry`](../mcp-registry/), and the manager's `servers`/`reconnect` faces read that union directly.
 
 ## Usage
 

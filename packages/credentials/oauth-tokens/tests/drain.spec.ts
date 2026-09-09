@@ -47,7 +47,7 @@ afterEach(async () => {
 
 describe('operation-drain teardown', () => {
   it('lets the in-flight commit land and fails the queued operations after disposal', async () => {
-    const dir = await mkdtemp(join(tmpdir(), 'dsh-oauth-tokens-drain-'))
+    const dir = await mkdtemp(join(tmpdir(), 'oh-oauth-tokens-drain-'))
     cleanups.push(() => rm(dir, { recursive: true, force: true }))
     const ctx = new Context()
     const fiber = ctx.plugin(OAuthTokenStore, { path: join(dir, 'tokens.json'), watch: false })

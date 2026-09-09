@@ -3,7 +3,7 @@
   "repository": "deepseek-harness",
   "projectNumber": 1,
   "projectTitle": "Open Harness Issue Management",
-  "lifecycleActor": "dsh-issue-management",
+  "lifecycleActor": "oh-issue-management",
   "priorityField": "Priority",
   "allowUnassignedOwner": true,
   "statuses": [

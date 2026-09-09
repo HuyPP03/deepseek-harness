@@ -170,7 +170,7 @@ function collapse(body: string, rooted: boolean, separator = '/'): string {
  *   start, whose text and error styling the generic path preserves.
  *
  * Window truncation can drop the call head from a settled result (see
- * `ToolResultNode.call`/`callView` in dsh-client-runtime), leaving a terminal
+ * `ToolResultNode.call`/`callView` in oh-client-runtime), leaving a terminal
  * result with no call side. That still renders: the command falls back to the
  * result view's replacement title, then to an empty command (the prompt line
  * draws bare), and the prompt shows no cwd.

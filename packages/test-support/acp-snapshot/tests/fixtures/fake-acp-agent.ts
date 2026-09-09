@@ -1,6 +1,6 @@
 /**
- * Scripted fake ACP agent bin for `dsh-acp-snapshot`'s unit specs. Speaks
- * newline-delimited JSON-RPC on stdio like the real `dsh-acp-agent` bin, but
+ * Scripted fake ACP agent bin for `oh-acp-snapshot`'s unit specs. Speaks
+ * newline-delimited JSON-RPC on stdio like the real `oh-acp-agent` bin, but
  * every behavior — how prompts settle, whether session/new rejects, which
  * session logs get persisted, what filesystem noise to leave — comes from a
  * `behavior.json` sitting NEXT to the `$OH_SNAPSHOT_FILE` fixture, so a spec

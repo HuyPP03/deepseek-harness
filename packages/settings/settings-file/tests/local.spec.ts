@@ -25,7 +25,7 @@ afterEach(async () => {
 })
 
 async function tempDir(): Promise<string> {
-  const dir = await mkdtemp(join(tmpdir(), 'dsh-settings-local-'))
+  const dir = await mkdtemp(join(tmpdir(), 'oh-settings-local-'))
   cleanups.push(() => rm(dir, { recursive: true, force: true }))
   return dir
 }

@@ -4,7 +4,7 @@ import { createUserMessage } from '@open-harness/oh-llm'
  * queued and steering work, while `keepInbox` preserves pending input for a
  * later wake after the active turn reaches quiescence. The suite
  * covers every landing window plus signal reset and `whenIdle()` quiescence.
- * @module dsh-agent-loop/tests/cancel
+ * @module oh-agent-loop/tests/cancel
  */
 
 import { describe, expect, it } from 'vitest'

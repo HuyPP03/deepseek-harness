@@ -27,7 +27,7 @@ await ctx.plugin(LocalFileSystem, { cwd: process.cwd() })
 
 ## 模型体验
 
-通过 [`dsh-tool-fs`](../tool-fs/README.md) 间接产生影响；该消费方把本提供方带行窗口的 UTF-8 内容、变更确认和提供方消息原文渲染为有保留上限的结果，而版本、原子写入机制和目录元数据仍属内部细节。
+通过 [`oh-tool-fs`](../tool-fs/README.md) 间接产生影响；该消费方把本提供方带行窗口的 UTF-8 内容、变更确认和提供方消息原文渲染为有保留上限的结果，而版本、原子写入机制和目录元数据仍属内部细节。
 
 #### KV Cache 影响
 

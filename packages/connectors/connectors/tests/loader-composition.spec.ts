@@ -86,8 +86,8 @@ let home: string | undefined
 let context: Context | undefined
 
 async function boot(catalogFiles: readonly [string, string][]): Promise<void> {
-  root = await mkdtemp(join(tmpdir(), 'dsh-connectors-loader-'))
-  home = await mkdtemp(join(tmpdir(), 'dsh-connectors-home-'))
+  root = await mkdtemp(join(tmpdir(), 'oh-connectors-loader-'))
+  home = await mkdtemp(join(tmpdir(), 'oh-connectors-home-'))
   vi.stubEnv('OH_HOME', home)
   const mcpDir = join(root, '.mcp')
   const catalogDir = join(root, 'catalog')

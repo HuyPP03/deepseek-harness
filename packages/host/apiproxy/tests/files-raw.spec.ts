@@ -46,8 +46,8 @@ function stubAgent(session: Session): Agent {
 }
 
 async function harness() {
-  const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-raw-')))
-  const outside = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-raw-out-')))
+  const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-raw-')))
+  const outside = realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-raw-out-')))
   const ctx = new Context()
   await ctx.plugin(SessionStore)
   await ctx.plugin(AgentRegistry)

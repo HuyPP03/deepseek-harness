@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-用户 MCP 服务器管理器：负责用户在运行时添加的 MCP 服务器。每个用户服务器持久化为 harness home 下 `.mcp/` 目录（默认 `$OH_HOME/.mcp`）中的一个 `<serverName>.cordis.yml` 文件，并在启动和 `add` 时挂载为 [`dsh-mcp-client`](../mcp-client/) 的实时实例。profile 或宿主组合中声明的服务器不是用户服务器——管理器绝不触碰它们，但所有服务器（两种来源）都会上报到共享的 [`dsh-mcp-registry`](../mcp-registry/)，管理器的 `servers`/`reconnect` 接口直接读取该并集。
+用户 MCP 服务器管理器：负责用户在运行时添加的 MCP 服务器。每个用户服务器持久化为 harness home 下 `.mcp/` 目录（默认 `$OH_HOME/.mcp`）中的一个 `<serverName>.cordis.yml` 文件，并在启动和 `add` 时挂载为 [`oh-mcp-client`](../mcp-client/) 的实时实例。profile 或宿主组合中声明的服务器不是用户服务器——管理器绝不触碰它们，但所有服务器（两种来源）都会上报到共享的 [`oh-mcp-registry`](../mcp-registry/)，管理器的 `servers`/`reconnect` 接口直接读取该并集。
 
 ## 用法
 

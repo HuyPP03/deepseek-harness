@@ -30,7 +30,7 @@ function stubAgent(session: Session): Agent {
 }
 
 async function harness() {
-  const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-files-')))
+  const cwd = realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-files-')))
   const ctx = new Context()
   await ctx.plugin(SessionStore)
   await ctx.plugin(AgentRegistry)
@@ -137,7 +137,7 @@ describe('files.list', () => {
   it('lists attached reference projects under their basename root id', async () => {
     const { api, ctx, cwd } = await harness()
     writeFileSync(join(cwd, 'README.md'), '')
-    const reference = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-files-ref-')))
+    const reference = realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-files-ref-')))
     writeFileSync(join(reference, 'lib.ts'), '')
     const session = ctx.sessions.create(SessionId('s2'), { meta: { cwd } })
     attachReference(session, reference)
@@ -230,7 +230,7 @@ describe('files.read', () => {
 
   it('reads an attached reference file', async () => {
     const { api, ctx, cwd } = await harness()
-    const reference = realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-files-ref-')))
+    const reference = realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-files-ref-')))
     const path = join(reference, 'data.txt')
     writeFileSync(path, 'ref\n')
     const session = ctx.sessions.create(SessionId('r2'), { meta: { cwd } })
@@ -243,7 +243,7 @@ describe('files.read', () => {
 
   it('refuses a path outside the working set with file-path-escape', async () => {
     const { api, ctx, cwd } = await harness()
-    const outside = join(realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-files-out-'))), 'secret.txt')
+    const outside = join(realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-files-out-'))), 'secret.txt')
     writeFileSync(outside, 'hidden\n')
     ctx.sessions.create(SessionId('r3'), { meta: { cwd } })
 
@@ -263,7 +263,7 @@ describe('files.read', () => {
 
   it('refuses a symlink that points outside the working set', async () => {
     const { api, ctx, cwd } = await harness()
-    const outside = join(realpathSync(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-files-out-'))), 'secret.txt')
+    const outside = join(realpathSync(mkdtempSync(join(tmpdir(), 'oh-apiproxy-files-out-'))), 'secret.txt')
     writeFileSync(outside, 'hidden\n')
     const link = join(cwd, 'sneaky.txt')
     symlinkSync(outside, link)

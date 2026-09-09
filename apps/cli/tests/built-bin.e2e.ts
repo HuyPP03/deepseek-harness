@@ -11,7 +11,7 @@ const repoRoot = fileURLToPath(new URL('../../../', import.meta.url))
 // The release version, including a prerelease such as 0.0.1-rc.1: `--version`
 // prints what this manifest carries, so no test may pin it to a literal.
 const cliVersion = (JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8')) as { version: string }).version
-const dshBin = join(repoRoot, 'apps/cli/lib/bin.js')
+const ohBin = join(repoRoot, 'apps/cli/lib/bin.js')
 const invalidProvider = fileURLToPath(new URL('./fixtures/invalid-provider.cordis.yml', import.meta.url))
 
 async function runBuiltBin(
@@ -23,7 +23,7 @@ async function runBuiltBin(
     Object.entries({ ...process.env, ...env })
       .filter((entry): entry is [string, string] => entry[1] !== undefined),
   )
-  const result = await execa(process.execPath, [dshBin, ...args], {
+  const result = await execa(process.execPath, [ohBin, ...args], {
     input: '',
     timeout: 25_000,
     killSignal: 'SIGKILL',
@@ -56,11 +56,11 @@ interface ProfileLifecycleFixture {
 
 /**
  * A minimal custom profile: one lifecycle-marker plugin bundle listed in
- * oh.profile.bundles, no dsh-base — proving out-of-box composition machinery without
+ * oh.profile.bundles, no oh-base — proving out-of-box composition machinery without
  * booting the entire product tree.
  */
 function createProfileLifecycleFixture(): ProfileLifecycleFixture {
-  const home = mkdtempSync(join(tmpdir(), 'dsh-profile-lifecycle-'))
+  const home = mkdtempSync(join(tmpdir(), 'oh-profile-lifecycle-'))
   const ready = join(home, 'ready')
   const settled = join(home, 'settled')
   const disposed = join(home, 'disposed')
@@ -103,7 +103,7 @@ function createProfileLifecycleFixture(): ProfileLifecycleFixture {
     '',
   ].join('\n'))
   writeFileSync(join(bundleDir, 'package.json'), JSON.stringify({
-    name: 'dsh-lifecycle-bundle',
+    name: 'oh-lifecycle-bundle',
     version: '0.0.0',
     type: 'module',
     oh: { bundle: { patch: './cordis.patch.yml' } },
@@ -111,14 +111,14 @@ function createProfileLifecycleFixture(): ProfileLifecycleFixture {
   const profileDir = join(home, 'profiles', 'lifecycle')
   mkdirSync(join(profileDir, 'node_modules'), { recursive: true })
   writeFileSync(join(profileDir, 'package.json'), JSON.stringify({
-    name: 'dsh-profile-lifecycle',
+    name: 'oh-profile-lifecycle',
     private: true,
     dependencies: {},
-    oh: { profile: { bundles: ['dsh-lifecycle-bundle'] } },
+    oh: { profile: { bundles: ['oh-lifecycle-bundle'] } },
   }, undefined, 2))
   // Hand-place the "installed" bundle where profile resolution finds it.
   writeFileSync(join(profileDir, 'cordis.patch.yml'), '[]\n')
-  const linkTarget = join(profileDir, 'node_modules', 'dsh-lifecycle-bundle')
+  const linkTarget = join(profileDir, 'node_modules', 'oh-lifecycle-bundle')
   mkdirSync(join(profileDir, 'node_modules'), { recursive: true })
   try {
     rmSync(linkTarget, { recursive: true, force: true })
@@ -132,7 +132,7 @@ function createProfileLifecycleFixture(): ProfileLifecycleFixture {
 }
 
 function startProfileLifecycle(fixture: ProfileLifecycleFixture, args: readonly string[] = []) {
-  return execa(process.execPath, [dshBin, '--profile', 'lifecycle', ...args], {
+  return execa(process.execPath, [ohBin, '--profile', 'lifecycle', ...args], {
     cwd: fixture.home,
     input: '',
     reject: false,
@@ -183,7 +183,7 @@ function createEnvironmentProbeProfile(home: string, project: string): void {
   const profileDir = join(home, 'profiles', 'environment-probe')
   mkdirSync(profileDir, { recursive: true })
   writeFileSync(join(profileDir, 'package.json'), JSON.stringify({
-    name: 'dsh-profile-environment-probe',
+    name: 'oh-profile-environment-probe',
     private: true,
     dependencies: {},
     oh: { profile: { bundles: ['@open-harness/oh-base'] } },
@@ -213,12 +213,12 @@ interface StartupFixture {
  * fallback, exactly as an installed out-of-tree bundle does.
  */
 function createStartupFixture(): StartupFixture {
-  const home = mkdtempSync(join(tmpdir(), 'dsh-profile-startup-'))
+  const home = mkdtempSync(join(tmpdir(), 'oh-profile-startup-'))
   const profileDir = join(home, 'profiles', 'startup')
   // Written straight into the installed location: a row module resolves its
   // own imports from where it is installed, and only inside the profile does
   // Node's parent walk reach the installation fallback these plugins need.
-  const bundleDir = join(profileDir, 'node_modules', 'dsh-startup-bundle')
+  const bundleDir = join(profileDir, 'node_modules', 'oh-startup-bundle')
   mkdirSync(bundleDir, { recursive: true })
   writeFileSync(join(bundleDir, 'startup.mjs'), [
     "import { Command } from 'commander'",
@@ -273,16 +273,16 @@ function createStartupFixture(): StartupFixture {
     '',
   ].join('\n'))
   writeFileSync(join(bundleDir, 'package.json'), JSON.stringify({
-    name: 'dsh-startup-bundle',
+    name: 'oh-startup-bundle',
     version: '0.0.0',
     type: 'module',
     oh: { bundle: { patch: './cordis.patch.yml' } },
   }, undefined, 2))
   writeFileSync(join(profileDir, 'package.json'), JSON.stringify({
-    name: 'dsh-profile-startup',
+    name: 'oh-profile-startup',
     private: true,
     dependencies: {},
-    oh: { profile: { bundles: ['dsh-startup-bundle'] } },
+    oh: { profile: { bundles: ['oh-startup-bundle'] } },
   }, undefined, 2))
   writeFileSync(join(profileDir, 'cordis.patch.yml'), '[]\n')
   return {
@@ -295,7 +295,7 @@ function createStartupFixture(): StartupFixture {
 }
 
 function startStartupProfile(fixture: StartupFixture, args: readonly string[]) {
-  return execa(process.execPath, [dshBin, '--profile', 'startup', ...args], {
+  return execa(process.execPath, [ohBin, '--profile', 'startup', ...args], {
     cwd: fixture.home,
     input: '',
     reject: false,
@@ -309,7 +309,7 @@ function startStartupProfile(fixture: StartupFixture, args: readonly string[]) {
   })
 }
 
-describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', () => {
+describe.skipIf(!existsSync(ohBin))('dsh BUILT bin (node lib/bin.js, no tsx)', () => {
   it('requires --profile and rejects removed commands', async () => {
     const bare = await runBuiltBin()
     expect(bare.code).toBe(1)
@@ -327,7 +327,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   }, 30_000)
 
   it('routes help and usage errors without activating startup-dependent rows', async () => {
-    const home = mkdtempSync(join(tmpdir(), 'dsh-app-help-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-app-help-'))
     try {
       const web = await runBuiltBin(['--profile', 'web', '--help'], {
         OH_HOME: home,
@@ -368,13 +368,13 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   }, 30_000)
 
   it('runs the headless profile through its app-owned task positional', async () => {
-    const apiKey = 'built-dsh-headless-key'
+    const apiKey = 'built-oh-headless-key'
     const server = await startMockLlmServer({
       sequence: ['success'],
       apiKey,
       successText: 'published headless profile reached the mock',
     })
-    const home = mkdtempSync(join(tmpdir(), 'dsh-built-headless-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-built-headless-'))
     try {
       const result = await runBuiltBin(['--profile', 'headless', 'answer', 'from', 'the', 'published', 'entry'], {
         OH_HOME: home,
@@ -395,7 +395,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   }, 30_000)
 
   it('does not load a project environment for --version', async () => {
-    const project = mkdtempSync(join(tmpdir(), 'dsh-version-project-'))
+    const project = mkdtempSync(join(tmpdir(), 'oh-version-project-'))
     writeFileSync(join(project, '.env'), 'PATH=/project-only-path\n')
     try {
       const result = await runBuiltBin(['--version'], {}, project)
@@ -406,7 +406,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
   })
 
   it('fails loud on a nonexistent profile with the plugin-command hint', async () => {
-    const home = mkdtempSync(join(tmpdir(), 'dsh-missing-profile-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-missing-profile-'))
     try {
       const result = await runBuiltBin(['--profile', 'nope'], { OH_HOME: home })
       expect(result.code).toBe(1)
@@ -424,8 +424,8 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
       apiKey,
       successText: 'launching endpoint reached the mock',
     })
-    const home = mkdtempSync(join(tmpdir(), 'dsh-home-environment-'))
-    const project = mkdtempSync(join(tmpdir(), 'dsh-home-project-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-home-environment-'))
+    const project = mkdtempSync(join(tmpdir(), 'oh-home-project-'))
     writeFileSync(join(home, '.credentials.yaml'), `DEEPSEEK_API_KEY: ${apiKey}\n`, { mode: 0o600 })
     createEnvironmentProbeProfile(home, project)
     try {
@@ -462,7 +462,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
     // mid-initial-apply, deadlocking the failing apply's rollback against the
     // refresh drain: dsh exited 13 with no diagnostic instead of settling
     // ([Agent Note](../../../.agents/notes/implemented/bug-fix/2026-08-03-hmr-initial-scan-boot-deadlock.md)).
-    const home = mkdtempSync(join(tmpdir(), 'dsh-invalid-patch-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-invalid-patch-'))
     try {
       const result = await runBuiltBin(['--profile', 'web', '--patch', invalidProvider], {
         OH_HOME: home,
@@ -626,8 +626,8 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
     // `oh plugin --profile x add .` from a plugin checkout must install THAT
     // checkout — pnpm's cwd is the profile directory, so an un-anchored `.`
     // would self-link the profile.
-    const home = mkdtempSync(join(tmpdir(), 'dsh-plugin-anchor-'))
-    const checkout = mkdtempSync(join(tmpdir(), 'dsh-plugin-checkout-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-plugin-anchor-'))
+    const checkout = mkdtempSync(join(tmpdir(), 'oh-plugin-checkout-'))
     try {
       writeFileSync(join(checkout, 'package.json'), JSON.stringify({
         name: 'anchored-bundle',
@@ -635,7 +635,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
         oh: { bundle: { patch: './cordis.patch.yml' } },
       }))
       writeFileSync(join(checkout, 'cordis.patch.yml'), '[]\n')
-      const result = await execa(process.execPath, [dshBin, 'plugin', '--profile', 'anchor', 'add', '.'], {
+      const result = await execa(process.execPath, [ohBin, 'plugin', '--profile', 'anchor', 'add', '.'], {
         cwd: checkout,
         input: '',
         timeout: 60_000,
@@ -661,13 +661,13 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
     // run, so `update` (not only `add`) activates a package whose newer
     // version declares oh.bundle. Simulated without a registry: hand-place
     // the installed package, flip its manifest, and run a benign pnpm verb.
-    const home = mkdtempSync(join(tmpdir(), 'dsh-plugin-update-'))
+    const home = mkdtempSync(join(tmpdir(), 'oh-plugin-update-'))
     try {
       const profileDir = join(home, 'profiles', 'up')
       const installed = join(profileDir, 'node_modules', 'late-bundle')
       mkdirSync(installed, { recursive: true })
       writeFileSync(join(profileDir, 'package.json'), JSON.stringify({
-        name: 'dsh-profile-up',
+        name: 'oh-profile-up',
         private: true,
         dependencies: { 'late-bundle': 'file:./late-bundle' },
         oh: { profile: { bundles: ['@open-harness/oh-base'] } },
@@ -695,7 +695,7 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
 
   describe('config dump', () => {
     let home: string
-    beforeEach(() => { home = mkdtempSync(join(tmpdir(), 'dsh-dump-bin-')) })
+    beforeEach(() => { home = mkdtempSync(join(tmpdir(), 'oh-dump-bin-')) })
     afterEach(() => { rmSync(home, { recursive: true, force: true }) })
 
     it('prints the web profile bundle layers without a user layer', async () => {
@@ -716,9 +716,9 @@ describe.skipIf(!existsSync(dshBin))('dsh BUILT bin (node lib/bin.js, no tsx)', 
       expect(code).toBe(0)
       expect(stderr).toBe('')
       expect(stdout).toContain("name: '@open-harness/oh-headless'")
-      expect(stdout).not.toMatch(/name: '@deepseek-ai\/dsh-host-/)
+      expect(stdout).not.toMatch(/name: '@open-harness\/oh-host-/)
       expect(stdout).not.toContain("name: '@open-harness/oh-web-app'")
-      expect(stdout).not.toMatch(/name: '@deepseek-ai\/dsh-client-/)
+      expect(stdout).not.toMatch(/name: '@open-harness\/oh-client-/)
     }, 30_000)
 
     it('composes the profile user layer and a --patch overlay in order', async () => {

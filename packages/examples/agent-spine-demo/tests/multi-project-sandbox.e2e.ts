@@ -32,7 +32,7 @@ let projectB: string
 const tempDirs: string[] = []
 
 async function projectDir(label: string): Promise<string> {
-  const dir = await mkdtemp(join(homedir(), `dsh-${label}-`))
+  const dir = await mkdtemp(join(homedir(), `oh-${label}-`))
   tempDirs.push(dir)
   return dir
 }

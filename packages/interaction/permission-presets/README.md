@@ -16,7 +16,7 @@ Fixed surfaces: `Config.chatPresetIds` lists the agent-preset ids whose sessions
 
 ## Model Experience
 
-Indirectly, through `dsh-user-approval` and `dsh-tool-bash`, which render the approval-policy prompt, switch notice, and sandboxed tool outcomes selected by this service's knob events; `permissionPresets/preset` itself is log-only.
+Indirectly, through `oh-user-approval` and `oh-tool-bash`, which render the approval-policy prompt, switch notice, and sandboxed tool outcomes selected by this service's knob events; `permissionPresets/preset` itself is log-only.
 
 #### KV Cache effect
 

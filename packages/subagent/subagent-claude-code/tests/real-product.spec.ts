@@ -80,8 +80,8 @@ const claudeBin = join(
   platformRoot,
   process.platform === 'win32' ? 'claude.exe' : 'claude',
 )
-const settingsModel = 'dsh-settings-inheritance-marker'
-const fakeKey = 'dsh-fake-anthropic-key'
+const settingsModel = 'oh-settings-inheritance-marker'
+const fakeKey = 'oh-fake-anthropic-key'
 
 const roots: string[] = []
 const fixtures: MessagesFixture[] = []
@@ -126,7 +126,7 @@ async function realHarness(behavior: MessagesBehavior): Promise<{
   readonly harness: RealHarness
   readonly fixture: MessagesFixture
 }> {
-  const root = mkdtempSync(join(tmpdir(), 'dsh-claude-code-real-'))
+  const root = mkdtempSync(join(tmpdir(), 'oh-claude-code-real-'))
   roots.push(root)
   const workspace = join(root, 'workspace')
   const claudeConfig = join(root, 'claude-config')

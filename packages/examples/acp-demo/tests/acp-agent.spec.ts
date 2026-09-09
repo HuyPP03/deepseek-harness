@@ -31,13 +31,13 @@ async function mount(config: acpAgent.Config, withBash = false): Promise<Context
       start() { throw new Error('composition test does not execute bash') },
     })
   }
-  config.persistenceRoot ??= await mkdtemp(join(tmpdir(), 'dsh-acp-demo-persistence-'))
+  config.persistenceRoot ??= await mkdtemp(join(tmpdir(), 'oh-acp-demo-persistence-'))
   await ctx.plugin(acpAgent, config)
   return ctx
 }
 
 async function isolatedSkillsConfig(catalogDescriptionMaxLength?: number): Promise<NonNullable<acpAgent.Config['skills']>> {
-  const home = await mkdtemp(join(tmpdir(), 'dsh-acp-demo-skills-'))
+  const home = await mkdtemp(join(tmpdir(), 'oh-acp-demo-skills-'))
   return {
     filesystem: { ohHome: join(home, '.oh'), agentsHome: join(home, '.agents') },
     ...catalogDescriptionMaxLength !== undefined ? { tool: { catalogDescriptionMaxLength } } : {},
@@ -62,7 +62,7 @@ async function composePrefix(ctx: Context): Promise<Message[]> {
 async function withIsolatedSkillHomes<T>(run: () => Promise<T>): Promise<T> {
   const oldDshHome = process.env.OH_HOME
   const oldAgentsHome = process.env.OH_AGENTS_HOME
-  const home = await mkdtemp(join(tmpdir(), 'dsh-acp-demo-default-skills-'))
+  const home = await mkdtemp(join(tmpdir(), 'oh-acp-demo-default-skills-'))
   process.env.OH_HOME = join(home, '.oh')
   process.env.OH_AGENTS_HOME = join(home, '.agents')
   try {
@@ -81,13 +81,13 @@ async function withIsolatedSkillHomes<T>(run: () => Promise<T>): Promise<T> {
   }
 }
 
-describe('dsh-acp-demo composition', () => {
+describe('oh-acp-demo composition', () => {
   it('brings up the spine + persistence + the ACP bridge', async () => {
     const ctx = await mount({
       provider: 'mock',
       model: 'mock',
       persona: 'hi',
-      persistenceRoot: '/tmp/dsh-acp-demo-test',
+      persistenceRoot: '/tmp/oh-acp-demo-test',
       persistenceCompression: 'none',
       skills: await isolatedSkillsConfig(),
       workspaceContext: false,
@@ -143,7 +143,7 @@ describe('dsh-acp-demo composition', () => {
       provider: 'mock',
       model: 'mock',
       persona: 'hi',
-      persistenceRoot: '/tmp/dsh-acp-demo-workspace-context',
+      persistenceRoot: '/tmp/oh-acp-demo-workspace-context',
       workspaceContext: false,
     })
     expect(ctx.get('agents')).toBeDefined()
@@ -174,7 +174,7 @@ describe('dsh-acp-demo composition', () => {
       provider: 'mock',
       model: 'mock',
       maxParallelToolCalls: 3,
-      persistenceRoot: '/tmp/dsh-acp-demo-test-parallel',
+      persistenceRoot: '/tmp/oh-acp-demo-test-parallel',
       skills: await isolatedSkillsConfig(),
       workspaceContext: false,
     })
@@ -232,7 +232,7 @@ describe('dsh-acp-demo composition', () => {
       provider: 'mock',
       model: 'mock',
       toolOrder: ['zulu', TOOL_ORDER_REST],
-      persistenceRoot: '/tmp/dsh-acp-demo-test-tool-order',
+      persistenceRoot: '/tmp/oh-acp-demo-test-tool-order',
       workspaceContext: false,
     })
     // The bundle's own bash tools pend on the absent `ctx.shell` executor in

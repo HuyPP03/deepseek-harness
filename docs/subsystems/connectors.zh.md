@@ -2,7 +2,7 @@
 
 [English](connectors.md) | 中文
 
-连接器子系统为预定义外部服务提供宿主侧身份：[dsh-connectors](../../packages/connectors/connectors) 的 YAML 清单目录（每个提供方一份），以及按连接器派生的状态。清单声明提供方的 MCP 服务器、支持的授权方式，以及使用它的会话所采用的 agent preset 与工作区；[Connectors](../../packages/connectors/connectors) 服务（`ctx.connectors`）通过 mcp-manager 挂载服务器，把非密字段存进按连接器的覆盖文档，并从其他服务已知的信息派生 `unconfigured` 到 `connected` 的状态 —— 注册表（已挂载）、凭据 seam（已配置）、以及最近一次失败的操作。配套包 [dsh-credentials-oauth-tokens](../../packages/credentials/oauth-tokens)（`ctx.oauthTokens`）存放后续授权流程阶段写入与移除的提供方令牌包。
+连接器子系统为预定义外部服务提供宿主侧身份：[oh-connectors](../../packages/connectors/connectors) 的 YAML 清单目录（每个提供方一份），以及按连接器派生的状态。清单声明提供方的 MCP 服务器、支持的授权方式，以及使用它的会话所采用的 agent preset 与工作区；[Connectors](../../packages/connectors/connectors) 服务（`ctx.connectors`）通过 mcp-manager 挂载服务器，把非密字段存进按连接器的覆盖文档，并从其他服务已知的信息派生 `unconfigured` 到 `connected` 的状态 —— 注册表（已挂载）、凭据 seam（已配置）、以及最近一次失败的操作。配套包 [oh-credentials-oauth-tokens](../../packages/credentials/oauth-tokens)（`ctx.oauthTokens`）存放后续授权流程阶段写入与移除的提供方令牌包。
 
 源码：[`packages/connectors/connectors/src/index.ts`](../../packages/connectors/connectors/src/index.ts)
 

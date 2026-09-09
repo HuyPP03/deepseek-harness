@@ -18,7 +18,7 @@ describe('Codex provider public Loader composition', () => {
   it('loads the opt-in package, one-shot task tool, and job controls without starting Codex', async () => {
     const { stdout, stderr } = await runLoaderSmoke({
       label: 'subagent-codex Loader composition',
-      tempDirPrefix: 'dsh-subagent-codex-loader-',
+      tempDirPrefix: 'oh-subagent-codex-loader-',
       binScript: driver,
       libBinScript: driver,
       configPath,

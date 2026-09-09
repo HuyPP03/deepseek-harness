@@ -8,7 +8,7 @@ import { existsSync } from 'node:fs'
 import { boot, installFailLoud, loadEnv, resolveConfigPath } from '@open-harness/oh-app-boot'
 
 /* v8 ignore start -- composition over tested app-boot/jsonrpc and executable acceptance paths */
-const NAME = 'dsh-jsonrpc-agent'
+const NAME = 'oh-jsonrpc-agent'
 
 /**
  * Boot the explicitly selected external configuration and own process exit.

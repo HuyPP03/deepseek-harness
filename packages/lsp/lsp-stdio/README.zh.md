@@ -46,11 +46,11 @@ Namespace 插件（`name`／`inject`／`Config`／`apply`，无默认导出）�
 
 ## 模型体验
 
-通过 `dsh-tool-lsp` 间接影响；该工具呈现此提供方的规范化结果，该主机自身不贡献提示词或 schema。
+通过 `oh-tool-lsp` 间接影响；该工具呈现此提供方的规范化结果，该主机自身不贡献提示词或 schema。
 
 #### KV Cache 影响
 
-不会直接失效；请求前缀变更由 `dsh-tool-lsp` 负责。
+不会直接失效；请求前缀变更由 `oh-tool-lsp` 负责。
 
 ## 已知限制与暂缓事项
 

@@ -1,4 +1,4 @@
-# dsh-credentials-oauth-tokens
+# oh-credentials-oauth-tokens
 
 [English](README.md) | 中文
 
@@ -46,7 +46,7 @@
 
 ## 存储纪律
 
-纪律与 [`credentials-local`](../credentials-local/README.md) 一致：文档以 `0600` 写入仅属主可访问（`0700`）的目录之下；在 POSIX 上，任何带有组或其他权限位的文件会在读取内容之前被拒绝；每次写入在 [`dsh-atomic-write`](../../util/atomic-write/README.md) 的跨进程写锁下先重读文档，再只修改自己的属主——因此并发写入者或监听器去抖窗口内的外部编辑会被合并而非覆盖。
+纪律与 [`credentials-local`](../credentials-local/README.md) 一致：文档以 `0600` 写入仅属主可访问（`0700`）的目录之下；在 POSIX 上，任何带有组或其他权限位的文件会在读取内容之前被拒绝；每次写入在 [`oh-atomic-write`](../../util/atomic-write/README.md) 的跨进程写锁下先重读文档，再只修改自己的属主——因此并发写入者或监听器去抖窗口内的外部编辑会被合并而非覆盖。
 
 外部编辑会在快照**整体**替换后按属主发布 `oauth-tokens/updated`——磁盘上已删除的属主不会残留在内存中。存储自身的写入按内容识别，只发布其提交事件；内容未变化的重复提交不发布事件。
 
@@ -66,4 +66,4 @@
 
 - **被动过期**——过期的令牌包在被属主刷新或删除之前始终可读；消费方在出示前必须检查 `expiresAt`。
 - **同一属主的并发写入为后写获胜**——写锁与读-改-写保证并发写入者不会丢失彼此的属主，但两个写入者修改同一属主仍以后写为准；没有版本检查。
-- **原子但非崩溃持久**——继承自 `dsh-atomic-write`；存储在启动时重读。
+- **原子但非崩溃持久**——继承自 `oh-atomic-write`；存储在启动时重读。

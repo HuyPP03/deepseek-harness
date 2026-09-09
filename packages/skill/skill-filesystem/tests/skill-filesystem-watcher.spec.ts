@@ -92,7 +92,7 @@ vi.mock('chokidar', () => ({
 const SkillFileSystem = await import('../src/index.ts')
 
 async function tempDir(name: string): Promise<string> {
-  return await import('node:fs/promises').then(fs => fs.mkdtemp(join(tmpdir(), `dsh-${name}-`)))
+  return await import('node:fs/promises').then(fs => fs.mkdtemp(join(tmpdir(), `oh-${name}-`)))
 }
 
 async function writeSkill(root: string, name: string): Promise<void> {

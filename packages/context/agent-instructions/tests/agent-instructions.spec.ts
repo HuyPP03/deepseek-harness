@@ -49,7 +49,7 @@ const sk = (directory: string, candidateName: string): string => candidateScopeK
 const testToolSignal = new AbortController().signal
 
 async function tempRepo(): Promise<string> {
-  return mkdtemp(join(tmpdir(), 'dsh-workspace-context-'))
+  return mkdtemp(join(tmpdir(), 'oh-workspace-context-'))
 }
 
 async function write(path: string, content: string): Promise<void> {

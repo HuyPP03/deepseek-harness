@@ -31,7 +31,7 @@ function signature(markdown: string) {
 }
 
 function gitSupportsObjectFormat(format: 'sha256'): boolean {
-  const root = mkdtempSync(join(tmpdir(), 'dsh-git-object-format-'))
+  const root = mkdtempSync(join(tmpdir(), 'oh-git-object-format-'))
   try {
     return spawnSync('git', ['init', '--quiet', `--object-format=${format}`, root], {
       stdio: 'ignore',
@@ -45,7 +45,7 @@ const supportsSha256ObjectFormat = gitSupportsObjectFormat('sha256')
 
 describe('translation pairing snapshots', () => {
   it('stores exact uncommitted bytes for later recovery by object ID', () => {
-    const root = mkdtempSync(join(tmpdir(), 'dsh-translation-pairing-'))
+    const root = mkdtempSync(join(tmpdir(), 'oh-translation-pairing-'))
     try {
       execFileSync('git', ['init', '--quiet', root], {
         env: { ...process.env, GIT_DEFAULT_HASH: 'sha1' },
@@ -66,7 +66,7 @@ describe('translation pairing snapshots', () => {
   })
 
   it('fails before a sidecar can reference an unavailable object', () => {
-    const root = mkdtempSync(join(tmpdir(), 'dsh-translation-pairing-'))
+    const root = mkdtempSync(join(tmpdir(), 'oh-translation-pairing-'))
     try {
       expect(() => storeGitBlob(root, Buffer.from('snapshot'))).toThrow('git hash-object -w --stdin failed')
     } finally {
@@ -85,7 +85,7 @@ describe('translation pairing snapshots', () => {
   })
 
   it('reads staged bytes independently of the working tree', () => {
-    const root = mkdtempSync(join(tmpdir(), 'dsh-translation-pairing-index-'))
+    const root = mkdtempSync(join(tmpdir(), 'oh-translation-pairing-index-'))
     try {
       execFileSync('git', ['init', '--quiet', root], {
         env: { ...process.env, GIT_DEFAULT_HASH: 'sha1' },
@@ -107,7 +107,7 @@ describe('translation pairing snapshots', () => {
   })
 
   it.skipIf(!supportsSha256ObjectFormat)('rejects an object format that pairing records cannot represent', () => {
-    const root = mkdtempSync(join(tmpdir(), 'dsh-translation-pairing-'))
+    const root = mkdtempSync(join(tmpdir(), 'oh-translation-pairing-'))
     try {
       execFileSync('git', ['init', '--quiet', '--object-format=sha256', root])
       expect(() => storeGitBlob(root, Buffer.from('snapshot'))).toThrow('returned unexpected object ID')
@@ -222,7 +222,7 @@ describe('translation scope discovery', () => {
     'packages/example/node_modules/dependency/README.md',
     'packages/example/lib/README.md',
     'coverage/report/README.md',
-    'python/sdk-runtime/src/deepseek_harness_runtime/runtime/dsh-jsonrpc-agent-macos-arm64/README.md',
+    'python/sdk-runtime/src/deepseek_harness_runtime/runtime/oh-jsonrpc-agent-macos-arm64/README.md',
     'python/sdk-runtime/src/deepseek_harness_runtime/runtime/node/README.md',
   ])('excludes non-source or non-README path %s', (file) => {
     expect(isTranslationScopeFile(file)).toBe(false)

@@ -11,7 +11,7 @@
 
 `Requires:` 行列出插件通过 `inject` 注入的服务键：其 `cordis.yml` 树还必须加载这些服务的提供者。范围限定为 harness 层级（`packages/`）；配置树还可能加载的 vendored cordis 插件（`hmr`、控制台日志记录器等）固定为上游源代码（参见 [vendoring policy](../vendor/README.md)），未收录于此目录。
 
-<a id="deepseek-aidsh-acp"></a>
+<a id="open-harnessoh-acp"></a>
 
 ## `@open-harness/oh-acp`
 
@@ -33,7 +33,7 @@ export interface AcpConfig {
 
 来源：[`packages/acp/acp/src/index.ts:75`](../packages/acp/acp/src/index.ts)
 
-<a id="deepseek-aidsh-acp-demo"></a>
+<a id="open-harnessoh-acp-demo"></a>
 
 ## `@open-harness/oh-acp-demo`
 
@@ -55,9 +55,9 @@ export interface Config {
   maxParallelToolCalls?: number
   /** Deployment persona (the system-prompt plugin's `persona` config). */
   persona?: string
-  /** Explicit model-facing tool order (the system-prompt plugin's `toolOrder` config; see dsh-system-prompt). */
+  /** Explicit model-facing tool order (the system-prompt plugin's `toolOrder` config; see oh-system-prompt). */
   toolOrder?: string[]
-  /** Tool-registry config — its presentation `mode` (forwarded through agent-spine-demo; see dsh-tools). */
+  /** Tool-registry config — its presentation `mode` (forwarded through agent-spine-demo; see oh-tools). */
   tools?: ToolsConfig
   /** Open Harness home directory exposed to bash and used for local skill discovery. */
   ohHome?: string
@@ -84,11 +84,11 @@ export interface Config {
 }
 ```
 
-依赖：[`agentCore`](../packages/examples/agent-spine-demo/src/index.ts) · [`JsonlCompression`](../packages/session/session-persistence-jsonl/src/index.ts) · [`ToolsConfig`](#deepseek-aidsh-tools)
+依赖：[`agentCore`](../packages/examples/agent-spine-demo/src/index.ts) · [`JsonlCompression`](../packages/session/session-persistence-jsonl/src/index.ts) · [`ToolsConfig`](#open-harnessoh-tools)
 
 来源：[`packages/examples/acp-demo/src/index.ts:39`](../packages/examples/acp-demo/src/index.ts)
 
-<a id="deepseek-aidsh-agent-default-model"></a>
+<a id="open-harnessoh-agent-default-model"></a>
 
 ## `@open-harness/oh-agent-default-model`
 
@@ -104,7 +104,7 @@ export interface Config {
 
 来源：[`packages/core/agent-default-model/src/index.ts:41`](../packages/core/agent-default-model/src/index.ts)
 
-<a id="deepseek-aidsh-agent-instructions"></a>
+<a id="open-harnessoh-agent-instructions"></a>
 
 ## `@open-harness/oh-agent-instructions`
 
@@ -134,7 +134,7 @@ export interface Config {
 
 来源：[`packages/context/agent-instructions/src/config.ts:18`](../packages/context/agent-instructions/src/config.ts)
 
-<a id="deepseek-aidsh-agent-loop"></a>
+<a id="open-harnessoh-agent-loop"></a>
 
 ## `@open-harness/oh-agent-loop`
 
@@ -166,7 +166,7 @@ export interface Config {
 
 来源：[`packages/core/agent-loop/src/index.ts:255`](../packages/core/agent-loop/src/index.ts)
 
-<a id="deepseek-aidsh-agent-presets"></a>
+<a id="open-harnessoh-agent-presets"></a>
 
 ## `@open-harness/oh-agent-presets`
 
@@ -210,7 +210,7 @@ export type PresetTrust = 'system' | 'user'
 
 来源：[`packages/preset/agent-presets/src/preset.ts:52`](../packages/preset/agent-presets/src/preset.ts)
 
-<a id="deepseek-aidsh-agent-spine-demo"></a>
+<a id="open-harnessoh-agent-spine-demo"></a>
 
 ## `@open-harness/oh-agent-spine-demo`
 
@@ -239,7 +239,7 @@ export type PresetTrust = 'system' | 'user'
  * `bash` name.
  */
 export interface Config {
-  /** The agent-loop `agents` list (see dsh-agent-loop's `Config`). */
+  /** The agent-loop `agents` list (see oh-agent-loop's `Config`). */
   agents?: AgentLoopConfig['agents']
   /** Agent-loop concurrency cap; `1` is serial. */
   maxParallelToolCalls?: AgentLoopConfig['maxParallelToolCalls']
@@ -247,11 +247,11 @@ export interface Config {
   includeHarnessIdentity?: SystemPromptConfig['includeHarnessIdentity']
   /** Whether model history includes dynamic runtime-context snapshots (default true). */
   includeRuntimeContext?: SystemPromptConfig['includeRuntimeContext']
-  /** The deployment persona (see dsh-system-prompt's `Config`). */
+  /** The deployment persona (see oh-system-prompt's `Config`). */
   persona?: SystemPromptConfig['persona']
-  /** The explicit model-facing tool order (see dsh-system-prompt's `Config`). */
+  /** The explicit model-facing tool order (see oh-system-prompt's `Config`). */
   toolOrder?: SystemPromptConfig['toolOrder']
-  /** The tool registry's config — its presentation `mode` (see dsh-tools' `Config`). */
+  /** The tool registry's config — its presentation `mode` (see oh-tools' `Config`). */
   tools?: ToolsConfig
   /** Open Harness home directory shared by shell context and local skill discovery. */
   ohHome?: string
@@ -298,11 +298,11 @@ export interface GoalConfig {
 }
 ```
 
-依赖：[`AgentLoopConfig`](#deepseek-aidsh-agent-loop) · [`GoalDomainConfig`](#deepseek-aidsh-goal) · [`InvariantConfig`](#deepseek-aidsh-invariants) · [`JobsConfig`](#deepseek-aidsh-jobs-local) · [`SessionTitleConfig`](#deepseek-aidsh-session-title) · [`SkillFileSystem`](../packages/skill/skill-filesystem/src/index.ts) · [`SkillRegistryConfig`](#deepseek-aidsh-skill) · [`SystemPromptConfig`](#deepseek-aidsh-system-prompt) · [`toolBash`](../packages/shell/tool-bash/src/index.ts) · [`toolGoal`](../packages/goal/tool-goal/src/index.ts) · [`toolJobs`](../packages/jobs/tool-jobs/src/index.ts) · [`ToolsConfig`](#deepseek-aidsh-tools) · [`toolSkill`](../packages/skill/tool-skill/src/index.ts) · [`workspaceContext`](../packages/context/agent-instructions/src/index.ts)
+依赖：[`AgentLoopConfig`](#open-harnessoh-agent-loop) · [`GoalDomainConfig`](#open-harnessoh-goal) · [`InvariantConfig`](#open-harnessoh-invariants) · [`JobsConfig`](#open-harnessoh-jobs-local) · [`SessionTitleConfig`](#open-harnessoh-session-title) · [`SkillFileSystem`](../packages/skill/skill-filesystem/src/index.ts) · [`SkillRegistryConfig`](#open-harnessoh-skill) · [`SystemPromptConfig`](#open-harnessoh-system-prompt) · [`toolBash`](../packages/shell/tool-bash/src/index.ts) · [`toolGoal`](../packages/goal/tool-goal/src/index.ts) · [`toolJobs`](../packages/jobs/tool-jobs/src/index.ts) · [`ToolsConfig`](#open-harnessoh-tools) · [`toolSkill`](../packages/skill/tool-skill/src/index.ts) · [`workspaceContext`](../packages/context/agent-instructions/src/index.ts)
 
 来源：[`packages/examples/agent-spine-demo/src/index.ts:92`](../packages/examples/agent-spine-demo/src/index.ts)
 
-<a id="deepseek-aidsh-agent-tool-presentation"></a>
+<a id="open-harnessoh-agent-tool-presentation"></a>
 
 ## `@open-harness/oh-agent-tool-presentation`
 
@@ -326,7 +326,7 @@ export interface Config {
 
 来源：[`packages/core/agent-tool-presentation/src/index.ts:38`](../packages/core/agent-tool-presentation/src/index.ts)
 
-<a id="deepseek-aidsh-attachment-local"></a>
+<a id="open-harnessoh-attachment-local"></a>
 
 ## `@open-harness/oh-attachment-local`
 
@@ -348,7 +348,7 @@ export interface Config {
 
 来源：[`packages/attachment/attachment-local/src/index.ts:24`](../packages/attachment/attachment-local/src/index.ts)
 
-<a id="deepseek-aidsh-bash-local"></a>
+<a id="open-harnessoh-bash-local"></a>
 
 ## `@open-harness/oh-bash-local`
 
@@ -374,7 +374,7 @@ export interface Config {
 
 来源：[`packages/shell/bash-local/src/index.ts:41`](../packages/shell/bash-local/src/index.ts)
 
-<a id="deepseek-aidsh-bash-sandbox"></a>
+<a id="open-harnessoh-bash-sandbox"></a>
 
 ## `@open-harness/oh-bash-sandbox`
 
@@ -391,11 +391,11 @@ export interface Config {
 export type Config = LocalConfig
 ```
 
-依赖：[`LocalConfig`](#deepseek-aidsh-bash-local)
+依赖：[`LocalConfig`](#open-harnessoh-bash-local)
 
 来源：[`packages/shell/bash-sandbox/src/index.ts:35`](../packages/shell/bash-sandbox/src/index.ts)
 
-<a id="deepseek-aidsh-client-connection"></a>
+<a id="open-harnessoh-client-connection"></a>
 
 ## `@open-harness/oh-client-connection`
 
@@ -409,7 +409,7 @@ export interface ConnectionConfig {
    * port-less `host` matching any port. The /api trust fence refuses any
    * request whose Host is neither loopback nor listed here, so a
    * non-loopback (`0.0.0.0`) deployment must declare the names it is reached
-   * by (the oh CLI derives the machine's LAN IP literals itself). An entry
+   * by (the dsh CLI derives the machine's LAN IP literals itself). An entry
    * that is not a bare, canonical authority fails the plugin load.
    */
   trustedHosts?: string[]
@@ -420,7 +420,7 @@ export interface ConnectionConfig {
 
 来源：[`packages/client/connection/src/index.ts:50`](../packages/client/connection/src/index.ts)
 
-<a id="deepseek-aidsh-client-hmr"></a>
+<a id="open-harnessoh-client-hmr"></a>
 
 ## `@open-harness/oh-client-hmr`
 
@@ -436,7 +436,7 @@ export interface Config {
 
 来源：[`packages/client/hmr/src/index.ts:31`](../packages/client/hmr/src/index.ts)
 
-<a id="deepseek-aidsh-code-runtime-worker-thread"></a>
+<a id="open-harnessoh-code-runtime-worker-thread"></a>
 
 ## `@open-harness/oh-code-runtime-worker-thread`
 
@@ -473,7 +473,7 @@ export interface Config {
 
 来源：[`packages/code-runtime/code-runtime-worker-thread/src/index.ts:25`](../packages/code-runtime/code-runtime-worker-thread/src/index.ts)
 
-<a id="deepseek-aidsh-command-agent-actions"></a>
+<a id="open-harnessoh-command-agent-actions"></a>
 
 ## `@open-harness/oh-command-agent-actions`
 
@@ -493,7 +493,7 @@ export interface Config {
 
 来源：[`packages/interaction/command-agent-actions/src/index.ts:17`](../packages/interaction/command-agent-actions/src/index.ts)
 
-<a id="deepseek-aidsh-compaction-basic"></a>
+<a id="open-harnessoh-compaction-basic"></a>
 
 ## `@open-harness/oh-compaction-basic`
 
@@ -539,7 +539,7 @@ export interface ModelCompactPolicyConfig extends CompactionPolicyConfig {
 
 来源：[`packages/compaction/compaction-basic/src/types.ts:38`](../packages/compaction/compaction-basic/src/types.ts)
 
-<a id="deepseek-aidsh-compaction-tool-result-pruner"></a>
+<a id="open-harnessoh-compaction-tool-result-pruner"></a>
 
 ## `@open-harness/oh-compaction-tool-result-pruner`
 
@@ -559,7 +559,7 @@ export interface ToolResultPruneConfig {
 
 来源：[`packages/compaction/compaction-tool-result-pruner/src/types.ts:4`](../packages/compaction/compaction-tool-result-pruner/src/types.ts)
 
-<a id="deepseek-aidsh-connectors"></a>
+<a id="open-harnessoh-connectors"></a>
 
 ## `@open-harness/oh-connectors`
 
@@ -579,7 +579,7 @@ export interface Config {
 
 来源：[`packages/connectors/connectors/src/index.ts:72`](../packages/connectors/connectors/src/index.ts)
 
-<a id="deepseek-aidsh-connectors-device-flow"></a>
+<a id="open-harnessoh-connectors-device-flow"></a>
 
 ## `@open-harness/oh-connectors-device-flow`
 
@@ -597,7 +597,7 @@ export interface Config {
 
 来源：[`packages/connectors/device-flow/src/index.ts:32`](../packages/connectors/device-flow/src/index.ts)
 
-<a id="deepseek-aidsh-connectors-oauth-flow"></a>
+<a id="open-harnessoh-connectors-oauth-flow"></a>
 
 ## `@open-harness/oh-connectors-oauth-flow`
 
@@ -613,7 +613,7 @@ export interface Config {
 
 来源：[`packages/connectors/oauth-flow/src/index.ts:34`](../packages/connectors/oauth-flow/src/index.ts)
 
-<a id="deepseek-aidsh-cordis-host-runner"></a>
+<a id="open-harnessoh-cordis-host-runner"></a>
 
 ## `@open-harness/oh-cordis-host-runner`
 
@@ -629,7 +629,7 @@ export interface Config {
 
 来源：[`packages/extensions/cordis-host-runner/src/index.ts:88`](../packages/extensions/cordis-host-runner/src/index.ts)
 
-<a id="deepseek-aidsh-credentials-local"></a>
+<a id="open-harnessoh-credentials-local"></a>
 
 ## `@open-harness/oh-credentials-local`
 
@@ -649,7 +649,7 @@ export interface Config {
 
 来源：[`packages/credentials/credentials-local/src/index.ts:55`](../packages/credentials/credentials-local/src/index.ts)
 
-<a id="deepseek-aidsh-credentials-oauth-tokens"></a>
+<a id="open-harnessoh-credentials-oauth-tokens"></a>
 
 ## `@open-harness/oh-credentials-oauth-tokens`
 
@@ -669,7 +669,7 @@ export interface Config {
 
 来源：[`packages/credentials/oauth-tokens/src/index.ts:42`](../packages/credentials/oauth-tokens/src/index.ts)
 
-<a id="deepseek-aidsh-e2b"></a>
+<a id="open-harnessoh-e2b"></a>
 
 ## `@open-harness/oh-e2b`
 
@@ -687,7 +687,7 @@ export interface Config {
 
 来源：[`packages/e2b/e2b/src/index.ts:43`](../packages/e2b/e2b/src/index.ts)
 
-<a id="deepseek-aidsh-fs-local"></a>
+<a id="open-harnessoh-fs-local"></a>
 
 ## `@open-harness/oh-fs-local`
 
@@ -706,7 +706,7 @@ export interface Config {
 
 来源：[`packages/fs/fs-local/src/index.ts:41`](../packages/fs/fs-local/src/index.ts)
 
-<a id="deepseek-aidsh-fs-sandbox"></a>
+<a id="open-harnessoh-fs-sandbox"></a>
 
 ## `@open-harness/oh-fs-sandbox`
 
@@ -722,11 +722,11 @@ export interface Config {
 export type Config = LocalConfig
 ```
 
-依赖：[`LocalConfig`](#deepseek-aidsh-fs-local)
+依赖：[`LocalConfig`](#open-harnessoh-fs-local)
 
 来源：[`packages/fs/fs-sandbox/src/index.ts:51`](../packages/fs/fs-sandbox/src/index.ts)
 
-<a id="deepseek-aidsh-goal"></a>
+<a id="open-harnessoh-goal"></a>
 
 ## `@open-harness/oh-goal`
 
@@ -742,7 +742,7 @@ export interface Config {
 
 来源：[`packages/goal/goal/src/index.ts:116`](../packages/goal/goal/src/index.ts)
 
-<a id="deepseek-aidsh-headless"></a>
+<a id="open-harnessoh-headless"></a>
 
 ## `@open-harness/oh-headless`
 
@@ -758,7 +758,7 @@ export interface Config {
 
 来源：[`packages/bundle/headless/src/index.ts:31`](../packages/bundle/headless/src/index.ts)
 
-<a id="deepseek-aidsh-hooks-claude-code"></a>
+<a id="open-harnessoh-hooks-claude-code"></a>
 
 ## `@open-harness/oh-hooks-claude-code`
 
@@ -796,7 +796,7 @@ export interface Config {
 
 来源：[`packages/hooks/hooks-claude-code/src/index.ts:45`](../packages/hooks/hooks-claude-code/src/index.ts)
 
-<a id="deepseek-aidsh-hooks-codex"></a>
+<a id="open-harnessoh-hooks-codex"></a>
 
 ## `@open-harness/oh-hooks-codex`
 
@@ -823,7 +823,7 @@ export interface Config {
 
 来源：[`packages/hooks/hooks-codex/src/index.ts:44`](../packages/hooks/hooks-codex/src/index.ts)
 
-<a id="deepseek-aidsh-host-apiproxy"></a>
+<a id="open-harnessoh-host-apiproxy"></a>
 
 ## `@open-harness/oh-host-apiproxy`
 
@@ -857,7 +857,7 @@ export interface Config {
 
 来源：[`packages/host/apiproxy/src/index.ts:41`](../packages/host/apiproxy/src/index.ts)
 
-<a id="deepseek-aidsh-host-directory-picker-browse"></a>
+<a id="open-harnessoh-host-directory-picker-browse"></a>
 
 ## `@open-harness/oh-host-directory-picker-browse`
 
@@ -871,7 +871,7 @@ export interface Config {
 
 来源：[`packages/host/directory-picker-browse/src/index.ts:181`](../packages/host/directory-picker-browse/src/index.ts)
 
-<a id="deepseek-aidsh-host-frontend-static"></a>
+<a id="open-harnessoh-host-frontend-static"></a>
 
 ## `@open-harness/oh-host-frontend-static`
 
@@ -887,7 +887,7 @@ export interface Config {
 
 来源：[`packages/host/frontend-static/src/index.ts:28`](../packages/host/frontend-static/src/index.ts)
 
-<a id="deepseek-aidsh-host-webserver"></a>
+<a id="open-harnessoh-host-webserver"></a>
 
 ## `@open-harness/oh-host-webserver`
 
@@ -903,7 +903,7 @@ export interface Config {
 
 来源：[`packages/host/webserver/src/index.ts:45`](../packages/host/webserver/src/index.ts)
 
-<a id="deepseek-aidsh-invariants"></a>
+<a id="open-harnessoh-invariants"></a>
 
 ## `@open-harness/oh-invariants`
 
@@ -921,7 +921,7 @@ export interface Config {
 
 来源：[`packages/runtime-diagnostics/invariants/src/index.ts:15`](../packages/runtime-diagnostics/invariants/src/index.ts)
 
-<a id="deepseek-aidsh-jobs-local"></a>
+<a id="open-harnessoh-jobs-local"></a>
 
 ## `@open-harness/oh-jobs-local`
 
@@ -944,7 +944,7 @@ export interface Config {
 
 来源：[`packages/jobs/jobs-local/src/index.ts:41`](../packages/jobs/jobs-local/src/index.ts)
 
-<a id="deepseek-aidsh-llm-deepseek"></a>
+<a id="open-harnessoh-llm-deepseek"></a>
 
 ## `@open-harness/oh-llm-deepseek`
 
@@ -1006,7 +1006,7 @@ export interface DeepSeekCatalogModel {
 
 来源：[`packages/llm/llm-deepseek/src/index.ts:62`](../packages/llm/llm-deepseek/src/index.ts)
 
-<a id="deepseek-aidsh-llm-pi-ai"></a>
+<a id="open-harnessoh-llm-pi-ai"></a>
 
 ## `@open-harness/oh-llm-pi-ai`
 
@@ -1203,7 +1203,7 @@ type WithheldThinkingFormat = 'chat-template' | 'qwen-chat-template'
 
 来源：[`packages/llm/llm-pi-ai/src/config.ts:172`](../packages/llm/llm-pi-ai/src/config.ts)
 
-<a id="deepseek-aidsh-llm-replay"></a>
+<a id="open-harnessoh-llm-replay"></a>
 
 ## `@open-harness/oh-llm-replay`
 
@@ -1271,7 +1271,7 @@ export interface ReplayModelConfig {
 
 来源：[`packages/test-support/llm-replay/src/index.ts:776`](../packages/test-support/llm-replay/src/index.ts)
 
-<a id="deepseek-aidsh-llm-retry"></a>
+<a id="open-harnessoh-llm-retry"></a>
 
 ## `@open-harness/oh-llm-retry`
 
@@ -1284,7 +1284,7 @@ export type Config = Readonly<Record<string, never>>
 
 来源：[`packages/llm/llm-retry/src/index.ts:24`](../packages/llm/llm-retry/src/index.ts)
 
-<a id="deepseek-aidsh-lsp-stdio"></a>
+<a id="open-harnessoh-lsp-stdio"></a>
 
 ## `@open-harness/oh-lsp-stdio`
 
@@ -1326,7 +1326,7 @@ export interface LspLocalServerConfig {
 
 来源：[`packages/lsp/lsp-stdio/src/index.ts:82`](../packages/lsp/lsp-stdio/src/index.ts)
 
-<a id="deepseek-aidsh-mcp-client"></a>
+<a id="open-harnessoh-mcp-client"></a>
 
 ## `@open-harness/oh-mcp-client`
 
@@ -1417,7 +1417,7 @@ export interface CredentialRefValue {
 
 来源：[`packages/mcp/mcp-client/src/index.ts:110`](../packages/mcp/mcp-client/src/index.ts)
 
-<a id="deepseek-aidsh-mcp-manager"></a>
+<a id="open-harnessoh-mcp-manager"></a>
 
 ## `@open-harness/oh-mcp-manager`
 
@@ -1433,7 +1433,7 @@ export interface Config {
 
 来源：[`packages/mcp/mcp-manager/src/index.ts:41`](../packages/mcp/mcp-manager/src/index.ts)
 
-<a id="deepseek-aidsh-message-feedback"></a>
+<a id="open-harnessoh-message-feedback"></a>
 
 ## `@open-harness/oh-message-feedback`
 
@@ -1449,7 +1449,7 @@ export interface Config {
 
 来源：[`packages/feedback/message-feedback/src/index.ts:49`](../packages/feedback/message-feedback/src/index.ts)
 
-<a id="deepseek-aidsh-permission-presets"></a>
+<a id="open-harnessoh-permission-presets"></a>
 
 ## `@open-harness/oh-permission-presets`
 
@@ -1503,7 +1503,7 @@ export interface PresetSpec {
 
 来源：[`packages/interaction/permission-presets/src/index.ts:140`](../packages/interaction/permission-presets/src/index.ts)
 
-<a id="deepseek-aidsh-persona"></a>
+<a id="open-harnessoh-persona"></a>
 
 ## `@open-harness/oh-persona`
 
@@ -1527,7 +1527,7 @@ export interface Config {
 
 来源：[`packages/preset/persona/src/index.ts:34`](../packages/preset/persona/src/index.ts)
 
-<a id="deepseek-aidsh-plan-mode"></a>
+<a id="open-harnessoh-plan-mode"></a>
 
 ## `@open-harness/oh-plan-mode`
 
@@ -1543,7 +1543,7 @@ export interface PlanModeConfig {
 
 来源：[`packages/plan/plan-mode/src/index.ts:70`](../packages/plan/plan-mode/src/index.ts)
 
-<a id="deepseek-aidsh-pwsh-local"></a>
+<a id="open-harnessoh-pwsh-local"></a>
 
 ## `@open-harness/oh-pwsh-local`
 
@@ -1576,7 +1576,7 @@ export interface Config {
 
 来源：[`packages/shell/pwsh-local/src/index.ts:58`](../packages/shell/pwsh-local/src/index.ts)
 
-<a id="deepseek-aidsh-pwsh-sandbox"></a>
+<a id="open-harnessoh-pwsh-sandbox"></a>
 
 ## `@open-harness/oh-pwsh-sandbox`
 
@@ -1594,11 +1594,11 @@ export interface Config {
 export type Config = LocalConfig
 ```
 
-依赖：[`LocalConfig`](#deepseek-aidsh-pwsh-local)
+依赖：[`LocalConfig`](#open-harnessoh-pwsh-local)
 
 来源：[`packages/shell/pwsh-sandbox/src/index.ts:40`](../packages/shell/pwsh-sandbox/src/index.ts)
 
-<a id="deepseek-aidsh-repeat-tool-reminder"></a>
+<a id="open-harnessoh-repeat-tool-reminder"></a>
 
 ## `@open-harness/oh-repeat-tool-reminder`
 
@@ -1632,7 +1632,7 @@ export interface Config {
 
 来源：[`packages/guard/repeat-tool-reminder/src/index.ts:28`](../packages/guard/repeat-tool-reminder/src/index.ts)
 
-<a id="deepseek-aidsh-sandbox-local"></a>
+<a id="open-harnessoh-sandbox-local"></a>
 
 ## `@open-harness/oh-sandbox-local`
 
@@ -1664,7 +1664,7 @@ export interface Config {
 
 来源：[`packages/sandbox/sandbox-local/src/index.ts:47`](../packages/sandbox/sandbox-local/src/index.ts)
 
-<a id="deepseek-aidsh-sandbox-policy"></a>
+<a id="open-harnessoh-sandbox-policy"></a>
 
 ## `@open-harness/oh-sandbox-policy`
 
@@ -1691,7 +1691,7 @@ export interface Config {
 
 来源：[`packages/sandbox/sandbox-policy/src/index.ts:70`](../packages/sandbox/sandbox-policy/src/index.ts)
 
-<a id="deepseek-aidsh-sdk-jsonrpc-server"></a>
+<a id="open-harnessoh-sdk-jsonrpc-server"></a>
 
 ## `@open-harness/oh-sdk-jsonrpc-server`
 
@@ -1715,7 +1715,7 @@ export interface JsonRpcConfig {
 
 来源：[`packages/sdk/server/src/index.ts:29`](../packages/sdk/server/src/index.ts)
 
-<a id="deepseek-aidsh-session-persistence-jsonl"></a>
+<a id="open-harnessoh-session-persistence-jsonl"></a>
 
 ## `@open-harness/oh-session-persistence-jsonl`
 
@@ -1754,7 +1754,7 @@ export type JsonlCompression = 'zstd' | 'none'
 
 来源：[`packages/session/session-persistence-jsonl/src/index.ts:60`](../packages/session/session-persistence-jsonl/src/index.ts)
 
-<a id="deepseek-aidsh-session-persistence-sqlite"></a>
+<a id="open-harnessoh-session-persistence-sqlite"></a>
 
 ## `@open-harness/oh-session-persistence-sqlite`
 
@@ -1799,7 +1799,7 @@ export type JournalMode = 'wal' | 'delete' | 'truncate' | 'persist'
 
 来源：[`packages/session/session-persistence-sqlite/src/index.ts:70`](../packages/session/session-persistence-sqlite/src/index.ts)
 
-<a id="deepseek-aidsh-session-projection-cache"></a>
+<a id="open-harnessoh-session-projection-cache"></a>
 
 ## `@open-harness/oh-session-projection-cache`
 
@@ -1822,7 +1822,7 @@ export interface Config {
 
 来源：[`packages/session/session-projection-cache/src/index.ts:42`](../packages/session/session-projection-cache/src/index.ts)
 
-<a id="deepseek-aidsh-session-query-sqlite"></a>
+<a id="open-harnessoh-session-query-sqlite"></a>
 
 ## `@open-harness/oh-session-query-sqlite`
 
@@ -1868,7 +1868,7 @@ export type JournalMode = 'wal' | 'delete' | 'truncate' | 'persist'
 
 来源：[`packages/session-query/session-query-sqlite/src/index.ts:89`](../packages/session-query/session-query-sqlite/src/index.ts)
 
-<a id="deepseek-aidsh-session-reference"></a>
+<a id="open-harnessoh-session-reference"></a>
 
 ## `@open-harness/oh-session-reference`
 
@@ -1888,7 +1888,7 @@ export interface Config {
 
 来源：[`packages/context/session-reference/src/config.ts:11`](../packages/context/session-reference/src/config.ts)
 
-<a id="deepseek-aidsh-session-telemetry-otel"></a>
+<a id="open-harnessoh-session-telemetry-otel"></a>
 
 ## `@open-harness/oh-session-telemetry-otel`
 
@@ -1934,7 +1934,7 @@ export enum SessionTelemetryMode {
 
 来源：[`packages/session/session-telemetry-otel/src/index.ts:91`](../packages/session/session-telemetry-otel/src/index.ts)
 
-<a id="deepseek-aidsh-session-title"></a>
+<a id="open-harnessoh-session-title"></a>
 
 ## `@open-harness/oh-session-title`
 
@@ -1954,7 +1954,7 @@ export interface Config {
 
 来源：[`packages/session/session-title/src/index.ts:79`](../packages/session/session-title/src/index.ts)
 
-<a id="deepseek-aidsh-session-title-all-prompts-llm"></a>
+<a id="open-harnessoh-session-title-all-prompts-llm"></a>
 
 ## `@open-harness/oh-session-title-all-prompts-llm`
 
@@ -1969,7 +1969,7 @@ export type Config = SessionTitleLlmConfig
 
 来源：[`packages/session/session-title-all-prompts-llm/src/index.ts:15`](../packages/session/session-title-all-prompts-llm/src/index.ts)
 
-<a id="deepseek-aidsh-session-title-first-prompt-llm"></a>
+<a id="open-harnessoh-session-title-first-prompt-llm"></a>
 
 ## `@open-harness/oh-session-title-first-prompt-llm`
 
@@ -1984,7 +1984,7 @@ export type Config = SessionTitleLlmConfig
 
 来源：[`packages/session/session-title-first-prompt-llm/src/index.ts:15`](../packages/session/session-title-first-prompt-llm/src/index.ts)
 
-<a id="deepseek-aidsh-settings-file"></a>
+<a id="open-harnessoh-settings-file"></a>
 
 ## `@open-harness/oh-settings-file`
 
@@ -2004,7 +2004,7 @@ export interface Config {
 
 来源：[`packages/settings/settings-file/src/index.ts:21`](../packages/settings/settings-file/src/index.ts)
 
-<a id="deepseek-aidsh-shell-env"></a>
+<a id="open-harnessoh-shell-env"></a>
 
 ## `@open-harness/oh-shell-env`
 
@@ -2018,7 +2018,7 @@ export interface Config {
 
 来源：[`packages/shell/shell-env/src/index.ts:29`](../packages/shell/shell-env/src/index.ts)
 
-<a id="deepseek-aidsh-skill"></a>
+<a id="open-harnessoh-skill"></a>
 
 ## `@open-harness/oh-skill`
 
@@ -2032,7 +2032,7 @@ export interface Config {
 
 来源：[`packages/skill/skill/src/index.ts:279`](../packages/skill/skill/src/index.ts)
 
-<a id="deepseek-aidsh-skill-filesystem"></a>
+<a id="open-harnessoh-skill-filesystem"></a>
 
 ## `@open-harness/oh-skill-filesystem`
 
@@ -2070,7 +2070,7 @@ export interface Config {
 
 来源：[`packages/skill/skill-filesystem/src/index.ts:49`](../packages/skill/skill-filesystem/src/index.ts)
 
-<a id="deepseek-aidsh-spill-local"></a>
+<a id="open-harnessoh-spill-local"></a>
 
 ## `@open-harness/oh-spill-local`
 
@@ -2088,7 +2088,7 @@ export interface Config {
 
 来源：[`packages/spill/spill-local/src/index.ts:22`](../packages/spill/spill-local/src/index.ts)
 
-<a id="deepseek-aidsh-spill-policy"></a>
+<a id="open-harnessoh-spill-policy"></a>
 
 ## `@open-harness/oh-spill-policy`
 
@@ -2108,7 +2108,7 @@ export interface Config {
 
 来源：[`packages/spill/spill-policy/src/index.ts:60`](../packages/spill/spill-policy/src/index.ts)
 
-<a id="deepseek-aidsh-storage-domain"></a>
+<a id="open-harnessoh-storage-domain"></a>
 
 ## `@open-harness/oh-storage-domain`
 
@@ -2131,7 +2131,7 @@ export interface Config {
 
 来源：[`packages/storage/storage-domain/src/index.ts:52`](../packages/storage/storage-domain/src/index.ts)
 
-<a id="deepseek-aidsh-storage-json"></a>
+<a id="open-harnessoh-storage-json"></a>
 
 ## `@open-harness/oh-storage-json`
 
@@ -2152,7 +2152,7 @@ export interface Config {
 
 来源：[`packages/storage/storage-json/src/index.ts:27`](../packages/storage/storage-json/src/index.ts)
 
-<a id="deepseek-aidsh-storage-sqlite"></a>
+<a id="open-harnessoh-storage-sqlite"></a>
 
 ## `@open-harness/oh-storage-sqlite`
 
@@ -2192,7 +2192,7 @@ export type JournalMode = 'wal' | 'delete' | 'truncate' | 'persist'
 
 来源：[`packages/storage/storage-sqlite/src/index.ts:24`](../packages/storage/storage-sqlite/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-acp"></a>
+<a id="open-harnessoh-subagent-acp"></a>
 
 ## `@open-harness/oh-subagent-acp`
 
@@ -2245,7 +2245,7 @@ export type PermissionPolicy = 'allow' | 'reject'
 
 来源：[`packages/subagent/subagent-acp/src/index.ts:27`](../packages/subagent/subagent-acp/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-claude-code"></a>
+<a id="open-harnessoh-subagent-claude-code"></a>
 
 ## `@open-harness/oh-subagent-claude-code`
 
@@ -2266,7 +2266,7 @@ export interface Config {
 
 来源：[`packages/subagent/subagent-claude-code/src/index.ts:32`](../packages/subagent/subagent-claude-code/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-codex"></a>
+<a id="open-harnessoh-subagent-codex"></a>
 
 ## `@open-harness/oh-subagent-codex`
 
@@ -2287,7 +2287,7 @@ export interface Config {
 
 来源：[`packages/subagent/subagent-codex/src/index.ts:30`](../packages/subagent/subagent-codex/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-dsh-sdk"></a>
+<a id="open-harnessoh-subagent-dsh-sdk"></a>
 
 ## `@open-harness/oh-subagent-dsh-sdk`
 
@@ -2340,7 +2340,7 @@ export interface Config {
 
 来源：[`packages/subagent/subagent-dsh-sdk/src/index.ts:29`](../packages/subagent/subagent-dsh-sdk/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-fork-in-process"></a>
+<a id="open-harnessoh-subagent-fork-in-process"></a>
 
 ## `@open-harness/oh-subagent-fork-in-process`
 
@@ -2356,7 +2356,7 @@ export interface Config {
 
 来源：[`packages/subagent/subagent-fork-in-process/src/index.ts:31`](../packages/subagent/subagent-fork-in-process/src/index.ts)
 
-<a id="deepseek-aidsh-subagent-spawn-in-process"></a>
+<a id="open-harnessoh-subagent-spawn-in-process"></a>
 
 ## `@open-harness/oh-subagent-spawn-in-process`
 
@@ -2372,7 +2372,7 @@ export interface Config {
 
 来源：[`packages/subagent/subagent-spawn-in-process/src/index.ts:25`](../packages/subagent/subagent-spawn-in-process/src/index.ts)
 
-<a id="deepseek-aidsh-subprocess-e2b"></a>
+<a id="open-harnessoh-subprocess-e2b"></a>
 
 ## `@open-harness/oh-subprocess-e2b`
 
@@ -2388,7 +2388,7 @@ export interface Config {
 
 来源：[`packages/e2b/subprocess-e2b/src/index.ts:25`](../packages/e2b/subprocess-e2b/src/index.ts)
 
-<a id="deepseek-aidsh-system-prompt"></a>
+<a id="open-harnessoh-system-prompt"></a>
 
 ## `@open-harness/oh-system-prompt`
 
@@ -2415,7 +2415,7 @@ export interface Config {
 
 来源：[`packages/core/system-prompt/src/index.ts:186`](../packages/core/system-prompt/src/index.ts)
 
-<a id="deepseek-aidsh-terminal-bash"></a>
+<a id="open-harnessoh-terminal-bash"></a>
 
 ## `@open-harness/oh-terminal-bash`
 
@@ -2460,7 +2460,7 @@ export interface Config {
 
 来源：[`packages/terminal/terminal-bash/src/config.ts:6`](../packages/terminal/terminal-bash/src/config.ts)
 
-<a id="deepseek-aidsh-time-context"></a>
+<a id="open-harnessoh-time-context"></a>
 
 ## `@open-harness/oh-time-context`
 
@@ -2478,7 +2478,7 @@ export interface Config {
 
 来源：[`packages/context/time-context/src/index.ts:27`](../packages/context/time-context/src/index.ts)
 
-<a id="deepseek-aidsh-tmux-context"></a>
+<a id="open-harnessoh-tmux-context"></a>
 
 ## `@open-harness/oh-tmux-context`
 
@@ -2494,7 +2494,7 @@ export interface Config {
 
 来源：[`packages/context/tmux-context/src/index.ts:34`](../packages/context/tmux-context/src/index.ts)
 
-<a id="deepseek-aidsh-token-meter"></a>
+<a id="open-harnessoh-token-meter"></a>
 
 ## `@open-harness/oh-token-meter`
 
@@ -2505,7 +2505,7 @@ export type TokenMeterConfig = Record<string, never>
 
 来源：[`packages/llm/token-meter/src/types.ts:12`](../packages/llm/token-meter/src/types.ts)
 
-<a id="deepseek-aidsh-tool-bash"></a>
+<a id="open-harnessoh-tool-bash"></a>
 
 ## `@open-harness/oh-tool-bash`
 
@@ -2521,7 +2521,7 @@ export interface Config {
 
 来源：[`packages/shell/tool-bash/src/index.ts:34`](../packages/shell/tool-bash/src/index.ts)
 
-<a id="deepseek-aidsh-tool-bash-persistent"></a>
+<a id="open-harnessoh-tool-bash-persistent"></a>
 
 ## `@open-harness/oh-tool-bash-persistent`
 
@@ -2543,7 +2543,7 @@ export interface Config {
 
 来源：[`packages/shell/tool-bash-persistent/src/index.ts:400`](../packages/shell/tool-bash-persistent/src/index.ts)
 
-<a id="deepseek-aidsh-tool-fs"></a>
+<a id="open-harnessoh-tool-fs"></a>
 
 ## `@open-harness/oh-tool-fs`
 
@@ -2565,7 +2565,7 @@ export interface Config {
 
 来源：[`packages/fs/tool-fs/src/index.ts:25`](../packages/fs/tool-fs/src/index.ts)
 
-<a id="deepseek-aidsh-tool-fs-search"></a>
+<a id="open-harnessoh-tool-fs-search"></a>
 
 ## `@open-harness/oh-tool-fs-search`
 
@@ -2600,7 +2600,7 @@ export interface Config {
 
 来源：[`packages/fs/tool-fs-search/src/index.ts:73`](../packages/fs/tool-fs-search/src/index.ts)
 
-<a id="deepseek-aidsh-tool-goal"></a>
+<a id="open-harnessoh-tool-goal"></a>
 
 ## `@open-harness/oh-tool-goal`
 
@@ -2616,7 +2616,7 @@ export interface Config {
 
 来源：[`packages/goal/tool-goal/src/index.ts:26`](../packages/goal/tool-goal/src/index.ts)
 
-<a id="deepseek-aidsh-tool-jobs"></a>
+<a id="open-harnessoh-tool-jobs"></a>
 
 ## `@open-harness/oh-tool-jobs`
 
@@ -2650,7 +2650,7 @@ export type CompletionDelivery = 'quiet' | 'wakeup'
 
 来源：[`packages/jobs/tool-jobs/src/index.ts:32`](../packages/jobs/tool-jobs/src/index.ts)
 
-<a id="deepseek-aidsh-tool-lsp"></a>
+<a id="open-harnessoh-tool-lsp"></a>
 
 ## `@open-harness/oh-tool-lsp`
 
@@ -2670,7 +2670,7 @@ export interface Config {
 
 来源：[`packages/lsp/tool-lsp/src/index.ts:58`](../packages/lsp/tool-lsp/src/index.ts)
 
-<a id="deepseek-aidsh-tool-pwsh"></a>
+<a id="open-harnessoh-tool-pwsh"></a>
 
 ## `@open-harness/oh-tool-pwsh`
 
@@ -2686,7 +2686,7 @@ export interface Config {
 
 来源：[`packages/shell/tool-pwsh/src/index.ts:52`](../packages/shell/tool-pwsh/src/index.ts)
 
-<a id="deepseek-aidsh-tool-ralph"></a>
+<a id="open-harnessoh-tool-ralph"></a>
 
 ## `@open-harness/oh-tool-ralph`
 
@@ -2708,7 +2708,7 @@ export interface Config {
 
 来源：[`packages/workflow/tool-ralph/src/index.ts:23`](../packages/workflow/tool-ralph/src/index.ts)
 
-<a id="deepseek-aidsh-tool-session-query"></a>
+<a id="open-harnessoh-tool-session-query"></a>
 
 ## `@open-harness/oh-tool-session-query`
 
@@ -2726,7 +2726,7 @@ export interface Config {
 
 来源：[`packages/session-query/tool-session-query/src/index.ts:29`](../packages/session-query/tool-session-query/src/index.ts)
 
-<a id="deepseek-aidsh-tool-skill"></a>
+<a id="open-harnessoh-tool-skill"></a>
 
 ## `@open-harness/oh-tool-skill`
 
@@ -2742,7 +2742,7 @@ export interface Config {
 
 来源：[`packages/skill/tool-skill/src/index.ts:61`](../packages/skill/tool-skill/src/index.ts)
 
-<a id="deepseek-aidsh-tool-str-replace-editor"></a>
+<a id="open-harnessoh-tool-str-replace-editor"></a>
 
 ## `@open-harness/oh-tool-str-replace-editor`
 
@@ -2760,7 +2760,7 @@ export interface Config {
 
 来源：[`packages/fs/tool-str-replace-editor/src/index.ts:497`](../packages/fs/tool-str-replace-editor/src/index.ts)
 
-<a id="deepseek-aidsh-tool-subagent"></a>
+<a id="open-harnessoh-tool-subagent"></a>
 
 ## `@open-harness/oh-tool-subagent`
 
@@ -2825,7 +2825,7 @@ export interface Config {
 
 来源：[`packages/subagent/tool-subagent/src/index.ts:29`](../packages/subagent/tool-subagent/src/index.ts)
 
-<a id="deepseek-aidsh-tool-subagent-report"></a>
+<a id="open-harnessoh-tool-subagent-report"></a>
 
 ## `@open-harness/oh-tool-subagent-report`
 
@@ -2847,7 +2847,7 @@ export interface Config {
 
 来源：[`packages/subagent/tool-subagent-report/src/index.ts:27`](../packages/subagent/tool-subagent-report/src/index.ts)
 
-<a id="deepseek-aidsh-tool-terminal"></a>
+<a id="open-harnessoh-tool-terminal"></a>
 
 ## `@open-harness/oh-tool-terminal`
 
@@ -2865,7 +2865,7 @@ export interface Config {
 
 来源：[`packages/terminal/tool-terminal/src/index.ts:35`](../packages/terminal/tool-terminal/src/index.ts)
 
-<a id="deepseek-aidsh-tool-todo"></a>
+<a id="open-harnessoh-tool-todo"></a>
 
 ## `@open-harness/oh-tool-todo`
 
@@ -2887,7 +2887,7 @@ export interface Config {
 
 来源：[`packages/todo/tool-todo/src/index.ts:29`](../packages/todo/tool-todo/src/index.ts)
 
-<a id="deepseek-aidsh-tool-web"></a>
+<a id="open-harnessoh-tool-web"></a>
 
 ## `@open-harness/oh-tool-web`
 
@@ -2913,7 +2913,7 @@ export interface Config {
 
 来源：[`packages/web/tool-web/src/index.ts:37`](../packages/web/tool-web/src/index.ts)
 
-<a id="deepseek-aidsh-tool-workflow"></a>
+<a id="open-harnessoh-tool-workflow"></a>
 
 ## `@open-harness/oh-tool-workflow`
 
@@ -2931,7 +2931,7 @@ export interface Config {
 
 来源：[`packages/workflow/tool-workflow/src/index.ts:33`](../packages/workflow/tool-workflow/src/index.ts)
 
-<a id="deepseek-aidsh-tools"></a>
+<a id="open-harnessoh-tools"></a>
 
 ## `@open-harness/oh-tools`
 
@@ -2967,7 +2967,7 @@ export type ToolPresentationMode = 'native' | 'code' | 'both'
 
 来源：[`packages/core/tools/src/index.ts:662`](../packages/core/tools/src/index.ts)
 
-<a id="deepseek-aidsh-typert-loader"></a>
+<a id="open-harnessoh-typert-loader"></a>
 
 ## `@open-harness/oh-typert-loader`
 
@@ -2983,7 +2983,7 @@ export interface Config {
 
 来源：[`packages/typert/loader/src/index.ts:47`](../packages/typert/loader/src/index.ts)
 
-<a id="deepseek-aidsh-user-approval"></a>
+<a id="open-harnessoh-user-approval"></a>
 
 ## `@open-harness/oh-user-approval`
 
@@ -3014,7 +3014,7 @@ export type ApprovalPolicy = 'ask' | 'never'
 
 来源：[`packages/interaction/user-approval/src/index.ts:177`](../packages/interaction/user-approval/src/index.ts)
 
-<a id="deepseek-aidsh-web"></a>
+<a id="open-harnessoh-web"></a>
 
 ## `@open-harness/oh-web`
 
@@ -3035,7 +3035,7 @@ export interface WebRuntimeConfig {
 
 来源：[`packages/web/web/src/index.ts:55`](../packages/web/web/src/index.ts)
 
-<a id="deepseek-aidsh-web-app"></a>
+<a id="open-harnessoh-web-app"></a>
 
 ## `@open-harness/oh-web-app`
 
@@ -3060,7 +3060,7 @@ export interface Config {
 
 来源：[`packages/bundle/web-app/src/index.ts:38`](../packages/bundle/web-app/src/index.ts)
 
-<a id="deepseek-aidsh-web-fetch-http"></a>
+<a id="open-harnessoh-web-fetch-http"></a>
 
 ## `@open-harness/oh-web-fetch-http`
 
@@ -3086,7 +3086,7 @@ export interface Config {
 
 来源：[`packages/web/web-fetch-http/src/index.ts:34`](../packages/web/web-fetch-http/src/index.ts)
 
-<a id="deepseek-aidsh-web-fetch-websift"></a>
+<a id="open-harnessoh-web-fetch-websift"></a>
 
 ## `@open-harness/oh-web-fetch-websift`
 
@@ -3106,7 +3106,7 @@ export interface Config {
 
 来源：[`packages/web/web-fetch-websift/src/index.ts:29`](../packages/web/web-fetch-websift/src/index.ts)
 
-<a id="deepseek-aidsh-web-search-deepseek"></a>
+<a id="open-harnessoh-web-search-deepseek"></a>
 
 ## `@open-harness/oh-web-search-deepseek`
 
@@ -3134,7 +3134,7 @@ export interface Config {
 
 来源：[`packages/web/web-search-deepseek/src/index.ts:46`](../packages/web/web-search-deepseek/src/index.ts)
 
-<a id="deepseek-aidsh-web-search-exa"></a>
+<a id="open-harnessoh-web-search-exa"></a>
 
 ## `@open-harness/oh-web-search-exa`
 
@@ -3158,7 +3158,7 @@ export interface Config {
 
 来源：[`packages/web/web-search-exa/src/index.ts:38`](../packages/web/web-search-exa/src/index.ts)
 
-<a id="deepseek-aidsh-web-search-perplexity"></a>
+<a id="open-harnessoh-web-search-perplexity"></a>
 
 ## `@open-harness/oh-web-search-perplexity`
 
@@ -3182,7 +3182,7 @@ export interface Config {
 
 来源：[`packages/web/web-search-perplexity/src/index.ts:32`](../packages/web/web-search-perplexity/src/index.ts)
 
-<a id="deepseek-aidsh-web-search-websift"></a>
+<a id="open-harnessoh-web-search-websift"></a>
 
 ## `@open-harness/oh-web-search-websift`
 
@@ -3202,7 +3202,7 @@ export interface Config {
 
 来源：[`packages/web/web-search-websift/src/index.ts:34`](../packages/web/web-search-websift/src/index.ts)
 
-<a id="deepseek-aidsh-workflow-worker-thread"></a>
+<a id="open-harnessoh-workflow-worker-thread"></a>
 
 ## `@open-harness/oh-workflow-worker-thread`
 
@@ -3232,7 +3232,7 @@ export interface Config {
 
 来源：[`packages/workflow/workflow-worker-thread/src/index.ts:32`](../packages/workflow/workflow-worker-thread/src/index.ts)
 
-<a id="deepseek-aidsh-workspace-references"></a>
+<a id="open-harnessoh-workspace-references"></a>
 
 ## `@open-harness/oh-workspace-references`
 

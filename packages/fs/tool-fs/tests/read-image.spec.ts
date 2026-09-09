@@ -80,8 +80,8 @@ let dir: string
 let home: string
 
 beforeEach(async () => {
-  dir = await mkdtemp(join(tmpdir(), 'dsh-read-image-'))
-  home = await mkdtemp(join(tmpdir(), 'dsh-read-image-home-'))
+  dir = await mkdtemp(join(tmpdir(), 'oh-read-image-'))
+  home = await mkdtemp(join(tmpdir(), 'oh-read-image-home-'))
 })
 afterEach(async () => {
   await rm(dir, { recursive: true, force: true })

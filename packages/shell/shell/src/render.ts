@@ -1,6 +1,6 @@
 /**
- * Shared rendering helpers for the shell tools (`dsh-tool-bash`,
- * `dsh-tool-pwsh`): the exit-status marker contract the tools' renderers
+ * Shared rendering helpers for the shell tools (`oh-tool-bash`,
+ * `oh-tool-pwsh`): the exit-status marker contract the tools' renderers
  * emit and the presentation layer parses back.
  * @module @open-harness/oh-shell/render
  */

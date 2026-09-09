@@ -11,7 +11,7 @@ import { decodeStorageRecord } from '@open-harness/oh-session'
 
 /**
  * The acp-agent example's snapshot suite: the scenario table for
- * `dsh-acp-snapshot`'s suite factory, which owns every compare/guard mechanic
+ * `oh-acp-snapshot`'s suite factory, which owns every compare/guard mechanic
  * (expected-output + re-persisted-log diffs, record/refresh write-back, the pinned-header
  * uniformity guard, the fixture guards). Fixtures live under `snapshots/<name>/`;
  * `pnpm run test:snapshot:record` re-records model transcripts against the real
@@ -20,7 +20,7 @@ import { decodeStorageRecord } from '@open-harness/oh-session'
  * .agents/notes/implemented/testing/2026-06-19-acp-snapshot-tests.md.
  */
 
-// The dsh-acp-demo bin (the demo:acp entry), this example's cordis.yml, and
+// The oh-acp-demo bin (the demo:acp entry), this example's cordis.yml, and
 // the repo-root tsconfig (four levels up from examples/acp-agent/tests) — all
 // ABSOLUTE: the subprocess cwd is a temp dir outside the repo.
 const AGENT = {
@@ -452,7 +452,7 @@ const SCENARIOS: Scenario[] = [
   // and the parent log pins call/call/result/result instead of the serial
   // interleaving. The twin delegations must stay identical: replay binds child
   // scripts and harvest order nondeterministically across concurrent children
-  // (XXX(concurrent-subagents) in dsh-llm-replay).
+  // (XXX(concurrent-subagents) in oh-llm-replay).
   { name: 'subagent-parallel', hasModelTurn: true, recorded: false },
   { name: 'subagent-fork-in-process', hasModelTurn: true, recorded: true },
   { name: 'subagent-mixed', hasModelTurn: true, recorded: true },

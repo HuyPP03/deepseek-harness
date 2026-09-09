@@ -81,7 +81,7 @@ afterEach(async () => {
 
 describe('command-compact real Loader composition', () => {
   it('discovers and executes /compact through the assembled command plane', async () => {
-    root = await mkdtemp(join(tmpdir(), 'dsh-command-compact-loader-'))
+    root = await mkdtemp(join(tmpdir(), 'oh-command-compact-loader-'))
     const configPath = join(root, 'cordis.yml')
     await writeFile(configPath, [
       "- name: '@open-harness/oh-commands'",

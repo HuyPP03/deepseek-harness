@@ -1,6 +1,6 @@
 /**
  * Model-facing result rendering for the pwsh tool — the PowerShell twin of
- * `dsh-tool-bash`'s renderer: stdout, a marked stderr section, sandbox
+ * `oh-tool-bash`'s renderer: stdout, a marked stderr section, sandbox
  * denial/runner-failure markers (with the same-turn escalation hint), and
  * truncation notices with spill paths, then exit-status markers. Non-zero
  * exits are reported, not errored — the model decides how to react; only
@@ -14,7 +14,7 @@ import type { ShellProcessRead, ShellSandboxInfo, CollectedOutput } from '@open-
 import type { SandboxMode } from '@open-harness/oh-sandbox'
 import { escalationHintMarker, sandboxDenialMarker } from '@open-harness/oh-sandbox'
 
-/* jscpd:ignore-start -- deliberate twin of dsh-tool-bash/render.ts (Agent Note). */
+/* jscpd:ignore-start -- deliberate twin of oh-tool-bash/render.ts (Agent Note). */
 
 /** Append the truncation notice (with the full-output spill path) to a stream's text. */
 function streamText(output: CollectedOutput): string {

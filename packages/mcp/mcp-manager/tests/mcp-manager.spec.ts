@@ -118,7 +118,7 @@ describe('mcp-manager', () => {
     })
     mockListTools.mockResolvedValue(listing('remote'))
     mockCallTool.mockResolvedValue({ content: [{ type: 'text', text: 'ok' }] })
-    dir = await mkdtemp(join(tmpdir(), 'dsh-mcp-manager-'))
+    dir = await mkdtemp(join(tmpdir(), 'oh-mcp-manager-'))
   })
 
   afterEach(async () => {
@@ -173,7 +173,7 @@ describe('mcp-manager', () => {
     await writeFile(join(dir, 'bad.cordis.yml'), stringify([
       { id: 'x', name: '@open-harness/oh-commands', config: {} },
     ], { lineWidth: 0 }))
-    await expect(mountHarness(dir)).rejects.toThrow(/must hold a single @deepseek-ai\/dsh-mcp-client entry/)
+    await expect(mountHarness(dir)).rejects.toThrow(/must hold a single @open-harness\/oh-mcp-client entry/)
     ctx = undefined as unknown as Context
   })
 

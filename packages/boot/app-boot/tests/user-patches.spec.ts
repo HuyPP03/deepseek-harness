@@ -1,5 +1,5 @@
 /**
- * User patch-layer behavior of `dsh-app-boot`: the optional patch-list loader
+ * User patch-layer behavior of `oh-app-boot`: the optional patch-list loader
  * (a profile's `cordis.patch.yml`) and `boot()` applying the user layer over
  * a real Loader tree, kept live through transactional HMR.
  */
@@ -21,9 +21,9 @@ import {
   watchUserPatches,
 } from '../src/index.ts'
 
-const NAME = 'dsh-test-bin'
+const NAME = 'oh-test-bin'
 
-const tmp = (): string => mkdtempSync(join(tmpdir(), 'dsh-user-patches-'))
+const tmp = (): string => mkdtempSync(join(tmpdir(), 'oh-user-patches-'))
 
 async function eventually(test: () => boolean, message: string): Promise<void> {
   const deadline = Date.now() + 10_000

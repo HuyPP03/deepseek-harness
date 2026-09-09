@@ -1,5 +1,5 @@
 /**
- * Generated scoped-event routing-subject resolvers for dsh-scope invariants.
+ * Generated scoped-event routing-subject resolvers for oh-scope invariants.
  * Do not edit by hand; run `pnpm run gen-scoped-events`.
  *
  * @module @open-harness/oh-scope/scoped-events.generated

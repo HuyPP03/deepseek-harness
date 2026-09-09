@@ -88,10 +88,10 @@ function main(): void {
   const expected = packed.get(entry.packageName)
   if (expected === undefined) throw new Error(`${entry.packageName} is not among the packed tarballs`)
 
-  const consumerRoot = mkdtempSync(join(tmpdir(), `dsh-packed-${family.id}-`))
+  const consumerRoot = mkdtempSync(join(tmpdir(), `oh-packed-${family.id}-`))
   try {
     writeFileSync(join(consumerRoot, 'package.json'), `${JSON.stringify({
-      name: `dsh-packed-install-${family.id}`,
+      name: `oh-packed-install-${family.id}`,
       version: '0.0.0',
       private: true,
       dependencies: Object.fromEntries([...packed].map(([name, entryPacked]) => [name, entryPacked.url])),
@@ -102,7 +102,7 @@ function main(): void {
     // Optional dependencies are omitted: the Landlock platform packages behind
     // them need a musl toolchain and one build per architecture, and a consumer
     // that cannot install them must still start — which is what optional means
-    // here. Their entry package is a plain dependency of dsh-sandbox-local, so
+    // here. Their entry package is a plain dependency of oh-sandbox-local, so
     // its tarball is supplied through --from.
     capture('npm', ['install', '--no-audit', '--no-fund', '--package-lock=false', '--omit=optional'],
       { cwd: consumerRoot, env: environment })

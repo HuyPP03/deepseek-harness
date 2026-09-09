@@ -14,7 +14,7 @@ afterEach(() => {
 })
 
 function fixture(exportPath = './lib/index.js'): string {
-  const root = mkdtempSync(join(tmpdir(), 'dsh-publint-all-'))
+  const root = mkdtempSync(join(tmpdir(), 'oh-publint-all-'))
   roots.push(root)
   const packageDir = join(root, 'packages/core/probe')
   mkdirSync(join(packageDir, 'lib'), { recursive: true })

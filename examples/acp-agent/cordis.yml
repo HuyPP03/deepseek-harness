@@ -158,8 +158,8 @@
 - id: repeat-tool-reminder
   name: '@open-harness/oh-repeat-tool-reminder'
 
-# The filesystem stack rides the SAME sandbox policy as bash: dsh-fs-sandbox
-# replaces dsh-fs-local behind ctx.fs and fences write/edit by the effective
+# The filesystem stack rides the SAME sandbox policy as bash: oh-fs-sandbox
+# replaces oh-fs-local behind ctx.fs and fences write/edit by the effective
 # mode (read-only denies, workspace-write contains to the workspace + temp
 # roots, danger-full-access passes through), so read/write/edit are available
 # under every mode. fs-observation-policy (read-before-edit) composes orthogonally on top.

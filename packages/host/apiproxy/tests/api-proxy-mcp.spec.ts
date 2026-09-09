@@ -106,7 +106,7 @@ describe('mcp RPC domain', () => {
   let dir: string
 
   beforeEach(async () => {
-    dir = await mkdtemp(join(tmpdir(), 'dsh-api-mcp-'))
+    dir = await mkdtemp(join(tmpdir(), 'oh-api-mcp-'))
   })
 
   afterEach(async () => {

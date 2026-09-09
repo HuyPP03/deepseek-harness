@@ -49,7 +49,7 @@ const LIMITS: ImageAttachmentLimits = {
 const roots: string[] = []
 
 async function root(): Promise<string> {
-  const value = await mkdtemp(join(tmpdir(), 'dsh-attachment-'))
+  const value = await mkdtemp(join(tmpdir(), 'oh-attachment-'))
   roots.push(value)
   return join(value, 'attachments', 'v1')
 }

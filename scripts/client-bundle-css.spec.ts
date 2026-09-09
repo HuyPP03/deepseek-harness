@@ -22,14 +22,14 @@ function cssPlugin(): CssPlugin {
   const client = configs.find(config => config.platform === 'browser')
   if (client === undefined) throw new Error('client config missing')
   const plugins = (client as { plugins: CssPlugin[] }).plugins
-  const plugin = plugins.find(candidate => candidate.name === 'dsh-css-modules-inline')
+  const plugin = plugins.find(candidate => candidate.name === 'oh-css-modules-inline')
   if (plugin === undefined) throw new Error('CSS Modules plugin missing from client config')
   return plugin
 }
 
 describe('client bundle CSS Modules', () => {
   it('registers the source stylesheet as a watch dependency', async () => {
-    const root = await mkdtemp(join(tmpdir(), 'dsh-client-css-watch-'))
+    const root = await mkdtemp(join(tmpdir(), 'oh-client-css-watch-'))
     try {
       const stylesheet = join(root, 'Fixture.module.css')
       const importer = join(root, 'index.ts')

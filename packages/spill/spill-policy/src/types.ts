@@ -3,9 +3,9 @@
  * execution the policy needs to derive the owning session for a spill artifact.
  *
  * `@open-harness/oh-tools`' `ToolExecution` satisfies this shape, so the policy
- * reads `exec` straight through without importing `dsh-tools` or `dsh-agent`.
+ * reads `exec` straight through without importing `oh-tools` or `oh-agent`.
  * Only the session HEADER id is read — the same identity every other subsystem
- * keys off (see `dsh-tool-bash`'s owner derivation).
+ * keys off (see `oh-tool-bash`'s owner derivation).
  *
  * @module @open-harness/oh-spill-policy/types
  */

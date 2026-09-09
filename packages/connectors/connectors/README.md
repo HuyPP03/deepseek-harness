@@ -1,8 +1,8 @@
-# dsh-connectors
+# oh-connectors
 
 English | [中文](README.zh.md)
 
-The connector catalog and state machine: predefined connections (Confluence, Figma, GitHub, Notion, Slack, …) and user-authored custom connectors, each mounting one or more MCP servers through [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md).
+The connector catalog and state machine: predefined connections (Confluence, Figma, GitHub, Notion, Slack, …) and user-authored custom connectors, each mounting one or more MCP servers through [`oh-mcp-manager`](../../mcp/mcp-manager/README.md).
 
 A connector is a manifest: the MCP server(s) it mounts, how it authenticates them, and the agent preset a session with it composes with. State is **derived at read time** from the authoritative seams — the credential store, the OAuth token store, the live MCP registry — so a connector can never claim a state the seams do not show.
 
@@ -88,7 +88,7 @@ None.
 ## Known Limitations and Deferred Work
 
 - **Boot-time credential failures surface as server down** — a mounted server whose document references an unconfigured credential fails its mcp-client connection attempts (reconnect backoff, state `down`); the product-level guard (`connect`'s pre-check) fails loud before a mount, so this only reaches a server whose credential was unset out from under it.
-- **No device-code engine** — the M365 device-code loop lands in a later phase; only the browser OAuth flow ([dsh-connectors-oauth-flow](../oauth-flow/README.md)) is composed today.
+- **No device-code engine** — the M365 device-code loop lands in a later phase; only the browser OAuth flow ([oh-connectors-oauth-flow](../oauth-flow/README.md)) is composed today.
 - **Polling for passive state** — registry flips without a connector operation (a server dropping, reconnecting) are visible on the next `list()`; no event is emitted for them.
 - **Overrides are a boot-time snapshot** — external edits of the override documents are not hot-reloaded.
 - **Custom connectors cannot use `$override` slots** — `addCustom` env and headers are literals only, so a self-hosted service whose server needs a base URL ships as a catalog manifest (Confluence) rather than a custom connector.

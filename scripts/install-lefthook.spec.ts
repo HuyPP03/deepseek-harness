@@ -133,7 +133,7 @@ function installPairingProbeFixture(root: string): void {
 }
 
 function createFixture(names: { main?: string; linked?: string } = {}): Fixture {
-  const container = mkdtempSync(join(tmpdir(), 'dsh-lefthook-'))
+  const container = mkdtempSync(join(tmpdir(), 'oh-lefthook-'))
   fixtures.push(container)
   const main = join(container, names.main ?? 'main')
   const linked = join(container, names.linked ?? 'linked')
@@ -176,11 +176,11 @@ function commonDirectory(fixture: Fixture): string {
 }
 
 function hooksPath(fixture: Fixture, root: string): string {
-  return join(gitDirectory(fixture, root), 'dsh-hooks')
+  return join(gitDirectory(fixture, root), 'oh-hooks')
 }
 
 function installLockPath(fixture: Fixture): string {
-  return join(commonDirectory(fixture), 'dsh-lefthook-install.lock')
+  return join(commonDirectory(fixture), 'oh-lefthook-install.lock')
 }
 
 async function waitForPath(path: string): Promise<void> {
@@ -334,7 +334,7 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
     ])
     for (const result of repeated) expect(result.status, result.stderr).toBe(0)
     expect(readFileSync(mainHookPath, 'utf8')).toBe(initialHook)
-    expect(existsSync(join(commonDirectory(fixture), 'dsh-lefthook-install.lock'))).toBe(false)
+    expect(existsSync(join(commonDirectory(fixture), 'oh-lefthook-install.lock'))).toBe(false)
     expect(existsSync(join(hooksPath(fixture, fixture.main), '.fake-lefthook-running'))).toBe(false)
   }, MULTI_PROCESS_TEST_TIMEOUT_MS)
 
@@ -440,7 +440,7 @@ describe('worktree-local Lefthook installer', { timeout: 30_000 }, () => {
   it('refuses dormant repository extensions before upgrading the repository format', async () => {
     const fixture = createFixture()
     const commonConfig = join(commonDirectory(fixture), 'config')
-    git(fixture, fixture.main, ['config', 'extensions.dshUnknown', 'true'])
+    git(fixture, fixture.main, ['config', 'extensions.ohUnknown', 'true'])
     expect(gitResult(fixture, fixture.main, ['status', '--porcelain']).status).toBe(0)
 
     const result = await runInstaller(fixture, fixture.main)
