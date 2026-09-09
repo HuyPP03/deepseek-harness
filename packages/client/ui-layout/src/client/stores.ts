@@ -19,7 +19,7 @@ import {
  * header's primary navigation is the driver (it syncs the value through the
  * layout face); the frame renders against it.
  */
-export type CenterView = 'conversation' | 'chats' | 'connectors'
+export type CenterView = 'conversation' | 'chats' | 'workspaces' | 'connectors'
 
 /**
  * Layout store state: panel width preferences in px (0 = closed), the center

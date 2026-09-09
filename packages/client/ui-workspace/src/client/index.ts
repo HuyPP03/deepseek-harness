@@ -13,10 +13,13 @@ import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client
 import type { ClientContext } from '@open-harness/oh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@open-harness/oh-client-locale/client'
-import type { ChatDashboardInjected, WorkspaceBrowserInjected, WorkspacePickerInjected } from './contract/slots.ts'
+import type {
+  ChatDashboardInjected, WorkspaceBrowserInjected, WorkspaceDashboardInjected, WorkspacePickerInjected,
+} from './contract/slots.ts'
 import { createWorkspaceViewStore } from './stores.ts'
 import { ChatDashboard } from './ChatDashboard.tsx'
 import { WorkspaceBrowser } from './WorkspaceBrowser.tsx'
+import { WorkspaceDashboard } from './WorkspaceDashboard.tsx'
 import { ReferenceProjectsChip, type ReferenceProjectsChipInjected } from './ReferenceProjectsChip.tsx'
 import { WorkspacePicker } from './WorkspacePicker.tsx'
 import { en, vi, zh, type WorkspaceKey } from './locales.ts'
@@ -24,7 +27,8 @@ import { en, vi, zh, type WorkspaceKey } from './locales.ts'
 export type {
   ChatDashboardInjected, ChatDashboardProps,
   DirectoryFlowOwnerProps, DirectoryFlowSlotName, DirectoryPickingHooks, DirectoryPickingInjected,
-  WorkspaceBrowserInjected, WorkspaceBrowserProps, WorkspacePickerInjected, WorkspacePickerProps,
+  WorkspaceBrowserInjected, WorkspaceBrowserProps, WorkspaceDashboardInjected, WorkspaceDashboardProps,
+  WorkspacePickerInjected, WorkspacePickerProps,
 } from './contract/slots.ts'
 export type { WorkspaceKey } from './locales.ts'
 
@@ -177,6 +181,18 @@ export function apply(ctx: ClientContext): void {
       hooks: { connectorPresetIds },
     }),
   }, ChatDashboard))
+
+  // The full-column workspace dashboard (the header's Workspaces tab): the
+  // card grid; a card click opens the workspace's newest session, or starts
+  // one when it holds none.
+  ctx.slots.inject('main.workspaces', () => ctx.slots.register({
+    name: 'main.workspaces',
+    locale: NS,
+    inject: (): WorkspaceDashboardInjected => ({
+      openSession: (sessionId) => { ctx.sessions.open(sessionId) },
+      startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
+    }),
+  }, WorkspaceDashboard))
 
   // The in-session reference-project chip: session context sits between the
   // process work (subagent catalog, job list) and the composition seat

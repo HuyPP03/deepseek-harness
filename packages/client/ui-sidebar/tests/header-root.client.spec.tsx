@@ -97,10 +97,10 @@ describe('HeaderRoot', () => {
 
   it('mirrors the browsing tab into the center view (no session current)', () => {
     const b = mountHeader({ currentSession: { current: undefined } })
-    // Mount syncs the persisted tab (workspaces) to the conversation view,
+    // Mount syncs the persisted tab (workspaces) to the workspace dashboard,
     // and exactly once — an unchanged tab issues no further writes.
     expect(b.setCenterView).toHaveBeenCalledTimes(1)
-    expect(b.setCenterView).toHaveBeenCalledWith('conversation')
+    expect(b.setCenterView).toHaveBeenCalledWith('workspaces')
 
     // Each tab change writes twice: the click re-asserts immediately, the
     // effect confirms after the tab store settles.
@@ -111,7 +111,7 @@ describe('HeaderRoot', () => {
     expect(b.setCenterView).toHaveBeenLastCalledWith('chats')
     expect(b.setCenterView).toHaveBeenCalledTimes(5)
     fireEvent.click(screen.getByRole('tab', { name: 'Workspaces' }))
-    expect(b.setCenterView).toHaveBeenLastCalledWith('conversation')
+    expect(b.setCenterView).toHaveBeenLastCalledWith('workspaces')
     expect(b.setCenterView).toHaveBeenCalledTimes(7)
     cleanup()
 

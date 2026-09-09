@@ -71,6 +71,15 @@ declare module '@open-harness/oh-client-ui-slots' {
     'main.chats': { kind: 'single'; scope: 'root' }
     /**
      * The full-column overlay above the center column, rendered while the
+     * layout store's centerView is 'workspaces' (the header's Workspaces tab
+     * drives it). OCCUPIED by ui-workspace's workspace dashboard — the
+     * workspace card grid; a card click opens the workspace's newest session
+     * (or starts one). The conversation underneath stays mounted, so
+     * switching back restores it in place.
+     */
+    'main.workspaces': { kind: 'single'; scope: 'root' }
+    /**
+     * The full-column overlay above the center column, rendered while the
      * layout store's centerView is 'connectors' (the header's Connectors tab
      * drives it). OCCUPIED by ui-connectors' connectors directory — the
      * big browse cards and the selected provider's detail. The conversation
@@ -155,6 +164,7 @@ export function apply(ctx: ClientContext): void {
         'sidebar': { kind: 'single', scope: 'root' },
         'conversation': { kind: 'single', scope: 'session-maybe' },
         'main.chats': { kind: 'single', scope: 'root' },
+        'main.workspaces': { kind: 'single', scope: 'root' },
         'main.connectors': { kind: 'single', scope: 'root' },
         'details': { kind: 'single', scope: 'session' },
         'shell.overlay': { kind: 'list', scope: 'root' },

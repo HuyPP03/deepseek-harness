@@ -4,9 +4,12 @@ import { describe, expect, it, vi } from 'vitest'
 import { SlotRegistry, createSnapshotStore } from '@open-harness/oh-client-runtime/client'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import { apply, inject } from '@open-harness/oh-client-ui-workspace/client'
-import type { ChatDashboardInjected, WorkspaceBrowserInjected, WorkspacePickerInjected } from '@open-harness/oh-client-ui-workspace/client'
+import type {
+  ChatDashboardInjected, WorkspaceBrowserInjected, WorkspaceDashboardInjected, WorkspacePickerInjected,
+} from '@open-harness/oh-client-ui-workspace/client'
 import { ChatDashboard } from '../src/client/ChatDashboard.tsx'
 import { WorkspaceBrowser } from '../src/client/WorkspaceBrowser.tsx'
+import { WorkspaceDashboard } from '../src/client/WorkspaceDashboard.tsx'
 import { WorkspacePicker } from '../src/client/WorkspacePicker.tsx'
 
 async function bench() {
@@ -43,7 +46,9 @@ async function bench() {
   }
 }
 
-type HoleName = 'sidebar.workspaces' | 'conversation.hero.workspace' | 'conversation.empty.workspace' | 'main.chats'
+type HoleName =
+  | 'sidebar.workspaces' | 'conversation.hero.workspace' | 'conversation.empty.workspace'
+  | 'main.chats' | 'main.workspaces'
 
 /** Declare any subset of the holes with a single root registration ('root' is a single slot). */
 function declare(slots: SlotRegistry, ...names: HoleName[]): () => void {
@@ -133,6 +138,21 @@ describe('ui-workspace apply', () => {
     expect([...dash.hooks.connectorPresetIds.getSnapshot()]).toEqual([])
   })
 
+  it('registers the workspace dashboard and routes its actions to the services', async () => {
+    const b = await bench()
+    declare(b.slots, 'main.workspaces')
+    await b.ctx.plugin({ inject: [...inject], apply }).await()
+    const entry = b.slots.entries('main.workspaces')[0]!
+    expect(entry.component).toBe(WorkspaceDashboard)
+    expect(entry.locale).toBe('workspace')
+
+    const dash = (entry.inject as () => WorkspaceDashboardInjected)()
+    dash.openSession('session' as never)
+    expect(b.open).toHaveBeenCalledWith('session')
+    dash.startSession('ws' as never)
+    expect(b.startSession).toHaveBeenCalledWith('ws')
+  })
+
   it('declares the two directory-flow holes and reports their occupancy per surface', async () => {
     const b = await bench()
     declare(b.slots, 'sidebar.workspaces', 'conversation.hero.workspace')
@@ -200,13 +220,14 @@ describe('ui-workspace apply', () => {
 
   it('unregisters every entry on teardown', async () => {
     const b = await bench()
-    declare(b.slots, 'sidebar.workspaces', 'conversation.hero.workspace', 'conversation.empty.workspace', 'main.chats')
+    declare(b.slots, 'sidebar.workspaces', 'conversation.hero.workspace', 'conversation.empty.workspace', 'main.chats', 'main.workspaces')
     const fiber = b.ctx.plugin({ inject: [...inject], apply })
     await fiber.await()
     await fiber.dispose()
     expect(b.slots.entries('sidebar.workspaces')).toHaveLength(0)
     expect(b.slots.entries('conversation.hero.workspace')).toHaveLength(0)
     expect(b.slots.entries('main.chats')).toHaveLength(0)
+    expect(b.slots.entries('main.workspaces')).toHaveLength(0)
     // expect(b.slots.entries('conversation.empty.workspace')).toHaveLength(0)
   })
 })

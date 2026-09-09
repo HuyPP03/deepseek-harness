@@ -20,7 +20,7 @@ import css from './AppFrame.module.css'
 /** Full composed props: runtime share + child-slot render share + store share. */
 export type AppFrameProps =
   & PropsRuntime<'root'>
-  & PropsRenderSlots<'shell.header' | 'sidebar' | 'conversation' | 'main.chats' | 'main.connectors' | 'details' | 'shell.overlay'>
+  & PropsRenderSlots<'shell.header' | 'sidebar' | 'conversation' | 'main.chats' | 'main.workspaces' | 'main.connectors' | 'details' | 'shell.overlay'>
   & PropsStore<ReturnType<typeof createLayoutStore>>
 
 /** Center column grid item (session-body building block). */
@@ -205,6 +205,11 @@ export function AppFrame({
           {panels.centerView === 'chats' && (
             <div className={css.centerOverlay} data-center-view="chats">
               {renderSlot('main.chats', {})}
+            </div>
+          )}
+          {panels.centerView === 'workspaces' && (
+            <div className={css.centerOverlay} data-center-view="workspaces">
+              {renderSlot('main.workspaces', {})}
             </div>
           )}
           {panels.centerView === 'connectors' && (

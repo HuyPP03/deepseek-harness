@@ -13,14 +13,13 @@ import type { HeaderRootComponentProps } from './contract/slots.ts'
 import css from './HeaderRoot.module.css'
 
 /**
- * The center view each browsing tab shows: Chats its dashboard, Connectors
- * the directory overlay; Workspaces keeps the conversation until the
- * workspace dashboard exists.
+ * The center view each browsing tab shows: Chats and Workspaces their
+ * dashboards, Connectors the directory overlay.
  */
 function viewForTab(tab: 'chats' | 'workspaces' | 'connectors'): CenterView {
   if (tab === 'connectors') return 'connectors'
   if (tab === 'chats') return 'chats'
-  return 'conversation'
+  return 'workspaces'
 }
 
 /**

@@ -212,3 +212,25 @@ export type ChatDashboardProps =
   & Omit<ChatDashboardInjected, 'hooks'>
   & ConnectorChatsHooks
   & PropsLocale<'workspace'>
+/**
+ * Workspace-dashboard injected share (arrives via the register inject
+ * factory): a card click opens the workspace's newest session, or starts a
+ * session in it when it holds none. Data reads use the global framework
+ * hooks.
+ */
+export type WorkspaceDashboardInjected = {
+  /** Open the session (card click on a workspace with sessions). */
+  openSession: (sessionId: SessionId) => void
+  /** Start a session in the workspace (card click on a session-less one): reuse-or-create its blank and open it. */
+  startSession: (workspaceId: WorkspaceId) => void
+}
+
+/**
+ * Full workspace-dashboard props: the root-scope global seats (useSessions /
+ * useWorkspaces), the injected actions, and the workspace-namespace locale
+ * seat.
+ */
+export type WorkspaceDashboardProps =
+  PropsRuntime<'main.workspaces'>
+  & WorkspaceDashboardInjected
+  & PropsLocale<'workspace'>
