@@ -2,7 +2,7 @@
 
 English | [中文](index.zh.md)
 
-Start the Web UI through the [root README](../../../README.md#run); the command prints its URL. This guide begins after that server is running. The `dsh` process uses its invoking directory as the default filesystem location, but a fresh Web UI has no selected workspace until you add one.
+Start the Web UI through the [root README](../../../README.md#run); the command prints its URL. This guide begins after that server is running. The `oh` process uses its invoking directory as the default filesystem location, but a fresh Web UI has no selected workspace until you add one.
 
 ## Configure a model
 
@@ -12,7 +12,7 @@ The [model configuration guide](./providers.md) covers other providers and custo
 
 ## Choose a workspace
 
-Click **Choose workspace** to open the workspace picker. Add the project directories you want to work in, then confirm: the first project you select becomes the session's main project, and you may add up to two more projects as read-only reference projects for comparison. You can also start a chat with no project: the session then runs in the directory where you started `dsh`. The session composer becomes available once you confirm.
+Click **Choose workspace** to open the workspace picker. Add the project directories you want to work in, then confirm: the first project you select becomes the session's main project, and you may add up to two more projects as read-only reference projects for comparison. You can also start a chat with no project: the session then runs in the directory where you started `oh`. The session composer becomes available once you confirm.
 
 While a session runs, the session header's reference control attaches and detaches reference projects (within the same limit); the model sees them as read-only comparison context from its next step onward.
 

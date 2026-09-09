@@ -20,7 +20,7 @@ function createWorkspace(): string {
   const root = mkdtempSync(join(tmpdir(), 'dsh-package-licenses-'))
   roots.push(root)
   writeManifest(root, 'package.json', {
-    name: '@deepseek-ai/dsh-root',
+    name: 'open-harness',
     license: 'MIT',
     workspaces: ['apps/*', 'packages/*/*', 'vendor/*'],
   })
@@ -30,7 +30,7 @@ function createWorkspace(): string {
 describe('DSH package license gate', () => {
   it('checks root, unhyphenated CLI, and dsh-prefixed package names while ignoring other families', () => {
     const root = createWorkspace()
-    writeManifest(root, 'apps/cli/package.json', { name: '@deepseek-ai/dsh', license: 'MIT' })
+    writeManifest(root, 'apps/cli/package.json', { name: 'oh', license: 'MIT' })
     writeManifest(root, 'packages/core/agent/package.json', {
       name: '@deepseek-ai/dsh-agent',
       license: 'BSD-3-Clause',

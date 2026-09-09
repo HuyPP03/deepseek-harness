@@ -1,4 +1,4 @@
-/** Published dsh web + pnpm dev:web → browser HMR, with no page reload. */
+/** Published oh web + pnpm dev:web → browser HMR, with no page reload. */
 
 import { existsSync } from 'node:fs'
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
@@ -72,7 +72,7 @@ it('hot-reloads a real client-plugin source edit without refreshing the page', a
   const sourcePath = join(REPO_ROOT, 'packages/client/ui-conversation/src/client/locales.ts')
   const bundlePath = join(REPO_ROOT, 'packages/client/ui-conversation/lib/client.js')
   const binPath = join(REPO_ROOT, 'apps/cli/lib/bin.js')
-  if (!existsSync(binPath)) throw new Error('HMR browser test needs the built dsh bin; run pnpm run build first')
+  if (!existsSync(binPath)) throw new Error('HMR browser test needs the built oh bin; run pnpm run build first')
   const originalSource = await readFile(sourcePath)
   const originalBundle = await readFile(bundlePath)
   const oldText = 'Into the Unknown'
@@ -99,7 +99,7 @@ it('hot-reloads a real client-plugin source edit without refreshing the page', a
         DSH_HOME: join(world, '.dsh'),
       },
     ))
-    const baseUrl = await waitForOutput(host, /dsh web: (http:\/\/[^\s]+)/, 'built dsh web')
+    const baseUrl = await waitForOutput(host, /oh web: (http:\/\/[^\s]+)/, 'built oh web')
     browser = await chromium.launch()
     const page = await browser.newPage()
     const pageErrors: string[] = []

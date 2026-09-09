@@ -99,7 +99,7 @@ const CHAT_PRESET_ID = 'chat'
 
 /**
  * Model-visible orientation and acceptance boundary for sessions created
- * through `dsh web`. Chat sessions run without a project directory, so they
+ * through `oh web`. Chat sessions run without a project directory, so they
  * get the orientation lines only — the client-plugin update contract is
  * coding-workflow vocabulary a general assistant does not need.
  */
@@ -114,7 +114,7 @@ function webSurfacePrompt(webUrl: string, chat: boolean): string {
   return base
     + updateContract
     + 'Starting another server does not update this GUI. '
-    + 'The apps/web Vite entry builds the shell but is not a standalone application because only dsh web injects window.__DSH_BOOT__. '
+    + 'The apps/web Vite entry builds the shell but is not a standalone application because only oh web injects window.__DSH_BOOT__. '
     + 'Do not start a replacement server unless the user asks; if one is needed, use a managed background job and verify its exact URL.'
 }
 
@@ -181,7 +181,7 @@ export function apply(ctx: Context, config: Config): void {
       // Reuse the exact LAN snapshot provided to the /api trust fence.
       const lanCandidate = runtime.lanAddresses[0]
       const port = ctx.webServer.port
-      console.log(`dsh web: ${localWebUrl(ctx)}${lanCandidate === undefined ? '' : ` (LAN: http://${lanCandidate}:${String(port)})`}`)
+      console.log(`oh web: ${localWebUrl(ctx)}${lanCandidate === undefined ? '' : ` (LAN: http://${lanCandidate}:${String(port)})`}`)
     }
     // This row's own activation can precede a sibling failure. The app owns
     // readiness by waiting for its Loader tree, or prints at once in a

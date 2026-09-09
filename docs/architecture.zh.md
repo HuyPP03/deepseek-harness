@@ -14,7 +14,7 @@
 
 ## Profile 与组合包
 
-运行中的 `dsh` 是一棵插件树，由启动时按序叠加的各层组合而成。
+运行中的 `oh` 是一棵插件树，由启动时按序叠加的各层组合而成。
 
 **profile** 是存放在 Harness home 中的具名组装。它列出自己叠放的组合包，存放自己安装的树外插件，并保存用户自己的 `cordis.patch.yml`。`web` 和 `headless` 作为模板随发行版交付。
 
@@ -29,7 +29,7 @@
 要查看你的机器实际启动的配置树：
 
 ```sh
-dsh --profile web --dump-config
+oh --profile web --dump-config
 ```
 
 它打印出的任何条目，都可以由你自己的 patch 替换。
