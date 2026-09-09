@@ -2287,9 +2287,27 @@ export interface Config {
 
 来源：[`packages/subagent/subagent-codex/src/index.ts:30`](../packages/subagent/subagent-codex/src/index.ts)
 
-<a id="open-harnessoh-subagent-dsh-sdk"></a>
+<a id="open-harnessoh-subagent-fork-in-process"></a>
 
-## `@open-harness/oh-subagent-dsh-sdk`
+## `@open-harness/oh-subagent-fork-in-process`
+
+需要：`subagents`
+
+```ts config-catalog
+/** Config: the registry name to register the provider under. */
+export interface Config {
+  /** Provider name on `ctx.subagents` (default `fork`). */
+  providerName: string
+}
+```
+
+来源：[`packages/subagent/subagent-fork-in-process/src/index.ts:31`](../packages/subagent/subagent-fork-in-process/src/index.ts)
+
+<a id="open-harnessoh-subagent-spawn-in-process"></a>
+
+<a id="open-harnessoh-subagent-sdk"></a>
+
+## `@open-harness/oh-subagent-sdk`
 
 需要：`subagents`
 
@@ -2338,25 +2356,7 @@ export interface Config {
 }
 ```
 
-来源：[`packages/subagent/subagent-dsh-sdk/src/index.ts:29`](../packages/subagent/subagent-dsh-sdk/src/index.ts)
-
-<a id="open-harnessoh-subagent-fork-in-process"></a>
-
-## `@open-harness/oh-subagent-fork-in-process`
-
-需要：`subagents`
-
-```ts config-catalog
-/** Config: the registry name to register the provider under. */
-export interface Config {
-  /** Provider name on `ctx.subagents` (default `fork`). */
-  providerName: string
-}
-```
-
-来源：[`packages/subagent/subagent-fork-in-process/src/index.ts:31`](../packages/subagent/subagent-fork-in-process/src/index.ts)
-
-<a id="open-harnessoh-subagent-spawn-in-process"></a>
+来源：[`packages/subagent/subagent-sdk/src/index.ts:29`](../packages/subagent/subagent-sdk/src/index.ts)
 
 ## `@open-harness/oh-subagent-spawn-in-process`
 

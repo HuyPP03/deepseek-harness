@@ -2285,9 +2285,25 @@ export interface Config {
 
 Source: [`packages/subagent/subagent-codex/src/index.ts:30`](../packages/subagent/subagent-codex/src/index.ts)
 
-<a id="open-harnessoh-subagent-dsh-sdk"></a>
+<a id="open-harnessoh-subagent-fork-in-process"></a>
 
-## `@open-harness/oh-subagent-dsh-sdk`
+## `@open-harness/oh-subagent-fork-in-process`
+
+Requires: `subagents`
+
+```ts config-catalog
+/** Config: the registry name to register the provider under. */
+export interface Config {
+  /** Provider name on `ctx.subagents` (default `fork`). */
+  providerName: string
+}
+```
+
+Source: [`packages/subagent/subagent-fork-in-process/src/index.ts:31`](../packages/subagent/subagent-fork-in-process/src/index.ts)
+
+<a id="open-harnessoh-subagent-sdk"></a>
+
+## `@open-harness/oh-subagent-sdk`
 
 Requires: `subagents`
 
@@ -2336,23 +2352,7 @@ export interface Config {
 }
 ```
 
-Source: [`packages/subagent/subagent-dsh-sdk/src/index.ts:29`](../packages/subagent/subagent-dsh-sdk/src/index.ts)
-
-<a id="open-harnessoh-subagent-fork-in-process"></a>
-
-## `@open-harness/oh-subagent-fork-in-process`
-
-Requires: `subagents`
-
-```ts config-catalog
-/** Config: the registry name to register the provider under. */
-export interface Config {
-  /** Provider name on `ctx.subagents` (default `fork`). */
-  providerName: string
-}
-```
-
-Source: [`packages/subagent/subagent-fork-in-process/src/index.ts:31`](../packages/subagent/subagent-fork-in-process/src/index.ts)
+Source: [`packages/subagent/subagent-sdk/src/index.ts:29`](../packages/subagent/subagent-sdk/src/index.ts)
 
 <a id="open-harnessoh-subagent-spawn-in-process"></a>
 

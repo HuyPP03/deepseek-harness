@@ -1,16 +1,16 @@
 /**
- * Package-owned invariant companion for `@open-harness/oh-subagent-dsh-sdk`.
- * @module @open-harness/oh-subagent-dsh-sdk/invariant
+ * Package-owned invariant companion for `@open-harness/oh-subagent-sdk`.
+ * @module @open-harness/oh-subagent-sdk/invariant
  */
 
 /* jscpd:ignore-start */
 import type { Context } from '@deepseek-ai/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
-const PACKAGE_NAME = '@open-harness/oh-subagent-dsh-sdk'
+const PACKAGE_NAME = '@open-harness/oh-subagent-sdk'
 
 /** Cordis companion plugin name. */
-export const name = 'subagent-dsh-sdk-invariant'
+export const name = 'subagent-sdk-invariant'
 /** Service required before the companion can reserve package ownership. */
 export const inject = ['invariants']
 

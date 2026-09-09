@@ -1,4 +1,4 @@
-# @open-harness/oh-subagent-dsh-sdk
+# @open-harness/oh-subagent-sdk
 
 [English](README.md) | 中文
 
@@ -39,8 +39,8 @@ Provider 不宣告任何启动期能力（`outputSchema`/`depthLimit`/`toolFilte
 | `disposeGraceMs` | `3000` | 终止后的退出确认窗口；POSIX 在 SIGTERM 之后、SIGKILL 之前也等待同样时长。 |
 
 ```yaml
-- id: subagent-dsh-sdk
-  name: '@open-harness/oh-subagent-dsh-sdk'
+- id: subagent-sdk
+  name: '@open-harness/oh-subagent-sdk'
   config:
     providerName: dsh-sdk
     command: node

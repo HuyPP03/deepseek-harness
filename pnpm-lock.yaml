@@ -626,9 +626,9 @@ importers:
       '@open-harness/oh-subagent-codex':
         specifier: workspace:*
         version: link:../packages/subagent/subagent-codex
-      '@open-harness/oh-subagent-dsh-sdk':
+      '@open-harness/oh-subagent-sdk':
         specifier: workspace:*
-        version: link:../packages/subagent/subagent-dsh-sdk
+        version: link:../packages/subagent/subagent-sdk
       '@open-harness/oh-subagent-fork-in-process':
         specifier: workspace:*
         version: link:../packages/subagent/subagent-fork-in-process
@@ -7728,7 +7728,7 @@ importers:
         specifier: 0.147.0
         version: 0.147.0
 
-  packages/subagent/subagent-dsh-sdk:
+  packages/subagent/subagent-sdk:
     dependencies:
       '@deepseek-ai/schemastery':
         specifier: link:../../../vendor/schemastery

@@ -75,7 +75,7 @@
     "@open-harness/oh-subagent-acp": "workspace:*",
     "@open-harness/oh-subagent-claude-code": "workspace:*",
     "@open-harness/oh-subagent-codex": "workspace:*",
-    "@open-harness/oh-subagent-dsh-sdk": "workspace:*",
+    "@open-harness/oh-subagent-sdk": "workspace:*",
     "@open-harness/oh-subagent-fork-in-process": "workspace:*",
     "@open-harness/oh-subagent-spawn-in-process": "workspace:*",
     "@open-harness/oh-subprocess-e2b": "workspace:*",
