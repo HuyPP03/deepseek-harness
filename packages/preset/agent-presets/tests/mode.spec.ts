@@ -40,15 +40,21 @@ type Script = (ReturnType<typeof textResponse> | 'hang')[]
  * LLM scripted by each test.
  * @param script - the model responses the tests will consume.
  * @param chatPresetIds - presets pinned as chat surfaces for the guard tests.
+ * @param providerPresetIds - presets claimed by a stubbed connectors service,
+ *   for the provider-preset guard tests.
  * @returns the booted context and its adapter.
  */
 async function harness(
   script: Script,
   chatPresetIds: string[] = [],
+  providerPresetIds: string[] = [],
 ): Promise<{ ctx: Context; adapter: MockAdapter }> {
   const ctx = new Context()
   contexts.push(ctx)
   ctx.baseUrl = pathToFileURL(FIXTURES).href + '/'
+  if (providerPresetIds.length > 0) {
+    ctx.provide('connectors', { presetIds: () => new Set(providerPresetIds) })
+  }
   await ctx.plugin(Loader)
   ctx.loader.builtins.include = Include
   await mountAgentLoopTestDependencies(ctx)
@@ -178,6 +184,43 @@ describe('the /mode command', () => {
     expect(run?.result.kind).toBe('error')
     expect(errorText(run!.result)).toContain('chat session')
     expect(catalog(ctx, agent)).toEqual(['chatlike_tool'])
+  })
+
+  it('refuses to switch into a provider preset', async () => {
+    const { ctx } = await harness([textResponse('ok')], [], ['gamma'])
+    const agent = await agentOn(ctx, 'mode-provider-into', 'alpha')
+
+    const run = await ctx.commands.execute(agent, '/mode gamma', signal())
+
+    expect(run?.result.kind).toBe('error')
+    expect(errorText(run!.result)).toContain('provider preset')
+    expect(catalog(ctx, agent)).toEqual(['alpha_tool'])
+    expect(agent.session.events.some(event => event.type === 'agent-preset/selected')).toBe(false)
+  })
+
+  it('refuses to switch out of a provider preset', async () => {
+    const { ctx } = await harness([textResponse('ok')], [], ['gamma'])
+    // A provider session is created ONTO its preset, so the header names it.
+    const agent = await agentOn(ctx, 'mode-provider-out', 'gamma', { agentPreset: 'gamma' })
+
+    const run = await ctx.commands.execute(agent, '/mode alpha', signal())
+
+    expect(run?.result.kind).toBe('error')
+    expect(errorText(run!.result)).toContain('provider preset')
+    expect(catalog(ctx, agent)).toEqual(['gamma_tool'])
+  })
+
+  it('keeps chat and provider presets out of the bare roster', async () => {
+    const { ctx } = await harness([textResponse('ok')], ['chatlike'], ['gamma'])
+    const agent = await agentOn(ctx, 'mode-roster', 'alpha', { agentPreset: 'alpha' })
+    await turn(agent)
+
+    const run = await ctx.commands.execute(agent, '/mode', signal())
+
+    expect(run?.result).toEqual({
+      kind: 'success',
+      text: 'current preset alpha (available: alpha, beta)',
+    })
   })
 
   it('refuses while a turn runs, then succeeds once it settles', async () => {

@@ -80,6 +80,8 @@ describe('rpcErrorSchema', () => {
     expect(rpcErrorSchema.parse({ code: 'command-error', message: 'm', details: {} }).code).toBe('command-error')
     expect(rpcErrorSchema.parse({ code: 'unknown-command', message: 'm', details: {} }).code).toBe('unknown-command')
     expect(rpcErrorSchema.parse({ code: 'title-invalid', message: 'm', details: { sessionId: 's' } }).code).toBe('title-invalid')
+    expect(rpcErrorSchema.parse({ code: 'job-not-found', message: 'm', details: { sessionId: 's', jobId: 'j' } }).code).toBe('job-not-found')
+    expect(rpcErrorSchema.parse({ code: 'job-unauthorized', message: 'm', details: { jobId: 'j' } }).code).toBe('job-unauthorized')
     // The credentials producer still emits this code, so the branch has to stay.
     expect(rpcErrorSchema.parse({ code: 'credential-rejected', message: 'm', details: { ref: 'r' } }).code).toBe('credential-rejected')
     expect(rpcErrorSchema.parse({ code: 'internal', message: 'm', details: {} }).code).toBe('internal')
@@ -88,6 +90,8 @@ describe('rpcErrorSchema', () => {
   it('rejects a known code with missing details', () => {
     expect(() => rpcErrorSchema.parse({ code: 'agent-busy', message: 'm', details: {} })).toThrow()
     expect(() => rpcErrorSchema.parse({ code: 'title-invalid', message: 'm', details: {} })).toThrow()
+    expect(() => rpcErrorSchema.parse({ code: 'job-not-found', message: 'm', details: { jobId: 'j' } })).toThrow()
+    expect(() => rpcErrorSchema.parse({ code: 'job-unauthorized', message: 'm', details: {} })).toThrow()
     expect(() => rpcErrorSchema.parse({ code: 'command-error', message: 'm' })).toThrow()
     expect(() => rpcErrorSchema.parse({ code: 'nope', message: 'm', details: {} })).toThrow()
   })

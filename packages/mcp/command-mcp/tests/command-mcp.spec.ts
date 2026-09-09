@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import CommandRuntime from '@deepseek-ai/dsh-commands'
+import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
+import ToolRuntime from '@deepseek-ai/dsh-tools'
 import { SESSION_FORMAT_VERSION, Session, SessionId, type SessionHeader } from '@deepseek-ai/dsh-session'
 import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
 import type { McpServerView } from '@deepseek-ai/dsh-mcp-registry'
@@ -16,6 +18,10 @@ interface Harness {
 async function harness(): Promise<Harness> {
   const ctx = new Context()
   await ctx.plugin(CommandRuntime)
+  // McpRegistry registers the model-facing bridge tools, so the registry
+  // needs the tool runtime (and its system-prompt dependency) to activate.
+  await ctx.plugin(SystemPrompt)
+  await ctx.plugin(ToolRuntime)
   await ctx.plugin(McpRegistry)
   const plugin = await ctx.plugin(commandMcp)
   const id = SessionId('command-mcp')

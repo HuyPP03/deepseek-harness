@@ -321,6 +321,11 @@ describe('new-session default', () => {
   })
 })
 
+/** A stubbed connectors service claiming the given presets as provider modes. */
+function provideConnectors(ctx: Context, presetIds: readonly string[]): void {
+  ctx.provide('connectors', { presetIds: () => new Set(presetIds) })
+}
+
 describe('chat session pinning', () => {
   const chatConfig: Config = {
     presets: {
@@ -345,6 +350,28 @@ describe('chat session pinning', () => {
     const ctx = await mounted({ config: chatConfig })
     const workspace = ctx.sessions.create(SessionId('workspace-fresh'), { meta: { agentPreset: 'standard' } })
     expect(workspace.events.map(event => [event.type, event.data])).toEqual([
+      ['permission/preset', { preset: 'workspace-write' }],
+      ['sandbox/mode', { mode: 'workspace-write' }],
+      ['approval/policy', { policy: 'ask' }],
+    ])
+  })
+
+  it('pins a fresh provider session read-only from the connectors claimed set', async () => {
+    const ctx = await mounted({ config: chatConfig })
+    provideConnectors(ctx, ['confluence'])
+    const provider = ctx.sessions.create(SessionId('provider-fresh'), { meta: { agentPreset: 'confluence' } })
+    expect(provider.events.map(event => [event.type, event.data])).toEqual([
+      ['permission/preset', { preset: 'read-only' }],
+      ['sandbox/mode', { mode: 'read-only' }],
+      ['approval/policy', { policy: 'ask' }],
+    ])
+  })
+
+  it('keeps the user default for a preset no connector claims', async () => {
+    const ctx = await mounted({ config: chatConfig })
+    provideConnectors(ctx, ['confluence'])
+    const other = ctx.sessions.create(SessionId('other-fresh'), { meta: { agentPreset: 'standard' } })
+    expect(other.events.map(event => [event.type, event.data])).toEqual([
       ['permission/preset', { preset: 'workspace-write' }],
       ['sandbox/mode', { mode: 'workspace-write' }],
       ['approval/policy', { policy: 'ask' }],
@@ -395,8 +422,9 @@ describe('chat /permission switch', () => {
   }
 
   /** Store-created session plus an idle stub agent the command executor accepts. */
-  async function harness(agentPreset?: string): Promise<{ ctx: Context; agent: Agent }> {
+  async function harness(agentPreset?: string, providerPresetIds?: readonly string[]): Promise<{ ctx: Context; agent: Agent }> {
     const ctx = new Context()
+    if (providerPresetIds !== undefined) provideConnectors(ctx, providerPresetIds)
     await ctx.plugin(SessionStore)
     await ctx.plugin(CommandRuntime)
     await ctx.plugin(AgentRegistry)
@@ -462,5 +490,15 @@ describe('chat /permission switch', () => {
     expect(execution).not.toBeUndefined()
     expect(execution!.result.kind).toBe('success')
     expect(ctx.permissionPresets.current(agent.session.events)).toBe('workspace-write')
+  })
+
+  it('refuses the switch while a session runs a provider preset', async () => {
+    const { ctx, agent } = await harness('confluence', ['confluence'])
+    const execution = await ctx.commands.execute(agent, '/permission workspace-write', new AbortController().signal)
+    expect(execution).not.toBeUndefined()
+    expect(execution!.result.kind).toBe('error')
+    expect(execution!.result.text).toBe('Connector sessions run their provider preset and cannot switch permission presets.')
+    // No knob moved: the session still folds to the pinned read-only preset.
+    expect(ctx.permissionPresets.current(agent.session.events)).toBe('read-only')
   })
 })

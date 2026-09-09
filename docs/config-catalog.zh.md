@@ -933,10 +933,16 @@ export interface Config {
    * omission defaults to 10.
    */
   maxConcurrentJobsPerOwner?: number
+  /**
+   * Retained characters (UTF-16 code units) of one job's human-view log,
+   * which the model read cursor rides: beyond the cap the head is dropped and
+   * the model's next read announces the loss once. Omission defaults to 2 Mi.
+   */
+  jobLogRetainChars?: number
 }
 ```
 
-来源：[`packages/jobs/jobs-local/src/index.ts:31`](../packages/jobs/jobs-local/src/index.ts)
+来源：[`packages/jobs/jobs-local/src/index.ts:41`](../packages/jobs/jobs-local/src/index.ts)
 
 <a id="deepseek-aidsh-llm-deepseek"></a>
 
@@ -970,6 +976,13 @@ export interface Config {
   models?: DeepSeekCatalogModel[]
   /** Maximum provider idle time while one stream read is outstanding (default five minutes). */
   streamIdleTimeoutMs?: number
+  /**
+   * Maximum provider idle time while a tool call is still streaming; omission
+   * keeps {@link streamIdleTimeoutMs} for the whole stream. Servers that batch
+   * tool-call arguments (vLLM tool parsers) emit a long file write as one late
+   * event, so the tool phase needs its own, wider window.
+   */
+  toolCallStreamIdleTimeoutMs?: number
   /** Provider-owned model-request retry policy; omission uses normal defaults. */
   retryPolicy?: RetryPolicyConfig
 }
@@ -1085,6 +1098,13 @@ export interface PiAiProviderProfile {
   websocketConnectTimeoutMs?: number
   /** Maximum provider idle time while one stream read is outstanding. */
   streamIdleTimeoutMs?: number
+  /**
+   * Maximum provider idle time while a tool call is still streaming; omission
+   * keeps {@link streamIdleTimeoutMs} for the whole stream. Servers that batch
+   * tool-call arguments (vLLM tool parsers) emit a long file write as one late
+   * event, so the tool phase needs its own, wider window.
+   */
+  toolCallStreamIdleTimeoutMs?: number
   /** Provider-owned model-request retry policy; omission uses normal defaults. */
   retryPolicy?: RetryPolicyConfig
 }

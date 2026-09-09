@@ -81,6 +81,7 @@ export function apply(ctx: ClientContext): void {
     load: () => controller.load(),
     openTokenDialog: (id) => { controller.openTokenDialog(id) },
     setDialogDraft: (ref, value) => { controller.setDialogDraft(ref, value) },
+    setDialogUrl: (value) => { controller.setDialogUrl(value) },
     closeDialog: () => { controller.closeDialog() },
     saveToken: () => controller.saveToken(),
     openOauthDialog: (id) => { controller.openOauthDialog(id) },
@@ -91,12 +92,11 @@ export function apply(ctx: ClientContext): void {
     authorize: id => controller.authorize(id),
     deviceLogin: id => controller.deviceLogin(id),
     disconnect: id => controller.disconnect(id),
-    selectProvider: id => controller.selectProvider(id),
-    openCustomDialog: () => controller.openCustomDialog(),
-    setCustomDraft: (field, value) => controller.setCustomDraft(field, value),
-    closeCustomDialog: () => controller.closeCustomDialog(),
+    selectProvider: (id) => { controller.selectProvider(id) },
+    openCustomDialog: () => { controller.openCustomDialog() },
+    setCustomDraft: (field, value) => { controller.setCustomDraft(field, value) },
+    closeCustomDialog: () => { controller.closeCustomDialog() },
     saveCustom: () => controller.saveCustom(),
-    removeCustom: id => controller.removeCustom(id),
     // Opening a chat from the directory must leave the overlay: the session
     // opens in the conversation column underneath, so the center view returns
     // to the conversation in the same step.
@@ -115,7 +115,7 @@ export function apply(ctx: ClientContext): void {
   const listInjected = (): ConnectedProvidersListInjected => ({
     hooks: { connectors: controller.store },
     load: () => controller.load(),
-    selectProvider: id => controller.selectProvider(id),
+    selectProvider: (id) => { controller.selectProvider(id) },
   })
   ctx.slots.inject('sidebar.connectors', () => ctx.slots.register(
     {

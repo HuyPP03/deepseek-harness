@@ -139,6 +139,20 @@ export interface JobRead {
   snapshot: JobSnapshot
 }
 
+/** Log and post-read state returned by {@link JobRegistry.log}. */
+export interface JobLogRead {
+  /**
+   * The job's retained output for human surfaces: stream kinds, everything
+   * drained so far (a bounded tail once the implementation's retention cap
+   * dropped earlier bytes); final-output kinds, empty while live, the
+   * terminal {@link JobOutcome.output} (or empty) once settled. Reading never
+   * advances the model-facing read cursor and marks nothing reported.
+   */
+  text: string
+  /** The job's state at read time. */
+  snapshot: JobSnapshot
+}
+
 /**
  * Completion callback with the exact owner supplied at start, or `undefined`
  * for an unowned job. Returned promises are observed but not awaited.

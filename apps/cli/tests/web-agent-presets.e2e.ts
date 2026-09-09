@@ -164,7 +164,9 @@ describe('the shipped Web composition', () => {
     // which preset composed it, so a two-tool benchmark surface would really
     // present three. A regression here means an agent-plane row came back to
     // the host composition.
-    expect(toolNames(ctx)).toEqual([])
+    // The lazy-mcp bridge trio is the one global exception: it reaches every
+    // agent so any preset can drive the connectors' mounted MCP servers.
+    expect(toolNames(ctx)).toEqual(['mcp_call', 'mcp_describe', 'mcp_list'])
   })
 
   it('keeps the token meter and its context-meter projections on the host plane', async () => {
@@ -198,14 +200,14 @@ describe('the shipped Web composition', () => {
     const listed = await ctx.agentPresets.list()
 
     expect(listed.map(preset => preset.id).sort()).toEqual([
-      'atlas', 'chat', 'code', 'cordis', 'custom', 'github', 'google', 'm365', 'minimal', 'notion', 'slack', 'standard',
+      'atlas', 'chat', 'code', 'cordis', 'custom', 'figma', 'github', 'google', 'm365', 'minimal', 'notion', 'slack', 'standard',
     ])
     expect(listed.every(preset => preset.trust === 'system')).toBe(true)
     expect(ctx.agentPresets.defaultId).toBe('standard')
   })
 
   it('composes every connector preset with the persona its file declares', async () => {
-    for (const id of ['atlas', 'custom', 'github', 'google', 'm365', 'notion', 'slack']) {
+    for (const id of ['atlas', 'custom', 'figma', 'github', 'google', 'm365', 'notion', 'slack']) {
       const handle = await ctx.agents.create({
         sessionId: SessionId(`preset-${id}`),
         setup: agentCtx => ctx.agentPresets.mount(agentCtx, id).then(() => undefined),
@@ -243,7 +245,8 @@ describe('the shipped Web composition', () => {
       // depend on ripgrep being present on the machine.
       expect(toolNames(ctx, handle.agent).filter(name => name !== 'glob' && name !== 'grep')).toEqual([
         'ask_user_question', 'bash', 'create_goal', 'edit', 'exit_plan_mode',
-        'get_goal', 'interrupt_agent', 'job_kill', 'job_list', 'job_output', 'list_agents', 'ralph', 'read', 'read_image', 'send_message', 'skill',
+        'get_goal', 'interrupt_agent', 'job_kill', 'job_list', 'job_output', 'list_agents', 'mcp_call', 'mcp_describe', 'mcp_list',
+        'ralph', 'read', 'read_image', 'send_message', 'skill',
         'subagent', 'subagent_fork', 'todo_write', 'update_goal', 'web_fetch', 'web_search',
         'workflow', 'write',
       ])
@@ -252,7 +255,7 @@ describe('the shipped Web composition', () => {
     }
   })
 
-  it('composes the exact RL prompt and two tools from `minimal`', async () => {
+  it('composes the exact RL prompt and tool layer from `minimal`', async () => {
     const handle = await ctx.agents.create({
       sessionId: SessionId('preset-minimal'),
       setup: agentCtx => ctx.agentPresets.mount(agentCtx, 'minimal').then(() => undefined),
@@ -262,7 +265,8 @@ describe('the shipped Web composition', () => {
       expect(assembly.sections).toEqual([
         { name: 'deployment:persona', text: MINIMAL_PROMPT },
       ])
-      expect(assembly.tools.map(tool => tool.name)).toEqual(['bash', 'str_replace_editor'])
+      // The lazy-mcp bridge trio joins every prompt's tool table, `minimal` included.
+      expect(assembly.tools.map(tool => tool.name)).toEqual(['bash', 'mcp_call', 'mcp_describe', 'mcp_list', 'str_replace_editor'])
       expect(assembly.tools.find(tool => tool.name === 'bash')?.description).toBe(MINIMAL_BASH_DESCRIPTION)
       expect(JSON.stringify(assembly.tools.find(tool => tool.name === 'str_replace_editor')?.parameters))
         .toContain('Absolute path')
@@ -283,14 +287,15 @@ describe('the shipped Web composition', () => {
       setup: agentCtx => ctx.agentPresets.mount(agentCtx, 'minimal').then(() => undefined),
     })
     try {
-      expect(toolNames(ctx, minimal.agent)).toEqual(['bash', 'str_replace_editor'])
+      expect(toolNames(ctx, minimal.agent)).toEqual(['bash', 'mcp_call', 'mcp_describe', 'mcp_list', 'str_replace_editor'])
       expect(toolNames(ctx, full.agent).length).toBeGreaterThan(10)
 
       await minimal.dispose()
 
-      // Tearing the minimal session down leaves the full one whole.
+      // Tearing the minimal session down leaves the full one whole; only the
+      // host-owned lazy-mcp trio remains in the global layer.
       expect(toolNames(ctx, full.agent).length).toBeGreaterThan(10)
-      expect(toolNames(ctx)).toEqual([])
+      expect(toolNames(ctx)).toEqual(['mcp_call', 'mcp_describe', 'mcp_list'])
     } finally {
       await full.dispose()
     }
@@ -432,7 +437,7 @@ describe('the shipped Web composition', () => {
       // stays the preset's choice — minimal mounts no `tool-skill`, so its
       // tool table has no loader even though the global layer is readable.
       expect((await ctx.skills.list({ scope: handle.agent })).map(skill => skill.name)).toContain('dsh-badge')
-      expect(toolNames(ctx, handle.agent)).toEqual(['bash', 'str_replace_editor'])
+      expect(toolNames(ctx, handle.agent)).toEqual(['bash', 'mcp_call', 'mcp_describe', 'mcp_list', 'str_replace_editor'])
     } finally {
       await handle.dispose()
     }
@@ -839,7 +844,7 @@ describe('authoring a preset on the shipped composition', () => {
     try {
       // The same tools the shipped `minimal` composes, from a directory copied
       // through the service into a root outside the installed harness.
-      expect(toolNames(authorCtx, handle.agent)).toEqual(['bash', 'str_replace_editor'])
+      expect(toolNames(authorCtx, handle.agent)).toEqual(['bash', 'mcp_call', 'mcp_describe', 'mcp_list', 'str_replace_editor'])
     } finally {
       await handle.dispose()
     }
@@ -874,9 +879,10 @@ describe('the default preset as a user setting', () => {
         setup: agentCtx => ctx.agentPresets.mount(agentCtx).then(() => undefined),
       })
       try {
-        // `mount()` with no id resolves the effective default. Two tools, not
-        // `standard`'s catalog: the setting decided the composition.
-        expect(toolNames(ctx, handle.agent)).toEqual(['bash', 'str_replace_editor'])
+        // `mount()` with no id resolves the effective default. `minimal`'s
+        // layer plus the lazy-mcp trio, not `standard`'s catalog: the setting
+        // decided the composition.
+        expect(toolNames(ctx, handle.agent)).toEqual(['bash', 'mcp_call', 'mcp_describe', 'mcp_list', 'str_replace_editor'])
       } finally {
         await handle.dispose()
       }
@@ -901,7 +907,7 @@ describe('a session keeps the preset it was created with', () => {
     try {
       // The api-proxy guard reads exactly this: the header records what the
       // session runs, so naming anything else is a caller error rather than a
-      // switch. Its history was produced under `minimal`'s two tools.
+      // switch. Its history was produced under `minimal`'s tool layer.
       expect(handle.agent.session.header.agentPreset).toBe('minimal')
     } finally {
       await handle.dispose()

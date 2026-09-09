@@ -9,7 +9,7 @@
 import { Context, Service } from '@deepseek-ai/cordis'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import type {
-  JobDoneListener, JobId, JobRead, JobSnapshot, JobStart, JobsChangedListener,
+  JobDoneListener, JobId, JobLogRead, JobRead, JobSnapshot, JobStart, JobsChangedListener,
 } from './types.ts'
 
 export { JobId } from './types.ts'
@@ -19,6 +19,7 @@ export type {
   JobKind,
   JobKindMap,
   JobOutcome,
+  JobLogRead,
   JobRead,
   JobSnapshot,
   JobStart,
@@ -107,6 +108,21 @@ export abstract class JobRegistry extends Service {
    * @returns output text and the post-read snapshot.
    */
   abstract read(id: JobId, caller?: Agent): JobRead
+
+  /**
+   * Read the job's retained output for human surfaces (the browser's job
+   * details panel) without touching model-facing state: the read cursor of
+   * {@link read} does not advance and the job is not marked reported. A
+   * reading that drains new producer output keeps the model's next read
+   * complete — the implementation owns the accumulation. Stream kinds return
+   * the retained tail (bounded by the implementation's retention);
+   * final-output kinds return empty while live and the terminal output once
+   * settled. Throws for an unknown or foreign job.
+   * @param id - job to read.
+   * @param caller - reading agent checked against the owner.
+   * @returns retained output text and the post-read snapshot.
+   */
+  abstract log(id: JobId, caller?: Agent): JobLogRead
 
   /**
    * Request cancellation, then mark the job stopping and reported. A producer

@@ -136,6 +136,13 @@ export interface PiAiProviderProfile {
   websocketConnectTimeoutMs?: number
   /** Maximum provider idle time while one stream read is outstanding. */
   streamIdleTimeoutMs?: number
+  /**
+   * Maximum provider idle time while a tool call is still streaming; omission
+   * keeps {@link streamIdleTimeoutMs} for the whole stream. Servers that batch
+   * tool-call arguments (vLLM tool parsers) emit a long file write as one late
+   * event, so the tool phase needs its own, wider window.
+   */
+  toolCallStreamIdleTimeoutMs?: number
   /** Provider-owned model-request retry policy; omission uses normal defaults. */
   retryPolicy?: RetryPolicyConfig
 }
@@ -151,6 +158,8 @@ export interface ResolvedPiAiProviderProfile
   apiKeyEnv?: CredentialRef
   /** Positive finite provider-idle interval after defaulting. */
   streamIdleTimeoutMs: number
+  /** Positive finite provider-idle interval for the tool-call phase after defaulting. */
+  toolCallStreamIdleTimeoutMs: number
   /** Immutable retry policy captured with this provider route. */
   retryPolicy: ResolvedRetryPolicy
   /**
@@ -248,6 +257,7 @@ const profile = z.object({
   timeoutMs: z.natural(),
   websocketConnectTimeoutMs: z.natural(),
   streamIdleTimeoutMs: z.number().min(Number.MIN_VALUE).max(MAX_TIMER_DELAY_MS).default(DEFAULT_STREAM_IDLE_TIMEOUT_MS),
+  toolCallStreamIdleTimeoutMs: z.number().min(Number.MIN_VALUE).max(MAX_TIMER_DELAY_MS),
   retryPolicy: RetryPolicySchema,
 })
 
@@ -323,6 +333,15 @@ export function resolveProfiles(
         `llm-pi-ai: provider "${provider}" streamIdleTimeoutMs must be a positive finite number no greater than ${MAX_TIMER_DELAY_MS}`,
       )
     }
+    const toolCallStreamIdleTimeoutMs = source.toolCallStreamIdleTimeoutMs ?? streamIdleTimeoutMs
+    if (source.toolCallStreamIdleTimeoutMs !== undefined
+      && (!Number.isFinite(source.toolCallStreamIdleTimeoutMs)
+        || source.toolCallStreamIdleTimeoutMs <= 0
+        || source.toolCallStreamIdleTimeoutMs > MAX_TIMER_DELAY_MS)) {
+      throw new Error(
+        `llm-pi-ai: provider "${provider}" toolCallStreamIdleTimeoutMs must be a positive finite number no greater than ${MAX_TIMER_DELAY_MS}`,
+      )
+    }
     // Detached from the configuration object because pi-ai types `Model.input`
     // mutable. The schema's explicit default covers an absent key, so an empty
     // list here is always one someone typed — and unlike an entry's, nothing
@@ -354,6 +373,7 @@ export function resolveProfiles(
       displayName,
       ...apiKeyEnv === undefined ? {} : { apiKeyEnv: credentialRef(apiKeyEnv) },
       streamIdleTimeoutMs,
+      toolCallStreamIdleTimeoutMs,
       retryPolicy: resolveRetryPolicy(retryPolicy, `llm-pi-ai: provider "${provider}" retryPolicy`),
       ...rest.headers === undefined ? {} : { headers: { ...rest.headers } },
       ...rest.thinkingBudgets === undefined ? {} : { thinkingBudgets: { ...rest.thinkingBudgets } },

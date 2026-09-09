@@ -1,0 +1,18 @@
+id: figma
+name: Figma
+description: Design files, node layout, and assets from Figma through its REST API.
+presetId: figma
+workspaceDirName: figma
+auth:
+  - mode: token
+    credentialRefs: [FIGMA_PERSONAL_ACCESS_TOKEN]
+    howTo: Create a personal access token in Figma under Settings, Security, Personal access tokens, scoped to file_content:read and folders:read.
+servers:
+  - serverName: figma
+    transport: stdio
+    command: npx
+    args: ['-y', 'figma-developer-mcp', '--stdio']
+    env: { FIGMA_API_KEY: { $cred: FIGMA_PERSONAL_ACCESS_TOKEN } }
+suggestions:
+  - Describe the layout of this Figma frame <design-url>
+  - Which components and design tokens does this Figma node use

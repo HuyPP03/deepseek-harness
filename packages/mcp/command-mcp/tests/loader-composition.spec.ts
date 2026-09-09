@@ -8,6 +8,8 @@ import Loader from '@deepseek-ai/cordis-plugin-loader'
 import Include from '@deepseek-ai/cordis-plugin-include'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import CommandRuntime from '@deepseek-ai/dsh-commands'
+import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
+import ToolRuntime from '@deepseek-ai/dsh-tools'
 import { SESSION_FORMAT_VERSION, Session, SessionId } from '@deepseek-ai/dsh-session'
 import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
 import * as commandMcp from '@deepseek-ai/dsh-command-mcp'
@@ -27,6 +29,8 @@ describe('command-mcp real Loader composition', () => {
     root = await mkdtemp(join(tmpdir(), 'dsh-command-mcp-loader-'))
     const configPath = join(root, 'cordis.yml')
     await writeFile(configPath, [
+      "- name: '@deepseek-ai/dsh-system-prompt'",
+      "- name: '@deepseek-ai/dsh-tools'",
       "- name: '@deepseek-ai/dsh-commands'",
       "- name: '@deepseek-ai/dsh-mcp-registry'",
       "- name: '@deepseek-ai/dsh-command-mcp'",
@@ -39,6 +43,8 @@ describe('command-mcp real Loader composition', () => {
     await context.plugin(Loader)
     context.loader.builtins.include = Include
     const modules = new Map<string, unknown>([
+      ['@deepseek-ai/dsh-system-prompt', SystemPrompt],
+      ['@deepseek-ai/dsh-tools', ToolRuntime],
       ['@deepseek-ai/dsh-commands', CommandRuntime],
       ['@deepseek-ai/dsh-mcp-registry', McpRegistry],
       ['@deepseek-ai/dsh-command-mcp', commandMcp],
@@ -84,6 +90,7 @@ describe('command-mcp real Loader composition', () => {
       name: 'mcp',
       description: 'List the connected MCP servers and their tools',
       input: { hint: '[server]' },
+      providerHidden: true,
     })
 
     const execution = await context.commands.execute(agent, '/mcp', new AbortController().signal)

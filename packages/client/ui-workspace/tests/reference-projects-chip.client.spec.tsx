@@ -31,18 +31,24 @@ function hook<T>(snapshot: T) {
 
 /**
  * Chip seat: the session id, a static workspace list, a static projection
- * value (undefined = capability uncomposed), and the setReferences spy.
+ * value (undefined = capability uncomposed), the setReferences spy, the
+ * session's agent preset (absent = the deployment composes no presets), and
+ * the connector preset set.
  */
 function props(
   view: RefView | undefined,
   workspaces: readonly WorkspaceView[],
   setReferences: (ids: readonly WorkspaceId[]) => Promise<RpcResult<{ accepted: true }>> = async () => OK,
+  agentPreset?: string,
+  connectorPresetIds: readonly string[] = [],
 ) {
   return {
     sessionId: SESSION,
+    useSessions: hook({ byId: { [SESSION]: { id: SESSION, displayTitle: 't', ...(agentPreset === undefined ? {} : { agentPreset }) } } }),
     useWorkspaces: hook({ items: workspaces } as WorkspaceListState),
     useProjection: (key: string) => (key === 'workspaceReferences' ? view : undefined),
     setReferences,
+    useConnectorPresetIds: hook(new Set(connectorPresetIds)),
     t,
   } as unknown as ReferenceProjectsChipProps
 }
@@ -62,9 +68,23 @@ describe('ReferenceProjectsChip visibility', () => {
     expect(container.innerHTML).toBe('')
   })
 
-  it('hides when no listed workspace owns the session', () => {
-    const { container } = render(<ReferenceProjectsChip {...props({ references: [], limit: 2 }, [workspace('own')])} />)
+  it('hides for a plain chat (no workspace, no provider preset)', () => {
+    const { container } = render(<ReferenceProjectsChip {...props({ references: [], limit: 2 }, [workspace('one'), workspace('two')])} />)
     expect(container.innerHTML).toBe('')
+  })
+
+  it('hides for a session running a preset no connector claims', () => {
+    const { container } = render(<ReferenceProjectsChip {...props({ references: [], limit: 2 }, [workspace('one')], async () => OK, 'standard', ['confluence'])} />)
+    expect(container.innerHTML).toBe('')
+  })
+
+  it('shows for a provider session, listing every registered workspace', () => {
+    render(<ReferenceProjectsChip {...props({ references: [], limit: 2 }, [workspace('one'), workspace('two')], async () => OK, 'confluence', ['confluence'])} />)
+    const trigger = screen.getByRole('button', { name: '参考项目' })
+    expect(trigger.textContent).toContain('添加参考项目')
+    openMenu()
+    expect(screen.getByRole('menuitem', { name: 'one' })).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: 'two' })).toBeTruthy()
   })
 
   it('closes an open menu when the capability frame disappears', () => {

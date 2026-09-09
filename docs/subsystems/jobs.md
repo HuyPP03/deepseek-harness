@@ -152,9 +152,25 @@ interface JobRead {
 }
 ```
 
+```ts type-equiv
+/** Log and post-read state returned by {@link JobRegistry.log}. */
+interface JobLogRead {
+  /**
+   * The job's retained output for human surfaces: stream kinds, everything
+   * drained so far (a bounded tail once the implementation's retention cap
+   * dropped earlier bytes); final-output kinds, empty while live, the
+   * terminal {@link JobOutcome.output} (or empty) once settled. Reading never
+   * advances the model-facing read cursor and marks nothing reported.
+   */
+  text: string
+  /** The job's state at read time. */
+  snapshot: JobSnapshot
+}
+```
+
 ## Service behavior
 
-The abstract [`JobRegistry`](../../packages/jobs/jobs/src/index.ts) Service Definition specifies atomic `start`, caller-scoped `get` and `list`, `read`, `kill`, bounded `wait`, failure-isolated `onJobDone` and `onJobsChanged` listeners, and when `attachController` becomes available; [`LocalJobRegistry`](../../packages/jobs/jobs-local/src/index.ts) is the process-local Service Provider. Authorization compares owner sessions; owner cleanup and admission use the exact registered `Agent` instance. The local provider's positive-safe-integer `maxConcurrentJobsPerOwner` config defaults to `10` and counts `running` plus `stopping` records per exact owner, with one shared bucket for unowned jobs; terminal producer settlement releases capacity. See [`dsh-jobs`](../../packages/jobs/jobs/README.md) for the Service Definition contract, [`dsh-jobs-local`](../../packages/jobs/jobs-local/README.md) for the registry lifecycle and admission policy, and [`dsh-tool-jobs`](../../packages/jobs/tool-jobs/README.md) for the model-facing Consumer.
+The abstract [`JobRegistry`](../../packages/jobs/jobs/src/index.ts) Service Definition specifies atomic `start`, caller-scoped `get` and `list`, the consuming `read` and the non-consuming human `log`, `kill`, bounded `wait`, failure-isolated `onJobDone` and `onJobsChanged` listeners, and when `attachController` becomes available; [`LocalJobRegistry`](../../packages/jobs/jobs-local/src/index.ts) is the process-local Service Provider. Authorization compares owner sessions; owner cleanup and admission use the exact registered `Agent` instance. The local provider's positive-safe-integer `maxConcurrentJobsPerOwner` config defaults to `10` and counts `running` plus `stopping` records per exact owner, with one shared bucket for unowned jobs; terminal producer settlement releases capacity. See [`dsh-jobs`](../../packages/jobs/jobs/README.md) for the Service Definition contract, [`dsh-jobs-local`](../../packages/jobs/jobs-local/README.md) for the registry lifecycle and admission policy, and [`dsh-tool-jobs`](../../packages/jobs/tool-jobs/README.md) for the model-facing Consumer.
 
 <!-- BEGIN GENERATED cordis-surface (gen-cordis-catalog.ts) — do not edit between markers -->
 
@@ -215,6 +231,21 @@ abstract get(id: JobId, caller?: Agent): JobSnapshot
  * @returns output text and the post-read snapshot.
  */
 abstract read(id: JobId, caller?: Agent): JobRead
+
+/**
+ * Read the job's retained output for human surfaces (the browser's job
+ * details panel) without touching model-facing state: the read cursor of
+ * {@link read} does not advance and the job is not marked reported. A
+ * reading that drains new producer output keeps the model's next read
+ * complete — the implementation owns the accumulation. Stream kinds return
+ * the retained tail (bounded by the implementation's retention);
+ * final-output kinds return empty while live and the terminal output once
+ * settled. Throws for an unknown or foreign job.
+ * @param id - job to read.
+ * @param caller - reading agent checked against the owner.
+ * @returns retained output text and the post-read snapshot.
+ */
+abstract log(id: JobId, caller?: Agent): JobLogRead
 
 /**
  * Request cancellation, then mark the job stopping and reported. A producer
@@ -286,5 +317,5 @@ abstract attachController(name: string): () => void
 
 Types: [Agent](core.md)
 
-Source: [`packages/jobs/jobs/src/index.ts:62`](../../packages/jobs/jobs/src/index.ts)
+Source: [`packages/jobs/jobs/src/index.ts:63`](../../packages/jobs/jobs/src/index.ts)
 <!-- END GENERATED cordis-surface -->

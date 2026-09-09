@@ -5,10 +5,13 @@
  * reference projects on the session through the whole-value
  * `session.setReferences` verb (every toggle resubmits the complete set;
  * the Host normalizes and logs one workspace/references event per change).
- * The menu lists every registered workspace except the session's own; an
- * attached reference whose path no longer matches a live workspace (deleted
- * registration) appears as a stale row that detaches on toggle. Sessions no
- * listed workspace owns (plain chat, unaccounted cwd) hide the chip.
+ * Eligibility mirrors the Host gate: a workspace-owned session or a session
+ * running a provider preset (a connector chat, whose fixed mode is the
+ * connector's) carries the chip; a plain chat has no project and hides it.
+ * The menu lists every registered workspace except the session's own; a
+ * non-owned session lists every registered workspace. An attached reference
+ * whose path no longer matches a live workspace (deleted registration)
+ * appears as a stale row that detaches on toggle.
  */
 import { useEffect, useMemo, useState } from 'react'
 import type { RpcResult } from '@deepseek-ai/dsh-api-remotes/client'
@@ -19,7 +22,8 @@ import type {
 // key merge (the /types subpath does not).
 import type {} from '@deepseek-ai/dsh-workspace-references'
 import { IconFolderClose16, Menu, type MenuEntry } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { HostObservable, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { ConnectorChatsHooks } from './contract/slots.ts'
 import css from './ReferenceProjectsChip.module.css'
 
 /** Whole-value reference-set mutation bound to the chip's session. */
@@ -30,13 +34,18 @@ export interface ReferenceProjectsChipInjected {
    * @returns the wire result.
    */
   setReferences: (referenceWorkspaceIds: readonly WorkspaceId[]) => Promise<RpcResult<{ accepted: true }>>
+  hooks: {
+    /** The preset ids of every connector; empty while none are loaded or the connectors plugin is composed out. */
+    connectorPresetIds: HostObservable<ReadonlySet<string>>
+  }
 }
 
 /** Full props for the session-header reference-project action. */
 export type ReferenceProjectsChipProps =
   PropsRuntime<'conversation.session.header.actions'>
   & { useProjection: UseProjection }
-  & ReferenceProjectsChipInjected
+  & Omit<ReferenceProjectsChipInjected, 'hooks'>
+  & ConnectorChatsHooks
   & PropsLocale<'workspace'>
 
 /** Stable prefix for the transient rows of references no live workspace serves. */
@@ -50,21 +59,27 @@ function pathBasename(path: string): string {
 
 /**
  * @param props - runtime slot currency, the projection seat, the bound
- *   setReferences callback, and the namespace translator.
- * @returns the trigger and its menu, or null when the session carries no
- *   workspace or the capability is uncomposed.
+ *   setReferences callback, the connector-preset source, and the namespace
+ *   translator.
+ * @returns the trigger and its menu, or null when the session has no
+ *   project surface (a plain chat) or the capability is uncomposed.
  */
 export function ReferenceProjectsChip({
-  sessionId, useWorkspaces, useProjection, setReferences, t,
+  sessionId, useSessions, useWorkspaces, useProjection, setReferences, useConnectorPresetIds, t,
 }: ReferenceProjectsChipProps) {
   const view = useProjection('workspaceReferences')
   const workspaces = useWorkspaces(state => state.items)
+  const connectorPresetIds = useConnectorPresetIds(ids => ids)
+  const agentPreset = useSessions(s => s.byId[sessionId]?.agentPreset)
   const [open, setOpen] = useState(false)
 
   // The owning workspace: membership in a listed workspace's sessionIds —
-  // the same rule the hero chip resolves the session's project with.
+  // the same rule the hero chip resolves the session's project with. A
+  // session without one still gets the chip while it runs a provider preset
+  // (a connector chat); a plain chat has no project to reference.
   const own = workspaces.find(workspace => workspace.sessionIds.includes(sessionId))
-  const hidden = view === undefined || own === undefined
+  const provider = agentPreset !== undefined && connectorPresetIds.has(agentPreset)
+  const hidden = view === undefined || (own === undefined && !provider)
 
   // A capability frame can disappear under an open menu (host projection
   // reset): close it before the unmount steals focus.
@@ -73,7 +88,7 @@ export function ReferenceProjectsChip({
   }, [hidden, open])
 
   const derived = useMemo(() => {
-    if (view === undefined || own === undefined) {
+    if (view === undefined) {
       return { referencedIds: [] as WorkspaceId[], rows: [] as MenuEntry[], selectedIds: [] as string[] }
     }
     const pathToId = new Map(workspaces.map(workspace => [workspace.path, workspace.workspaceId] as const))
@@ -83,7 +98,7 @@ export function ReferenceProjectsChip({
     const stalePaths = view.references.filter(path => pathToId.get(path) === undefined)
     const atCapacity = view.references.length >= view.limit
     const rows: MenuEntry[] = workspaces
-      .filter(workspace => workspace.workspaceId !== own.workspaceId)
+      .filter(workspace => own === undefined || workspace.workspaceId !== own.workspaceId)
       .map((workspace) => {
         const isReferenced = view.references.includes(workspace.path)
         return {

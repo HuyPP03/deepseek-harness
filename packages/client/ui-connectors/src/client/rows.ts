@@ -32,14 +32,17 @@ export function dotStateOf(state: ConnectorState): StateDotState {
 }
 
 /**
- * Whether the row offers the configure action (an unconfigured token method).
+ * Whether the row offers the configure action: an unconfigured token method,
+ * or a self-hosted row whose stored base URL is still missing (its connect
+ * precondition, independent of the token).
  * @param row - the roster row view.
- * @returns true for an unconfigured or needs-auth connector whose token method is not yet stored.
+ * @returns true for an unconfigured or needs-auth connector whose token method is not yet stored, or whose required base URL is.
  */
 export function canConfigure(row: ConnectorView): boolean {
   if (row.state !== 'unconfigured' && row.state !== 'needs-auth') return false
   const token = row.auth.find(entry => entry.mode === 'token')
-  return token !== undefined && !token.configured
+  if (token !== undefined && !token.configured) return true
+  return row.urlRequired === true && row.url === undefined
 }
 
 /**

@@ -141,7 +141,9 @@ const NO_TOOL_YML = [
 
 const fibers: Array<{ dispose: () => Promise<void> }> = []
 
-function track(fiber: { dispose: () => Promise<void> }): typeof fiber {
+// Generic T keeps the fiber's thenable identity (ctx.plugin returns
+// Fiber & PromiseLike<Fiber>) so callers can await the boot.
+function track<T extends { dispose: () => Promise<void> }>(fiber: T): T {
   fibers.push(fiber)
   return fiber
 }

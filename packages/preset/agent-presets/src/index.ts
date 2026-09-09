@@ -281,28 +281,53 @@ export class AgentPresets extends Service {
   }
 
   /**
-   * The `/mode` handler: report the current preset and roster, or switch to a
-   * named preset. A switch is refused on unknown ids, across a configured
-   * chat preset in either direction, and while the agent runs a turn; the
-   * switch itself serializes per session and re-reads the idle state under
-   * the lock.
+   * The preset ids the composed connectors claim: their sessions run a fixed
+   * provider mode, so `/mode` never crosses them in either direction. Absent
+   * when the deployment composes no connectors service.
+   * @returns the claimed preset ids, or `undefined` without a connectors service.
+   */
+  private providerPresetIds(): ReadonlySet<string> | undefined {
+    const connectors = this.selfCtx.get('connectors') as { presetIds(): ReadonlySet<string> } | undefined
+    return connectors?.presetIds()
+  }
+
+  /**
+   * The `/mode` handler: report the current preset and the switchable roster,
+   * or switch to a named preset. A switch is refused on unknown ids, across a
+   * configured chat preset in either direction, across a provider preset in
+   * either direction (a connector's session is created by its Connect flow,
+   * not by a mode switch), and while the agent runs a turn; the switch itself
+   * serializes per session and re-reads the idle state under the lock.
    * @param agent - the command's receiving agent.
    * @param rawInput - the text following the command name.
    * @returns the command result.
    */
   private async switchModeCommand(agent: Agent, rawInput: string): Promise<CommandResult> {
     const roster = await this.list()
-    const ids = roster.map(preset => preset.id)
+    const providerIds = this.providerPresetIds()
+    // The no-arg roster lists what a switch may target: fixed surfaces (chat
+    // presets, provider presets) cannot be targets, so they stay out.
+    const switchable = roster
+      .filter(preset => !this.chatPresetIds.includes(preset.id))
+      .filter(preset => providerIds === undefined || !providerIds.has(preset.id))
+      .map(preset => preset.id)
     const target = rawInput.trim()
     if (target === '') {
       const current = resolveSessionPreset(agent.session) ?? '(none)'
-      return { kind: 'success', text: `current preset ${current} (available: ${ids.join(', ')})` }
+      return { kind: 'success', text: `current preset ${current} (available: ${switchable.join(', ')})` }
     }
     const current = resolveSessionPreset(agent.session) ?? ''
     if (this.chatPresetIds.includes(current) || this.chatPresetIds.includes(target)) {
       return {
         kind: 'error',
         text: 'A chat session is fixed to its preset; switching out of or into a chat preset is refused.',
+      }
+    }
+    if ((providerIds !== undefined && providerIds.has(current))
+      || (providerIds !== undefined && providerIds.has(target))) {
+      return {
+        kind: 'error',
+        text: 'A connector session is fixed to its provider preset; switching out of or into a provider preset is refused.',
       }
     }
     if (agent.status === 'running') {

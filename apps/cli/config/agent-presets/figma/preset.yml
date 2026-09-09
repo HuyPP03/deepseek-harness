@@ -1,0 +1,3 @@
+name: Figma mode
+description: Read Figma design files, node layout, components, and assets through the connected Figma MCP tools.
+order: 11

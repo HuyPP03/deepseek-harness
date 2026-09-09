@@ -20,6 +20,7 @@ function ok<T>(request: RpcRequest<unknown>, value: T): Promise<RpcResponse<T>> 
 function scriptedApi(overrides: {
   sessions?: Partial<ApiProxy['sessions']>
   subagents?: Partial<ApiProxy['subagents']>
+  jobs?: Partial<ApiProxy['jobs']>
   host?: Partial<ApiProxy['host']>
   skills?: Partial<ApiProxy['skills']>
   files?: Partial<ApiProxy['files']>
@@ -73,6 +74,10 @@ function scriptedApi(overrides: {
       prompt: r => ok(r, { messageId: 'message-1' as never }),
       interrupt: r => ok(r, { accepted: true as const }),
       ...overrides.subagents,
+    },
+    jobs: {
+      log: r => ok(r, { text: '', truncated: false }),
+      ...overrides.jobs,
     },
     host: {
       describe: r => ok(r, {
@@ -246,6 +251,21 @@ describe('unary round trip', () => {
     const response = await client(api).sessions.fork({ sessionId: sid('s-parent'), atSeq: 7 })
     expect(seen?.payload).toEqual({ sessionId: 's-parent', atSeq: 7 })
     expect(response.result).toEqual({ ok: true, value: { sessionId: 's-child' } })
+  })
+
+  it('routes jobs.log with the requesting session and job id through the wire', async () => {
+    let seen: RpcRequest<{ sessionId: SessionId; jobId: string }> | undefined
+    const api = scriptedApi({
+      jobs: {
+        log: (request) => {
+          seen = request
+          return ok(request, { text: 'tail', truncated: true })
+        },
+      },
+    })
+    const response = await client(api).jobs.log({ sessionId: sid('s1'), jobId: 'bash-1' as never })
+    expect(seen?.payload).toEqual({ sessionId: 's1', jobId: 'bash-1' })
+    expect(response.result).toEqual({ ok: true, value: { text: 'tail', truncated: true } })
   })
 
   it('routes workspace rename, delete, and ordering through the wire', async () => {

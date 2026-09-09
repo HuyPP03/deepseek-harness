@@ -57,6 +57,15 @@ The catalog, the user's overrides, and the operations over both.
 async list(): Promise<readonly ConnectorView[]>
 
 /**
+ * The agent presets the known connectors' sessions run: a connector's
+ * preset is that session's fixed mode, so host gates (`/mode` switches,
+ * reference eligibility) read the provider set from here rather than
+ * parsing manifests themselves.
+ * @returns the claimed preset ids (catalog and custom connectors).
+ */
+presetIds(): ReadonlySet<string>
+
+/**
  * One connector's wire-safe view.
  * @param id - the connector id.
  * @returns the view, or `undefined` while the id is not in the catalog.
@@ -157,7 +166,7 @@ async addCustom(spec: AddCustomSpec): Promise<string>
 async removeCustom(id: string): Promise<void>
 ```
 
-Source: [`packages/connectors/connectors/src/index.ts:244`](../../packages/connectors/connectors/src/index.ts)
+Source: [`packages/connectors/connectors/src/index.ts:246`](../../packages/connectors/connectors/src/index.ts)
 
 <a id="ctxoauthtokens--oauthtokenstore"></a>
 
@@ -224,7 +233,7 @@ A connector's derived state changed as the result of a connector operation (conf
 'connector/state'(connectorId: string, state: ConnectorState): void
 ```
 
-Source: [`packages/connectors/connectors/src/types.ts:305`](../../packages/connectors/connectors/src/types.ts)
+Source: [`packages/connectors/connectors/src/types.ts:356`](../../packages/connectors/connectors/src/types.ts)
 
 <a id="oauth-tokens-events"></a>
 

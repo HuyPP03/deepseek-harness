@@ -177,6 +177,13 @@ export class FakeApiClient implements IApiClient {
     interrupt: (payload: unknown) => this.record('subagent.interrupt', payload, this.onSubagentInterrupt(payload)),
   }
 
+  onJobLog: (payload: unknown) => Promise<RpcResponse<{ text: string; truncated: boolean }>>
+    = () => Promise.resolve(ok({ text: '', truncated: false }))
+
+  readonly jobs: IApiClient['jobs'] = {
+    log: (payload: unknown) => this.record('jobs.log', payload, this.onJobLog(payload)),
+  }
+
   readonly host: IApiClient['host'] = {
     describe: (payload: unknown) => this.record('host.describe', payload, this.onDescribe(payload)),
     pickDirectory: (payload: unknown) => this.record('host.pickDirectory', payload, this.onPickDirectory(payload)),

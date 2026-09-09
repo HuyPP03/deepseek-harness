@@ -1,11 +1,12 @@
 /**
- * tasks domain zod schemas: the branded job id and the wire view carried by
- * `session/jobs` frames.
+ * jobs domain zod schemas: the branded job id, the wire view carried by
+ * `session/jobs` frames, and the `jobs.log` request/response pair.
  */
 
 import { z } from 'zod'
 import type { JobId } from '@deepseek-ai/dsh-jobs/brand'
-import type { JobView } from './jobs.ts'
+import type { JobLogView, JobView } from './jobs.ts'
+import type { RequestPayload, ResponseValue } from './index.ts'
 import type { Wire } from './rpc.schema.ts'
 
 /** JobId: one brand cast after non-empty string validation. */
@@ -31,3 +32,15 @@ export const taskViewSchema = z.object({
   startedAt: z.number().int().nonnegative(),
   finishedAt: z.number().int().nonnegative().optional(),
 }) satisfies z.ZodType<Wire<JobView>>
+
+/** jobs.log request payload. */
+export const jobLogRequestSchema = z.object({
+  sessionId: z.string(),
+  jobId: taskIdSchema,
+}) as unknown as z.ZodType<Wire<RequestPayload<'jobs.log'>>>
+
+/** jobs.log response value. */
+export const jobLogValueSchema = z.object({
+  text: z.string(),
+  truncated: z.boolean(),
+}) satisfies z.ZodType<Wire<JobLogView>> as unknown as z.ZodType<Wire<ResponseValue<'jobs.log'>>>

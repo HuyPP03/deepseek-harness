@@ -17,7 +17,7 @@ import type { ScopeLayer } from '@deepseek-ai/dsh-scope'
 import { deadline, timeoutOf } from '@deepseek-ai/dsh-timeout'
 import { JobRegistry, JobId } from '@deepseek-ai/dsh-jobs'
 import type {
-  JobDoneListener, JobKind, JobOutcome, JobRead, JobSnapshot, JobStart, JobStatus,
+  JobDoneListener, JobKind, JobLogRead, JobOutcome, JobRead, JobSnapshot, JobStart, JobStatus,
   JobsChangedListener,
 } from '@deepseek-ai/dsh-jobs'
 
@@ -27,6 +27,16 @@ export const TASK_WAIT_TIMEOUT = 'TASK_WAIT_TIMEOUT'
 /** Default maximum number of active jobs in one exact-owner bucket. */
 const DEFAULT_MAX_CONCURRENT_TASKS_PER_OWNER = 10
 
+/** Default retained characters of one job's human-view log (UTF-16 code units). */
+const DEFAULT_JOB_LOG_RETAIN_CHARS = 2_097_152
+
+/**
+ * One-shot marker the model's next read carries after the retention window
+ * dropped head bytes the model had not yet consumed (the human log and the
+ * model cursor ride the same bounded window).
+ */
+const LOG_HEAD_DROP_MARK = '[job log head dropped]'
+
 /** Configuration for the process-local job registry. */
 export interface Config {
   /**
@@ -34,6 +44,12 @@ export interface Config {
    * omission defaults to 10.
    */
   maxConcurrentJobsPerOwner?: number
+  /**
+   * Retained characters (UTF-16 code units) of one job's human-view log,
+   * which the model read cursor rides: beyond the cap the head is dropped and
+   * the model's next read announces the loss once. Omission defaults to 2 Mi.
+   */
+  jobLogRetainChars?: number
 }
 
 /** The registry's mutable per-job record (never handed out — see {@link LocalJobRegistry.snapshot}). */
@@ -45,7 +61,14 @@ interface TrackedTask {
   /** Exact lifecycle owner; session-id authorization is derived from it. */
   owner: Agent | undefined
   cancel: (reason?: string) => void
+  /** The wrapped producer read: the raw delta plus a retention side effect. */
   readOutput: (() => string) | undefined
+  /** Human-view log: every drained delta, tail-bounded by `jobLogRetainChars`. */
+  logText: string
+  /** Model read cursor — an index into {@link logText} of the next unconsumed character. */
+  modelCursor: number
+  /** True until the model's next read has announced a retention head-drop. */
+  modelHeadLost: boolean
   status: JobStatus
   detail: string | undefined
   output: string | undefined
@@ -95,10 +118,17 @@ export class LocalJobRegistry extends JobRegistry {
       .min(1)
       .max(Number.MAX_SAFE_INTEGER)
       .default(DEFAULT_MAX_CONCURRENT_TASKS_PER_OWNER),
+    jobLogRetainChars: z.number()
+      .step(1)
+      .min(1)
+      .max(Number.MAX_SAFE_INTEGER)
+      .default(DEFAULT_JOB_LOG_RETAIN_CHARS),
   })
 
   /** Schemastery-defaulted active-job limit. */
   private readonly maxConcurrentJobsPerOwner: number
+  /** Schemastery-defaulted human-view log retention (UTF-16 code units). */
+  private readonly jobLogRetainChars: number
   private store = new Map<JobId, TrackedTask>()
   private counters = new Map<string, number>()
   /**
@@ -124,6 +154,7 @@ export class LocalJobRegistry extends JobRegistry {
     super(ctx)
     // Schemastery validates and fills the default before constructing the service.
     this.maxConcurrentJobsPerOwner = (config as Required<Config>).maxConcurrentJobsPerOwner
+    this.jobLogRetainChars = (config as Required<Config>).jobLogRetainChars
     this.selfCtx = ctx
     ctx.effect(() => () => this.disposeAll(), 'jobs teardown')
   }
@@ -161,7 +192,10 @@ export class LocalJobRegistry extends JobRegistry {
       outputLimitBytes: spec.outputLimitBytes,
       owner: spec.owner,
       cancel: hooks.cancel.bind(hooks),
-      readOutput: hooks.readOutput?.bind(hooks),
+      readOutput: undefined,
+      logText: '',
+      modelCursor: 0,
+      modelHeadLost: false,
       status: 'running',
       detail: undefined,
       output: undefined,
@@ -173,6 +207,16 @@ export class LocalJobRegistry extends JobRegistry {
       waiters: 0,
       waitResolvers: new Set(),
     }
+    // Wrap the producer read so every drained delta also accumulates into the
+    // human-view log; the wrapper is the single consumption point.
+    const rawRead = hooks.readOutput?.bind(hooks)
+    job.readOutput = rawRead === undefined
+      ? undefined
+      : () => {
+        const delta = rawRead()
+        this.appendLog(job, delta)
+        return delta
+      }
     this.store.set(id, job)
 
     void hooks.done.then(
@@ -205,10 +249,32 @@ export class LocalJobRegistry extends JobRegistry {
   read(id: JobId, caller?: Agent): JobRead {
     const job = this.expect(id)
     this.assertAccess(job, caller)
-    const text = job.readOutput !== undefined
-      ? job.readOutput()
-      : isTerminal(job.status) ? job.output ?? '' : ''
+    let text: string
+    if (job.readOutput !== undefined) {
+      // Drain the producer into the retention log, then serve the model's
+      // share from the cursor so a human `log()` drain never steals bytes.
+      job.readOutput()
+      const tail = job.logText.slice(job.modelCursor)
+      job.modelCursor = job.logText.length
+      const lost = job.modelHeadLost
+      job.modelHeadLost = false
+      text = lost ? `${LOG_HEAD_DROP_MARK}\n${tail}` : tail
+    } else {
+      text = isTerminal(job.status) ? job.output ?? '' : ''
+    }
     if (isTerminal(job.status)) job.reported = true
+    return { text, snapshot: this.snapshot(job) }
+  }
+
+  log(id: JobId, caller?: Agent): JobLogRead {
+    const job = this.expect(id)
+    this.assertAccess(job, caller)
+    // Drain the producer so the retained tail is current; the human read
+    // never advances the model cursor nor claims the terminal report.
+    if (job.readOutput !== undefined) job.readOutput()
+    const text = job.readOutput !== undefined
+      ? job.logText
+      : isTerminal(job.status) ? job.output ?? '' : ''
     return { text, snapshot: this.snapshot(job) }
   }
 
@@ -356,6 +422,29 @@ export class LocalJobRegistry extends JobRegistry {
   private assertAccess(job: TrackedTask, caller?: Agent): void {
     if (job.owner !== undefined && job.owner.id !== caller?.id) {
       throw new Error(`job ${job.id} belongs to another session`)
+    }
+  }
+
+  /**
+   * Append one drained producer delta to the record's human-view log,
+   * tail-bounded to `jobLogRetainChars`. The model cursor rides the same
+   * window: a head-drop that swallows unconsumed model bytes resets the
+   * cursor to the retained head and arms the one-shot loss marker; a drop
+   * wholly behind the cursor only shifts it.
+   * @param job - the record whose log grows.
+   * @param delta - the producer delta just drained (possibly empty).
+   */
+  private appendLog(job: TrackedTask, delta: string): void {
+    if (delta.length === 0) return
+    job.logText += delta
+    if (job.logText.length <= this.jobLogRetainChars) return
+    const dropped = job.logText.length - this.jobLogRetainChars
+    job.logText = job.logText.slice(dropped)
+    if (job.modelCursor < dropped) {
+      job.modelCursor = 0
+      job.modelHeadLost = true
+    } else {
+      job.modelCursor -= dropped
     }
   }
 

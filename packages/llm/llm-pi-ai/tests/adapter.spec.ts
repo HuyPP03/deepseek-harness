@@ -352,6 +352,114 @@ describe('PiAiAdapter provider routing', () => {
   })
 })
 
+/**
+ * A tool-call generation in the wire shape pi-ai's openai-completions client
+ * parses: the arguments arrive, then the provider stays silent (a batching
+ * server such as a vLLM tool parser holds the rest while generation runs).
+ */
+const toolCallWire = [
+  '{"choices":[{"index":0,"delta":{"role":"assistant","tool_calls":['
+  + '{"index":0,"id":"call_1","type":"function","function":{"name":"write","arguments":"{\\"path\\":\\"/tmp/a\\"}"}}'
+  + ']},"finish_reason":null}]}',
+]
+const toolCallFinish = '{"choices":[{"index":0,"delta":{},"finish_reason":"tool_calls"}],"usage":{"prompt_tokens":3,"completion_tokens":5}}'
+
+describe('tool-call idle window', () => {
+  it('holds the tool-call window across a wire gap inside a tool call', async () => {
+    const server = await mockServer([{ events: [...toolCallWire, toolCallFinish, '[DONE]'], gapsMs: [300, 0, 0] }])
+    const ctx = await harness(server.url, {
+      streamIdleTimeoutMs: 40,
+      toolCallStreamIdleTimeoutMs: 2_000,
+    })
+
+    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+
+    expect(result.finish).toEqual({ kind: 'tool-calls' })
+    expect(result.message.content).toEqual([{
+      type: 'tool-call',
+      id: 'call_1',
+      name: 'write',
+      arguments: '{"path":"/tmp/a"}',
+    }])
+  })
+
+  it('still times out a tool-call gap under the default (base) window', async () => {
+    const server = await mockServer([{ events: [...toolCallWire, toolCallFinish, '[DONE]'], gapsMs: [300, 0, 0] }])
+    const ctx = await harness(server.url, { streamIdleTimeoutMs: 40 })
+
+    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+
+    expect(result.finish).toMatchObject({ kind: 'error', failure: { code: 'TIMEOUT' } })
+    await Promise.race([
+      server.responseClosed,
+      new Promise<never>((_resolve, reject) => {
+        setTimeout(() => { reject(new Error('SDK request did not close after idle timeout')) }, 1_000)
+      }),
+    ])
+  })
+
+  it('times out a tool-call gap longer than the tool-call window', async () => {
+    const server = await mockServer([{ events: [...toolCallWire, toolCallFinish, '[DONE]'], gapsMs: [300, 0, 0] }])
+    const ctx = await harness(server.url, {
+      streamIdleTimeoutMs: 40,
+      toolCallStreamIdleTimeoutMs: 120,
+    })
+
+    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+
+    expect(result.finish).toMatchObject({
+      kind: 'error',
+      failure: { code: 'TIMEOUT', message: 'pi-ai stream idle timeout after 120ms' },
+    })
+  })
+
+  it('keeps the base window for text even when a tool-call window is configured', async () => {
+    const server = await mockServer([{
+      events: [
+        '{"choices":[{"index":0,"delta":{"role":"assistant","content":"hel"},"finish_reason":null}]}',
+        ...textEvents.slice(1),
+      ],
+      gapsMs: [300, 0, 0],
+    }])
+    const ctx = await harness(server.url, {
+      streamIdleTimeoutMs: 40,
+      toolCallStreamIdleTimeoutMs: 2_000,
+    })
+
+    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+
+    expect(result.finish).toMatchObject({
+      kind: 'error',
+      failure: { code: 'TIMEOUT', message: 'pi-ai stream idle timeout after 40ms' },
+    })
+  })
+
+  it('restores the base window when the stream leaves the tool-call phase', async () => {
+    const server = await mockServer([{
+      events: [
+        ...toolCallWire,
+        '{"choices":[{"index":0,"delta":{"content":"after"},"finish_reason":null}]}',
+        '{"choices":[{"index":0,"delta":{},"finish_reason":"stop"}],"usage":{"prompt_tokens":3,"completion_tokens":5}}',
+        '[DONE]',
+      ],
+      gapsMs: [200, 300, 0, 0],
+    }])
+    const ctx = await harness(server.url, {
+      streamIdleTimeoutMs: 40,
+      toolCallStreamIdleTimeoutMs: 2_000,
+    })
+
+    const result = await assemble(ctx, { model: 'deepseek-v4-flash', messages: [] })
+
+    // The 200ms gap inside the tool call survived on the tool window; the
+    // 300ms text gap after it did not, on the restored base window.
+    expect(result.finish).toMatchObject({
+      kind: 'error',
+      failure: { code: 'TIMEOUT', message: 'pi-ai stream idle timeout after 40ms' },
+    })
+  })
+})
+
 describe('provider profile lifecycle', () => {
   it('keeps adapter helpers off the package root', () => {
     for (const helper of [
@@ -730,6 +838,9 @@ describe('provider profile lifecycle', () => {
       { streamIdleTimeoutMs: 0 },
       { streamIdleTimeoutMs: Number.NaN },
       { streamIdleTimeoutMs: MAX_TIMER_DELAY_MS + 1 },
+      { toolCallStreamIdleTimeoutMs: 0 },
+      { toolCallStreamIdleTimeoutMs: Number.NaN },
+      { toolCallStreamIdleTimeoutMs: MAX_TIMER_DELAY_MS + 1 },
     ]
     for (const entry of invalid) {
       const ctx = new Context()
@@ -812,6 +923,25 @@ describe('provider profile lifecycle', () => {
     expect(() => resolveProfiles({
       openai: { streamIdleTimeoutMs: MAX_TIMER_DELAY_MS + 1 },
     })).toThrow(/streamIdleTimeoutMs.*no greater/)
+    expect(() => resolveProfiles({
+      openai: { toolCallStreamIdleTimeoutMs: 0 },
+    })).toThrow(/toolCallStreamIdleTimeoutMs.*positive finite/)
+    expect(() => resolveProfiles({
+      openai: { toolCallStreamIdleTimeoutMs: MAX_TIMER_DELAY_MS + 1 },
+    })).toThrow(/toolCallStreamIdleTimeoutMs.*no greater/)
+  })
+
+  it('defaults the tool-call window to the base window', () => {
+    const resolved = (providers: Parameters<typeof resolveProfiles>[0]) => {
+      const route = resolveProfiles(providers).get('openai')
+      if (route === undefined) throw new Error('openai route missing')
+      return route
+    }
+    const base = resolved({ openai: {} })
+    expect(base.toolCallStreamIdleTimeoutMs).toBe(base.streamIdleTimeoutMs)
+    expect(resolved({ openai: { streamIdleTimeoutMs: 123 } }).toolCallStreamIdleTimeoutMs).toBe(123)
+    expect(resolved({ openai: { streamIdleTimeoutMs: 123, toolCallStreamIdleTimeoutMs: 456 } })
+      .toolCallStreamIdleTimeoutMs).toBe(456)
   })
 })
 

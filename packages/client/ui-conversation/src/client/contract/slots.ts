@@ -141,6 +141,15 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      */
     'conversation.details.files': { kind: 'single'; scope: 'session'; owner: DetailsFilesOwnerProps }
     /**
+     * The body of the details panel for the background job the user selected —
+     * one occupant that renders the job's retained log (a live tail while the
+     * job runs, the settled output once terminal). The owner passes the
+     * registry-issued job id; the occupant reads the log itself (the shared
+     * connection's `jobs.log` unary) and owns its own polling, status line,
+     * and error presentation.
+     */
+    'conversation.details.job': { kind: 'single'; scope: 'session'; owner: DetailsJobOwnerProps }
+    /**
      * The composer takeover chain: entries are selector-routed replacements
      * of the default InputBar. Declared by this package's 'conversation'
      * entry; the owner dispatches the {@link ComposerChainProps} currency and
@@ -414,6 +423,12 @@ export interface DetailsFilesOwnerProps {
   dir: string
   /** Session workspace root for relative-path display (display-only). */
   cwd?: string | undefined
+}
+
+/** Owner currency of the details panel's background-job log seat. */
+export interface DetailsJobOwnerProps {
+  /** The registry-issued id of the selected job (`<kind>-N`). */
+  jobId: string
 }
 
 /**
@@ -780,8 +795,8 @@ export interface DetailsInjected {
   closeDetails: () => void
 }
 
-/** Full details-slot props: selection store, Tool output seat, injected close callback, and locale. */
-export type DetailsSlotProps = PropsRuntime<'details'> & PropsRenderSlots<'conversation.details.tool' | 'conversation.details.file' | 'conversation.details.files'>
+/** Full details-slot props: selection store, the four detail seats, injected close callback, and locale. */
+export type DetailsSlotProps = PropsRuntime<'details'> & PropsRenderSlots<'conversation.details.tool' | 'conversation.details.file' | 'conversation.details.files' | 'conversation.details.job'>
   & PropsStore<ChatStore> & DetailsInjected & PropsLocale<'conversation'>
 
 /** The confirmed selection of the hero / New-Session Workspace picker. */

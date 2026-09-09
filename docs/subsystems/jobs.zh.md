@@ -152,9 +152,25 @@ interface JobRead {
 }
 ```
 
+```ts type-equiv
+/** Log and post-read state returned by {@link JobRegistry.log}. */
+interface JobLogRead {
+  /**
+   * The job's retained output for human surfaces: stream kinds, everything
+   * drained so far (a bounded tail once the implementation's retention cap
+   * dropped earlier bytes); final-output kinds, empty while live, the
+   * terminal {@link JobOutcome.output} (or empty) once settled. Reading never
+   * advances the model-facing read cursor and marks nothing reported.
+   */
+  text: string
+  /** The job's state at read time. */
+  snapshot: JobSnapshot
+}
+```
+
 ## 服务行为
 
-抽象的 [`JobRegistry`](../../packages/jobs/jobs/src/index.ts) Service Definition 规定原子 `start`、限定调用方作用域的 `get` 和 `list`、`read`、`kill`、有界 `wait`、故障隔离的 `onJobDone` 与 `onJobsChanged` 监听器，以及 `attachController` 何时可用；[`LocalJobRegistry`](../../packages/jobs/jobs-local/src/index.ts) 是其进程局部 Service Provider。授权会比较拥有者会话；拥有者清理与准入会使用确切的已注册 `Agent` 实例。本地 Service Provider 的 `maxConcurrentJobsPerOwner` 配置必须是正的安全整数，默认值为 `10`；它按确切 owner 统计 `running` 与 `stopping` 记录，所有无 owner 任务共享一个服务级桶，并在生产方终止结算后释放容量。Service Definition 约定见 [`dsh-jobs`](../../packages/jobs/jobs/README.md)，注册表生命周期与准入策略见 [`dsh-jobs-local`](../../packages/jobs/jobs-local/README.md)，面向模型的 Consumer 见 [`dsh-tool-jobs`](../../packages/jobs/tool-jobs/README.md)。
+抽象的 [`JobRegistry`](../../packages/jobs/jobs/src/index.ts) Service Definition 规定原子 `start`、限定调用方作用域的 `get` 和 `list`、消费式的 `read` 与非消费式的人类 `log`、`kill`、有界 `wait`、故障隔离的 `onJobDone` 与 `onJobsChanged` 监听器，以及 `attachController` 何时可用；[`LocalJobRegistry`](../../packages/jobs/jobs-local/src/index.ts) 是其进程局部 Service Provider。授权会比较拥有者会话；拥有者清理与准入会使用确切的已注册 `Agent` 实例。本地 Service Provider 的 `maxConcurrentJobsPerOwner` 配置必须是正的安全整数，默认值为 `10`；它按确切 owner 统计 `running` 与 `stopping` 记录，所有无 owner 任务共享一个服务级桶，并在生产方终止结算后释放容量。Service Definition 约定见 [`dsh-jobs`](../../packages/jobs/jobs/README.md)，注册表生命周期与准入策略见 [`dsh-jobs-local`](../../packages/jobs/jobs-local/README.md)，面向模型的 Consumer 见 [`dsh-tool-jobs`](../../packages/jobs/tool-jobs/README.md)。
 
 <!-- BEGIN GENERATED cordis-surface (gen-cordis-catalog.ts) — do not edit between markers -->
 
@@ -215,6 +231,21 @@ abstract get(id: JobId, caller?: Agent): JobSnapshot
  * @returns output text and the post-read snapshot.
  */
 abstract read(id: JobId, caller?: Agent): JobRead
+
+/**
+ * Read the job's retained output for human surfaces (the browser's job
+ * details panel) without touching model-facing state: the read cursor of
+ * {@link read} does not advance and the job is not marked reported. A
+ * reading that drains new producer output keeps the model's next read
+ * complete — the implementation owns the accumulation. Stream kinds return
+ * the retained tail (bounded by the implementation's retention);
+ * final-output kinds return empty while live and the terminal output once
+ * settled. Throws for an unknown or foreign job.
+ * @param id - job to read.
+ * @param caller - reading agent checked against the owner.
+ * @returns retained output text and the post-read snapshot.
+ */
+abstract log(id: JobId, caller?: Agent): JobLogRead
 
 /**
  * Request cancellation, then mark the job stopping and reported. A producer
@@ -286,5 +317,5 @@ abstract attachController(name: string): () => void
 
 Types: [Agent](core.md)
 
-Source: [`packages/jobs/jobs/src/index.ts:62`](../../packages/jobs/jobs/src/index.ts)
+Source: [`packages/jobs/jobs/src/index.ts:63`](../../packages/jobs/jobs/src/index.ts)
 <!-- END GENERATED cordis-surface -->

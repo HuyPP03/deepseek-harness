@@ -86,6 +86,7 @@
       "@deepseek-ai/dsh-credentials-oauth-tokens/invariant": ["./packages/credentials/oauth-tokens/src/invariant.ts"],
       "@deepseek-ai/dsh-connectors": ["./packages/connectors/connectors/src/index.ts"],
       "@deepseek-ai/dsh-connectors/invariant": ["./packages/connectors/connectors/src/invariant.ts"],
+      "@deepseek-ai/dsh-connectors/types": ["./packages/connectors/connectors/src/types.ts"],
       "@deepseek-ai/dsh-settings/types": ["./packages/settings/settings/src/types.ts"],
       "@deepseek-ai/dsh-api-remotes/types": ["./packages/api/remotes/src/types.ts"],
       "@deepseek-ai/dsh-api-remotes/invariant": ["./packages/api/remotes/src/invariant.ts"],

@@ -30,6 +30,8 @@ export interface ConnectorsDirectoryCallbacks {
   openTokenDialog: (id: string) => void
   /** Name the draft one credential reference is typing. */
   setDialogDraft: (ref: string, value: string) => void
+  /** Name the draft base URL the dialog is typing. */
+  setDialogUrl: (value: string) => void
   /** Close the dialog, discarding the draft. */
   closeDialog: () => void
   /** Store the dialog's token and adopt the updated view. */
@@ -66,8 +68,6 @@ export interface ConnectorsDirectoryCallbacks {
   closeCustomDialog: () => void
   /** Persist the dialog's draft through connector.add and re-list. */
   saveCustom: () => Promise<void>
-  /** Remove one custom connector and re-list. */
-  removeCustom: (id: string) => Promise<void>
   /** Open one session in the main conversation area. */
   openSession: (id: SessionId) => void
   /** Mint a blank session under the provider's preset and open it. */

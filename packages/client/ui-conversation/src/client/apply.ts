@@ -455,6 +455,7 @@ export function apply(ctx: Context): void {
       'conversation.details.tool': { kind: 'single', scope: 'session' },
       'conversation.details.file': { kind: 'single', scope: 'session' },
       'conversation.details.files': { kind: 'single', scope: 'session' },
+      'conversation.details.job': { kind: 'single', scope: 'session' },
     },
     store: chatStore,
     inject: (sessionId: SessionId, actions: BoundActions<typeof chatStore>): DetailsInjected => {

@@ -1,2 +1,3 @@
 - list "Background jobs":
-  - listitem: "bash sleep 45 signal: SIGTERM {{duration}}"
+  - listitem:
+    - button "Open log for for i in $(seq 1 50); do echo \"line $i\"; done; sleep 45 (cancelled)": "bash for i in $(seq 1 50); do echo \"line $i\"; done; sleep 45 signal: SIGTERM {{duration}}"

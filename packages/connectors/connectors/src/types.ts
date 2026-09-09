@@ -287,6 +287,57 @@ export interface ConnectorView {
   readonly suggestions: readonly string[]
   /** The switchable provider products, where the provider has them. */
   readonly products?: readonly string[]
+  /**
+   * Whether a server of this manifest resolves its base URL from the user's
+   * override document, so the connector cannot connect before one is stored.
+   */
+  readonly urlRequired?: boolean
+  /** The stored base URL, present when `urlRequired` and one has been stored. */
+  readonly url?: string
+}
+
+/** The fields one `configure` call can set; absent fields are left untouched. */
+export interface ConnectorConfigureFields {
+  /** A token value stored under the token method's first credential reference. */
+  token?: string
+  /** Additional credential values by reference name, for multi-reference token methods. */
+  credentials?: Record<string, string>
+  /** The provider base URL (self-hosted or multi-tenant endpoint). */
+  url?: string
+  /** The pre-registered OAuth client id. */
+  clientId?: string
+  /** The pre-registered OAuth client secret, stored under the derived reference. */
+  clientSecret?: string
+  /** The provider products to switch on. */
+  products?: string[]
+  /** Microsoft 365: the organization tool set. */
+  orgMode?: boolean
+  /** GitHub: read-only mount. */
+  readOnly?: boolean
+}
+
+/** One user-authored custom connector as added through `addCustom`. */
+export interface AddCustomSpec {
+  /** Display name; the id slug derives from it when `id` is omitted. */
+  readonly name: string
+  /** An explicit id slug; defaults to a slug of the name. */
+  readonly id?: string
+  /** The transport the custom server speaks. */
+  readonly transport: 'stdio' | 'streamable-http'
+  /** The executable (stdio only). */
+  readonly command?: string
+  /** Arguments passed directly (stdio only). */
+  readonly args?: readonly string[]
+  /** Literal env vars (stdio only); the token var's value is replaced by its placeholder. */
+  readonly env?: Record<string, string>
+  /** The MCP endpoint URL (streamable-http only). */
+  readonly url?: string
+  /** Literal headers (streamable-http only). */
+  readonly headers?: Record<string, string>
+  /** The env var or header that carries the token, when the custom server authenticates. */
+  readonly tokenVar?: string
+  /** Whether `tokenVar` names a header rather than an env var (streamable-http). */
+  readonly tokenVarIsHeader?: boolean
 }
 
 declare module '@deepseek-ai/cordis' {

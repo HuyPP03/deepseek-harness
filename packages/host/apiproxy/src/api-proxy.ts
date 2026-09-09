@@ -68,6 +68,7 @@ import type {
   QueuedInboxItem, SessionSummary, SettingsNamespaceView, SubagentAddress, JobView, ToolEventView,
   WorkspaceId, WorkspaceView,
 } from './api/index.ts'
+import { JOB_LOG_WIRE_TAIL_BYTES } from './api/index.ts'
 import {
   DEFAULT_SESSION_LOG_COMPRESSION_LEVEL,
   flushLiveSessionLog,
@@ -498,6 +499,37 @@ function jobViews(snapshots: readonly JobSnapshot[]): JobView[] {
 }
 
 /**
+ * Tail-bound a retained log to a UTF-8 byte budget without splitting a
+ * character. The scan walks code units from the end, so the cost is the
+ * dropped head, not the retained tail.
+ * @param text - the full retained text.
+ * @param maxBytes - the wire budget in UTF-8 bytes.
+ * @returns the tail that fits and whether anything was dropped.
+ */
+function utf8Tail(text: string, maxBytes: number): { text: string; truncated: boolean } {
+  if (new TextEncoder().encode(text).length <= maxBytes) return { text, truncated: false }
+  let bytes = 0
+  let i = text.length
+  while (i > 0) {
+    const unit = text.charCodeAt(i - 1)
+    let charBytes: number
+    let span: number
+    if (unit >= 0xdc00 && unit <= 0xdfff && i >= 2
+      && text.charCodeAt(i - 2) >= 0xd800 && text.charCodeAt(i - 2) <= 0xdbff) {
+      charBytes = 4
+      span = 2
+    } else {
+      charBytes = unit < 0x80 ? 1 : unit < 0x800 ? 2 : 3
+      span = 1
+    }
+    if (bytes + charBytes > maxBytes) break
+    bytes += charBytes
+    i -= span
+  }
+  return { text: text.slice(i), truncated: true }
+}
+
+/**
  * Whether the session's conversation has started: no turn has run yet (a
  * turn is one model-loop execution). Standalone plugin events — command
  * lifecycle records, plan/mode, titles, goals — never open a turn, so
@@ -532,6 +564,26 @@ function referencesUnsupported(request: RpcRequest<unknown>, sessionId: SessionI
     message: 'this deployment does not mount @deepseek-ai/dsh-workspace-references',
     details: { sessionId },
   })
+}
+
+/**
+ * The session was refused: reference projects need a project surface, which
+ * only a workspace session or a connector (provider) session carries. A plain
+ * chat has no project, so its control surface hides the chip and a direct
+ * call is refused here — the enforcement point every caller shares.
+ */
+function referencesUnavailable(request: RpcRequest<unknown>, sessionId: SessionId): RpcResponse<never> {
+  return err(request, {
+    code: 'references-unavailable',
+    message: 'reference projects require a workspace session or a connector session; a plain chat has no project to reference',
+    details: { sessionId },
+  })
+}
+
+/** Whether a preset id runs a connector (provider) session. */
+function isProviderPreset(ctx: Context, presetId: string | undefined): boolean {
+  const connectors = ctx.get('connectors')
+  return presetId !== undefined && connectors !== undefined && connectors.presetIds().has(presetId)
 }
 
 /**
@@ -2389,19 +2441,19 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         const requestedReferences = request.payload.referenceWorkspaceIds
         let referenceSet: string[] | undefined
         if (requestedReferences !== undefined && requestedReferences.length > 0) {
-          // Reference projects are anchored to the session's own workspace:
-          // a workspace-less session (a chat) has no directory to compare
-          // against, and its surfaces hide the control, so a direct call is
-          // refused before the create commits.
-          if (workspace === undefined) {
-            return err(request, {
-              code: 'references-require-workspace',
-              message: 'reference projects require a session workspace; a session without one cannot attach them',
-              details: { sessionId },
-            })
-          }
           if (referencesService === undefined) {
             return referencesUnsupported(request, sessionId)
+          }
+          // Eligibility: a workspace-attached session, or a session that runs
+          // a provider preset (the request's preset, else an adopted session's
+          // log, else the deployment default — the preset ensureSession
+          // commits below).
+          if (workspace === undefined) {
+            const live = ctx.agents.get(sessionId)
+            const running = requestedPreset
+              ?? (live === undefined ? undefined : resolveSessionPreset(live.session))
+              ?? ctx.get('agentPresets')?.defaultId
+            if (!isProviderPreset(ctx, running)) return referencesUnavailable(request, sessionId)
           }
           const resolved = resolveReferencePaths(ctx, requestedReferences)
           if ('notFound' in resolved) {
@@ -2515,17 +2567,14 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
         if (references === undefined) {
           return referencesUnsupported(request, sessionId)
         }
-        // Reference projects are anchored to the session's own workspace: a
-        // workspace-less session (a chat) has no directory to compare
-        // against. A non-empty attach is refused; the empty whole value is
-        // the idempotent detach-all and stays a no-op.
+        // Eligibility: a workspace-owned session, or a provider session (the
+        // log resolves the preset a /mode switch may have landed on).
+        const session = found.agent.session
+        const workspaceOwned = ctx.workspaceRegistry.list()
+          .some(workspace => workspace.sessionIds.includes(sessionId))
         if (referenceWorkspaceIds.length > 0
-          && !ctx.workspaceRegistry.list().some(entry => entry.sessionIds.includes(sessionId))) {
-          return err(request, {
-            code: 'references-require-workspace',
-            message: `session "${sessionId}" has no workspace to attach reference projects to`,
-            details: { sessionId },
-          })
+          && !workspaceOwned && !isProviderPreset(ctx, resolveSessionPreset(session))) {
+          return referencesUnavailable(request, sessionId)
         }
         const resolved = resolveReferencePaths(ctx, referenceWorkspaceIds)
         if ('notFound' in resolved) {
@@ -3197,6 +3246,45 @@ export function createApiProxy(ctx: Context, defaults: ApiProxyDefaults): ApiPro
           })
         }
         return ok(request, { archivedSessionIds: [...ctx.workspaceRegistry.archivedSessionIds] })
+      },
+    },
+
+    jobs: {
+      log(request) {
+        const { sessionId, jobId } = request.payload
+        const jobs = ctx.get('jobs')
+        if (jobs === undefined) {
+          return Promise.resolve(err(request, {
+            code: 'internal',
+            message: 'the deployment composes no background-job registry (load @deepseek-ai/dsh-jobs-local)',
+            details: {},
+          }))
+        }
+        // Same caller resolution as the session/jobs frames: the registry fence
+        // rejects a foreign session the way job_output rejects a foreign read.
+        const caller = ctx.agents.get(sessionId)
+        let text: string
+        try {
+          text = jobs.log(jobId, caller).text
+        } catch (error: unknown) {
+          if (error instanceof Error && error.message === `unknown job ${jobId}`) {
+            return Promise.resolve(err(request, {
+              code: 'job-not-found',
+              message: `session "${sessionId}" has no background job under id "${jobId}"`,
+              details: { sessionId, jobId },
+            }))
+          }
+          if (error instanceof Error && error.message === `job ${jobId} belongs to another session`) {
+            return Promise.resolve(err(request, {
+              code: 'job-unauthorized',
+              message: `job "${jobId}" belongs to another session`,
+              details: { jobId },
+            }))
+          }
+          return Promise.resolve(err(request, { code: 'internal', message: 'job log read failed', details: {} }))
+        }
+        const tail = utf8Tail(text, JOB_LOG_WIRE_TAIL_BYTES)
+        return Promise.resolve(ok(request, { text: tail.text, truncated: tail.truncated }))
       },
     },
 

@@ -1,0 +1,20 @@
+id: confluence
+name: Confluence
+description: Confluence pages and search on a self-hosted Data Center or Server instance.
+presetId: custom
+workspaceDirName: confluence
+auth:
+  - mode: token
+    credentialRefs: [CONFLUENCE_PERSONAL_TOKEN]
+    howTo: Create a personal access token for your self-hosted instance under your profile's security settings.
+servers:
+  - serverName: confluence
+    transport: stdio
+    command: uvx
+    args: [mcp-atlassian]
+    env:
+      CONFLUENCE_URL: { $override: url }
+      CONFLUENCE_PERSONAL_TOKEN: { $cred: CONFLUENCE_PERSONAL_TOKEN }
+suggestions:
+  - Search the space for pages that mention this project
+  - Summarize a page and list its children

@@ -1,6 +1,6 @@
 /**
  * Custom connector dialog suite: the add flow over a real controller and a
- * fake wire, plus the remove action on a custom row.
+ * fake wire.
  * @vitest-environment jsdom
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -13,7 +13,7 @@ import type { ConnectorsDirectoryProps } from '../src/client/contract/slots.ts'
 import { en } from '../src/client/locales.ts'
 
 type ConnectorDouble = Pick<IApiClient['connectors'],
-  'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin' | 'add' | 'remove'>
+  'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin' | 'add'>
 
 afterEach(() => {
   cleanup()
@@ -51,7 +51,6 @@ function baseWire(rows: readonly ConnectorView[]): ConnectorDouble {
     authorize: vi.fn(async () => ok({ authorizationUrl: 'http://127.0.0.1:8766/authorize', expiresAt: Date.now() + 300_000 })),
     deviceLogin: vi.fn(async () => ok({ status: 'ready' as const, expiresAt: Date.now() })),
     add: vi.fn(async () => ok({ id: 'custom' })),
-    remove: vi.fn(async () => ok({})),
   }
 }
 
@@ -66,6 +65,7 @@ function mountRow(wire: ConnectorDouble) {
     load: () => controller.load(),
     openTokenDialog: (id: string) => { controller.openTokenDialog(id) },
     setDialogDraft: (ref: string, value: string) => { controller.setDialogDraft(ref, value) },
+    setDialogUrl: (value: string) => { controller.setDialogUrl(value) },
     closeDialog: () => { controller.closeDialog() },
     saveToken: () => controller.saveToken(),
     connect: (id: string, mode?: 'token' | 'oauth' | 'device') => controller.connect(id, mode),
@@ -77,7 +77,6 @@ function mountRow(wire: ConnectorDouble) {
     setCustomDraft: (field: string, value: string) => { controller.setCustomDraft(field, value) },
     closeCustomDialog: () => { controller.closeCustomDialog() },
     saveCustom: () => controller.saveCustom(),
-    removeCustom: (id: string) => controller.removeCustom(id),
     useSessions: (selector: (s: never) => unknown) => selector({ ids: [], byId: {}, current: undefined, phase: 'ready', subagentsByParent: {}, jobsBySession: {} } as never),
     openSession: vi.fn(),
     newProviderChat: vi.fn(() => Promise.resolve()),
@@ -89,7 +88,7 @@ function mountRow(wire: ConnectorDouble) {
 describe('custom connector dialog', () => {
   it('opens from the New connector control over an empty stdio draft', async () => {
     const controller = mountRow(baseWire([view()]))
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByText('New custom connector')).toBeTruthy()
@@ -101,7 +100,7 @@ describe('custom connector dialog', () => {
   it('saves a stdio draft through connector.add and re-lists', async () => {
     const wire = baseWire([view()])
     const controller = mountRow(wire)
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'Acme API' } })
@@ -109,16 +108,16 @@ describe('custom connector dialog', () => {
     fireEvent.change(within(dialog).getByPlaceholderText('npx'), { target: { value: 'npx' } })
     fireEvent.change(within(dialog).getByPlaceholderText('-y, @example/mcp-server'), { target: { value: '-y, @acme/mcp' } })
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
-    await waitFor(() => expect(wire.add).toHaveBeenCalledWith({
+    await waitFor(() => { expect(wire.add).toHaveBeenCalledWith({
       spec: { name: 'Acme API', id: 'acme', transport: 'stdio', command: 'npx', args: ['-y', '@acme/mcp'] },
-    }))
-    await waitFor(() => expect((wire.list as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBeGreaterThanOrEqual(2))
+    }) })
+    await waitFor(() => { expect((wire.list as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBeGreaterThanOrEqual(2) })
   })
 
   it('switches to streamable-http and saves the url with the header flag', async () => {
     const wire = baseWire([view()])
     const controller = mountRow(wire)
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'Remote' } })
@@ -136,40 +135,49 @@ describe('custom connector dialog', () => {
     fireEvent.click(headerFlag)
     fireEvent.click(headerFlag)
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
-    await waitFor(() => expect(wire.add).toHaveBeenCalledWith({
+    await waitFor(() => { expect(wire.add).toHaveBeenCalledWith({
       spec: {
         name: 'Remote', transport: 'streamable-http', url: 'https://mcp.example.com',
         tokenVar: 'AUTHORIZATION', tokenVarIsHeader: true,
       },
-    }))
+    }) })
   })
 
   it('keeps the draft and shows the failure when the host rejects the add', async () => {
     const wire = baseWire([view()])
-    wire.add = vi.fn(async () => err('name required')) as unknown as typeof wire.add
+    wire.add = vi.fn(async () => err('name required'))
     const controller = mountRow(wire)
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     const dialog = screen.getByRole('dialog')
     fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'X' } })
     fireEvent.change(within(dialog).getByPlaceholderText('npx'), { target: { value: 'npx' } })
     fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
-    await waitFor(() => expect(within(dialog).getByText('name required')).toBeTruthy())
+    await waitFor(() => { expect(within(dialog).getByText('name required')).toBeTruthy() })
     expect(controller.store.getSnapshot().customDialog).not.toBeNull()
   })
 
-  it('removes a custom row through the Remove button and re-lists', async () => {
+  it('saves stdio env pairs through the env field and keeps the gate closed on a malformed pair', async () => {
     const wire = baseWire([view()])
     const controller = mountRow(wire)
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
-    fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
-    await waitFor(() => expect(wire.remove).toHaveBeenCalledWith({ id: 'my-svc' }))
-    await waitFor(() => expect((wire.list as unknown as { mock: { calls: unknown[] } }).mock.calls.length).toBeGreaterThanOrEqual(2))
-  })
-
-  it('offers Remove only on custom rows', async () => {
-    const controller = mountRow(baseWire([view(), view({ id: 'github', name: 'GitHub', custom: false })]))
-    await waitFor(() => expect(controller.store.getSnapshot().status).toBe('ready'))
-    expect(screen.getAllByRole('button', { name: 'Remove' })).toHaveLength(1)
+    await waitFor(() => { expect(controller.store.getSnapshot().status).toBe('ready') })
+    fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
+    const dialog = screen.getByRole('dialog')
+    const env = within(dialog).getByPlaceholderText('CONFLUENCE_URL=https://confluence.example.com, OTHER_KEY=value')
+    expect(within(dialog).getByText('Env vars (optional)')).toBeTruthy()
+    expect(within(dialog).queryByText('URL')).toBeNull()
+    fireEvent.change(within(dialog).getByPlaceholderText('My Service'), { target: { value: 'Confluence' } })
+    fireEvent.change(within(dialog).getByPlaceholderText('npx'), { target: { value: 'uvx' } })
+    // A pair without a value keeps Create disabled until the draft parses.
+    fireEvent.change(env, { target: { value: 'CONFLUENCE_URL' } })
+    expect(within(dialog).getByRole('button', { name: 'Create' }).hasAttribute('disabled')).toBe(true)
+    fireEvent.change(env, { target: { value: 'CONFLUENCE_URL=https://confluence.example.com' } })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Create' }))
+    await waitFor(() => { expect(wire.add).toHaveBeenCalledWith({
+      spec: {
+        name: 'Confluence', transport: 'stdio', command: 'uvx',
+        env: { CONFLUENCE_URL: 'https://confluence.example.com' },
+      },
+    }) })
   })
 })

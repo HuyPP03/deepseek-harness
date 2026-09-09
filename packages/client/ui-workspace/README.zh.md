@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-共享 Workspace 浏览器与选择器插件。`WorkspaceBrowser` 填充侧边栏的 `sidebar.workspaces` slot，`WorkspacePicker` 则填充页面局部 Session Intent 主视觉区的 `conversation.hero.workspace` slot；两个界面使用同一套 Workspace 菜单和添加流程。
+共享 Workspace 浏览器与选择器插件。`WorkspaceBrowser` 填充侧边栏的 `sidebar.workspaces` slot，`WorkspacePicker` 则填充页面局部 Session Intent 主视觉区的 `conversation.hero.workspace` slot；两个界面使用同一套 Workspace 菜单和添加流程。`ReferenceProjectsChip` 以参考项目控件填充会话头部的 `conversation.session.header.actions` slot：仅当 `workspaceReferences` 投影已组合且会话被工作区拥有或运行 provider（connector）preset 时才显示——普通 chat 隐藏它，与网关的 `references-unavailable` 拒绝保持一致——并通过 `session.setReferences` 全量切换会话的参考集合。
 
 该浏览器通过全局运行时钩子渲染侧边栏的两个浏览标签——标签由外壳 owner 以 `tab` 属主属性交给本包：Workspaces 标签是 Workspace 树（分组 Session 行），Chats 标签是所有未被任何 Workspace 记账的 Session 的平铺列表——运行 connector preset 的 Session 除外：Chats 标签及其搜索都不显示它们，provider 详情页（见 connectors surface）是它们唯一的展示位置（preset id 经由 connectors 插件发布的 `connectorPresetIds` ctx 服务到达，跨激活顺序惰性读取）。本包在两个标签中都负责 Workspace 添加／重命名／重排序以及 Session 重排序。每个 Workspace 会记住自身是关闭还是显示 Session；打开后默认显示五条 Session，其余条目通过临时的**展开其余**控件显示，而关闭并重新打开整个 Workspace 后会恢复为五条。从 Workspace 行创建 Session 时会先打开该分组，使 Session 状态到达后新行保持可见。Workspace 列表基线就绪后，浏览器持久化的展开状态与 Session 顺序记录只保留当前 Workspace id 与未分组记账键（Chats 标签复用它）。视图选项只提供排序方式和每个记账各自的一份浏览器持久化 Session 顺序：真实 Workspace 从 `WorkspaceView.sessionIds` 初始化，未分组记账则从最近更新时间顺序初始化。**手动排序**和**最近更新**在两个标签中都可用。进入最近更新时会执行一次完整的时间排序，后续 user prompt 或 steer 会将对应 Session 置顶一次；进入手动排序则保留所有当前位置并停用后续置顶。两种模式下的拖拽都会编辑当前顺序；真实 Workspace 在手动模式下的拖拽还会更新 Host Session 记账，而聊天顺序因没有 Workspace 记账始终只保存在浏览器本地。聊天行没有父级层次，因此不显示空的左侧状态槽；Session 存在可见状态时仍保留该槽。无论采用哪种 Session 顺序，Workspace 拖拽顺序都由 Host 持久化。
 

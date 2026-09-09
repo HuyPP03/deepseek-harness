@@ -5,12 +5,13 @@ export type CallId = string
 
 /**
  * Selection target for the details linkage channel (a tool call is the step
- * special case). `callId`, `filePath`, and `browse` name mutually exclusive
- * occupants: a call selection renders the tool output seat, a file selection
- * (a workspace-rooted or attached-reference absolute path) renders the file
- * inspector seat, and a browse selection (the session cwd's canonical
- * absolute path) renders the session file list seat. Persisted targets older
- * than any field rehydrate as a no-op selection for that field.
+ * special case). `callId`, `filePath`, `browse`, and `jobId` name mutually
+ * exclusive occupants: a call selection renders the tool output seat, a file
+ * selection (a workspace-rooted or attached-reference absolute path) renders
+ * the file inspector seat, a browse selection (the session cwd's canonical
+ * absolute path) renders the session file list seat, and a job selection
+ * (a registry-issued background-job id) renders the job log seat. Persisted
+ * targets older than any field rehydrate as a no-op selection for that field.
  */
 export interface SelectionTarget {
   turnSeq: number
@@ -21,6 +22,8 @@ export interface SelectionTarget {
   filePath?: string
   /** The directory the file list seat should show (a `callId`-less target). */
   browse?: string
+  /** The job whose log the job seat should show (a `callId`-less target). */
+  jobId?: string
 }
 
 /**

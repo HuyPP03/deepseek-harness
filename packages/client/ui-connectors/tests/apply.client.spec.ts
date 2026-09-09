@@ -35,7 +35,6 @@ async function bench() {
       authorize: vi.fn(async () => ok({ authorizationUrl: 'http://127.0.0.1:8766/authorize', expiresAt: Date.now() + 300_000 })),
       deviceLogin: vi.fn(async () => ok({ status: 'ready' as const, expiresAt: Date.now() })),
       add: vi.fn(async () => ok({ id: 'custom' })),
-      remove: vi.fn(async () => ok({})),
     },
   }
   ctx.provide('connection', { api } as never)
@@ -99,7 +98,7 @@ describe('ui-connectors apply', () => {
     expect(Object.keys(listInjected)).toEqual(['hooks', 'load', 'selectProvider'])
     const directoryInjected = (directoryEntry.inject as unknown as () => ConnectorsDirectoryInjected)()
     expect(Object.keys(directoryInjected)).toEqual([
-      'hooks', 'load', 'openTokenDialog', 'setDialogDraft', 'closeDialog', 'saveToken', 'openOauthDialog', 'setOauthDraft', 'closeOauthDialog', 'saveOauth', 'connect', 'authorize', 'deviceLogin', 'disconnect', 'selectProvider', 'openCustomDialog', 'setCustomDraft', 'closeCustomDialog', 'saveCustom', 'removeCustom', 'openSession', 'newProviderChat',
+      'hooks', 'load', 'openTokenDialog', 'setDialogDraft', 'setDialogUrl', 'closeDialog', 'saveToken', 'openOauthDialog', 'setOauthDraft', 'closeOauthDialog', 'saveOauth', 'connect', 'authorize', 'deviceLogin', 'disconnect', 'selectProvider', 'openCustomDialog', 'setCustomDraft', 'closeCustomDialog', 'saveCustom', 'openSession', 'newProviderChat',
     ])
     // Both faces bind the same controller store: one controller, two surfaces.
     const listStore = listInjected.hooks.connectors
@@ -140,6 +139,8 @@ describe('ui-connectors apply', () => {
     directoryInjected.openTokenDialog('nope')
     expect(directoryStore.getSnapshot().dialog).toBeNull()
     directoryInjected.setDialogDraft('NOTION_API_TOKEN', 'sekrit')
+    // The roster row takes no URL override, so the URL mutator is a guard.
+    directoryInjected.setDialogUrl('https://ignored.example')
     directoryInjected.closeDialog()
     await directoryInjected.saveToken()
     expect(directoryStore.getSnapshot().dialog).toBeNull()
@@ -164,10 +165,9 @@ describe('ui-connectors apply', () => {
     expect(directoryStore.getSnapshot().customDialog?.drafts.name).toBe('Bench Svc')
     directoryInjected.closeCustomDialog()
     expect(directoryStore.getSnapshot().customDialog).toBeNull()
-    // add and remove re-list the roster through the single-flighted read.
+    // add re-lists the roster through the single-flighted read.
     await directoryInjected.saveCustom()
     expect(directoryStore.getSnapshot().customDialog).toBeNull()
-    await directoryInjected.removeCustom('atlas')
     // The mutation answers with the single row the controller adopts.
     expect(directoryStore.getSnapshot().connectors.map(c => c.id)).toEqual(['atlas'])
     await fiber.dispose()

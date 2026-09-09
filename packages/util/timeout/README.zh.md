@@ -50,6 +50,8 @@ export async function runWithDeadline(upstream: AbortSignal | undefined, timeout
 
 对于流式传输，创建一个 `idleWatchdog`，将其稳定的 `signal` 传给传输层，并为提供方的每次读取调用 `watchdog.next(iterator)`。当传输活动不产生迭代器值时，调用 `watchdog.pulse()`。间隔必须为正有限数，且不得超过 `MAX_TIMER_DELAY_MS`；否则 Node 会将其限制为 1 毫秒。它只对尚未完成的读取请求计时，因此当下游代码进行渲染或在请求下一个分片前以其他方式等待时，timer 不会运行。该原语仍然只会通知，因此传输层必须观察稳定信号；DeepSeek 和 pi-ai 适配器证明，超时会关闭它们的真实响应正文或 SDK 请求。
 
+调用 `watchdog.setIdleTimeout(ms)` 可改变此后每次布防所用的窗口——DeepSeek 和 pi-ai 适配器用它为 tool call 阶段加宽窗口，因为做批量处理的服务器（vLLM tool parser）可以在生成继续期间扣留整个 tool call 参数值。一个已经完成的在途请求保持其原定期限，且超时原因报告的是其 timer 触发时生效的间隔。
+
 ## 哪些操作不设置超时
 
 本地文件 `read`/`write`/`edit` 不接受 `timeoutMs`：文件 IO 不设时限地运行，因为截止时间会中止操作系统仍会完成的工作。详见[文件系统子系统页面](../../../docs/subsystems/filesystem.md)。

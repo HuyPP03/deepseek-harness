@@ -72,9 +72,15 @@ function insertedRow(patches: PatchOptions[]): InsertedRow {
   return insert?.[0] as InsertedRow
 }
 
+/**
+ * Wait until the connected server's per-server tool is registered. The read
+ * goes through `get`, not `schemas`: P9's lazy-mcp-tool-bridge marks
+ * per-server tools `unlisted`, so they stay out of the model-facing schema
+ * projection while remaining registered and dispatchable.
+ */
 async function waitForTool(ctx: Context, name: string): Promise<void> {
   const deadline = Date.now() + 10_000
-  while (!ctx.tools.schemas().some(schema => schema.name === name)) {
+  while (ctx.tools.get(name) === undefined) {
     if (Date.now() >= deadline) throw new Error(`timed out waiting for ${name}`)
     await new Promise(resolveWait => setTimeout(resolveWait, 25))
   }

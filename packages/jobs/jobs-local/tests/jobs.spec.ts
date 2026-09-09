@@ -390,6 +390,142 @@ describe('LocalJobRegistry reads and settlement', () => {
   })
 })
 
+describe('LocalJobRegistry.log', () => {
+  /**
+   * Queue-backed stream producer, batched like the shell collectors: one
+   * drained read returns everything queued so far.
+   */
+  function streamProducer(queue: string[]) {
+    return producer({ readOutput: () => queue.splice(0).join('') })
+  }
+
+  it('keeps the model read byte-identical while no human reads', async () => {
+    const ctx = await harness()
+    const queue = ['x']
+    const id = ctx.jobs.start(streamProducer(queue).spec)
+    expect(ctx.jobs.read(id).text).toBe('x')
+    queue.push('y')
+    expect(ctx.jobs.read(id).text).toBe('y')
+    expect(ctx.jobs.read(id).text).toBe('')
+  })
+
+  it('serves the full drained log without consuming the model read', async () => {
+    const ctx = await harness()
+    const queue = ['a', 'b']
+    const id = ctx.jobs.start(streamProducer(queue).spec)
+
+    // The human view drains the producer but leaves the model cursor at zero.
+    expect(ctx.jobs.log(id).text).toBe('ab')
+    expect(ctx.jobs.log(id).text).toBe('ab') // idempotent: no re-drain, no growth
+    expect(ctx.jobs.read(id).text).toBe('ab') // the model still gets everything
+    expect(ctx.jobs.read(id).text).toBe('')
+
+    queue.push('c')
+    expect(ctx.jobs.log(id).text).toBe('abc')
+    expect(ctx.jobs.read(id).text).toBe('c')
+    expect(ctx.jobs.log(id).text).toBe('abc')
+  })
+
+  it('marks nothing reported, on a live or a settled job', async () => {
+    const ctx = await harness()
+    const p = streamProducer(['done'])
+    const id = ctx.jobs.start(p.spec)
+
+    expect(ctx.jobs.log(id).snapshot).toMatchObject({ status: 'running', reported: false })
+    p.settle({ status: 'completed' })
+    await tick()
+    expect(ctx.jobs.log(id).snapshot).toMatchObject({ status: 'completed', reported: false })
+    expect(ctx.jobs.list()[0]).toMatchObject({ reported: false })
+    // The model read keeps its own reporting duty.
+    expect(ctx.jobs.read(id).snapshot).toMatchObject({ reported: true })
+  })
+
+  it('serves a final-output job: empty while live, the output once settled', async () => {
+    const ctx = await harness()
+    const p = producer({ kind: 'subagent' })
+    const id = ctx.jobs.start(p.spec)
+    expect(ctx.jobs.log(id).text).toBe('')
+
+    p.settle({ status: 'completed', output: 'child answer' })
+    await tick()
+    expect(ctx.jobs.log(id).text).toBe('child answer')
+    expect(ctx.jobs.log(id).text).toBe('child answer') // idempotent
+
+    // A settled job whose outcome carries no output still serves the empty tail.
+    const f = producer({ kind: 'subagent' })
+    const failed = ctx.jobs.start(f.spec)
+    f.settle({ status: 'failed' })
+    await tick()
+    expect(ctx.jobs.log(failed).text).toBe('')
+  })
+
+  it('tail-bounds the retained log and arms the one-shot model loss marker', async () => {
+    const ctx = await harness({ jobLogRetainChars: 5 })
+    const queue = ['abcde', 'fghij']
+    const id = ctx.jobs.start(streamProducer(queue).spec)
+
+    expect(ctx.jobs.log(id).text).toBe('fghij') // the head 'abcde' left the window
+    expect(ctx.jobs.read(id).text).toBe('[job log head dropped]\nfghij')
+    expect(ctx.jobs.read(id).text).toBe('') // the marker is one-shot
+    expect(ctx.jobs.log(id).text).toBe('fghij')
+  })
+
+  it('shifts the model cursor without re-delivery when a drop stays behind it', async () => {
+    const ctx = await harness({ jobLogRetainChars: 5 })
+    const queue = ['abcde']
+    const id = ctx.jobs.start(streamProducer(queue).spec)
+    ctx.jobs.log(id)
+    expect(ctx.jobs.read(id).text).toBe('abcde') // cursor now at the window end
+
+    queue.push('fgh')
+    ctx.jobs.log(id)
+    // Drop of 3 is wholly behind the cursor: no marker, no re-delivery of 'de'.
+    expect(ctx.jobs.read(id).text).toBe('fgh')
+  })
+
+  it('re-arms the loss marker on every drop that swallows unconsumed bytes', async () => {
+    const ctx = await harness({ jobLogRetainChars: 5 })
+    const queue = ['abcdef']
+    const id = ctx.jobs.start(streamProducer(queue).spec)
+
+    // First drop (one char) with nothing consumed: the first model read
+    // carries the marker once, then goes quiet.
+    ctx.jobs.log(id) // window 'bcdef'
+    expect(ctx.jobs.read(id).text).toBe('[job log head dropped]\nbcdef')
+    expect(ctx.jobs.read(id).text).toBe('')
+
+    // The model consumed the whole window; a 6-char slide drops one byte
+    // past the cursor, so the second drop arms the marker again.
+    queue.push('ghijkl')
+    ctx.jobs.log(id) // window 'hijkl'
+    expect(ctx.jobs.read(id).text).toBe('[job log head dropped]\nhijkl')
+    expect(ctx.jobs.read(id).text).toBe('')
+  })
+
+  it('fences a foreign job and throws for an unknown id', async () => {
+    const ctx = await harness()
+    const owner = stubAgent(ctx, 'owner')
+    ctx.agents.register(owner)
+    const stranger = stubAgent(ctx, 'stranger')
+    ctx.agents.register(stranger)
+    const id = ctx.jobs.start(producer({ owner }).spec)
+
+    expect(() => ctx.jobs.log(id, stranger)).toThrow(`job ${id} belongs to another session`)
+    expect(() => ctx.jobs.log(id)).toThrow('belongs to another session')
+    expect(() => ctx.jobs.log(JobId('bash-99'))).toThrow('unknown job bash-99')
+    expect(ctx.jobs.log(id, owner).text).toBe('')
+  })
+
+  it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY, Number.MAX_SAFE_INTEGER + 1])(
+    'rejects invalid jobLogRetainChars config: %s',
+    async (jobLogRetainChars) => {
+      const ctx = new Context()
+      await expect(ctx.plugin(LocalJobRegistry, { jobLogRetainChars }))
+        .rejects.toThrow()
+    },
+  )
+})
+
 describe('LocalJobRegistry.kill', () => {
   it('cancels a live job with the forwarded reason and suppresses the notice', async () => {
     const ctx = await harness()

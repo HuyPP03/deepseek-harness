@@ -2531,6 +2531,14 @@ function createFixtureWorld(options: FixtureOptions): FixtureWorld {
       })),
       interrupt: request => Promise.resolve(ok(request, { accepted: true as const })),
     },
+    jobs: {
+      // The fixture composes no job registry: every job read is not-found.
+      log: request => err(request, {
+        code: 'job-not-found',
+        message: `session "${request.payload.sessionId}" has no background job under id "${request.payload.jobId}"`,
+        details: { sessionId: request.payload.sessionId, jobId: request.payload.jobId },
+      }),
+    },
     host: {
       describe: request => ok(request, {
         version: '0.0.0-fixture', cwd: '/tmp/fixture', attachedSessions, canOpenPath: true,
@@ -3256,6 +3264,7 @@ export class FixtureApiClient extends AbstractApiClient {
       case 'subagent.history': return this.api.subagents.history(request)
       case 'subagent.prompt': return this.api.subagents.prompt(request, signal)
       case 'subagent.interrupt': return this.api.subagents.interrupt(request)
+      case 'jobs.log': return this.api.jobs.log(request)
       case 'host.describe': return this.api.host.describe(request)
       case 'host.pickDirectory': return this.api.host.pickDirectory(request, new AbortController().signal)
       case 'host.listDirectory': return this.api.host.listDirectory(request, new AbortController().signal)

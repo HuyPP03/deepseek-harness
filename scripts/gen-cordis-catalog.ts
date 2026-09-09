@@ -429,6 +429,7 @@ export const LINK_MAP: Readonly<Record<string, string>> = {
   ToolProviderResult: 'system-prompt.md',
   JobDoneListener: 'jobs.md',
   JobId: 'jobs.md',
+  JobLogRead: 'jobs.md',
   JobRead: 'jobs.md',
   JobSnapshot: 'jobs.md',
   JobStart: 'jobs.md',
@@ -511,6 +512,7 @@ export const FOUNDATION_TYPE_NAMES: ReadonlySet<string> = new Set([
   'Promise',
   'Record',
   'Readonly',
+  'ReadonlySet',
   'Uint8Array',
 ])
 

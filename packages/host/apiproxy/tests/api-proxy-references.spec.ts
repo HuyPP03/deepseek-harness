@@ -69,7 +69,7 @@ function stubAgent(session: Session): Agent {
 /** Compose the API over real Session, Agent, Storage, Domain, Workspace, and reference services. */
 async function harness(
   root = realpathSync.native(mkdtempSync(join(tmpdir(), 'dsh-apiproxy-refs-'))),
-  options: { withReferences?: boolean } = {},
+  options: { withReferences?: boolean; providerPreset?: string } = {},
 ) {
   const ctx = new Context()
   await ctx.plugin(SessionStore)
@@ -83,6 +83,15 @@ async function harness(
   ctx.storage.mount('domain', storageDomain)
   ctx.provide('storageDomain', storageDomain)
   ctx.provide('sessionPersistence', { list: () => Promise.resolve([]) } as never)
+  if (options.providerPreset !== undefined) {
+    ctx.provide('connectors', { presetIds: () => new Set([options.providerPreset]) } as never)
+    // A minimal roster so create records the requested preset on the header.
+    ctx.provide('agentPresets', {
+      defaultId: 'standard',
+      resolve: async (id?: string) => ({ id: id ?? 'standard' }),
+      mount: async () => {},
+    } as never)
+  }
   await ctx.plugin(WorkspaceRegistry)
   if (options.withReferences !== false) await ctx.plugin(WorkspaceReferenceService, {})
 
@@ -197,10 +206,10 @@ describe('session.create with referenceWorkspaceIds', () => {
     expect(ctx.agents.get(sessionId)).toBeUndefined()
   })
 
-  it('refuses references for a session without a workspace', async () => {
+  it('refuses references for a plain chat session', async () => {
     const { api, ctx, root } = await harness()
     const refA = await stageWorkspace(api, root, 'w-ref-a')
-    const sessionId = SessionId('refs-noworkspace')
+    const sessionId = SessionId('refs-plain-chat')
 
     const created = await api.sessions.create(request({
       sessionId,
@@ -208,9 +217,28 @@ describe('session.create with referenceWorkspaceIds', () => {
     }))
     expect(created.result).toMatchObject({
       ok: false,
-      error: { code: 'references-require-workspace', details: { sessionId } },
+      error: { code: 'references-unavailable', details: { sessionId } },
     })
     expect(ctx.agents.get(sessionId)).toBeUndefined()
+  })
+
+  it('admits references for a provider session', async () => {
+    const { api, ctx, root } = await harness(undefined, { providerPreset: 'provpreset' })
+    const refA = await stageWorkspace(api, root, 'w-ref-a')
+    const sessionId = SessionId('refs-provider')
+
+    const created = expectOk(await api.sessions.create(request({
+      sessionId,
+      agentPreset: 'provpreset',
+      referenceWorkspaceIds: [refA.workspaceId],
+    })))
+    expect(created.sessionId).toBe(sessionId)
+
+    const session = ctx.sessions.get(sessionId)
+    if (session === undefined) throw new Error('created session missing from store')
+    const events = referenceEvents(session)
+    expect(events).toHaveLength(1)
+    expect(events[0]?.data).toEqual({ references: [{ path: refA.path }] })
   })
 
   it('treats an empty reference list as no references', async () => {
@@ -310,7 +338,7 @@ describe('session.setReferences', () => {
     expect(referenceEvents(session)).toHaveLength(0)
   })
 
-  it('refuses a non-empty set for a session without a workspace', async () => {
+  it('refuses a non-empty set on a plain chat session', async () => {
     const { api, ctx, root } = await harness()
     const refA = await stageWorkspace(api, root, 'w-ref-a')
     const created = expectOk(await api.sessions.create(request({})))
@@ -323,9 +351,26 @@ describe('session.setReferences', () => {
     }))
     expect(response.result).toMatchObject({
       ok: false,
-      error: { code: 'references-require-workspace', details: { sessionId: created.sessionId } },
+      error: { code: 'references-unavailable', details: { sessionId: created.sessionId } },
     })
     expect(referenceEvents(session)).toHaveLength(0)
+  })
+
+  it('attaches a non-empty set to a provider session', async () => {
+    const { api, ctx, root } = await harness(undefined, { providerPreset: 'provpreset' })
+    const refA = await stageWorkspace(api, root, 'w-ref-a')
+    const session = ctx.sessions.create(SessionId('refs-prov-set'), {
+      meta: { cwd: root, agentPreset: 'provpreset' },
+    })
+    ctx.agents.register(stubAgent(session))
+
+    expectOk(await api.sessions.setReferences(request({
+      sessionId: session.id,
+      referenceWorkspaceIds: [refA.workspaceId],
+    })))
+    const events = referenceEvents(session)
+    expect(events).toHaveLength(1)
+    expect(events[0]?.data).toEqual({ references: [{ path: refA.path }] })
   })
 
   it('treats the empty set as a no-op for a session without a workspace', async () => {

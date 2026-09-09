@@ -358,6 +358,7 @@ describe('catalog and list', () => {
     expect(google?.auth).toEqual([
       {
         mode: 'oauth',
+        byoApp: true,
         configured: false,
         setupGuide: ['Create an OAuth client in Google Cloud.'],
         reauthHint: 'Personal accounts re-authenticate every 7 days.',
@@ -366,11 +367,26 @@ describe('catalog and list', () => {
     expect(google?.products).toEqual(['gmail', 'drive'])
   })
 
+  it('publishes the claimed preset ids over catalog and custom connectors', async () => {
+    const { ctx } = await boot()
+    expect([...ctx.connectors.presetIds()].sort()).toEqual(['atlas', 'duo', 'google', 'm365', 'mislabeled', 'notion'])
+    const id = await ctx.connectors.addCustom({
+      name: 'My Local API',
+      transport: 'streamable-http',
+      url: 'http://127.0.0.1:9999/mcp',
+    })
+    expect(ctx.connectors.presetIds().has('custom-my-local-api')).toBe(true)
+    await ctx.connectors.removeCustom(id)
+    expect(ctx.connectors.presetIds().has('custom-my-local-api')).toBe(false)
+  })
+
   it('boots loud on a malformed catalog manifest', async () => {
     const root = await tempDir('bad-catalog')
     await mkdir(join(root, 'catalog'), { recursive: true })
     await writeFile(join(root, 'catalog', 'bad.yml'), 'id: Bad Id\nname: X\ndescription: X\npresetId: x\nworkspaceDirName: x\nservers: []\nauth: []\n')
     const ctx = new Context()
+    await ctx.plugin(SystemPrompt)
+    await ctx.plugin(ToolRuntime)
     const fiber = ctx.plugin(McpRegistry)
     fibers.push(fiber)
     await fiber
@@ -440,6 +456,20 @@ describe('token flow', () => {
     await expect(readFile(join(root, '.mcp', 'notion.cordis.yml'), 'utf8')).rejects.toThrow(/ENOENT/)
   })
 
+  it('keeps a self-hosted connector unconfigured until its base URL is stored', async () => {
+    const { ctx } = await boot()
+    // No URL stored: the requirement is advertised from the first read.
+    expect(await ctx.connectors.get('atlas')).toMatchObject({ urlRequired: true })
+    // Storing the token references alone does not arm the connect.
+    await ctx.connectors.configure('atlas', { credentials: { ATLASSIAN_USERNAME: 'me', ATLASSIAN_TOKEN: 'tok' } })
+    expect(await stateOf(ctx, 'atlas')).toBe('unconfigured')
+    // The stored URL lifts the gate and surfaces on the view.
+    await ctx.connectors.configure('atlas', { url: 'https://x.atlassian.net' })
+    expect(await ctx.connectors.get('atlas')).toMatchObject({
+      urlRequired: true, url: 'https://x.atlassian.net', state: 'needs-auth',
+    })
+  })
+
   it('refuses a configure with an unknown credential reference', async () => {
     const { ctx } = await boot()
     await expect(ctx.connectors.configure('notion', { credentials: { WRONG_REF: 'x' } })).rejects.toThrow(/not a credential reference/)
@@ -456,6 +486,10 @@ describe('token flow', () => {
     // declared reference.
     await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorCredentialMissingError)
     await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(/ATLASSIAN_USERNAME/)
+
+    // The manifest's env resolves the override document's url field, so the
+    // view advertises the URL requirement from the first read on.
+    expect(await ctx.connectors.get('atlas')).toMatchObject({ urlRequired: true })
 
     await ctx.connectors.configure('atlas', { credentials: { ATLASSIAN_USERNAME: 'me' } })
     expect(await stateOf(ctx, 'atlas')).toBe('unconfigured')
@@ -919,7 +953,9 @@ describe('override document validation', () => {
     const { ctx } = await boot({
       userDirFiles: [['google.json', JSON.stringify({ clientId: 'app.example', products: ['gmail'], orgMode: true, readOnly: false })]],
     })
-    expect(await stateOf(ctx, 'google')).toBe('unconfigured')
+    // The byoApp client id alone configures the OAuth method (P9), so the
+    // connector is configured and waiting on the auth flow, not unconfigured.
+    expect(await stateOf(ctx, 'google')).toBe('needs-auth')
   })
 })
 
@@ -1013,6 +1049,8 @@ describe('boot configuration edges', () => {
     const home = await tempDir('home')
     vi.stubEnv('DSH_HOME', home)
     const ctx = new Context()
+    await track(ctx.plugin(SystemPrompt))
+    await track(ctx.plugin(ToolRuntime))
     await track(ctx.plugin(McpRegistry))
     await track(ctx.plugin(McpManager, { mcpDir: join(home, '.mcp') }))
     await track(ctx.plugin(Connectors))
@@ -1020,6 +1058,8 @@ describe('boot configuration edges', () => {
 
     const root = await tempDir('no-catalog')
     const ctx2 = new Context()
+    await track(ctx2.plugin(SystemPrompt))
+    await track(ctx2.plugin(ToolRuntime))
     await track(ctx2.plugin(McpRegistry))
     await track(ctx2.plugin(McpManager, { mcpDir: join(root, '.mcp') }))
     await track(ctx2.plugin(Connectors, { catalogDir: join(root, 'missing'), userDir: join(root, 'user') }))
@@ -1031,6 +1071,8 @@ describe('boot configuration edges', () => {
     const catalog = join(root, 'catalog')
     await writeFile(catalog, 'not a dir')
     const ctx = new Context()
+    await track(ctx.plugin(SystemPrompt))
+    await track(ctx.plugin(ToolRuntime))
     await track(ctx.plugin(McpRegistry))
     await track(ctx.plugin(McpManager, { mcpDir: join(root, '.mcp') }))
     const fiber = ctx.plugin(Connectors, { catalogDir: catalog, userDir: join(root, 'user') })
@@ -1044,6 +1086,8 @@ describe('boot configuration edges', () => {
     const user = join(root, 'user')
     await writeFile(user, 'not a dir')
     const ctx = new Context()
+    await track(ctx.plugin(SystemPrompt))
+    await track(ctx.plugin(ToolRuntime))
     await track(ctx.plugin(McpRegistry))
     await track(ctx.plugin(McpManager, { mcpDir: join(root, '.mcp') }))
     const fiber = ctx.plugin(Connectors, { catalogDir: join(root, 'catalog'), userDir: user })
@@ -1184,6 +1228,8 @@ describe('user directory at boot', () => {
     await mkdir(userDir, { recursive: true, mode: 0o700 })
     await writeFile(join(userDir, 'custom-file.json'), custom, { mode: 0o600 })
     const ctx = new Context()
+    await ctx.plugin(SystemPrompt)
+    await ctx.plugin(ToolRuntime)
     const f1 = ctx.plugin(McpRegistry)
     fibers.push(f1)
     await f1

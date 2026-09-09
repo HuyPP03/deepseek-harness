@@ -20,6 +20,7 @@ The package root exposes the Cordis plugin contract and `DeepSeekAdapter`; wire 
     reasoningEffort: high    # optional; off | low | high | max — omitted ⇒ high
     maxTokens: 256000        # optional positive per-request output cap; this is the default
     streamIdleTimeoutMs: 300000 # optional; positive finite Node timer delay; five-minute default
+    toolCallStreamIdleTimeoutMs: 1800000 # optional; tool-call-phase idle window; defaults to streamIdleTimeoutMs
     retryPolicy:             # optional; omission uses bounded normal defaults
       mode: always           # normal | always
       backoff:
@@ -46,6 +47,8 @@ The same exact-model result exposes ordered `off`, `low`, `high`, and `max` effo
 `thinking: disabled` is a deployment lock that publishes only `off` with `off` as its default. Omitting `reasoningEffort` or configuring it as `off` is valid; configuring `low`, `high`, or `max` fails plugin loading, and a direct per-request attempt to enable thinking fails before network I/O. A request with `GenerateOptions.purpose: 'session-title'` also forces thinking disabled and omits the already-resolved effort, reserving its bounded output for visible title text without changing conversation or compaction defaults.
 
 `streamIdleTimeoutMs` bounds each outstanding provider read, including the initial `fetch`, without counting time the consumer spends between chunks. DeepSeek SSE comments rearm an outstanding read as transport activity but never become `StreamChunk` values or session-log events. One stable abort signal reaches the request and body reader for the whole call; expiry stops the transport and throws `LlmError('TIMEOUT')`, while an earlier caller abort throws `LlmError('ABORTED')`. The adapter makes exactly one provider request per `stream()` call; it registers the configured policy as provider metadata, and `dsh-llm-retry` separately executes it at durable agent-step boundaries.
+
+`toolCallStreamIdleTimeoutMs` sets the idle window for the tool-call phase: from the first `tool-call-delta` of a stream until a `text-delta` or `reasoning-delta` follows. It defaults to `streamIdleTimeoutMs`. The split exists because some servers batch tool-call arguments — a vLLM tool parser can hold an entire `write` file's content and flush it in one late event — so a long file write legitimately produces a wire gap that would trip the five-minute base window. A timeout fired during the tool phase reports the tool-call window in its message.
 
 ## Dynamic configuration (settings + credentials)
 

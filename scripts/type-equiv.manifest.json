@@ -956,6 +956,11 @@
       "source": "packages/jobs/jobs/src/types.ts"
     },
     {
+      "doc": "docs/subsystems/jobs.md",
+      "symbol": "JobLogRead",
+      "source": "packages/jobs/jobs/src/types.ts"
+    },
+    {
       "doc": "docs/subsystems/terminal.md",
       "symbol": "TerminalWaitReason",
       "source": "packages/terminal/terminal/src/types.ts"

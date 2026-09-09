@@ -50,6 +50,8 @@ Pass your own `code` to `timeoutOf` so classification composes under nesting. Wh
 
 For a streamed transport, create one `idleWatchdog`, pass its stable `signal` into the transport, and call `watchdog.next(iterator)` for each provider read. Call `watchdog.pulse()` when transport activity does not yield an iterator value. The interval must be positive, finite, and no greater than `MAX_TIMER_DELAY_MS`; Node otherwise clamps it to one millisecond. It measures only outstanding demand, so no timer runs while downstream code renders or otherwise waits before asking for the next chunk. The primitive still only notifies, so the transport must observe the stable signal; the DeepSeek and pi-ai adapters prove that timeout closes their real response body or SDK request.
 
+Call `watchdog.setIdleTimeout(ms)` to change the window for every later arm — the DeepSeek and pi-ai adapters use it to widen the window for the tool-call phase, because a batching server (vLLM tool parser) can hold an entire tool-call argument value while generation continues. An already outstanding demand keeps its original deadline, and the timeout reason reports the interval in force when its timer fires.
+
 ## What does NOT get a timeout
 
 Local file `read`/`write`/`edit` take no `timeoutMs`: file IO runs untimed because a deadline would kill work the OS will still finish. See [the filesystem subsystem page](../../../docs/subsystems/filesystem.md).

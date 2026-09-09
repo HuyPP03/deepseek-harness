@@ -2,7 +2,7 @@
 
 [English](README.md) | 中文
 
-连接器目录与状态机：预定义连接（Notion、GitHub、Atlassian、Slack、Google、Microsoft 365 等）与用户自定义连接器，每个都通过 [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md) 挂载一个或多个 MCP 服务器。
+连接器目录与状态机：预定义连接（Confluence、Figma、GitHub、Notion、Slack 等）与用户自定义连接器，每个都通过 [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md) 挂载一个或多个 MCP 服务器。
 
 一个连接器是一份清单：它要挂载的 MCP 服务器、如何为它们认证，以及带它的会话要组合的 agent 预设。状态**在读取时派生**，来源是权威 seam——凭据存储、OAuth 令牌存储、实时 MCP 注册表——因此连接器不可能声称 seam 没有显示的状态。
 
@@ -42,20 +42,21 @@ suggestions:
 | 操作 | 含义 |
 |---|---|
 | `list()` | 所有目录 + 自定义连接器，以 wire 安全视图返回，按 id 排序。 |
+| `presetIds()` | 覆盖每个目录 + 自定义清单的 `presetId` 集合——connector 会话出生时所处的 agent preset，因此 host 门控（模式切换、参考资格、权限固定）从这里读取 provider 集合。 |
 | `get(id)` | 一个视图，或 `undefined`。 |
-| `manifest(id)` | 原始清单（host 内部用；视图永不携带命令、env 或 URL）。 |
+| `manifest(id)` | 原始清单（host 内部用；视图永不携带命令或 env，视图唯一可能携带的 URL 是用户存储的 `url`）。 |
 | `setAuthorizing(id, inFlight)` | 标记进行中的认证流程；标记期间状态读作 `authorizing`。 |
-| `configure(id, fields)` | 存储 token/凭据值与/或 override 字段。token 方法配置完整时自动连接；挂载失败会记录 `lastError`，而不是丢掉已存值。 |
+| `configure(id, fields)` | 存储 token/凭据值与/或 override 字段。token 方法配置完整时自动连接；挂载失败会记录 `lastError`，而不是丢掉已存值。需要 base URL 的清单在 `url` override 存好之前不算配置完整；因缺少 override 的挂载失败会让连接器停留在 configure 关卡，而不是进入 `error`。 |
 | `connect(id, mode)` | 以 token 挂载；每个已声明的凭据引用必须先已存储（否则抛 `ConnectorCredentialMissingError`）。`oauth` 与 `device` 在流程引擎落地前以 `ConnectorAuthUnavailableError` 拒绝。 |
 | `disconnect(id)` | 卸载、清除连接器的凭据、删除其令牌包，并删除其 override 文档。 |
 | `addCustom(spec)` | 创建 `custom-<slug>`：复制 `custom` 预设、持久化清单、无认证需求时自动挂载。 |
 | `removeCustom(id)` | 卸载、清除凭据、删除清单与预设副本。拒绝删除预定义 id。 |
 
-wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`mounted`、`status`；认证条目携带 `mode`、`configured`、token 方法的 `credentialRefs`（公共引用名——客户端 token 对话框的按引用字段）与面向用户的提示——从不携带值。
+wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`mounted`、`status`；认证条目携带 `mode`、`configured`、token 方法的 `credentialRefs`（公共引用名——客户端 token 对话框的按引用字段）与面向用户的提示——从不携带值。清单从 override 文档解析 base URL 时，视图携带 `urlRequired: true`，存好 `url` 后携带该值。
 
 ### 状态
 
-`unconfigured` → `needs-auth` →（`authorizing`）→ `connecting` → `connected` → `reconnecting`/`down`，另加 `error`（在一次失败操作的 `lastError` 挂起期间）。派生规则：已挂载服务器的状态来自注册表；挂起的挂载失败优先于连接器并不拥有的同名注册表视图（被占用的名字显示 `error`，而不是占用者的状态）。
+`unconfigured` → `needs-auth` →（`authorizing`）→ `connecting` → `connected` → `reconnecting`/`down`，另加 `error`（在一次失败操作的 `lastError` 挂起期间）。派生规则：已挂载服务器的状态来自注册表；挂起的挂载失败优先于连接器并不拥有的同名注册表视图（被占用的名字显示 `error`，而不是占用者的状态）。“已配置”——`unconfigured` 与 `needs-auth` 之间的关卡——指认证方法的要求已存储；对需要 base URL 的清单，还包括 `url` override。
 
 ### 事件
 
@@ -90,4 +91,5 @@ wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`m
 - **没有 device-code 引擎**——M365 的 device-code 循环将在后续阶段落地；目前只组合了浏览器 OAuth 流程（[dsh-connectors-oauth-flow](../oauth-flow/README.md)）。
 - **被动状态靠轮询**——没有连接器操作的注册表翻转（服务器掉线、重连）在下次 `list()` 时可见；不为它们发出事件。
 - **override 是 boot 时快照**——override 文档的外部编辑不会热重载。
+- **自定义连接器不能用 `$override` 槽**——`addCustom` 的 env 与 headers 只能是字面量，所以服务器需要 base URL 的自托管服务以目录清单形式发布（Confluence），而不是自定义连接器。
 - **`lastError` 在内存中**——失败挂载的报错在下一次成功操作前保留，但不跨重启。

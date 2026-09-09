@@ -20,7 +20,7 @@ import {
   webSnapshotMode,
   type WebScaffold,
 } from './scaffold.ts'
-import { newEnglishPage, saveFailureShot } from './support.ts'
+import { newEnglishPage, openChatsTab, saveFailureShot } from './support.ts'
 
 const MODE = webSnapshotMode()
 const LOAD_MORE_EXPECTED = fileURLToPath(new URL(
@@ -35,6 +35,13 @@ const FIXTURE = createChatScrollFixture({
 })
 const MAX_MOUNTED_ROWS = 160
 const GEOMETRY_TOLERANCE = 2
+/**
+ * Bounded auto-scroll during a streamed turn: the end-pinning virtualizer
+ * batches re-anchors into a handful of scrollTo calls. Frame-timing dependent
+ * across hosts (5 on CI, 6 on slower local frame pacing) — a per-chunk scroll
+ * storm would still exceed this by an order of magnitude.
+ */
+const MAX_STREAMING_SCROLL_CALLS = 6
 const STREAM_MARKER = 'TRAJECTORY_VIRTUAL_STREAM_FINISHED'
 const STREAM_TEXT = Array.from(
   { length: 80 },
@@ -198,6 +205,7 @@ describe('web e2e: Trajectory virtualization over tail-paged history', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    await openChatsTab(page)
     // The compact layout dropped group session counts; the seeded baseline is
     // the chats-tab row once cold summaries load.
     await page.getByRole('tree', { name: 'Chats' }).getByRole('treeitem').first().waitFor({ timeout: 30_000 })
@@ -331,7 +339,7 @@ describe('web e2e: Trajectory virtualization over tail-paged history', () => {
         return (window as Window & { __trajectoryScrollCalls?: number })
           .__trajectoryScrollCalls ?? 0
       })
-      expect(streamingScrollCalls).toBeLessThanOrEqual(5)
+      expect(streamingScrollCalls).toBeLessThanOrEqual(MAX_STREAMING_SCROLL_CALLS)
       expect(await mountedRows(page)).toBeLessThanOrEqual(MAX_MOUNTED_ROWS)
       expect({
         pageErrors: tripwire.pageErrors,

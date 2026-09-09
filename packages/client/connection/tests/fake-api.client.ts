@@ -143,6 +143,13 @@ export class FakeApiClient implements IApiClient {
     }))),
   }
 
+  readonly jobs: IApiClient['jobs'] = {
+    log: (payload: unknown) => this.record('jobs.log', payload, Promise.resolve(ok({
+      text: '',
+      truncated: false,
+    }))),
+  }
+
   readonly host: IApiClient['host'] = {
     describe: payload => this.record('host.describe', payload, this.onDescribe(payload)),
     pickDirectory: payload => this.record('host.pickDirectory', payload, this.onPickDirectory(payload)),

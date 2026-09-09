@@ -75,7 +75,7 @@ export class McpRegistry extends Service {
    * Register the three bridge tools over this registry's faces. Each
    * registration rides a ctx effect so disposing the service removes it.
    */
-  protected async [Service.init](): Promise<void> {
+  protected [Service.init](): Promise<void> {
     const tools = this.ctx.tools
     const faces: BridgeFaces = {
       servers: () => this.servers(),
@@ -105,6 +105,7 @@ export class McpRegistry extends Service {
     ] as const) {
       this.ctx.effect(() => tools.register(definition), `mcp-registry: ${label}`)
     }
+    return Promise.resolve()
   }
 
   /**

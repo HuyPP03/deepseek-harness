@@ -1,57 +1,27 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import type { JobView } from '@deepseek-ai/dsh-client-runtime/client'
-import { IconChevronDownOutline14, StateDot, useDismissOnOutsidePointer, type StateDotState } from '@deepseek-ai/dsh-client-ui-primitives'
+import { IconChevronDownOutline14, StateDot, useDismissOnOutsidePointer } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { PropsLocale, PropsRuntime, TranslateNS } from '@deepseek-ai/dsh-client-ui-slots'
+import { dotState, isLive, statusLabel } from './job-view.ts'
 import { NS } from './locales.ts'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import css from './JobListAction.module.css'
 
+/** Injected share of the job list: the details-panel open gesture. */
+export interface JobListActionInjected {
+  /**
+   * Open the details panel on this session's job-log seat.
+   * @param jobId - the registry-issued id of the clicked row.
+   */
+  openJob: (jobId: string) => void
+}
+
 /** Full props for the session-header background-job action. */
 export type JobListActionProps =
-  PropsRuntime<'conversation.session.header.actions'> & PropsLocale<typeof NS>
+  PropsRuntime<'conversation.session.header.actions'> & JobListActionInjected & PropsLocale<typeof NS>
 
 /** Stable empty list so a session with no jobs keeps one array identity. */
 const NO_TASKS: readonly JobView[] = []
-
-/** A job the registry still holds open, and whose duration therefore ticks. */
-function isLive(job: JobView): boolean {
-  return job.status === 'running' || job.status === 'stopping'
-}
-
-/** Closed-union exhaustiveness fence for the wire status set. */
-/* v8 ignore next 3 -- closed-union backstop; only reached if a status is forged */
-function assertNever(value: never): never {
-  throw new Error(`unhandled job status: ${JSON.stringify(value)}`)
-}
-
-/**
- * Status marker semantics. `stopping` and `killed` share the attention color:
- * both mean the work ended (or is ending) on request rather than on its own.
- */
-function dotState(status: JobView['status']): StateDotState {
-  switch (status) {
-    case 'running': return 'ongoing'
-    case 'stopping': return 'warning'
-    case 'completed': return 'done'
-    case 'killed': return 'warning'
-    case 'failed': return 'error'
-    /* v8 ignore next -- closed wire status union */
-    default: return assertNever(status)
-  }
-}
-
-/** Human status word for the row and its accessible name. */
-function statusLabel(status: JobView['status'], t: TranslateNS<typeof NS>): string {
-  switch (status) {
-    case 'running': return t('status.running')
-    case 'stopping': return t('status.stopping')
-    case 'completed': return t('status.completed')
-    case 'killed': return t('status.killed')
-    case 'failed': return t('status.failed')
-    /* v8 ignore next -- closed wire status union */
-    default: return assertNever(status)
-  }
-}
 
 /**
  * Elapsed time in at most two adjacent units. A background job that outlives
@@ -91,7 +61,7 @@ function ordered(jobs: readonly JobView[]): JobView[] {
  * @param props - runtime slot currency plus the namespace translator.
  * @returns the trigger and its popover list, or null when there is nothing to show.
  */
-export function JobListAction({ sessionId, useSessions, t }: JobListActionProps) {
+export function JobListAction({ sessionId, useSessions, openJob, t }: JobListActionProps) {
   const jobs = useSessions(state => state.jobsBySession[sessionId]) ?? NO_TASKS
   const [open, setOpen] = useState(false)
   const [now, setNow] = useState(() => Date.now())
@@ -162,16 +132,29 @@ export function JobListAction({ sessionId, useSessions, t }: JobListActionProps)
               const status = statusLabel(job.status, t)
               return (
                 <li key={job.id} className={live ? css.row : `${css.row} ${css.rowSettled}`}>
-                  <StateDot state={dotState(job.status)} className={css.rowDot} />
-                  <span className={css.kind}>{job.kind}</span>
-                  <span className={css.label} title={job.label}>{job.label}</span>
-                  <span className={css.status} title={job.detail ?? status}>{job.detail ?? status}</span>
-                  <span
-                    className={css.duration}
-                    title={t(live ? 'duration.title.live' : 'duration.title.done', { duration })}
+                  <button
+                    type="button"
+                    className={css.rowButton}
+                    aria-label={t('row.aria', { label: job.label, status })}
+                    onClick={() => {
+                      // Close before opening the panel: the row unmounts with
+                      // the popover, and focus must not vanish from a node
+                      // that is going away.
+                      setOpen(false)
+                      openJob(job.id)
+                    }}
                   >
-                    {duration}
-                  </span>
+                    <StateDot state={dotState(job.status)} className={css.rowDot} />
+                    <span className={css.kind}>{job.kind}</span>
+                    <span className={css.label} title={job.label}>{job.label}</span>
+                    <span className={css.status} title={job.detail ?? status}>{job.detail ?? status}</span>
+                    <span
+                      className={css.duration}
+                      title={t(live ? 'duration.title.live' : 'duration.title.done', { duration })}
+                    >
+                      {duration}
+                    </span>
+                  </button>
                 </li>
               )
             })}

@@ -172,7 +172,7 @@ describe('ui-workspace apply', () => {
     const notified = vi.fn()
     const unsubscribe = source.subscribe(notified)
     provider.set(new Set(['preset-a', 'preset-b']))
-    await vi.waitFor(() => expect([...source.getSnapshot()]).toEqual(['preset-a', 'preset-b']))
+    await vi.waitFor(() => { expect([...source.getSnapshot()]).toEqual(['preset-a', 'preset-b']) })
     expect(notified).toHaveBeenCalled()
     unsubscribe()
     // The provider disposing returns the source to the empty set.

@@ -12,7 +12,7 @@
 
 两个可选子功能在同一服务之上提供产品界面：`permissions` 会话投影单元（`src/types.ts` 声明该 key；单元以组合默认值为基础折叠三个全量值可调参数事件，并生成选择器视图，其中包含表内选项和仅作当前值的 `custom`）与 `/permissionPresets` 命令（不带参数调用时报告当前预设与表；预设参数经 `set` 切换）。每个子功能仅在其注册表（`ctx.sessionProjections` / `ctx.commands`）被组合时激活。
 
-聊天预设：`Config.chatPresetIds` 列出哪些 agent-preset id 的会话是聊天会话（Web 界面随附 `chat`）；留空（默认值）则禁用该行为。以列表中的 preset 创建的聊天会话会固定 `Config.chatPreset`（默认 `read-only`，加载时对照 preset 表校验），而不是默认预设；`/permissionPresets` 切换会拒绝任何仍运行列表中 preset 的会话——其模式由组合固定，客户端界面对其隐藏切换控件，而不是呈现一个必然被拒的操作。
+固定表面：`Config.chatPresetIds` 列出哪些 agent-preset id 的会话是聊天会话（Web 界面随附 `chat`）；留空（默认值）则禁用该半边。以列表中的 preset——或以已组合 connectors 服务声明的 preset（provider 会话；声明经由 `ctx.get('connectors').presetIds()` 读取，未组合 connectors 服务时缺省）——创建的会话会固定 `Config.chatPreset`（默认 `read-only`，加载时对照 preset 表校验），而不是默认预设；`/permissionPresets` 切换会拒绝任何仍运行列表中或被声明 preset 的会话——其模式由组合固定，客户端界面对其隐藏切换控件，而不是呈现一个必然被拒的操作。
 
 ## 模型体验
 

@@ -23,6 +23,8 @@ export interface ConnectTokenDialog {
   howTo: string | null
   /** The draft value per credential reference, in the method's declared order; cleared by the next open. */
   drafts: Record<string, string>
+  /** The draft base URL for a self-hosted row, prefilled with the stored one; null when the row takes no URL override. */
+  url: string | null
   /** Whether the save is in flight. */
   saving: boolean
   /** The last save failure, cleared by the next edit. */
@@ -62,9 +64,34 @@ export interface CustomDraft {
   transport: string
   command: string
   args: string
+  env: string
   url: string
   tokenVar: string
   tokenVarIsHeader: string
+}
+
+/** One `KEY=VALUE` draft segment: the key before the first `=`, the value after it. */
+function parseEnvSegment(segment: string): [string, string] | undefined {
+  const eq = segment.indexOf('=')
+  if (eq <= 0 || segment.slice(eq + 1).length === 0) return undefined
+  return [segment.slice(0, eq), segment.slice(eq + 1)]
+}
+
+/**
+ * Parse the draft's comma-separated `KEY=VALUE` env pairs (stdio only).
+ * @param text - the draft's env field, trimmed and comma-split by the caller's rules.
+ * @returns the env record, or undefined while any segment is malformed.
+ */
+export function parseEnvDraft(text: string): Record<string, string> | undefined {
+  const segments = text.split(',').map(s => s.trim()).filter(s => s !== '')
+  if (segments.length === 0) return undefined
+  const env: Record<string, string> = {}
+  for (const segment of segments) {
+    const entry = parseEnvSegment(segment)
+    if (entry === undefined) return undefined
+    env[entry[0]] = entry[1]
+  }
+  return env
 }
 
 /** The custom connector dialog: the AddCustomSpec draft plus its operation facts. */
@@ -123,8 +150,8 @@ export class ConnectorsSectionController {
   readonly store: SnapshotStore<ConnectorsSectionState> = createSnapshotStore(INITIAL)
 
   // Only the operations the region drives; the wider connector domain
-  // (complete, add, remove) stays host-side until the flow engine lands.
-  constructor(private readonly api: { connectors: Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin' | 'add' | 'remove'> }) {}
+  // (complete, remove) stays host-side until the flow engine lands.
+  constructor(private readonly api: { connectors: Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin' | 'add'> }) {}
 
   private get state(): ConnectorsSectionState {
     return this.store.getSnapshot()
@@ -188,7 +215,9 @@ export class ConnectorsSectionController {
     this.set({
       dialog: {
         id, name: row.name, howTo: token.howTo ?? null,
-        drafts, saving: false, error: null,
+        drafts,
+        url: row.urlRequired === true ? (row.url ?? '') : null,
+        saving: false, error: null,
       },
     })
   }
@@ -202,6 +231,16 @@ export class ConnectorsSectionController {
     const { dialog } = this.state
     if (dialog === null) return
     this.set({ dialog: { ...dialog, drafts: { ...dialog.drafts, [ref]: value }, error: null } })
+  }
+
+  /**
+   * Name the draft base URL the dialog is typing; clears a previous save failure.
+   * @param value - the value so far.
+   */
+  setDialogUrl(value: string): void {
+    const { dialog } = this.state
+    if (dialog === null || dialog.url === null) return
+    this.set({ dialog: { ...dialog, url: value, error: null } })
   }
 
   /** Close the dialog, discarding the draft. */
@@ -219,9 +258,11 @@ export class ConnectorsSectionController {
     const { dialog } = this.state
     if (dialog === null || dialog.saving) return
     this.set({ dialog: { ...dialog, saving: true, error: null } })
+    const fields: { credentials: Record<string, string> } & { url?: string } = { credentials: { ...dialog.drafts } }
+    if (dialog.url !== null) fields.url = dialog.url.trim()
     const response = await this.api.connectors.configure({
       id: dialog.id,
-      fields: { credentials: { ...dialog.drafts } },
+      fields,
     })
     if (!response.result.ok) {
       this.set({ dialog: { ...dialog, saving: false, error: response.result.error.message } })
@@ -379,7 +420,7 @@ export class ConnectorsSectionController {
   openCustomDialog(): void {
     this.set({
       customDialog: {
-        drafts: { name: '', id: '', transport: 'stdio', command: '', args: '', url: '', tokenVar: '', tokenVarIsHeader: '' },
+        drafts: { name: '', id: '', transport: 'stdio', command: '', args: '', env: '', url: '', tokenVar: '', tokenVarIsHeader: '' },
         saving: false, error: null,
       },
     })
@@ -412,8 +453,9 @@ export class ConnectorsSectionController {
     const { customDialog } = this.state
     if (customDialog === null || customDialog.saving) return
     const d = customDialog.drafts
-    const transport = (d.transport === 'streamable-http' ? 'streamable-http' : 'stdio') as 'stdio' | 'streamable-http'
+    const transport: 'stdio' | 'streamable-http' = d.transport === 'streamable-http' ? 'streamable-http' : 'stdio'
     const args = d.args.split(',').map(a => a.trim()).filter(a => a !== '')
+    const env = parseEnvDraft(d.env)
     const tokenVar = d.tokenVar.trim()
     this.set({ customDialog: { ...customDialog, saving: true, error: null } })
     const response = await this.api.connectors.add({
@@ -422,7 +464,7 @@ export class ConnectorsSectionController {
         ...(d.id.trim() !== '' ? { id: d.id.trim() } : {}),
         transport,
         ...(transport === 'stdio'
-          ? { command: d.command.trim(), ...(args.length > 0 ? { args } : {}) }
+          ? { command: d.command.trim(), ...(args.length > 0 ? { args } : {}), ...(env !== undefined ? { env } : {}) }
           : { url: d.url.trim() }),
         ...(tokenVar !== ''
           ? {
@@ -437,24 +479,6 @@ export class ConnectorsSectionController {
       return
     }
     this.set({ customDialog: null })
-    await this.load()
-  }
-
-  /**
-   * Remove one custom connector: the host deletes its manifest and unmounts
-   * its server; the roster re-lists to drop the row.
-   * @param id - the custom connector to remove.
-   * @returns once the store carries the host's answer.
-   */
-  async removeCustom(id: string): Promise<void> {
-    if (this.state.busyId !== null) return
-    this.set({ busyId: id, opError: null })
-    const response = await this.api.connectors.remove({ id })
-    if (!response.result.ok) {
-      this.set({ busyId: null, opError: { id, message: response.result.error.message } })
-      return
-    }
-    this.set({ busyId: null, selectedProvider: this.state.selectedProvider === id ? null : this.state.selectedProvider })
     await this.load()
   }
 

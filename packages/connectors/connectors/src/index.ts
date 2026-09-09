@@ -38,7 +38,9 @@ import type {} from '@deepseek-ai/dsh-credentials-oauth-tokens'
 import { McpServerExistsError, type McpServerSpec, type StdioServerSpec, type StreamableHttpServerSpec } from '@deepseek-ai/dsh-mcp-manager'
 import { parseConnectorManifest, CUSTOM_CONNECTOR_ID } from './manifest.ts'
 import type {
+  AddCustomSpec,
   ConnectorAuthFlow,
+  ConnectorConfigureFields,
   ConnectorDeviceFlow,
   DeviceFlowStart,
   ConnectorAuthMethod,
@@ -287,6 +289,19 @@ export class Connectors extends Service {
   }
 
   /**
+   * The agent presets the known connectors' sessions run: a connector's
+   * preset is that session's fixed mode, so host gates (`/mode` switches,
+   * reference eligibility) read the provider set from here rather than
+   * parsing manifests themselves.
+   * @returns the claimed preset ids (catalog and custom connectors).
+   */
+  presetIds(): ReadonlySet<string> {
+    const ids = new Set<string>()
+    for (const manifest of [...this.catalog.values(), ...this.customs.values()]) ids.add(manifest.presetId)
+    return ids
+  }
+
+  /**
    * One connector's wire-safe view.
    * @param id - the connector id.
    * @returns the view, or `undefined` while the id is not in the catalog.
@@ -423,9 +438,14 @@ export class Connectors extends Service {
           this.lastError.delete(id)
         } catch (error) {
           // The credential is stored; the mount failed. Surface the failure
-          // as the connector's state rather than losing the stored value.
-          /* v8 ignore next -- mcp-manager rejects with Error instances; the String(error) peer answers the catch type */
-          this.lastError.set(id, error instanceof Error ? error.message : String(error))
+          // as the connector's state rather than losing the stored value. A
+          // missing override is a configuration precondition, not a mount
+          // failure: the row stays on its configure gate (the view already
+          // advertises urlRequired) instead of a terminal error.
+          if (!(error instanceof ConnectorOverrideMissingError)) {
+            /* v8 ignore next -- mcp-manager rejects with Error instances; the String(error) peer answers the catch type */
+            this.lastError.set(id, error instanceof Error ? error.message : String(error))
+          }
         }
       }
     }
@@ -465,7 +485,7 @@ export class Connectors extends Service {
         // mount back so a failed connect leaves no partial trace, and
         // surface the failure as the connector's error state.
         await this.unmountServers(manifest)
-        this.recordFlowFailure(id, error instanceof Error ? error.message : String(error))
+        await this.recordFlowFailure(id, error instanceof Error ? error.message : String(error))
         throw error
       }
     }
@@ -624,7 +644,10 @@ export class Connectors extends Service {
       if (method.mode === 'device' && method.howTo !== undefined) view.howTo = method.howTo
       return view
     }))
-    const state = this.stateOf(manifest.id, servers, auth.some(entry => entry.configured))
+    const urlRequired = this.manifestRequiresUrl(manifest)
+    const configured = auth.some(entry => entry.configured)
+      && (!urlRequired || overrides.url !== undefined)
+    const state = this.stateOf(manifest.id, servers, configured)
     const view: Writable<ConnectorView> = {
       id: manifest.id,
       name: manifest.name,
@@ -635,6 +658,10 @@ export class Connectors extends Service {
       servers,
       auth,
       suggestions: [...(manifest.suggestions ?? [])],
+    }
+    if (urlRequired) {
+      view.urlRequired = true
+      if (overrides.url !== undefined) view.url = overrides.url
     }
     const lastError = this.lastError.get(manifest.id)
     if (state === 'error' && lastError !== undefined) view.lastError = lastError
@@ -717,6 +744,19 @@ export class Connectors extends Service {
       return overrides.clientId !== undefined
     }
     return false
+  }
+
+  /**
+   * Whether any of the manifest's server slots resolves the override
+   * document's `url` field, so a stored base URL is a connect precondition.
+   * @param manifest - the connector whose servers are scanned.
+   */
+  private manifestRequiresUrl(manifest: ConnectorManifest): boolean {
+    return manifest.servers.some((server) => {
+      const slots = server.transport === 'stdio' ? (server.env ?? {}) : (server.headers ?? {})
+      return Object.values(slots).some(slot =>
+        typeof slot !== 'string' && '$override' in slot && slot.$override === 'url')
+    })
   }
 
   /** Whether a token method's references are all stored. */
@@ -996,50 +1036,6 @@ export class Connectors extends Service {
     if (manifest === undefined) throw new ConnectorNotFoundError(id)
     return manifest
   }
-}
-
-/** The fields one `configure` call can set; absent fields are left untouched. */
-export interface ConnectorConfigureFields {
-  /** A token value stored under the token method's first credential reference. */
-  token?: string
-  /** Additional credential values by reference name, for multi-reference token methods. */
-  credentials?: Record<string, string>
-  /** The provider base URL (self-hosted or multi-tenant endpoint). */
-  url?: string
-  /** The pre-registered OAuth client id. */
-  clientId?: string
-  /** The pre-registered OAuth client secret, stored under the derived reference. */
-  clientSecret?: string
-  /** The provider products to switch on. */
-  products?: string[]
-  /** Microsoft 365: the organization tool set. */
-  orgMode?: boolean
-  /** GitHub: read-only mount. */
-  readOnly?: boolean
-}
-
-/** One user-authored custom connector as added through `addCustom`. */
-export interface AddCustomSpec {
-  /** Display name; the id slug derives from it when `id` is omitted. */
-  readonly name: string
-  /** An explicit id slug; defaults to a slug of the name. */
-  readonly id?: string
-  /** The transport the custom server speaks. */
-  readonly transport: 'stdio' | 'streamable-http'
-  /** The executable (stdio only). */
-  readonly command?: string
-  /** Arguments passed directly (stdio only). */
-  readonly args?: readonly string[]
-  /** Literal env vars (stdio only); the token var's value is replaced by its placeholder. */
-  readonly env?: Record<string, string>
-  /** The MCP endpoint URL (streamable-http only). */
-  readonly url?: string
-  /** Literal headers (streamable-http only). */
-  readonly headers?: Record<string, string>
-  /** The env var or header that carries the token, when the custom server authenticates. */
-  readonly tokenVar?: string
-  /** Whether `tokenVar` names a header rather than an env var (streamable-http). */
-  readonly tokenVarIsHeader?: boolean
 }
 
 /** Derive a lower-case slug from a display name. */
