@@ -209,7 +209,7 @@ describe('web e2e: settings modal and General preferences', () => {
         const boot = element.parentElement?.parentElement
         if (boot === undefined || boot === null) throw new Error('loading hint is detached from the boot page')
         return {
-          attr: document.body.hasAttribute('data-ds-dark-theme'),
+          attr: document.body.hasAttribute('data-oh-dark-theme'),
           background: getComputedStyle(boot).backgroundColor,
           colorScheme: document.documentElement.style.colorScheme,
         }
@@ -232,7 +232,7 @@ describe('web e2e: settings modal and General preferences', () => {
     const systemCube = restoredDialog.getByRole('button', { name: '跟随系统' })
     await systemCube.click()
     await expect.poll(() => systemCube.getAttribute('aria-pressed'), { timeout: 5_000 }).toBe('true')
-    await expect.poll(() => page.evaluate(() => document.body.hasAttribute('data-ds-dark-theme')), {
+    await expect.poll(() => page.evaluate(() => document.body.hasAttribute('data-oh-dark-theme')), {
       timeout: 5_000,
     }).toBe(false)
     await page.keyboard.press('Escape')
@@ -254,12 +254,12 @@ describe('web e2e: settings modal and General preferences', () => {
       const metas = document.head.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')
       const computed = getComputedStyle(document.body)
       return {
-        attr: document.body.hasAttribute('data-ds-dark-theme'),
+        attr: document.body.hasAttribute('data-oh-dark-theme'),
         background: computed.backgroundColor,
         legacy: localStorage.getItem('oh.theme'),
         themeColor: metas[0]?.content ?? null,
         themeColorCount: metas.length,
-        token: computed.getPropertyValue('--dsw-alias-bg-base').trim(),
+        token: computed.getPropertyValue('--oh-alias-bg-base').trim(),
       }
     })
     const expectThemeColorSynchronized = (state: ThemeState): void => {

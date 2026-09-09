@@ -22,13 +22,13 @@
   font-size: 12px;
   line-height: 18px;
   font-weight: 500;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
 }
 
 .dialogFieldHint {
   font-size: 11px;
   line-height: 16px;
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
 }
 
 /* The byoApp app-registration steps, numbered, above the credential fields. */
@@ -36,13 +36,13 @@
   margin: 0 0 16px;
   padding: 12px 12px 12px 28px;
   border-radius: 10px;
-  background: var(--dsw-alias-bg-module-platform);
+  background: var(--oh-alias-bg-module-platform);
   display: flex;
   flex-direction: column;
   gap: 6px;
   font-size: 12px;
   line-height: 18px;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
 }
 
 .dialogError {
@@ -50,7 +50,7 @@
   margin-top: 14px;
   font-size: 12px;
   line-height: 18px;
-  color: var(--dsw-alias-state-error-primary);
+  color: var(--oh-alias-state-error-primary);
   overflow-wrap: anywhere;
 }
 
@@ -72,12 +72,12 @@
   align-items: center;
   gap: 6px;
   padding: 6px 10px;
-  border: 1px solid var(--dsw-alias-border-l2);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: 999px;
-  background: var(--dsw-alias-bg-layer-1);
+  background: var(--oh-alias-bg-layer-1);
   font-size: 12px;
   line-height: 18px;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
   cursor: pointer;
   transition:
     border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
@@ -86,17 +86,17 @@
 }
 
 .customTransport label:hover {
-  border-color: var(--dsw-alias-label-dimmed);
-  color: var(--dsw-alias-label-primary);
+  border-color: var(--oh-alias-label-dimmed);
+  color: var(--oh-alias-label-primary);
 }
 
 .customTransport input {
-  accent-color: var(--dsw-alias-brand-primary);
+  accent-color: var(--oh-alias-brand-primary);
 }
 
 .customTransport input:checked + span,
 .customTransport label:has(input:checked) {
-  border-color: var(--dsw-alias-brand-primary);
-  background: color-mix(in srgb, var(--dsw-alias-state-business-primary) 10%, transparent);
-  color: var(--dsw-alias-label-primary);
+  border-color: var(--oh-alias-brand-primary);
+  background: color-mix(in srgb, var(--oh-alias-state-business-primary) 10%, transparent);
+  color: var(--oh-alias-label-primary);
 }

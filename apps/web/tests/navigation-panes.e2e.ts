@@ -263,13 +263,13 @@ describe('web e2e: navigation & panes over a rich seeded session', () => {
     await expect.poll(() => details.count(), { timeout: 10_000 }).toBe(1)
     expect(await details.getByRole('tabpanel').evaluate(panel => getComputedStyle(panel).overflowX))
       .toBe('hidden')
-    await page.evaluate(() => { document.body.setAttribute('data-ds-dark-theme', '') })
+    await page.evaluate(() => { document.body.setAttribute('data-oh-dark-theme', '') })
     const darkSummarySurfaces = await details.getByRole('heading', { name: 'Payload' }).evaluate(heading => ({
       heading: getComputedStyle(heading).backgroundColor,
       panel: getComputedStyle(heading.closest('[aria-label="Event details"]')!).backgroundColor,
     }))
     expect(darkSummarySurfaces.heading).toBe(darkSummarySurfaces.panel)
-    await page.evaluate(() => { document.body.removeAttribute('data-ds-dark-theme') })
+    await page.evaluate(() => { document.body.removeAttribute('data-oh-dark-theme') })
     await page.getByRole('tab', { name: 'Result' }).click()
     await expect.poll(() => page.getByText('NAVIGATION_OK', { exact: false }).count(), { timeout: 10_000 }).toBeGreaterThanOrEqual(1)
     const assistantSpan = page.locator('[data-timeline-span="message"][data-assistant-timing="true"]').first()
@@ -455,13 +455,13 @@ describe('web e2e: navigation & panes over a rich seeded session', () => {
     })
     expect(layout).toEqual({ whiteSpace: 'pre', overflowX: 'auto', wrapped: false, scrollsSideways: true })
     // The run-state dot's color is the whole point of it and is the one thing
-    // jsdom cannot report: --dsw-* tokens resolve only against the real theme
+    // jsdom cannot report: --oh-* tokens resolve only against the real theme
     // stylesheet. This command settled cleanly, so the dot must be the green
     // success token — a red one here would read as a failed command.
     const dot = await card.locator('[class*="_runState_"][data-state]').first().evaluate((node) => {
       // The token lives on body, so the probe must sit in the same cascade.
       const probe = document.createElement('span')
-      probe.style.color = 'var(--dsw-alias-state-success-primary)'
+      probe.style.color = 'var(--oh-alias-state-success-primary)'
       document.body.appendChild(probe)
       const success = getComputedStyle(probe).color
       probe.remove()

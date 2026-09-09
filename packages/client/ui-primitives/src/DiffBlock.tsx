@@ -5,7 +5,7 @@
 // through the shared shiki path, and marks the exact changed run inside a
 // modified line with a stronger wash than the whole-line side color. Output
 // never soft-wraps — an aligned source line keeps its indentation and scrolls
-// horizontally instead of folding. Colors resolve through --dsw-* tokens;
+// horizontally instead of folding. Colors resolve through --oh-* tokens;
 // geometry mirrors CodeBlock.
 
 import { useCallback, useMemo, useState, useSyncExternalStore, type ReactNode } from 'react'

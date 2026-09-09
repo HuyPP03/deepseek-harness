@@ -14,11 +14,11 @@
 
   position: relative;
   margin: 16px 0;
-  color: var(--dsw-alias-label-primary);
-  background: var(--dsw-alias-markdown-code-block);
-  border: 1px solid var(--dsw-alias-border-l2);
+  color: var(--oh-alias-label-primary);
+  background: var(--oh-alias-markdown-code-block);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: var(--dsl-diff-radius);
-  box-shadow: var(--dsw-shadow-lv1);
+  box-shadow: var(--oh-shadow-lv1);
   overflow: hidden;
   /* When a consumer fills a flex seat (file-inspector Changes), keep the
      footer pinned and let only .body scroll. Standalone cards stay auto-sized. */
@@ -34,12 +34,12 @@
   z-index: 1;
   height: 24px;
   padding: 0 8px;
-  border: 1px solid var(--dsw-alias-border-l2);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: 6px;
-  background: color-mix(in srgb, var(--dsw-alias-markdown-code-block) 88%, transparent);
-  color: var(--dsw-alias-label-secondary);
+  background: color-mix(in srgb, var(--oh-alias-markdown-code-block) 88%, transparent);
+  color: var(--oh-alias-label-secondary);
   cursor: pointer;
-  font: var(--dsw-font-xs-13);
+  font: var(--oh-font-xs-13);
   backdrop-filter: blur(4px);
   transition:
     color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
@@ -48,9 +48,9 @@
 }
 
 .copyButton:hover {
-  color: var(--dsw-alias-label-primary);
-  border-color: var(--dsw-alias-label-dimmed);
-  background: var(--dsw-alias-bg-layer-2);
+  color: var(--oh-alias-label-primary);
+  border-color: var(--oh-alias-label-dimmed);
+  background: var(--oh-alias-bg-layer-2);
 }
 
 .body {
@@ -63,11 +63,11 @@
   min-height: 0;
   max-height: var(--dsl-diff-body-max-height, none);
   padding: 10px 0 8px;
-  font: var(--dsw-font-markdown-code-block);
+  font: var(--oh-font-markdown-code-block);
   overflow-x: auto;
   overflow-y: auto;
-  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--oh-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--oh-alias-scrollbar-hover-l2);
 }
 
 .body::-webkit-scrollbar-thumb {
@@ -94,9 +94,9 @@
   width: var(--dsl-diff-gutter);
   padding-right: 10px;
   text-align: right;
-  color: var(--dsw-alias-label-caption);
+  color: var(--oh-alias-label-caption);
   user-select: none;
-  border-right: 1px solid var(--dsw-alias-border-l1);
+  border-right: 1px solid var(--oh-alias-border-l1);
 }
 
 .sign {
@@ -111,51 +111,51 @@
   flex: 1;
   min-width: 0;
   padding: 0 14px 0 8px;
-  color: var(--dsw-alias-label-primary);
+  color: var(--oh-alias-label-primary);
 }
 
 /* A file header: the path in the primary tone, set apart by weight. */
 .path {
-  color: var(--dsw-alias-label-primary);
+  color: var(--oh-alias-label-primary);
   font-weight: 600;
   padding: 4px 14px;
   padding-right: 72px;
-  background: var(--dsw-alias-markdown-code-block-banner);
-  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  background: var(--oh-alias-markdown-code-block-banner);
+  border-bottom: 1px solid var(--oh-alias-border-l1);
 }
 
 /* A same-file second hunk's separator (a scattered edit), in the dim tone. */
 .gap {
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
   padding: 2px 14px;
-  background: color-mix(in srgb, var(--dsw-alias-label-secondary) 5%, transparent);
+  background: color-mix(in srgb, var(--oh-alias-label-secondary) 5%, transparent);
 }
 
 /* Whole-line wash + sign color for the removed / added sides. */
 .del .sign {
-  color: var(--dsw-alias-state-error-primary);
+  color: var(--oh-alias-state-error-primary);
 }
 
 .del {
-  background: var(--dsw-alias-diff-del-bg);
+  background: var(--oh-alias-diff-del-bg);
 }
 
 .add .sign {
-  color: var(--dsw-alias-state-success-primary);
+  color: var(--oh-alias-state-success-primary);
 }
 
 .add {
-  background: var(--dsw-alias-diff-add-bg);
+  background: var(--oh-alias-diff-add-bg);
 }
 
 /* Intra-line mark: the exact changed run inside a modified line. */
 .strongDel {
-  background: var(--dsw-alias-diff-del-strong);
+  background: var(--oh-alias-diff-del-strong);
   border-radius: 2px;
 }
 
 .strongAdd {
-  background: var(--dsw-alias-diff-add-strong);
+  background: var(--oh-alias-diff-add-strong);
   border-radius: 2px;
 }
 
@@ -164,8 +164,8 @@
   width: 100%;
   padding: 4px 14px;
   border: none;
-  background-color: color-mix(in srgb, var(--dsw-alias-label-secondary) 5%, transparent);
-  color: var(--dsw-alias-label-tertiary);
+  background-color: color-mix(in srgb, var(--oh-alias-label-secondary) 5%, transparent);
+  color: var(--oh-alias-label-tertiary);
   cursor: pointer;
   font: inherit;
   text-align: left;
@@ -173,15 +173,15 @@
 }
 
 .expand:hover {
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
 }
 
 /* The change summary under the body. */
 .footer {
   flex: none;
   padding: 8px 14px 12px;
-  border-top: 1px solid var(--dsw-alias-border-l1);
-  font: var(--dsw-font-markdown-code-block);
-  color: var(--dsw-alias-label-tertiary);
-  background: var(--dsw-alias-markdown-code-block-banner);
+  border-top: 1px solid var(--oh-alias-border-l1);
+  font: var(--oh-font-markdown-code-block);
+  color: var(--oh-alias-label-tertiary);
+  background: var(--oh-alias-markdown-code-block-banner);
 }

@@ -18,8 +18,8 @@
   padding: 10px 16px;
   overflow-wrap: anywhere;
   border-radius: 22px;
-  background: var(--dsw-specific-bubble);
-  color: var(--dsw-alias-label-primary);
-  font: var(--dsw-font-markdown-code);
+  background: var(--oh-specific-bubble);
+  color: var(--oh-alias-label-primary);
+  font: var(--oh-font-markdown-code);
   white-space: pre-wrap;
 }

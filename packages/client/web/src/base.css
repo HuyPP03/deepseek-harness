@@ -1,5 +1,5 @@
 /* Shell-owned global base: full-height mount plus the theme token sheets.
- * The five ui-theme sheets are the sole token source (--dsw-*); the shell
+ * The five ui-theme sheets are the sole token source (--oh-*); the shell
  * links them here so tokens exist before any plugin CSS lands. scrollbar.css
  * follows design-platform.css because it reads that sheet's tokens. */
 @import '@open-harness/oh-client-ui-theme/styles/base.css';
@@ -16,13 +16,13 @@ body,
 }
 
 body {
-  font-family: var(--dsw-font-family);
+  font-family: var(--oh-font-family);
   /* Grayscale antialiasing over subpixel rendering: WebKit/Blink and the
      Firefox macOS equivalent; other engines ignore both lines. */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--dsw-alias-label-primary);
-  background: var(--dsw-alias-bg-base);
+  color: var(--oh-alias-label-primary);
+  background: var(--oh-alias-bg-base);
 }
 
 /* Form controls don't inherit the body font (UA sheets pin their families —

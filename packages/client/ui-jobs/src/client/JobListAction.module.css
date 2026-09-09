@@ -11,7 +11,7 @@
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
   font-size: 12px;
   line-height: 18px;
   cursor: pointer;
@@ -19,7 +19,7 @@
 
 .trigger:hover,
 .trigger:focus-visible {
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
 }
 
 .trigger svg {
@@ -54,12 +54,12 @@
   padding: 4px;
   overflow: auto;
   list-style: none;
-  border: 1px solid var(--dsw-alias-border-l2);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: 12px;
-  background: var(--dsw-specific-menu);
-  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
-  box-shadow: var(--dsw-shadow-lv3);
+  background: var(--oh-specific-menu);
+  --oh-scrollbar-thumb: var(--oh-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--oh-alias-scrollbar-hover-l2);
+  box-shadow: var(--oh-shadow-lv3);
 }
 
 .row {
@@ -67,13 +67,13 @@
   width: 100%;
   min-height: 32px;
   border-radius: 8px;
-  color: var(--dsw-alias-label-primary);
+  color: var(--oh-alias-label-primary);
   font-size: 13px;
   line-height: 18px;
 }
 
 .rowSettled {
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
 }
 
 /* The whole row is the click target for the details panel. */
@@ -96,7 +96,7 @@
 
 .rowButton:hover,
 .rowButton:focus-visible {
-  background: var(--dsw-alias-fill-l2);
+  background: var(--oh-alias-fill-l2);
 }
 
 .rowDot {
@@ -107,8 +107,8 @@
   flex: none;
   padding: 0 6px;
   border-radius: 5px;
-  background: var(--dsw-alias-fill-l2);
-  color: var(--dsw-alias-label-secondary);
+  background: var(--oh-alias-fill-l2);
+  color: var(--oh-alias-label-secondary);
   font-size: 11px;
   line-height: 18px;
 }
@@ -117,7 +117,7 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  font-family: var(--dsw-font-mono);
+  font-family: var(--oh-font-mono);
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -125,7 +125,7 @@
 .status,
 .duration {
   flex: none;
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
   font-size: 11px;
   line-height: 18px;
 }

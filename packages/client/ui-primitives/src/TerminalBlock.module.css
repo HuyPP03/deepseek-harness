@@ -10,7 +10,7 @@
   /* Rebindable by consumers (CodeBlock's --dsl-code-block-content-font
      pattern): a surface wanting the smaller code size rebinds this together
      with --dsl-terminal-line-height on its own container. */
-  --dsl-terminal-font: var(--dsw-font-markdown-code-block);
+  --dsl-terminal-font: var(--oh-font-markdown-code-block);
   /* The card's own left inset, holding the run-state dot in a column of its own
      so it never competes with the commands for horizontal space. */
   --dsl-terminal-gutter: 30px;
@@ -23,11 +23,11 @@
      container that clips it. Owning the reservation here keeps the invariant
      with the component that depends on it. */
   padding-left: var(--dsl-terminal-gutter);
-  color: var(--dsw-alias-label-primary);
-  background: var(--dsw-alias-markdown-code-block);
-  border: 1px solid var(--dsw-alias-border-l2);
+  color: var(--oh-alias-label-primary);
+  background: var(--oh-alias-markdown-code-block);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: var(--dsl-terminal-radius);
-  box-shadow: var(--dsw-shadow-lv1);
+  box-shadow: var(--oh-shadow-lv1);
   /* Clip the banner to the card's own radius: when a consumer adds a border,
      the banner's equal corner radius no longer nests inside it and leaves a
      notch at the corner. Nothing inside renders out of the box. */
@@ -46,13 +46,13 @@
   padding: 10px 14px 10px var(--dsl-terminal-gutter);
   border-top-left-radius: var(--dsl-terminal-radius);
   border-top-right-radius: var(--dsl-terminal-radius);
-  background: var(--dsw-alias-markdown-code-block-banner);
+  background: var(--oh-alias-markdown-code-block-banner);
   /* A long multi-line command scrolls inside the banner instead of pushing
      the output off screen. */
   max-height: 150px;
   overflow-y: auto;
-  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--oh-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--oh-alias-scrollbar-hover-l2);
 }
 
 /* Banner scrollbar floats off the card edge like the output's. */
@@ -68,7 +68,7 @@
 
 /* Full-width l2 hairline between the command banner and the body. */
 .block:not([data-running]) .header {
-  border-bottom: 1px solid var(--dsw-alias-border-l2);
+  border-bottom: 1px solid var(--oh-alias-border-l2);
 }
 
 /* One row per command line. The prompt column is the only element allowed to
@@ -110,14 +110,14 @@
 
 .cwd {
   flex: none;
-  color: var(--dsw-alias-state-business-primary);
+  color: var(--oh-alias-state-business-primary);
   font-weight: 600;
 }
 
 /* `pre`, not `nowrap`: the prompt row renders the command verbatim. */
 .command {
   min-width: 0;
-  color: var(--dsw-alias-label-primary);
+  color: var(--oh-alias-label-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: pre;
@@ -129,7 +129,7 @@
   position: sticky;
   top: 0;
   height: var(--dsl-terminal-line-height);
-  color: var(--dsw-alias-state-error-primary);
+  color: var(--oh-alias-state-error-primary);
 }
 
 .copyButton {
@@ -138,14 +138,14 @@
   top: 0;
   height: var(--dsl-terminal-line-height);
   padding: 0 8px;
-  border: 1px solid var(--dsw-alias-border-l2);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: 6px;
   /* Card surface, not transparent: the control is sticky over the banner's
      own scroll, so scrolled command text must not bleed through it. */
-  background-color: var(--dsw-alias-markdown-code-block-banner);
-  color: var(--dsw-alias-label-secondary);
+  background-color: var(--oh-alias-markdown-code-block-banner);
+  color: var(--oh-alias-label-secondary);
   cursor: pointer;
-  font: var(--dsw-font-xs-13);
+  font: var(--oh-font-xs-13);
   line-height: calc(var(--dsl-terminal-line-height) - 2px);
   transition:
     color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
@@ -154,9 +154,9 @@
 }
 
 .copyButton:hover {
-  color: var(--dsw-alias-label-primary);
-  border-color: var(--dsw-alias-label-dimmed);
-  background-color: var(--dsw-alias-bg-layer-2);
+  color: var(--oh-alias-label-primary);
+  border-color: var(--oh-alias-label-dimmed);
+  background-color: var(--oh-alias-bg-layer-2);
 }
 
 /* Vertical scrolling lives on the OUTPUT, not the card root. */
@@ -166,8 +166,8 @@
   font: var(--dsl-terminal-font);
   overflow-x: auto;
   overflow-y: auto;
-  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--oh-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--oh-alias-scrollbar-hover-l2);
 }
 
 /* Both output scrollbars float 2px off the card edge. */
@@ -193,7 +193,7 @@
   padding: 2px 0;
   border: none;
   background-color: transparent;
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
   cursor: pointer;
   font: inherit;
   text-align: left;
@@ -201,11 +201,11 @@
 }
 
 .expand:hover {
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
 }
 
 .empty {
   padding: 12px 14px 12px 0;
   font: var(--dsl-terminal-font);
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
 }

@@ -12,11 +12,11 @@
 }
 
 .modalError {
-  color: var(--dsw-alias-state-error-primary);
+  color: var(--oh-alias-state-error-primary);
 }
 
 .menuStatus {
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
 }
 
 /* Multi-select row: title plus the main-project badge, kept on one line. */

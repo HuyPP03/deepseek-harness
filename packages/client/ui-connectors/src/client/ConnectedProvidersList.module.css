@@ -28,13 +28,13 @@
   padding: 0;
   background: transparent;
   cursor: pointer;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
   transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .railIcon:hover {
-  background: var(--dsw-alias-interactive-bg-hover);
-  color: var(--dsw-alias-label-primary);
+  background: var(--oh-alias-interactive-bg-hover);
+  color: var(--oh-alias-label-primary);
 }
 
 .sectionHeader {
@@ -45,7 +45,7 @@
   padding-left: 12px;
   margin-bottom: 4px;
   box-sizing: border-box;
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
   font-size: 11px;
   line-height: 16px;
   font-weight: 600;
@@ -63,13 +63,13 @@
   gap: 10px;
   padding: 24px 16px;
   text-align: center;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
   font-size: 13px;
   line-height: 20px;
 }
 
 .message.error {
-  color: var(--dsw-alias-state-error-primary);
+  color: var(--oh-alias-state-error-primary);
 }
 
 .list {
@@ -82,8 +82,8 @@
   padding: 0 8px 8px 4px;
   /* Elevated surface: the rows paint the l1 rung on hover (above the base),
      so the list's own scrollport takes the l2 pair (scrollbar.css rebind). */
-  --oh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
-  --oh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
+  --oh-scrollbar-thumb: var(--oh-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--oh-alias-scrollbar-hover-l2);
 }
 
 /* One connected-provider row: dot + name, hoverable, selects on click. */
@@ -99,11 +99,11 @@
 }
 
 .row:hover {
-  background: var(--dsw-alias-interactive-bg-hover);
+  background: var(--oh-alias-interactive-bg-hover);
 }
 
 .row:focus-visible {
-  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline: 2px solid var(--oh-alias-brand-primary);
   outline-offset: -2px;
 }
 
@@ -116,7 +116,7 @@
   font-size: 13px;
   line-height: 20px;
   font-weight: 500;
-  color: var(--dsw-alias-label-primary);
+  color: var(--oh-alias-label-primary);
 }
 
 /* The list scrolls, so the badge tints from the label family instead of
@@ -125,8 +125,8 @@
   flex: none;
   padding: 1px 6px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--dsw-alias-label-secondary) 12%, transparent);
-  color: var(--dsw-alias-label-secondary);
+  background: color-mix(in srgb, var(--oh-alias-label-secondary) 12%, transparent);
+  color: var(--oh-alias-label-secondary);
   font-size: 10px;
   line-height: 16px;
   font-weight: 500;

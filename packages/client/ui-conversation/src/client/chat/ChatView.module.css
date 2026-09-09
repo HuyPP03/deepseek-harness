@@ -72,15 +72,15 @@
   display: inline-flex;
   align-items: center;
   height: 26px;
-  font: var(--dsw-font-s-strong-14);
+  font: var(--oh-font-s-strong-14);
   white-space: nowrap;
   background: linear-gradient(
     90deg,
-    var(--dsw-static-brand-500) 0%,
-    var(--dsw-static-brand-500) 40%,
-    var(--dsw-static-brand-200) 50%,
-    var(--dsw-static-brand-500) 60%,
-    var(--dsw-static-brand-500) 100%
+    var(--oh-static-brand-500) 0%,
+    var(--oh-static-brand-500) 40%,
+    var(--oh-static-brand-200) 50%,
+    var(--oh-static-brand-500) 60%,
+    var(--oh-static-brand-500) 100%
   );
   background-position: 100% 0;
   background-size: 250% 100%;
@@ -93,11 +93,11 @@
 
 .turnStatusClock {
   margin-left: 8px;
-  font: var(--dsw-font-xs-13);
+  font: var(--oh-font-xs-13);
   font-weight: 400;
   font-variant-numeric: tabular-nums;
-  color: var(--dsw-alias-label-caption);
-  -webkit-text-fill-color: var(--dsw-alias-label-caption);
+  color: var(--oh-alias-label-caption);
+  -webkit-text-fill-color: var(--oh-alias-label-caption);
 }
 
 @keyframes oh-turn-status-shimmer {
@@ -115,13 +115,13 @@
 }
 
 .hint {
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--oh-alias-label-tertiary);
   font-size: 12px;
   line-height: 18px;
 }
 
 .openError {
-  color: var(--dsw-alias-state-error-primary);
+  color: var(--oh-alias-state-error-primary);
   font-size: 12px;
   line-height: 18px;
 }
@@ -136,8 +136,8 @@
   border-radius: 14px;
   padding: 4px 12px;
   font-size: 12px;
-  color: var(--dsw-alias-label-secondary);
-  background: var(--dsw-alias-interactive-bg-hover-solid);
+  color: var(--oh-alias-label-secondary);
+  background: var(--oh-alias-interactive-bg-hover-solid);
   cursor: pointer;
 }
 
@@ -178,15 +178,15 @@
   height: 34px;
   margin-top: -34px;
   padding: 0;
-  border: 1px solid var(--dsw-alias-border-l2);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: 100px;
-  color: var(--dsw-alias-label-primary);
-  background: var(--dsw-alias-button-floating-fill);
-  box-shadow: var(--dsw-shadow-lv2);
+  color: var(--oh-alias-label-primary);
+  background: var(--oh-alias-button-floating-fill);
+  box-shadow: var(--oh-shadow-lv2);
   cursor: pointer;
   pointer-events: auto;
 }
 
 .toBottom:hover {
-  background: var(--dsw-alias-button-floating-hover);
+  background: var(--oh-alias-button-floating-hover);
 }

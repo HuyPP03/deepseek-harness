@@ -97,7 +97,7 @@ export function HeroGlow({ className }: { className?: string | undefined }) {
           cy="234"
           rx="425.5"
           ry="134"
-          style={{ fill: 'var(--dsw-alias-button-info-fill, #ea595f)' }}
+          style={{ fill: 'var(--oh-alias-button-info-fill, #ea595f)' }}
           fillOpacity="0.08"
         />
       </g>

@@ -1,5 +1,5 @@
 /**
- * Browser theme registry over the `--dsw-*` token stylesheets. The service
+ * Browser theme registry over the `--oh-*` token stylesheets. The service
  * owns the live theme preference (light/dark/system), resolves `system` through
  * `prefers-color-scheme`, and publishes immutable snapshots; it never touches
  * the DOM — ui-layout's presenter consumes the resolved snapshot. The Host
@@ -39,7 +39,7 @@ declare module '@open-harness/oh-client-ui-slots' {
   }
 }
 
-/** Theme token dictionary: --dsw-alias-* overrides keyed by variable name. */
+/** Theme token dictionary: --oh-alias-* overrides keyed by variable name. */
 export type ThemeTokens = Record<string, string>
 
 /**
@@ -63,7 +63,7 @@ export interface ThemeDefinition {
   id: string
   /**
    * Which base palette this theme builds on. The presenter switches
-   * `body[data-ds-dark-theme]` from this field — never from the id.
+   * `body[data-oh-dark-theme]` from this field — never from the id.
    */
   colorScheme: 'light' | 'dark'
   /** Alias-layer overrides applied as inline CSS variables over the base palette. */
@@ -121,19 +121,19 @@ const BUILTIN_THEMES: readonly ThemeDefinition[] = Object.freeze([
 ])
 
 const BUILTIN_INSPECT_TOKENS: readonly ThemeTokenInspection[] = Object.freeze([
-  { name: '--dsw-alias-bg-base', description: 'Application base background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-bg-base' },
-  { name: '--dsw-alias-bg-layer-1', description: 'Primary raised surface background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-bg-layer-1' },
-  { name: '--dsw-alias-bg-layer-2', description: 'Secondary nested surface background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-bg-layer-2' },
-  { name: '--dsw-alias-bg-overlay', description: 'Overlay and popover background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-bg-overlay' },
-  { name: '--dsw-alias-border-l1', description: 'Primary subtle border.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-border-l1' },
-  { name: '--dsw-alias-border-l2', description: 'Secondary stronger border.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-border-l2' },
-  { name: '--dsw-alias-brand-primary', description: 'Primary brand accent.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-brand-primary' },
-  { name: '--dsw-alias-label-primary', description: 'Primary text color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-label-primary' },
-  { name: '--dsw-alias-label-secondary', description: 'Secondary text color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-label-secondary' },
-  { name: '--dsw-alias-state-error-primary', description: 'Primary error state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-state-error-primary' },
-  { name: '--dsw-alias-state-success-primary', description: 'Primary success state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-state-success-primary' },
-  { name: '--dsw-alias-state-warn-primary', description: 'Primary warning state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-alias-state-warn-primary' },
-  { name: '--dsw-specific-sidebar-fill', description: 'Sidebar column and title-row background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--dsw-specific-sidebar-fill' },
+  { name: '--oh-alias-bg-base', description: 'Application base background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-bg-base' },
+  { name: '--oh-alias-bg-layer-1', description: 'Primary raised surface background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-bg-layer-1' },
+  { name: '--oh-alias-bg-layer-2', description: 'Secondary nested surface background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-bg-layer-2' },
+  { name: '--oh-alias-bg-overlay', description: 'Overlay and popover background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-bg-overlay' },
+  { name: '--oh-alias-border-l1', description: 'Primary subtle border.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-border-l1' },
+  { name: '--oh-alias-border-l2', description: 'Secondary stronger border.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-border-l2' },
+  { name: '--oh-alias-brand-primary', description: 'Primary brand accent.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-brand-primary' },
+  { name: '--oh-alias-label-primary', description: 'Primary text color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-label-primary' },
+  { name: '--oh-alias-label-secondary', description: 'Secondary text color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-label-secondary' },
+  { name: '--oh-alias-state-error-primary', description: 'Primary error state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-state-error-primary' },
+  { name: '--oh-alias-state-success-primary', description: 'Primary success state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-state-success-primary' },
+  { name: '--oh-alias-state-warn-primary', description: 'Primary warning state color.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-alias-state-warn-primary' },
+  { name: '--oh-specific-sidebar-fill', description: 'Sidebar column and title-row background.', valueType: 'CSS color', requiresLightAndDark: true, cssVariable: '--oh-specific-sidebar-fill' },
 ])
 
 /**

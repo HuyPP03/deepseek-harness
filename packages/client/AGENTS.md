@@ -66,7 +66,7 @@ One UI feature = one plugin package (`src/client/` browser half). A multi-domain
 
 ## Styling
 
-[docs/web-styling.md](../../docs/web-styling.md) is authoritative. Shared `--dsw-*` tokens and global sheets live in `ui-theme/src/styles/`; feature components consume semantic aliases through CSS Modules and `clsx`, with no literal colors, component library, or Tailwind. Product copy is English; zh and vi ride the locale dictionaries (`en` is the key-set source of truth), and code comments are English. `verify-product-copy` keeps non-dictionary CJK out of client sources.
+[docs/web-styling.md](../../docs/web-styling.md) is authoritative. Shared `--oh-*` tokens and global sheets live in `ui-theme/src/styles/`; feature components consume semantic aliases through CSS Modules and `clsx`, with no literal colors, component library, or Tailwind. Product copy is English; zh and vi ride the locale dictionaries (`en` is the key-set source of truth), and code comments are English. `verify-product-copy` keeps non-dictionary CJK out of client sources.
 
 ## Testing and coverage
 

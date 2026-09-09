@@ -2,18 +2,18 @@
    stay on the existing shiki `--shiki-*` sheet (not Prism highlight.css). */
 
 .block {
-  --dsl-code-block-banner-background-color: var(--dsw-alias-markdown-code-block-banner);
+  --dsl-code-block-banner-background-color: var(--oh-alias-markdown-code-block-banner);
   --dsl-code-block-border-radius: 12px;
-  --dsl-code-block-banner-font: var(--dsw-font-xs-13);
-  --dsl-code-block-content-font: var(--dsw-font-markdown-code-block);
+  --dsl-code-block-banner-font: var(--oh-font-xs-13);
+  --dsl-code-block-content-font: var(--oh-font-markdown-code-block);
 
   position: relative;
   margin: 16px 0;
-  color: var(--dsw-alias-label-primary);
-  background: var(--dsw-alias-markdown-code-block);
-  border: 1px solid var(--dsw-alias-border-l2);
+  color: var(--oh-alias-label-primary);
+  background: var(--oh-alias-markdown-code-block);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: var(--dsl-code-block-border-radius);
-  box-shadow: var(--dsw-shadow-lv1);
+  box-shadow: var(--oh-shadow-lv1);
 }
 
 .block:not(:last-child) {
@@ -24,7 +24,7 @@
   position: sticky;
   top: 0;
   z-index: 6;
-  background-color: var(--dsw-alias-bg-base);
+  background-color: var(--oh-alias-bg-base);
   border-top-left-radius: var(--dsl-code-block-border-radius);
   border-top-right-radius: var(--dsl-code-block-border-radius);
 }
@@ -42,7 +42,7 @@
 }
 
 .infostring {
-  color: var(--dsw-alias-label-primary);
+  color: var(--oh-alias-label-primary);
   font-family: var(--ds-font-family-code);
   font-size: 12px;
   line-height: 18px;
@@ -62,10 +62,10 @@
   height: 24px;
   padding: 0 8px;
   margin: 0;
-  border: 1px solid var(--dsw-alias-border-l2);
+  border: 1px solid var(--oh-alias-border-l2);
   border-radius: 6px;
   background-color: transparent;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--oh-alias-label-secondary);
   cursor: pointer;
   font: inherit;
   transition:
@@ -75,9 +75,9 @@
 }
 
 .copyButton:hover {
-  color: var(--dsw-alias-label-primary);
-  border-color: var(--dsw-alias-label-dimmed);
-  background-color: var(--dsw-alias-bg-layer-2);
+  color: var(--oh-alias-label-primary);
+  border-color: var(--oh-alias-label-dimmed);
+  background-color: var(--oh-alias-bg-layer-2);
 }
 
 .block :where(pre) {
@@ -87,7 +87,7 @@
   overflow-x: auto;
   white-space: pre-wrap;
   word-break: break-all;
-  background: var(--dsw-alias-markdown-code-block);
+  background: var(--oh-alias-markdown-code-block);
   /* Bottom radii live on <pre>: overflow:hidden on .block would kill the
      sticky banner, and this opaque fill otherwise squares off the wrapper. */
   border-bottom-left-radius: var(--dsl-code-block-border-radius);
@@ -96,7 +96,7 @@
 
 /* Shiki inlines its theme background var; route it to the repo token. */
 .block :where(pre.shiki) {
-  background: var(--dsw-alias-markdown-code-block) !important;
+  background: var(--oh-alias-markdown-code-block) !important;
 }
 
 .block :where(pre) code {
@@ -106,5 +106,5 @@
 }
 
 .plain {
-  color: var(--dsw-alias-label-primary);
+  color: var(--oh-alias-label-primary);
 }
