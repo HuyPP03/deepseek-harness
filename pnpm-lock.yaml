@@ -9,7 +9,7 @@ overrides:
   '@deepseek-ai/schemastery': link:vendor/schemastery
 
 patchedDependencies:
-  node-pty@1.2.0-beta.15: b40ae545608897914bd25fb009c97eeac478c34e8a910298ddcb01b746534bb0
+  node-pty@1.2.0-beta.15: 9e12939afa9bf554b4de4477ef322020406b6dbd9e40b0735108d0e22e1a4284
 
 importers:
 
@@ -8070,7 +8070,7 @@ importers:
     dependencies:
       node-pty:
         specifier: 1.2.0-beta.15
-        version: 1.2.0-beta.15(patch_hash=b40ae545608897914bd25fb009c97eeac478c34e8a910298ddcb01b746534bb0)
+        version: 1.2.0-beta.15(patch_hash=9e12939afa9bf554b4de4477ef322020406b6dbd9e40b0735108d0e22e1a4284)
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: workspace:^
@@ -19783,7 +19783,7 @@ snapshots:
       css-select: 5.2.2
       he: 1.2.0
 
-  node-pty@1.2.0-beta.15(patch_hash=b40ae545608897914bd25fb009c97eeac478c34e8a910298ddcb01b746534bb0):
+  node-pty@1.2.0-beta.15(patch_hash=9e12939afa9bf554b4de4477ef322020406b6dbd9e40b0735108d0e22e1a4284):
     dependencies:
       node-addon-api: 7.1.1
 
