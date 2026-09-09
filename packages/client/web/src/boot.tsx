@@ -38,7 +38,7 @@ import { createRoot, type Root } from 'react-dom/client'
 import * as ModulesClient from '@open-harness/oh-client-modules/client'
 import {
   ClientModuleSystem, parseBootManifest,
-  type BootManifest, type ClientModuleSystemOptions, type DshWindow,
+  type BootManifest, type ClientModuleSystemOptions, type OhWindow,
 } from '@open-harness/oh-client-modules/client'
 import * as AppShell from './app-shell.ts'
 import { APP_SHELL_ID } from './app-shell.ts'
@@ -95,7 +95,7 @@ export class AppWebEntry {
    * @returns resolves once the UI settled or the failure report rendered.
    */
   async run(): Promise<void> {
-    this.manifest = parseBootManifest((globalThis as DshWindow).__OH_BOOT__)
+    this.manifest = parseBootManifest((globalThis as OhWindow).__OH_BOOT__)
 
     this.modules = new ClientModuleSystem({
       modules: this.manifest.modules, staticModules: getStaticModules(), ...this.seams,
@@ -109,7 +109,7 @@ export class AppWebEntry {
     // trigger a real fetch), and put the instance on the kernel slot the
     // wrapper's apply reads to provide ctx.modules.
     this.modules.registerStatic(MODULES_ID, ModulesClient)
-    ;(globalThis as DshWindow).__OH_MODULES__ = this.modules
+    ;(globalThis as OhWindow).__OH_MODULES__ = this.modules
 
     this.root = createRoot(this.el)
     this.root.render(

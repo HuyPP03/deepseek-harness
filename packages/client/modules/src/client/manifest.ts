@@ -156,7 +156,7 @@ export interface ClientPluginHandoff {
 }
 
 /** Window API of the web boot protocol: the host-injected graph, registration sink, and kernel handoff slot. */
-export interface DshWindow {
+export interface OhWindow {
   /** Host-composed entry graph, injected before the shell bundle runs; wire-boundary raw until {@link parseBootManifest}. */
   __OH_BOOT__?: unknown
   /** Bundle registration sink; installed once per page by the {@link ClientModuleSystem} constructor. */

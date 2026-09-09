@@ -10,13 +10,13 @@
  * @module @open-harness/oh-client-modules/client
  */
 import type { Context } from '@deepseek-ai/cordis'
-import type { DshWindow } from './manifest.ts'
+import type { OhWindow } from './manifest.ts'
 
 export { ClientModuleSystem } from './system.ts'
 export { parseBootManifest } from './manifest.ts'
 export type {
   BootManifest, BootModuleRow, BootPluginRow, ClientModuleLoader, ClientModuleRecord,
-  ClientModuleSystemOptions, ClientPluginHandoff, DshWindow, WebBootEntry, WebBootGraph,
+  ClientModuleSystemOptions, ClientPluginHandoff, OhWindow, WebBootEntry, WebBootGraph,
 } from './manifest.ts'
 
 /**
@@ -24,7 +24,7 @@ export type {
  * @param ctx - client root context.
  */
 export function apply(ctx: Context): void {
-  const modules = (globalThis as DshWindow).__OH_MODULES__
+  const modules = (globalThis as OhWindow).__OH_MODULES__
   // The kernel writes the slot right after constructing the instance, before
   // any cordis entry exists — a missing slot means the kernel sequencing broke.
   if (modules === undefined) {
