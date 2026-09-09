@@ -21,7 +21,7 @@ git clone https://github.com/deepseek-ai/deepseek-harness.git
 cd deepseek-harness
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install deepseek-harness-sdk
+python -m pip install open-harness-sdk
 ```
 
 安装后的运行时不需要系统提供 Node.js。需要从源码构建运行时或 wheel 包的仓库贡献者应使用 [Python 贡献者工作流](../../../python/development.md)。
@@ -56,7 +56,7 @@ python examples/jsonrpc-agent/minimal.py \
 ```python
 from pathlib import Path
 
-from deepseek_harness import DeepSeekHarness
+from open_harness import DeepSeekHarness
 
 config = Path("examples/jsonrpc-agent/minimal.cordis.yml").resolve()
 workspace = Path("/absolute/path/to/workspace").resolve()

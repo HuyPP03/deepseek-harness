@@ -7,16 +7,16 @@ runtime inherits normal Open Harness environment variables such as
 `DEEPSEEK_BASE_URL` and `DEEPSEEK_API_KEY`, so callers can use real model
 endpoints directly or point those variables at a local proxy.
 
-Install the `deepseek-harness-sdk` distribution from PyPI; the import module remains `deepseek_harness`:
+Install the `open-harness-sdk` distribution from PyPI; the import module remains `open_harness`:
 
 ```sh
-python -m pip install deepseek-harness-sdk
+python -m pip install open-harness-sdk
 ```
 
-Installing `deepseek-harness-sdk` installs the exact same-version `deepseek-harness-runtime-bin` platform wheel. The normal entry point therefore needs no executable argument:
+Installing `open-harness-sdk` installs the exact same-version `open-harness-runtime-bin` platform wheel. The normal entry point therefore needs no executable argument:
 
 ```py
-from deepseek_harness import DeepSeekHarness
+from open_harness import DeepSeekHarness
 
 with DeepSeekHarness() as harness:
     result = harness.run("Say hi.")
@@ -24,10 +24,10 @@ with DeepSeekHarness() as harness:
 
 `DeepSeekHarness` keeps its lazily started runtime subprocess for reuse across calls. Use it as a context manager, as above, or call `close()` explicitly when finished.
 
-By default, the SDK launches the bundled single-file `oh-jsonrpc-agent` executable from the `deepseek-harness-runtime-bin` package and injects that package's default configuration (the stdio JSON-RPC server, agent core, preloaded DeepSeek adapter, JSONL session persistence with an explicitly composed semantic checkpoint policy, local bash) via `OH_CORDIS_CONFIG`. To run a plugin composition of your own, keep the `@open-harness/oh-sdk-jsonrpc-server` entry in the config and pass the Cordis config path.
+By default, the SDK launches the bundled single-file `oh-jsonrpc-agent` executable from the `open-harness-runtime-bin` package and injects that package's default configuration (the stdio JSON-RPC server, agent core, preloaded DeepSeek adapter, JSONL session persistence with an explicitly composed semantic checkpoint policy, local bash) via `OH_CORDIS_CONFIG`. To run a plugin composition of your own, keep the `@open-harness/oh-sdk-jsonrpc-server` entry in the config and pass the Cordis config path.
 
 ```py
-from deepseek_harness import DeepSeekHarness
+from open_harness import DeepSeekHarness
 
 with DeepSeekHarness(
     provider="deepseek-official",

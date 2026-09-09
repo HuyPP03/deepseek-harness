@@ -21,7 +21,7 @@ git clone https://github.com/deepseek-ai/deepseek-harness.git
 cd deepseek-harness
 python -m venv .venv
 . .venv/bin/activate
-python -m pip install deepseek-harness-sdk
+python -m pip install open-harness-sdk
 ```
 
 The installed runtime needs no system Node.js. Repository contributors who need to build the runtime or wheels from source should use the [Python contributor workflows](../../../python/development.md).
@@ -56,7 +56,7 @@ The checked-in example is a thin wrapper around this SDK call:
 ```python
 from pathlib import Path
 
-from deepseek_harness import DeepSeekHarness
+from open_harness import DeepSeekHarness
 
 config = Path("examples/jsonrpc-agent/minimal.cordis.yml").resolve()
 workspace = Path("/absolute/path/to/workspace").resolve()

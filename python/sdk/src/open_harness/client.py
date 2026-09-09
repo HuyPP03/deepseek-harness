@@ -427,11 +427,11 @@ class HarnessClient:
         if self.config.bridge_bin is not None:
             return (self.config.bridge_bin,)
         try:
-            from deepseek_harness_runtime import resolve_bundled_launch_args
+            from open_harness_runtime import resolve_bundled_launch_args
         except ImportError as exc:
             raise FileNotFoundError(
                 "Unable to locate the bundled Open Harness SDK runtime. "
-                "Install deepseek-harness-runtime-bin or set HarnessConfig.runtime_bin."
+                "Install open-harness-runtime-bin or set HarnessConfig.runtime_bin."
             ) from exc
         return resolve_bundled_launch_args()
 
@@ -449,7 +449,7 @@ class HarnessClient:
         if not uses_bundled_runtime or env.get("OH_CORDIS_CONFIG"):
             return
         # _default_launch_args already imported the package or raised its install error.
-        from deepseek_harness_runtime import bundled_default_config_path
+        from open_harness_runtime import bundled_default_config_path
 
         env["OH_CORDIS_CONFIG"] = str(bundled_default_config_path())
 

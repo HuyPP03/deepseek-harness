@@ -3,7 +3,7 @@
  * request/result pairs and the four server-to-client notification payloads
  * exchanged over the newline-delimited JSON-RPC stdio transport. The server
  * plugin (`@open-harness/oh-sdk-jsonrpc-server`) and SDK clients share these shapes;
- * `serverInfo.name` stays the wire-stable `deepseek-harness-sdk-runtime`.
+ * `serverInfo.name` stays the wire-stable `open-harness-sdk-runtime`.
  *
  * @module @open-harness/oh-sdk-protocol/types
  */
@@ -26,7 +26,7 @@ export interface InitializeParams {
 
 /** Wire-stable server identity returned by initialization. */
 export interface InitializeResult {
-  /** Wire-stable server identity (`deepseek-harness-sdk-runtime`) and version. */
+  /** Wire-stable server identity (`open-harness-sdk-runtime`) and version. */
   serverInfo: { name: string; version: string }
 }
 
