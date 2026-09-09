@@ -29,10 +29,12 @@
   background: transparent;
   cursor: pointer;
   color: var(--dsw-alias-label-secondary);
+  transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .railIcon:hover {
   background: var(--dsw-alias-interactive-bg-hover);
+  color: var(--dsw-alias-label-primary);
 }
 
 .sectionHeader {
@@ -45,6 +47,7 @@
   box-sizing: border-box;
   color: var(--dsw-alias-label-tertiary);
   font-size: 11px;
+  line-height: 16px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -58,10 +61,11 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 24px 20px;
+  padding: 24px 16px;
   text-align: center;
   color: var(--dsw-alias-label-secondary);
   font-size: 13px;
+  line-height: 20px;
 }
 
 .message.error {
@@ -88,9 +92,10 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
-  border-radius: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
   cursor: pointer;
+  transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .row:hover {
@@ -98,8 +103,8 @@
 }
 
 .row:focus-visible {
-  outline: 1px solid var(--dsw-alias-accent-primary);
-  outline-offset: -1px;
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: -2px;
 }
 
 .rowName {
@@ -109,6 +114,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 13px;
+  line-height: 20px;
   font-weight: 500;
   color: var(--dsw-alias-label-primary);
 }
@@ -118,9 +124,10 @@
 .customBadge {
   flex: none;
   padding: 1px 6px;
-  border-radius: 8px;
+  border-radius: 999px;
   background: color-mix(in srgb, var(--dsw-alias-label-secondary) 12%, transparent);
   color: var(--dsw-alias-label-secondary);
   font-size: 10px;
+  line-height: 16px;
   font-weight: 500;
 }

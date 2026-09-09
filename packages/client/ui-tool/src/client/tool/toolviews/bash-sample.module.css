@@ -17,7 +17,6 @@
   --dsl-terminal-line-height: 18px;
   --dsl-terminal-output-max-height: 224px;
   margin: 4px 0 4px 4px;
-  border: 1px solid var(--dsw-alias-border-l1);
 }
 
 /* A bash execution error can settle without terminal-card material (for

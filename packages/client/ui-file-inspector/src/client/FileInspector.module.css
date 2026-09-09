@@ -1,17 +1,21 @@
-/* File inspector: the tab strip and the two seats inside the details panel body. */
+/* File inspector: the tab strip and the two seats inside the details panel body.
+   Tokens stay on the --dsw-alias-* semantic layer so light/dark ride the theme. */
 
 .root {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-height: 0;
+  background: var(--dsw-alias-bg-base);
+  color: var(--dsw-alias-label-primary);
 }
 
 .tabs {
   display: flex;
-  gap: 2px;
+  gap: 0;
   padding: 0 12px;
-  border-bottom: 1px solid var(--dsw-border, rgb(34 34 34));
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-1);
   flex: none;
 }
 
@@ -20,20 +24,29 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  color: var(--dsw-text-muted, rgb(156 163 175));
+  color: var(--dsw-alias-label-tertiary);
   font: inherit;
   font-size: 12px;
-  padding: 6px 10px 5px;
+  line-height: 18px;
+  font-weight: 500;
+  padding: 8px 12px 7px;
   cursor: pointer;
+  transition: color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .tab:hover {
-  color: var(--dsw-text, rgb(229 229 229));
+  color: var(--dsw-alias-label-primary);
 }
 
 .tabActive {
-  color: var(--dsw-text, rgb(229 229 229));
-  border-bottom-color: var(--dsw-accent, rgb(56 139 253));
+  color: var(--dsw-alias-label-primary);
+  border-bottom-color: var(--dsw-alias-state-business-primary);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: -2px;
+  border-radius: 4px;
 }
 
 .seat {
@@ -45,20 +58,26 @@
 }
 
 .state {
-  padding: 16px 12px;
-  color: var(--dsw-text-muted, rgb(156 163 175));
+  padding: 20px 16px;
+  color: var(--dsw-alias-label-tertiary);
   font-size: 13px;
+  line-height: 20px;
 }
 
 /* The virtualized code view: the line height is the layout unit (the
    component's LINE constant must track --insp-line-height). */
 
 .scroll {
+  --insp-line-height: 20px;
   flex: 1;
   min-height: 0;
   overflow: auto;
   font-family: var(--dsw-font-mono, ui-monospace, monospace);
   font-size: 12px;
+  line-height: var(--insp-line-height);
+  background: var(--dsw-alias-markdown-code-block);
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .spacer {
@@ -75,36 +94,50 @@
 .line {
   display: flex;
   align-items: baseline;
-  height: var(--insp-line-height, 20px);
-  line-height: var(--insp-line-height, 20px);
+  height: var(--insp-line-height);
+  line-height: var(--insp-line-height);
   white-space: pre;
+  padding-right: 12px;
+}
+
+.line:hover {
+  background: var(--dsw-alias-interactive-bg-hover);
 }
 
 .gutter {
   flex: none;
-  width: 44px;
-  padding-right: 12px;
+  width: 52px;
+  padding: 0 12px 0 8px;
   text-align: right;
-  color: var(--dsw-text-faint, rgb(113 118 128));
+  color: var(--dsw-alias-label-caption);
   user-select: none;
+  border-right: 1px solid var(--dsw-alias-border-l1);
+  margin-right: 12px;
 }
 
 .code {
   flex: 1;
   min-width: 0;
+  color: var(--dsw-alias-label-primary);
 }
 
 .previewScroll {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 8px 12px;
+  padding: 16px 18px;
+  background: var(--dsw-alias-bg-base);
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .img {
   max-width: 100%;
   display: block;
-  margin: 8px auto;
+  margin: 12px auto;
+  border-radius: 8px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-3);
 }
 
 .frame {
@@ -112,7 +145,7 @@
   min-height: 0;
   width: 100%;
   border: none;
-  background: var(--dsw-surface-base, #fff);
+  background: var(--dsw-alias-bg-layer-3);
 }
 
 /* The sheet grid (xlsx/csv): a scrollable table of display strings. */
@@ -121,19 +154,32 @@
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 8px 12px;
+  padding: 12px 16px;
+  background: var(--dsw-alias-bg-base);
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .gridTable {
   border-collapse: collapse;
   font-size: 12px;
+  line-height: 18px;
+  background: var(--dsw-alias-bg-layer-3);
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .gridTable td {
-  border: 1px solid var(--dsw-border, rgb(34 34 34));
-  padding: 2px 8px;
+  border: 1px solid var(--dsw-alias-border-l1);
+  padding: 4px 10px;
   white-space: pre;
   font-family: var(--dsw-font-mono, ui-monospace, monospace);
+  color: var(--dsw-alias-label-primary);
+}
+
+.gridTable tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--dsw-alias-label-secondary) 4%, transparent);
 }
 
 /* The session file list seat: one filter input over the bounded walk. */
@@ -143,29 +189,38 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+  background: var(--dsw-alias-bg-base);
 }
 
 .browserFilter {
   flex: none;
-  margin: 8px 12px 4px;
-  padding: 4px 8px;
-  border: 1px solid var(--dsw-border, rgb(34 34 34));
-  border-radius: 6px;
-  background: none;
-  color: var(--dsw-text, rgb(229 229 229));
+  margin: 12px 12px 8px;
+  padding: 7px 10px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 8px;
+  background: var(--dsw-alias-bg-layer-1);
+  color: var(--dsw-alias-label-primary);
   font: inherit;
   font-size: 12px;
+  line-height: 18px;
+  outline: none;
+  transition: border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+}
+
+.browserFilter:focus {
+  border-color: var(--dsw-alias-brand-primary);
 }
 
 .browserFilter::placeholder {
-  color: var(--dsw-text-muted, rgb(156 163 175));
+  color: var(--dsw-alias-label-dimmed);
 }
 
 .browserNote {
   flex: none;
-  padding: 0 12px 4px;
-  color: var(--dsw-text-muted, rgb(156 163 175));
+  padding: 0 14px 8px;
+  color: var(--dsw-alias-label-tertiary);
   font-size: 11px;
+  line-height: 16px;
 }
 
 .browserList {
@@ -173,8 +228,10 @@
   min-height: 0;
   overflow: auto;
   margin: 0;
-  padding: 0 4px 8px;
+  padding: 0 8px 12px;
   list-style: none;
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 .browserRow {
@@ -183,29 +240,43 @@
   appearance: none;
   background: none;
   border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  color: var(--dsw-text, rgb(229 229 229));
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--dsw-alias-label-primary);
   font: inherit;
   font-size: 12px;
+  line-height: 18px;
   font-family: var(--dsw-font-mono, ui-monospace, monospace);
   text-align: left;
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .browserRow:hover {
-  background: var(--dsw-alias-fill-tsp-secondary, rgb(34 34 34));
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.browserRow:focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: -2px;
 }
 
 .browserRowDir {
-  padding: 4px 8px;
-  color: var(--dsw-text-muted, rgb(156 163 175));
+  padding: 6px 10px;
+  color: var(--dsw-alias-label-tertiary);
   font-size: 12px;
+  line-height: 18px;
   font-family: var(--dsw-font-mono, ui-monospace, monospace);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.browserName {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
 }

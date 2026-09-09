@@ -7,39 +7,54 @@
 .block {
   --dsl-diff-radius: 12px;
   --dsl-diff-line-height: 22px;
-  --dsl-diff-gutter: 48px;
-  --dsl-diff-sign: 18px;
+  --dsl-diff-gutter: 52px;
+  --dsl-diff-sign: 20px;
 
   position: relative;
   margin: 16px 0;
   color: var(--dsw-alias-label-primary);
   background: var(--dsw-alias-markdown-code-block);
+  border: 1px solid var(--dsw-alias-border-l2);
   border-radius: var(--dsl-diff-radius);
+  box-shadow: var(--dsw-shadow-lv1);
+  overflow: hidden;
 }
 
 /* The copy control floats in the top-right corner over the body, so the card
-   has no empty banner row above its first diff line (the TUI diff card has no
-   banner either — only the footer). The block is position: relative, so this
-   anchors to the card. */
+   has no empty banner row above its first diff line. */
 .copyButton {
   position: absolute;
   top: 8px;
   right: 12px;
   z-index: 1;
-  background-color: transparent;
-  border: none;
-  padding: 0;
-  margin: 0;
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--dsw-alias-markdown-code-block) 88%, transparent);
   color: var(--dsw-alias-label-secondary);
   cursor: pointer;
   font: var(--dsw-font-xs-13);
+  backdrop-filter: blur(4px);
+  transition:
+    color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+}
+
+.copyButton:hover {
+  color: var(--dsw-alias-label-primary);
+  border-color: var(--dsw-alias-label-dimmed);
+  background: var(--dsw-alias-bg-layer-2);
 }
 
 .body {
-  padding: 12px 0;
+  padding: 10px 0 8px;
   font: var(--dsw-font-markdown-code-block);
   overflow-x: auto;
   overflow-y: hidden;
+  --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
+  --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
 }
 
 /* One body row: optional gutter, a sign column, then the content. No wrapping —
@@ -54,10 +69,11 @@
 .gutter {
   flex: none;
   width: var(--dsl-diff-gutter);
-  padding-right: 8px;
+  padding-right: 10px;
   text-align: right;
-  color: var(--dsw-alias-label-tertiary);
+  color: var(--dsw-alias-label-caption);
   user-select: none;
+  border-right: 1px solid var(--dsw-alias-border-l1);
 }
 
 .sign {
@@ -65,35 +81,34 @@
   width: var(--dsl-diff-sign);
   text-align: center;
   user-select: none;
+  font-weight: 600;
 }
 
 .content {
   flex: 1;
   min-width: 0;
-  padding-right: 14px;
+  padding: 0 14px 0 8px;
   color: var(--dsw-alias-label-primary);
 }
 
-/* A file header: the path in the primary tone, set apart by weight. The copy
-   button floats over this first row's top-right corner, so reserve space at the
-   line's end for it — a long path scrolls under the button otherwise, and the
-   button's hit area would eat clicks on the path's tail. */
+/* A file header: the path in the primary tone, set apart by weight. */
 .path {
   color: var(--dsw-alias-label-primary);
   font-weight: 600;
-  padding: 0 14px;
-  padding-right: 56px;
+  padding: 4px 14px;
+  padding-right: 72px;
+  background: var(--dsw-alias-markdown-code-block-banner);
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
 }
 
 /* A same-file second hunk's separator (a scattered edit), in the dim tone. */
 .gap {
   color: var(--dsw-alias-label-tertiary);
-  padding: 0 14px;
+  padding: 2px 14px;
+  background: color-mix(in srgb, var(--dsw-alias-label-secondary) 5%, transparent);
 }
 
-/* Whole-line wash + sign color for the removed / added sides. The sign lives in
-   its own column (not a ::before) so a gutter can sit beside it; the meaning-
-   carrying colors still resolve through the shared state tokens. */
+/* Whole-line wash + sign color for the removed / added sides. */
 .del .sign {
   color: var(--dsw-alias-state-error-primary);
 }
@@ -110,8 +125,7 @@
   background: var(--dsw-alias-diff-add-bg);
 }
 
-/* Intra-line mark: the exact changed run inside a modified line, stronger than
-   the whole-line wash so a reader sees which tokens moved. */
+/* Intra-line mark: the exact changed run inside a modified line. */
 .strongDel {
   background: var(--dsw-alias-diff-del-strong);
   border-radius: 2px;
@@ -125,23 +139,25 @@
 .expand {
   display: block;
   width: 100%;
-  padding: 0 14px;
+  padding: 4px 14px;
   border: none;
-  background-color: transparent;
+  background-color: color-mix(in srgb, var(--dsw-alias-label-secondary) 5%, transparent);
   color: var(--dsw-alias-label-tertiary);
   cursor: pointer;
   font: inherit;
   text-align: left;
+  transition: color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .expand:hover {
   color: var(--dsw-alias-label-secondary);
 }
 
-/* The change summary, dim under the body: `└ +A -R · N file(s)`, the same
-   footer the TUI transcript's diff card draws. */
+/* The change summary under the body. */
 .footer {
-  padding: 0 14px 12px;
+  padding: 8px 14px 12px;
+  border-top: 1px solid var(--dsw-alias-border-l1);
   font: var(--dsw-font-markdown-code-block);
   color: var(--dsw-alias-label-tertiary);
+  background: var(--dsw-alias-markdown-code-block-banner);
 }

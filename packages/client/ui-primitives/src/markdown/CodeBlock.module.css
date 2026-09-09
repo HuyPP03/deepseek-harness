@@ -11,7 +11,9 @@
   margin: 16px 0;
   color: var(--dsw-alias-label-primary);
   background: var(--dsw-alias-markdown-code-block);
+  border: 1px solid var(--dsw-alias-border-l2);
   border-radius: var(--dsl-code-block-border-radius);
+  box-shadow: var(--dsw-shadow-lv1);
 }
 
 .block:not(:last-child) {
@@ -57,13 +59,25 @@
 }
 
 .copyButton {
-  background-color: rgb(255 255 255 / 0);
-  border: none;
-  padding: 0;
+  height: 24px;
+  padding: 0 8px;
   margin: 0;
-  color: inherit;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 6px;
+  background-color: transparent;
+  color: var(--dsw-alias-label-secondary);
   cursor: pointer;
   font: inherit;
+  transition:
+    color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+}
+
+.copyButton:hover {
+  color: var(--dsw-alias-label-primary);
+  border-color: var(--dsw-alias-label-dimmed);
+  background-color: var(--dsw-alias-bg-layer-2);
 }
 
 .block :where(pre) {

@@ -252,6 +252,8 @@ export function ConnectorsDirectory(props: ConnectorsDirectoryProps): ReactNode 
             </Button>
             <StateDot state={dotStateOf(provider.state)} />
             <span className={css.detailName}>{provider.name}</span>
+            {provider.custom && <span className={css.customBadge}>{t('custom')}</span>}
+            <span className={css.cardState}>{t(STATE_KEY[provider.state])}</span>
             {provider.state === 'connected' && (
               <Button variant="outline" size="sm" className={css.newChatButton}
                 onClick={() => { void newProviderChat(provider.id) }}>

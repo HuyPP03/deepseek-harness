@@ -106,23 +106,29 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   margin: 0;
-  padding: 0;
+  padding: 0 2px;
   border: none;
+  border-radius: 4px;
   background: none;
   font: inherit;
   text-align: left;
   font-size: 14px;
   line-height: 24px;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--dsw-alias-state-business-primary);
   text-decoration: underline;
-  text-decoration-color: var(--dsw-alias-label-quaternary);
+  text-decoration-color: color-mix(in srgb, var(--dsw-alias-state-business-primary) 35%, transparent);
   text-underline-offset: 3px;
   cursor: pointer;
+  transition:
+    color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    text-decoration-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .fileLink:hover {
   color: var(--dsw-alias-label-primary);
   text-decoration-color: currentColor;
+  background: var(--dsw-alias-interactive-bg-hover);
 }
 
 /* Error row's collapsed summary: the failure's first line in the error color. */
@@ -292,7 +298,6 @@
   --dsl-terminal-font: var(--dsw-font-markdown-code-block-small);
   --dsl-terminal-line-height: 18px;
   --dsl-terminal-output-max-height: 224px;
-  border: 1px solid var(--dsw-alias-border-l1);
 }
 
 /* Visually hidden run-state label for assistive technology: the StateDot and

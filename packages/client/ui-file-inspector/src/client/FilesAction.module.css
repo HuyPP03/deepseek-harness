@@ -13,14 +13,22 @@
   font: inherit;
   font-size: 12px;
   line-height: 22px;
-  color: var(--dsw-text-muted, rgb(156 163 175));
+  color: var(--dsw-alias-label-tertiary);
   cursor: pointer;
   white-space: nowrap;
+  transition:
+    color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .action:hover {
-  color: var(--dsw-text, rgb(229 229 229));
-  background: var(--dsw-alias-fill-tsp-secondary, rgb(34 34 34));
+  color: var(--dsw-alias-label-primary);
+  background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.action:focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: 1px;
 }
 
 .icon {

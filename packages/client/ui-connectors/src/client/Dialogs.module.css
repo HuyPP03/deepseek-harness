@@ -1,8 +1,7 @@
 /* Connectors dialogs (token + OAuth app + custom connector): one modal per draft. */
 
 .dialog {
-  width: 360px;
-  max-width: calc(100vw - 32px);
+  width: min(420px, calc(100vw - 32px));
 }
 
 .dialogField {
@@ -11,31 +10,46 @@
   gap: 6px;
 }
 
+.dialogField :global(span) {
+  width: 100%;
+}
+
+.dialogField + .dialogField {
+  margin-top: 14px;
+}
+
 .dialogFieldLabel {
   font-size: 12px;
+  line-height: 18px;
   font-weight: 500;
   color: var(--dsw-alias-label-secondary);
 }
 
 .dialogFieldHint {
   font-size: 11px;
+  line-height: 16px;
   color: var(--dsw-alias-label-tertiary);
 }
 
 /* The byoApp app-registration steps, numbered, above the credential fields. */
 .setupSteps {
-  margin: 0 0 12px;
-  padding-left: 18px;
+  margin: 0 0 16px;
+  padding: 12px 12px 12px 28px;
+  border-radius: 10px;
+  background: var(--dsw-alias-bg-module-platform);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 18px;
   color: var(--dsw-alias-label-secondary);
 }
 
 .dialogError {
+  display: block;
+  margin-top: 14px;
   font-size: 12px;
+  line-height: 18px;
   color: var(--dsw-alias-state-error-primary);
   overflow-wrap: anywhere;
 }
@@ -49,13 +63,40 @@
 
 .customTransport {
   display: flex;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .customTransport label {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 13px;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  border-radius: 999px;
+  background: var(--dsw-alias-bg-layer-1);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--dsw-alias-label-secondary);
   cursor: pointer;
+  transition:
+    border-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out),
+    color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
+}
+
+.customTransport label:hover {
+  border-color: var(--dsw-alias-label-dimmed);
+  color: var(--dsw-alias-label-primary);
+}
+
+.customTransport input {
+  accent-color: var(--dsw-alias-brand-primary);
+}
+
+.customTransport input:checked + span,
+.customTransport label:has(input:checked) {
+  border-color: var(--dsw-alias-brand-primary);
+  background: color-mix(in srgb, var(--dsw-alias-state-business-primary) 10%, transparent);
+  color: var(--dsw-alias-label-primary);
 }

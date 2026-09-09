@@ -17,14 +17,15 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 20px 14px;
+  padding: 18px 24px 16px;
   box-sizing: border-box;
-  border-bottom: 1px solid var(--dsw-alias-border-l1);
+  border-bottom: 1px solid var(--dsw-alias-border-l2);
 }
 
 .title {
   font-size: 16px;
-  font-weight: 650;
+  line-height: 24px;
+  font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--dsw-alias-label-primary);
 }
@@ -36,11 +37,12 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 24px 20px;
+  gap: 12px;
+  padding: 40px 24px;
   text-align: center;
   color: var(--dsw-alias-label-secondary);
   font-size: 13px;
+  line-height: 20px;
 }
 
 .message.error {
@@ -49,12 +51,12 @@
 
 /* The browse grid: cards reflow to as many columns as fit (one per card on
    a narrow frame, two or more when the frame is wide), scrolling with the
-   body. The 14px gap is the card separation. */
+   body. */
 .grid {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 16px 20px 20px;
+  padding: 20px 24px 24px;
   box-sizing: border-box;
   /* Elevated surface: the cards paint the l1 rung (above the base), so the
      grid's own scrollport takes the l2 pair (scrollbar.css rebind contract). */
@@ -64,10 +66,10 @@
 
 .cards {
   display: grid;
-  /* min(100%, 320px) keeps a single card from overflowing a narrow frame
+  /* min(100%, 300px) keeps a single card from overflowing a narrow frame
      while the auto-fill tracks give two+ columns in a wide one. */
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
   align-content: start;
 }
 
@@ -81,47 +83,50 @@
   flex-direction: column;
   box-sizing: border-box;
   min-width: 0;
-  border-radius: 12px;
+  border-radius: 14px;
   outline: none;
 }
 
 .cardWrapper:focus-visible {
-  outline: 1px solid var(--dsw-alias-accent-primary);
+  outline: 2px solid var(--dsw-alias-brand-primary);
   outline-offset: 2px;
 }
 
-/* One directory card: the row anatomy (dot + name + state, description)
-   scaled up, with the risk notes and the action cluster. The card fills
-   its stretched grid cell, so cards in one row share a height whatever
-   their text runs; the action cluster pins to the shared bottom. */
-/* flex: 1 fills the stretched cardWrapper (equal-height row cards) without a
-   percentage height the grid cannot resolve while sizing the auto row. */
+/* One directory card: identity, description, risk notes, and the action
+   cluster. The card fills its stretched grid cell, so cards in one row share
+   a height; the action cluster pins to the shared bottom. */
 .card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
   box-sizing: border-box;
   min-width: 0;
-  padding: 16px;
-  border-radius: 12px;
-  border: 1px solid var(--dsw-alias-border-l1);
-  background: var(--dsw-alias-bg-layer-1);
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid var(--dsw-alias-border-l2);
+  background: var(--dsw-alias-bg-layer-3);
+  box-shadow: var(--dsw-shadow-lv1);
   cursor: pointer;
   transition:
-    border-color var(--ds-transition-duration-slow) var(--ds-ease-in-out),
-    background-color var(--ds-transition-duration-slow) var(--ds-ease-in-out);
+    border-color var(--ds-transition-duration) var(--ds-ease-in-out),
+    background-color var(--ds-transition-duration) var(--ds-ease-in-out),
+    box-shadow var(--ds-transition-duration) var(--ds-ease-in-out),
+    transform var(--ds-transition-duration) var(--ds-ease-in-out);
 }
 
 .cardWrapper:hover .card {
-  border-color: var(--dsw-alias-border-l2);
+  border-color: var(--dsw-alias-label-dimmed);
   background: var(--dsw-alias-bg-layer-2);
+  box-shadow: var(--dsw-shadow-lv2);
+  transform: translateY(-1px);
 }
 
 .cardHead {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .cardName {
@@ -131,6 +136,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 15px;
+  line-height: 22px;
   font-weight: 600;
   letter-spacing: -0.01em;
   color: var(--dsw-alias-label-primary);
@@ -138,25 +144,30 @@
 
 .customBadge {
   flex: none;
-  padding: 2px 7px;
+  padding: 1px 8px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--dsw-alias-label-secondary) 12%, transparent);
+  background: var(--dsw-alias-bg-module-platform);
   color: var(--dsw-alias-label-secondary);
   font-size: 10px;
+  line-height: 16px;
   font-weight: 600;
   letter-spacing: 0.02em;
 }
 
 .cardState {
   flex: none;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--dsw-alias-label-secondary) 10%, transparent);
   font-size: 11px;
+  line-height: 16px;
   font-weight: 500;
   color: var(--dsw-alias-label-tertiary);
 }
 
 .cardDescription {
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 20px;
   color: var(--dsw-alias-label-secondary);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -168,15 +179,16 @@
 .riskList {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--dsw-alias-state-warning-primary) 8%, transparent);
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--dsw-alias-state-warn-primary) 18%, transparent);
+  background: color-mix(in srgb, var(--dsw-alias-state-warn-primary) 8%, transparent);
 }
 
 .risk {
   font-size: 11px;
-  line-height: 1.4;
+  line-height: 16px;
   color: var(--dsw-alias-label-secondary);
 }
 
@@ -185,34 +197,33 @@
   align-items: center;
   gap: 6px;
   font-size: 11px;
+  line-height: 16px;
   color: var(--dsw-alias-label-tertiary);
 }
 
 .cardError {
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 18px;
   color: var(--dsw-alias-state-error-primary);
   overflow-wrap: anywhere;
 }
 
-/* The action cluster aligns with the card content (left) and pins to the
-   shared bottom of the stretched cell, so a row of cards shares one action
-   baseline whatever each card's text runs. */
+/* The action cluster pins to the shared bottom of the stretched cell. */
 .cardActions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: auto;
-  padding-top: 12px;
+  padding-top: 4px;
 }
 
-/* Provider detail: the header's New chat sits after the name (Back and
-   name keep their left column). */
+/* Provider detail: the header's New chat sits after the name. */
 .detail {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 0 20px 20px;
+  padding: 0 24px 24px;
   box-sizing: border-box;
   --dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2);
   --dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2);
@@ -222,15 +233,18 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 8px 0;
+  padding: 14px 0;
   position: sticky;
   top: 0;
+  z-index: 1;
   background: var(--dsw-alias-bg-base);
+  border-bottom: 1px solid var(--dsw-alias-border-l1);
 }
 
 .detailName {
   font-weight: 600;
   font-size: 15px;
+  line-height: 22px;
   letter-spacing: -0.01em;
   color: var(--dsw-alias-label-primary);
 }
@@ -245,6 +259,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  margin-top: 12px;
 }
 
 .sessionRow {
@@ -252,13 +267,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px;
-  border-radius: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: background-color var(--ds-transition-duration-fast) var(--ds-ease-in-out);
 }
 
 .sessionRow:hover {
   background: var(--dsw-alias-interactive-bg-hover);
+}
+
+.sessionRow:focus-visible {
+  outline: 2px solid var(--dsw-alias-brand-primary);
+  outline-offset: -2px;
 }
 
 .sessionTitle {
@@ -268,11 +289,14 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 13px;
+  line-height: 20px;
   color: var(--dsw-alias-label-primary);
 }
 
 .toolsSection {
-  padding: 8px 0;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--dsw-alias-border-l1);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -280,7 +304,9 @@
 
 .toolsLabel {
   font-size: 11px;
+  line-height: 16px;
   font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--dsw-alias-label-tertiary);
   margin-bottom: 4px;
@@ -288,7 +314,10 @@
 
 .toolRow {
   font-size: 12px;
-  font-family: var(--dsw-font-mono);
+  line-height: 18px;
+  font-family: var(--dsw-font-mono, ui-monospace, monospace);
   color: var(--dsw-alias-label-primary);
-  padding: 2px 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--dsw-alias-bg-module-platform);
 }
