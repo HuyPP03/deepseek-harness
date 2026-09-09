@@ -7,11 +7,11 @@
  * @module @open-harness/oh-user-questions
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import { HarnessError } from '@open-harness/oh-llm'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     userQuestions: UserQuestionService
   }

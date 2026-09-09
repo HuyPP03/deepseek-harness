@@ -11,7 +11,7 @@
  * projections. Direct driving is deliberate: this spec owns only the
  * source's own contract.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import { describe, expect, it } from 'vitest'
 import {

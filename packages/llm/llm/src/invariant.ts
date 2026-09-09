@@ -1,6 +1,6 @@
 /** Package-owned LLM stream-protocol invariants. @module @open-harness/oh-llm/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import type { ContentBlockType, StreamChunk } from './types.ts'
 

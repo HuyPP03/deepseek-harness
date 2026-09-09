@@ -29,7 +29,7 @@
   "devDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "files": [
     "lib/index.js",
@@ -38,6 +38,6 @@
   ],
   "peerDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

@@ -4,8 +4,8 @@
  * participates in method lookup, invocation, or type exposure.
  */
 
-import { Service } from '@deepseek-ai/cordis'
-import type { Context, Events } from '@deepseek-ai/cordis'
+import { Service } from '@open-harness/cordis'
+import type { Context, Events } from '@open-harness/cordis'
 import type { ConnectionHandle } from '@open-harness/oh-client-connection/client'
 import type {
   InvocationDescriptor,
@@ -55,7 +55,7 @@ interface RemoteNamespaceHandle {
 /** Typed Remote service augmented by generated direct namespaces. */
 export type ClientRemote = TypertClientRemote
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** Generated Remote namespaces selected by the Client assembly. */
     remote: ClientRemote

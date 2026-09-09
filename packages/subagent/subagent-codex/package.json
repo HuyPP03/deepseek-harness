@@ -39,13 +39,13 @@
     "@open-harness/oh-subagent": "workspace:^",
     "@open-harness/oh-subprocess": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-llm": "workspace:^",
@@ -57,6 +57,6 @@
     "@open-harness/oh-subprocess-local": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
     "@openai/codex": "0.147.0",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

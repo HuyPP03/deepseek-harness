@@ -6,7 +6,7 @@
  * @module @open-harness/oh-llm
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type {
   GenerateOptions,
   LlmConfigurableProvider,
@@ -44,7 +44,7 @@ export { BlockAssembler } from './assembler.ts'
 export { callConfigEquals, deepFreeze, isAgentLoopRequest, markAgentLoopRequest } from './call-config.ts'
 export type { LlmCallConfig, LlmCallConfigAdapterDefaults } from './call-config.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     llm: LlmRuntime
   }

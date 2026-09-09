@@ -25,8 +25,8 @@
 
 import { realpath, stat } from 'node:fs/promises'
 import { isAbsolute, resolve } from 'node:path'
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import zod from 'zod'
 // Type-only: resolves the declaration merges these types rely on.
 import type {} from '@open-harness/oh-agent'
@@ -35,7 +35,7 @@ import type {} from '@open-harness/oh-session-projection'
 import type {} from '@open-harness/oh-system-prompt'
 import type { ReferenceProject, WorkspaceReferencesView } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** The session reference-project service (absent when the package is not composed). */
     workspaceReferences: WorkspaceReferenceService

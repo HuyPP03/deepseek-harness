@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import Loader from '@open-harness/cordis-plugin-loader'
 import * as toolLsp from '@open-harness/oh-tool-lsp'
 
 describe('oh-tool-lsp Loader export-shape guard', () => {

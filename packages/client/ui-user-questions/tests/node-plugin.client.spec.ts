@@ -1,4 +1,4 @@
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { afterEach, describe, expect, it } from 'vitest'
 import ToolRuntime from '@open-harness/oh-tools'
 import SystemPrompt from '@open-harness/oh-system-prompt'

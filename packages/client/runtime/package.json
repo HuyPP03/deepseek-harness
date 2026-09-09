@@ -59,14 +59,14 @@
     "zustand": "~4.4.7"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-typert-protocol": "workspace:^",
     "@open-harness/oh-typert-registry": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",

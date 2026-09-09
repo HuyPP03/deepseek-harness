@@ -10,7 +10,7 @@
  * @module @open-harness/oh-subagent-in-process-driver/structured
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { ToolSchema } from '@open-harness/oh-llm'
 import type { ToolExecution, ToolRunContext } from '@open-harness/oh-tools'
 import { ToolArgsError, validateJsonSchemaValue, type ObjectJsonSchema } from '@open-harness/oh-tools'

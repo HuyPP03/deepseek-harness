@@ -5,7 +5,7 @@
  * @module @open-harness/oh-sdk-jsonrpc-server/server
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { resolve } from 'node:path'
 import type { Agent, AgentHandle } from '@open-harness/oh-agent'
 import { createUserMessage } from '@open-harness/oh-llm'

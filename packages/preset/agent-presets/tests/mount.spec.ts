@@ -2,9 +2,9 @@ import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
-import Include from '@deepseek-ai/cordis-plugin-include'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
+import Include from '@open-harness/cordis-plugin-include'
 import LlmRuntime from '@open-harness/oh-llm'
 import SessionStore, { SessionId } from '@open-harness/oh-session'
 import SystemPrompt from '@open-harness/oh-system-prompt'
@@ -19,7 +19,7 @@ import type { Config } from '@open-harness/oh-agent-presets'
 import type {} from '@open-harness/oh-agent-presets/types'
 import { bindScopeParent, createScope, scopeOf } from '@open-harness/oh-scope'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** Published by the `isolated` fixture preset behind an entry-local realm. */
     fixtureIsolatedSvc: { label: string }

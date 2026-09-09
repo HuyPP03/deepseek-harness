@@ -12,7 +12,7 @@ import type { Branded } from '@open-harness/oh-brand'
 /** Nominal reference to one credential: a POSIX-style environment-variable name. */
 export type CredentialRef = Branded<'CredentialRef'>
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     /**
      * Committed change to a provider-managed credential source: a `set`, an

@@ -17,13 +17,13 @@
  */
 
 import { CallId } from '@open-harness/oh-llm'
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { createBridgeTools, type BridgeFaces } from './bridge.ts'
 import type { McpServerView } from './types.ts'
 
 export type { McpServerStatus, McpServerView, McpToolInfo } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     mcpRegistry: McpRegistry
   }

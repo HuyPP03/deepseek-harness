@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import * as SettingsInvariant from '../src/invariant.ts'
 import { settingsNamespace } from '../src/index.ts'

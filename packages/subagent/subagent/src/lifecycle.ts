@@ -15,7 +15,7 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import { foldConsumedWork } from '@open-harness/oh-agent'

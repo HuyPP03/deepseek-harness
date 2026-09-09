@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, expectTypeOf, it } from 'vitest'
 import {
   bindTypertRemote,
@@ -13,7 +13,7 @@ import {
   type TypertRemoteEvent,
 } from '@open-harness/oh-typert-protocol'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     /**
      * Test-only one-way event: bound to no Scope and returning nothing.

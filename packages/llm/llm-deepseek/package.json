@@ -39,11 +39,11 @@
     "@open-harness/oh-settings": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
     "@open-harness/oh-anonymous-user-id": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
     "eventsource-parser": "^3.1.0",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-credentials": "workspace:^",
@@ -53,6 +53,6 @@
     "@open-harness/oh-settings": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
     "@open-harness/oh-anonymous-user-id": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

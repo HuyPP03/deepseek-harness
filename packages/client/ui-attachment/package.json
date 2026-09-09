@@ -34,7 +34,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
     "@types/react-dom": "~18.3.0"
@@ -45,7 +45,7 @@
     "lib/types/**/*.d.ts"
   ],
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^"
   }
 }

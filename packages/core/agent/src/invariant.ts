@@ -1,6 +1,6 @@
 /** Package-owned agent lifecycle invariants. @module @open-harness/oh-agent/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 import type { Agent, AgentStatus } from '@open-harness/oh-agent'
 

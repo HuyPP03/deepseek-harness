@@ -36,7 +36,7 @@
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-brand": "workspace:^",
@@ -44,6 +44,6 @@
     "@open-harness/oh-scope": "workspace:^",
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

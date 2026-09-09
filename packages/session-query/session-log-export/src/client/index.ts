@@ -9,7 +9,7 @@ import type { SessionLogDownloadDialogInjected } from './Dialog.tsx'
 import { SessionLogDownloadHeaderAction } from './HeaderAction.tsx'
 import { en, NS, vi, zh, type SessionLogDownloadKey } from './locales.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sessionLogDownload: SessionLogDownloadController
   }

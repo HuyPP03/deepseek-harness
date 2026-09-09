@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { agentEvents, Inbox, type Agent } from '@open-harness/oh-agent'
 import { CallId } from '@open-harness/oh-llm'
 import { boot, loadOverlayPatches } from '@open-harness/oh-app-boot'

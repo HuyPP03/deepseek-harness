@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRuntime, { TOOL_ABORTED_BEFORE_DISPATCH } from '@open-harness/oh-tools'
 import type { ToolExecutionResult, ToolExecutionToken } from '@open-harness/oh-tools'

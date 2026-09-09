@@ -6,7 +6,7 @@
  * the MCP SDK doesn't pollute other test suites.
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRuntime from '@open-harness/oh-tools'
 import { CredentialProvider, type CredentialRef, type CredentialInfo, type ResolvedCredential } from '@open-harness/oh-credentials'

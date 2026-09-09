@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { z } from 'zod'
 import Storage, { storageBackendServiceKey } from '@open-harness/oh-storage'
 import { apply, DomainFacility, defineDomain, domainTable } from '../src/index.ts'

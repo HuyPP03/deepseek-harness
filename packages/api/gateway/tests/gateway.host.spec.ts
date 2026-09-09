@@ -1,7 +1,7 @@
 import { createServer } from 'node:http'
 import type { AddressInfo } from 'node:net'
 import { describe, expect, it } from 'vitest'
-import { Context, Service, symbols } from '@deepseek-ai/cordis'
+import { Context, Service, symbols } from '@open-harness/cordis'
 import { z } from 'zod'
 import { apply as applyConnection, inject as connectionInject } from '@open-harness/oh-client-connection'
 import type { WebServer, WebRoute } from '@open-harness/oh-host-webserver'

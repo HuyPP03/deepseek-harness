@@ -1,6 +1,6 @@
 /** Parent adapter that fails if the composition-only Loader test starts a turn. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { GenerateOptions, StreamChunk } from '@open-harness/oh-llm'
 import { LlmAdapter } from '@open-harness/oh-llm'
 

@@ -3,7 +3,7 @@
  * @module @open-harness/oh-agent/model-selection
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { LlmCallConfig, ReasoningEffortId } from '@open-harness/oh-llm'
 
 /** Complete provider, model, and optional reasoning effort selected for one live Agent. */

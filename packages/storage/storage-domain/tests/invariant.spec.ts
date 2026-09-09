@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { z } from 'zod'
 import Storage from '@open-harness/oh-storage'
 import InvariantRegistry, { InvariantError } from '@open-harness/oh-invariants'

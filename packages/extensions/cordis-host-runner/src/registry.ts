@@ -3,7 +3,7 @@
  * @module @open-harness/oh-cordis-host-runner/registry
  */
 
-import type { Fiber } from '@deepseek-ai/cordis'
+import type { Fiber } from '@open-harness/cordis'
 import type { SessionId } from '@open-harness/oh-session/types'
 import type {
   ApprovalRequestId, CordisDynamicPackageId, CordisDynamicPluginId, CordisDynamicPluginRunId,

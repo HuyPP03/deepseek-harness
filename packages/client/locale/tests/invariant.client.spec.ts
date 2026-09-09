@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { apply as nodeApply } from '@open-harness/oh-client-locale'
 import { apply as clientApply, COMMON_NS, LocaleRuntime, inject } from '@open-harness/oh-client-locale/client'
 import * as LocaleInvariant from '@open-harness/oh-client-locale/invariant'

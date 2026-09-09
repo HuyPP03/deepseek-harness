@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {

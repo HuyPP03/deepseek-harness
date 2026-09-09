@@ -3,7 +3,7 @@
 # The authored snapshot is replay-only; the live config retains the ordinary
 # exact provider route for manual use.
 - id: base
-  name: '@deepseek-ai/cordis-plugin-include'
+  name: '@open-harness/cordis-plugin-include'
   config:
     path: ./cordis.yml
     patches:

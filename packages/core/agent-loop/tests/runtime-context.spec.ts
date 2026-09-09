@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createUserMessage } from '@open-harness/oh-llm'
 import SessionStore, { SessionId } from '@open-harness/oh-session'
 import { RuntimeContextProjection } from '../src/runtime-context.ts'

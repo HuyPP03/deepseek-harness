@@ -4,7 +4,7 @@
  * @module @open-harness/oh-api-gateway
  */
 
-import { Context, Service, symbols } from '@deepseek-ai/cordis'
+import { Context, Service, symbols } from '@open-harness/cordis'
 import type { ConnectionRpcHandler } from '@open-harness/oh-client-connection'
 import {
   remoteMethods,

@@ -6,7 +6,7 @@
  * that are already showing, so a default set from one converges the other.
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { resolveSlotLabel } from '@open-harness/oh-client-ui-slots'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'

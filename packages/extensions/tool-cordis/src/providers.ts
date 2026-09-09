@@ -1,6 +1,6 @@
 /** First-party Host inspect providers registered by the Cordis tool package. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { HOST_BUILTIN_INSPECTION } from '@open-harness/oh-cordis-host-runner'
 import type { HostCordisInspectProviderRegistration } from '@open-harness/oh-cordis-host-runner'
 import type { JsonValue } from '@open-harness/oh-session'

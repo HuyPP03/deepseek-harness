@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import type { Events } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
+import type { Events } from '@open-harness/cordis'
 import { bindScopeParent, createScope } from '@open-harness/oh-scope'
 import type { Scope } from '@open-harness/oh-scope'
 import SystemPrompt from '@open-harness/oh-system-prompt'

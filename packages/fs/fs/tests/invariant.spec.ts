@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { FsTargetKey, FsVersion } from '@open-harness/oh-fs'
 import type { FsTarget } from '@open-harness/oh-fs'
 import * as FsInvariant from '@open-harness/oh-fs/invariant'

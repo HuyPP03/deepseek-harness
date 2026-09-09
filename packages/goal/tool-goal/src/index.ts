@@ -4,8 +4,8 @@
  * @module @open-harness/oh-tool-goal
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { GoalId } from '@open-harness/oh-goal'
 import type { GoalRef, GoalView } from '@open-harness/oh-goal'
 import { boundContextSummary, createUserMessage, HarnessError } from '@open-harness/oh-llm'

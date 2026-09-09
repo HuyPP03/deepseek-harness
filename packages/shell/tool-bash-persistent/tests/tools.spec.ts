@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { CallId } from '@open-harness/oh-llm'
 import { Session, SessionId } from '@open-harness/oh-session'
 import AgentRegistry, { Inbox } from '@open-harness/oh-agent'

@@ -1,6 +1,6 @@
 import { createUserMessage } from '@open-harness/oh-llm'
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentRegistry, { type Agent } from '@open-harness/oh-agent'
 import AgentLoop from '@open-harness/oh-agent-loop'
 import LlmRuntime from '@open-harness/oh-llm'

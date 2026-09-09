@@ -6,8 +6,8 @@ import { createUserMessage } from '@open-harness/oh-llm'
  */
 
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import { SESSION_FORMAT_VERSION, SessionId } from '@open-harness/oh-session'
 import SessionStore from '@open-harness/oh-session'
 import SqliteSessionPersistence from '@open-harness/oh-session-persistence-sqlite'

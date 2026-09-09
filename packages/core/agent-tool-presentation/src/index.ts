@@ -18,8 +18,8 @@
  * @module @open-harness/oh-agent-tool-presentation
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { ToolPresentationMode } from '@open-harness/oh-tools'
 // Type-only: brings the `ctx.tools` Context merge into this program.
 import type {} from '@open-harness/oh-tools'

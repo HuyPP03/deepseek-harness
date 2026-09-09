@@ -7,8 +7,8 @@
  * @module @open-harness/oh-tool-jobs
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { boundContextSummary, createUserMessage, type ContentBlock } from '@open-harness/oh-llm'
 import { TextRetainer } from '@open-harness/oh-output-retention'
 import { defineTool } from '@open-harness/oh-tools'

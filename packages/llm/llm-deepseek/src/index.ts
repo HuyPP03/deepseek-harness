@@ -11,8 +11,8 @@
  * @module @open-harness/oh-llm-deepseek
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { assertUsableApiKey, LlmError, resolveRetryPolicy, RetryPolicySchema } from '@open-harness/oh-llm'
 import type { RetryPolicyConfig } from '@open-harness/oh-llm'
 import { credentialRef } from '@open-harness/oh-credentials'

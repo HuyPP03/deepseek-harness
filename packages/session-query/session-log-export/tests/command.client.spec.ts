@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { CommandDefinition, CommandInvocation } from '@open-harness/oh-commands'
 import * as SessionLogDownload from '../src/index.ts'
 

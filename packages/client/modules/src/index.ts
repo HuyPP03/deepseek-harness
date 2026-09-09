@@ -26,9 +26,9 @@ import { readFile } from 'node:fs/promises'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
-import { Service } from '@deepseek-ai/cordis'
-import type { Context } from '@deepseek-ai/cordis'
-import type {} from '@deepseek-ai/cordis-plugin-loader'
+import { Service } from '@open-harness/cordis'
+import type { Context } from '@open-harness/cordis'
+import type {} from '@open-harness/cordis-plugin-loader'
 import type {} from '@open-harness/oh-host-webserver'
 import type { WebBootEntry, WebBootGraph } from './client/manifest.ts'
 
@@ -36,7 +36,7 @@ export type {
   BootManifest, BootModuleRow, BootPluginRow, WebBootEntry, WebBootGraph,
 } from './client/manifest.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** The web plugin table (provided by the client-modules node half). */
     clientModules: ClientModuleRegistry

@@ -1,7 +1,7 @@
 /** The package's node half: an empty host body and an explained empty invariant companion. */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import * as McpInvariant from '../src/invariant.ts'
 

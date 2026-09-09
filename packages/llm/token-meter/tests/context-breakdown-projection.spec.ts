@@ -2,7 +2,7 @@
 // plus the shared estimator's pricing branches.
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createMessage, createUserMessage } from '@open-harness/oh-llm'
 import type { ContentBlock, ToolSchema } from '@open-harness/oh-llm'
 import SessionStore from '@open-harness/oh-session'

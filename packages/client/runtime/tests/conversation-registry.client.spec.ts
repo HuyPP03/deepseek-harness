@@ -1,4 +1,4 @@
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import type { SessionId } from '@open-harness/oh-api-remotes/client'
 import { ConversationEventRegistry } from '../src/client/conversation/event-registry.ts'

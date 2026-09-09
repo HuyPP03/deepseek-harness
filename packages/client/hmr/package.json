@@ -38,21 +38,21 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-client-modules": "workspace:^",
     "@open-harness/oh-host-webserver": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-client-modules": "workspace:^",
     "@open-harness/oh-host-webserver": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "files": [
     "lib/index.js",

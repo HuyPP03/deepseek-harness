@@ -1,6 +1,6 @@
 /** Package-owned scoped-dispatch invariants. @module @open-harness/oh-scope/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 import { carrierKeyOf, isScopeCarrier } from '@open-harness/oh-scope'
 import { scopedSubjectResolverFor } from './scoped-events.generated.ts'

@@ -21,24 +21,24 @@ const workspaceGlobs = [
   { dir: 'apps', depth: 1 },
 ] as const
 const vendoredPackages = new Set([
-  '@deepseek-ai/cordis',
-  '@deepseek-ai/cosmokit',
-  '@deepseek-ai/schemastery',
-  '@deepseek-ai/cordis-plugin-loader',
-  '@deepseek-ai/cordis-plugin-include',
-  '@deepseek-ai/cordis-plugin-group',
-  '@deepseek-ai/cordis-plugin-timer',
-  '@deepseek-ai/cordis-plugin-hmr',
-  '@deepseek-ai/cordis-plugin-logger-console',
+  '@open-harness/cordis',
+  '@open-harness/cosmokit',
+  '@open-harness/schemastery',
+  '@open-harness/cordis-plugin-loader',
+  '@open-harness/cordis-plugin-include',
+  '@open-harness/cordis-plugin-group',
+  '@open-harness/cordis-plugin-timer',
+  '@open-harness/cordis-plugin-hmr',
+  '@open-harness/cordis-plugin-logger-console',
 ])
 const publicLandlockPackages = new Set([
-  '@deepseek-ai/node-addon-landlock-run',
-  '@deepseek-ai/node-addon-landlock-run-linux-arm64',
-  '@deepseek-ai/node-addon-landlock-run-linux-x64',
+  '@open-harness/node-addon-landlock-run',
+  '@open-harness/node-addon-landlock-run-linux-arm64',
+  '@open-harness/node-addon-landlock-run-linux-x64',
 ])
 /** Deliberate source payloads whose exact bytes are part of the package's audit surface. */
 const publicationSourceAllowlist: Readonly<Record<string, readonly string[]>> = {
-  '@deepseek-ai/node-addon-landlock-run': ['src/main.c'],
+  '@open-harness/node-addon-landlock-run': ['src/main.c'],
 }
 const repositoryUrl = 'git+https://github.com/deepseek-harness/deepseek-harness.git'
 /**
@@ -270,7 +270,7 @@ function checkWorkspace({ dir, manifest }: WorkspaceManifest): string[] {
     return errors
   }
 
-  if (manifest.name === 'oh' || manifest.name?.startsWith('@deepseek-ai/') || manifest.name?.startsWith('@open-harness/')) {
+  if (manifest.name === 'oh' || manifest.name?.startsWith('@open-harness/') || manifest.name?.startsWith('@open-harness/')) {
     const allowedSources = publicationSourceAllowlist[manifest.name] ?? []
     for (const file of manifest.files ?? []) {
       if (isForbiddenPublicationFile(file) && !allowedSources.includes(file)) {
@@ -298,13 +298,13 @@ function checkWorkspace({ dir, manifest }: WorkspaceManifest): string[] {
   }
 
   if (dir.startsWith('packages/') && manifest.name?.startsWith('@open-harness/oh-')) {
-    const peer = manifest.peerDependencies?.['@deepseek-ai/cordis']
-    const dev = manifest.devDependencies?.['@deepseek-ai/cordis']
+    const peer = manifest.peerDependencies?.['@open-harness/cordis']
+    const dev = manifest.devDependencies?.['@open-harness/cordis']
 
-    if (!peer) errors.push(`${label}: @deepseek-ai/cordis must be a peerDependency`)
-    if (!dev) errors.push(`${label}: @deepseek-ai/cordis must also be a devDependency`)
+    if (!peer) errors.push(`${label}: @open-harness/cordis must be a peerDependency`)
+    if (!dev) errors.push(`${label}: @open-harness/cordis must also be a devDependency`)
     if (peer && dev && peer !== dev) {
-      errors.push(`${label}: @deepseek-ai/cordis peer (${peer}) and dev (${dev}) ranges must match`)
+      errors.push(`${label}: @open-harness/cordis peer (${peer}) and dev (${dev}) ranges must match`)
     }
     if (manifest.version !== repositoryVersion) {
       errors.push(`${label}: package.json version must match root version ${repositoryVersion ?? '(missing)'}`)

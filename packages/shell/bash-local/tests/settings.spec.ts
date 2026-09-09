@@ -1,8 +1,8 @@
 /** The `bash` settings section layered over the executor's composition entry. */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import type { Fiber } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
+import type { Fiber } from '@open-harness/cordis'
 import { SettingsProvider } from '@open-harness/oh-settings'
 import type { SettingsNamespace } from '@open-harness/oh-settings'
 import LocalSubprocessRuntime from '@open-harness/oh-subprocess-local'

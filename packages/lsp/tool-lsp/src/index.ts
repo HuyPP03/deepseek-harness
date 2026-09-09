@@ -10,8 +10,8 @@
  * @module @open-harness/oh-tool-lsp
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { defineTool } from '@open-harness/oh-tools'
 import { assertNever } from '@open-harness/oh-llm'
 import { LspError } from '@open-harness/oh-lsp'

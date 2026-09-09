@@ -1,6 +1,6 @@
 /** Built-in Client inspect providers over live Client-owned services. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { JsonValue } from '@open-harness/oh-api-remotes/client'
 import type { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import type {} from '@open-harness/oh-client-ui-theme/client'

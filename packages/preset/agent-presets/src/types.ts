@@ -1,7 +1,7 @@
 /** Client-safe event declarations owned by the agent-preset domain. */
 import type { SessionId } from '@open-harness/oh-session/types'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     /**
      * One session committed a different agent preset to its durable log.

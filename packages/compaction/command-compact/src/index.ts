@@ -3,7 +3,7 @@
  * @module @open-harness/oh-command-compact
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { ManualCompactionError } from '@open-harness/oh-compaction'
 import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'
 

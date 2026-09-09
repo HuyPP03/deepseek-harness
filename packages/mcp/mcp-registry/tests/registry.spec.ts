@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRuntime from '@open-harness/oh-tools'
 import McpRegistry from '@open-harness/oh-mcp-registry'

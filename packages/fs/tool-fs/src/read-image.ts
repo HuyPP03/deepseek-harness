@@ -12,7 +12,7 @@
  */
 
 import { basename, extname } from 'node:path'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { AttachmentError, AttachmentId } from '@open-harness/oh-attachment'
 import type { ImageAttachmentRef, ImageMediaType } from '@open-harness/oh-attachment'
 import type { ContentBlock } from '@open-harness/oh-llm'

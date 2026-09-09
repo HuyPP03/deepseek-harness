@@ -13,8 +13,8 @@
 // point; a cross-package facade for imports alone would add indirection.
 /* jscpd:ignore-start */
 import { readFileSync } from 'node:fs'
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
 import { createUserMessage } from '@open-harness/oh-llm'
 import type { ContentBlock, MessageSource } from '@open-harness/oh-llm'

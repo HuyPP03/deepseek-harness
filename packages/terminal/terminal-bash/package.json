@@ -39,10 +39,10 @@
     "@open-harness/oh-sandbox-policy": "workspace:^",
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-subprocess": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-agent": "workspace:^",
@@ -53,6 +53,6 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-subprocess": "workspace:^",
     "@open-harness/oh-subprocess-local": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

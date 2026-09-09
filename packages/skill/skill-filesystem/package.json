@@ -36,11 +36,11 @@
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-home-paths": "workspace:^",
     "@open-harness/oh-skill": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
     "chokidar": "^5.0.0",
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "yaml": "^2.4.2"
   },
   "devDependencies": {
@@ -48,6 +48,6 @@
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-home-paths": "workspace:^",
     "@open-harness/oh-skill": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

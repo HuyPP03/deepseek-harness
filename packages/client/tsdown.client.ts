@@ -27,18 +27,18 @@ const CSS_VIRTUAL_SUFFIX = '.mjs'
 /**
  * Wire/type layers a client bundle may inline: browser-safe contracts
  * with no runtime identity to share (no Symbol/instanceof/singleton state).
- * Everything else under @deepseek-ai/* is either a module-table entry
+ * Everything else under @open-harness/* is either a module-table entry
  * (external) or a leak the purity gate rejects.
  */
 export const INLINE_SAFE = /^@open-harness\/oh-(host-apiproxy|session|llm|tools|brand)(\/|$)/
 
 /**
- * Vendored framework libraries: rescoped into @deepseek-ai, so the gate below
+ * Vendored framework libraries: rescoped into @open-harness, so the gate below
  * would read them as plugin packages. They carry no cross-plugin runtime
  * identity to share — the framework itself is a platform module (external),
  * while these are ordinary libraries a browser bundle inlines.
  */
-const VENDORED_LIBRARY = /^@deepseek-ai\/(cosmokit|schemastery)(\/|$)/
+const VENDORED_LIBRARY = /^@open-harness\/(cosmokit|schemastery)(\/|$)/
 
 /** Generated descriptor/codec contribution with no shared runtime identity. */
 const GENERATED_REMOTE = /^@open-harness\/oh-[a-z0-9]+(?:-[a-z0-9]+)*\/remote$/
@@ -214,13 +214,13 @@ function clientConfig(id: string, entry: string): UserConfig {
       // Bundle purity gate (build-time mirror of the module-edge rules):
       // platform seed entries stay external, inline-safe wire layers inline,
       // and every other @open-harness value import (plus any unlisted
-      // vendored @deepseek-ai one) is a build error — a cross-plugin value
+      // vendored @open-harness one) is a build error — a cross-plugin value
       // import either inlines a duplicate runtime instance or requires a
       // specifier the frozen module table cannot answer. Cross-plugin
       // collaboration goes through cordis services instead.
       name: 'oh-client-bundle-purity',
       resolveId(source: string) {
-        if (!source.startsWith('@open-harness/') && !source.startsWith('@deepseek-ai/')) return null
+        if (!source.startsWith('@open-harness/') && !source.startsWith('@open-harness/')) return null
         if (CLIENT_EXTERNALS.includes(source)) return null // platform module: external wins
         if (VENDORED_LIBRARY.test(source)) return null // vendored library: inline, no shared identity
         if (INLINE_SAFE.test(source) || GENERATED_REMOTE.test(source)) return null // wire contribution: inline is the point

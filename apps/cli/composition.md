@@ -8,9 +8,9 @@ The oh-base bundle patch every profile applies first; mode bundles (oh-web-app, 
 ```mermaid
 flowchart LR
   cfg["packages/bundle/base/cordis.patch.yml<br/>cordis.yml"]
-  plugin_oh_base_timer["timer<br/>@deepseek-ai/cordis-plugin-timer"]
+  plugin_oh_base_timer["timer<br/>@open-harness/cordis-plugin-timer"]
   cfg --> plugin_oh_base_timer
-  plugin_oh_base_hmr["hmr<br/>@deepseek-ai/cordis-plugin-hmr"]
+  plugin_oh_base_hmr["hmr<br/>@open-harness/cordis-plugin-hmr"]
   cfg --> plugin_oh_base_hmr
   plugin_oh_base_llm["llm<br/>@open-harness/oh-llm"]
   cfg --> plugin_oh_base_llm
@@ -186,8 +186,8 @@ flowchart LR
 
 | Plugin id | Package / module |
 | --- | --- |
-| `timer` | `@deepseek-ai/cordis-plugin-timer` |
-| `hmr` | `@deepseek-ai/cordis-plugin-hmr` |
+| `timer` | `@open-harness/cordis-plugin-timer` |
+| `hmr` | `@open-harness/cordis-plugin-hmr` |
 | `llm` | `@open-harness/oh-llm` |
 | `session` | `@open-harness/oh-session` |
 | `typert` | `@open-harness/oh-typert-registry` |

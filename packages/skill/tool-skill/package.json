@@ -37,10 +37,10 @@
     "@open-harness/oh-llm": "workspace:^",
     "@open-harness/oh-skill": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-agent": "workspace:^",
@@ -51,6 +51,6 @@
     "@open-harness/oh-skill": "workspace:^",
     "@open-harness/oh-skill-filesystem": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

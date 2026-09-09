@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import * as SchemaFormInvariant from '@open-harness/oh-client-schema-form/invariant'
 import InvariantRegistry from '@open-harness/oh-invariants'
 

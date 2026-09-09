@@ -3,7 +3,7 @@
  * @module @open-harness/oh-tool-cordis
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
 import {
   CordisDynamicPackageId, CordisDynamicPluginId,

@@ -10,11 +10,11 @@
  * @module @open-harness/oh-connectors-device-flow
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { Connectors, DeviceFlowStart } from '@open-harness/oh-connectors'
 import { CallId, type ContentBlock } from '@open-harness/oh-llm'
 import type { McpManager } from '@open-harness/oh-mcp-manager'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 
 /**
  * The MCP public tool name for one server and raw tool name: the clean case

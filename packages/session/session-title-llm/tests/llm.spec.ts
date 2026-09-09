@@ -1,4 +1,4 @@
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import LlmRuntime, { createUserMessage, CallId, isAgentLoopRequest, LlmAdapter  } from '@open-harness/oh-llm'
 import type { FinishReason, GenerateOptions, StreamChunk } from '@open-harness/oh-llm'

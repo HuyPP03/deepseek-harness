@@ -35,12 +35,12 @@
     "@open-harness/oh-e2b": "workspace:^",
     "@open-harness/oh-fs": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-e2b": "workspace:^",
     "@open-harness/oh-fs": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

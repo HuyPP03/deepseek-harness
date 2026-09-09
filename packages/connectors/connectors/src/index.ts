@@ -26,8 +26,8 @@
 
 import { mkdir, readdir, readFile, rm } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { writeFileAtomic } from '@open-harness/oh-atomic-write'
 import { ohHomePath, expandHomePath } from '@open-harness/oh-home-paths'
 import { credentialRef, type CredentialProvider } from '@open-harness/oh-credentials'
@@ -68,7 +68,7 @@ export type {
   ServerValue,
 } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** The connector catalog and state machine. */
     connectors: Connectors

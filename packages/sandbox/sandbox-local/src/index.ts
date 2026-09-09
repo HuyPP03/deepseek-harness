@@ -33,9 +33,9 @@ import {
   LAUNCHER_FAILURE_EXIT,
   launcherPath as landlockLauncherPath,
   probe as defaultProbeLandlock,
-} from '@deepseek-ai/node-addon-landlock-run'
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+} from '@open-harness/node-addon-landlock-run'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { assertNever } from '@open-harness/oh-llm'
 import { SandboxProvider, SandboxUnavailableError } from '@open-harness/oh-sandbox'
 import type { ConfinedArgv, ConfinedSandboxMode, RunnerFailureRule, SandboxEnforcement, SandboxPolicy } from '@open-harness/oh-sandbox'

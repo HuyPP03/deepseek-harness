@@ -7,7 +7,7 @@
  * @module @open-harness/oh-fs-observation-policy
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { FsError } from '@open-harness/oh-fs'
 import type { FsObservation, FsTarget, FsVersion, FsWriteIntent } from '@open-harness/oh-fs'
 import type { FsObservationActor } from './types.ts'

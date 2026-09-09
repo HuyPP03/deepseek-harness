@@ -2,7 +2,7 @@
  * Browser trajectory plugin contributing one entry to the conversation view
  * slot without defining a service.
  */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { SessionId } from '@open-harness/oh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@open-harness/oh-client-locale/client'

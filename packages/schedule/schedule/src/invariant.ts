@@ -3,7 +3,7 @@
  * @module @open-harness/oh-schedule/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import { foldScheduleEvents, ScheduleLogError } from './domain.ts'

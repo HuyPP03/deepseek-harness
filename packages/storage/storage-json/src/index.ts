@@ -7,8 +7,8 @@
 
 import { mkdir } from 'node:fs/promises'
 import { join } from 'node:path'
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { StorageError, UNIT_NAME_RE, storageBackendServiceKey } from '@open-harness/oh-storage'
 import type { KvFacet, KvUnit, KvUnitDescriptor, StorageBackend } from '@open-harness/oh-storage'
 import { openJsonUnit } from './unit.ts'

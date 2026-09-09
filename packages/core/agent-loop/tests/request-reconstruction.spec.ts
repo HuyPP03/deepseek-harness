@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import LlmRuntime, { createUserMessage, LlmError, ReasoningEffortId  } from '@open-harness/oh-llm'
 import type { GenerateOptions, LlmModelReasoningInfo, LlmResolvedModelInfo, StreamChunk } from '@open-harness/oh-llm'
 import SessionStore, { Session, SessionId, foldRequestHeader } from '@open-harness/oh-session'

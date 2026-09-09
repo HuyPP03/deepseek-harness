@@ -1,4 +1,4 @@
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { SessionId } from '@open-harness/oh-session'
 
 export const name = 'subagent-durability-failure'

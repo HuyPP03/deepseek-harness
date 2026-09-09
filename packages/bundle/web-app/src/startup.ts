@@ -7,7 +7,7 @@
  */
 
 import { Command } from 'commander'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { parseCmdline } from '@open-harness/oh-cmdline'
 
 /** Stable Cordis plugin name. */

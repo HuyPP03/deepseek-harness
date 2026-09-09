@@ -8,7 +8,7 @@
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render } from '@testing-library/react'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
 import {
   createSnapshotStore, EMPTY_CONVERSATION_VIEWS,

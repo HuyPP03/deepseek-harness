@@ -39,13 +39,13 @@
   "peerDependencies": {
     "@open-harness/oh-brand": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/cordis": "workspace:^",
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-brand": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/cordis": "workspace:^",
+    "@open-harness/schemastery": "workspace:^"
   }
 }

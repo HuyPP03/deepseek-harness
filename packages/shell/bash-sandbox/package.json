@@ -37,7 +37,7 @@
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-sandbox": "workspace:^",
     "@open-harness/oh-sandbox-policy": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-shell": "workspace:^",
@@ -47,7 +47,7 @@
     "@open-harness/oh-sandbox": "workspace:^",
     "@open-harness/oh-sandbox-local": "workspace:^",
     "@open-harness/oh-sandbox-policy": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/node-addon-landlock-run": "workspace:^"
+    "@open-harness/cordis": "workspace:^",
+    "@open-harness/node-addon-landlock-run": "workspace:^"
   }
 }

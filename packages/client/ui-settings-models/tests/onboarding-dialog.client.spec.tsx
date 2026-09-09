@@ -2,7 +2,7 @@
 /** First-run DeepSeek prompt behavior over the shared Models join. */
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import Schema from '@deepseek-ai/schemastery'
+import Schema from '@open-harness/schemastery'
 import type { RpcResponse, SettingsNamespaceView } from '@open-harness/oh-api-remotes/client'
 import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
 import { DeepSeekOnboardingDialog } from '../src/client/DeepSeekOnboardingDialog.tsx'

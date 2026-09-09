@@ -11,7 +11,7 @@
  * @module @open-harness/oh-subagent/activation-setup-registry
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { AgentSetupCommit } from '@open-harness/oh-agent'
 import { errorChain } from '@open-harness/oh-llm'
 import { SubagentError } from './error.ts'

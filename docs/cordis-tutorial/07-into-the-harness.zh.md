@@ -9,7 +9,7 @@
 创建 `greet-tool.ts`，将它放在 `tmp/cordis-tutorial` 中：
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 import { CallId } from '@open-harness/oh-llm'
 
@@ -53,7 +53,7 @@ export function apply(ctx: Context) {
 创建 `tool-logger.ts`。这是一个独立插件，通过 harness 的 `tools/result` 事件观察应用中的每次工具调用：
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-tools'
 
 export const name = 'tool-logger'

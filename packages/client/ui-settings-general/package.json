@@ -49,7 +49,7 @@
   "license": "MIT",
   "dependencies": {
     "@open-harness/oh-settings": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "clsx": "^2.0.0"
   },
   "peerDependencies": {
@@ -63,7 +63,7 @@
     "@open-harness/oh-client-ui-slots": "workspace:^",
     "@open-harness/oh-client-web-react": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "devDependencies": {
@@ -78,7 +78,7 @@
     "@open-harness/oh-client-ui-slots": "workspace:^",
     "@open-harness/oh-client-web-react": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@types/react": "~18.3.1",
     "react": "^18.2.0"
   },

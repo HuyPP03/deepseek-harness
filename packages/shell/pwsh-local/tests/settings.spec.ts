@@ -1,8 +1,8 @@
 /** The shared `bash` settings section as the pwsh executor family resolves it. */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import type { Fiber } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
+import type { Fiber } from '@open-harness/cordis'
 import { SettingsProvider } from '@open-harness/oh-settings'
 import type { SettingsNamespace } from '@open-harness/oh-settings'
 import { SHELL_SETTINGS_NAMESPACE } from '@open-harness/oh-shell'

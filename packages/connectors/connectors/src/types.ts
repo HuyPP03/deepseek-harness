@@ -340,7 +340,7 @@ export interface AddCustomSpec {
   readonly tokenVarIsHeader?: boolean
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     /**
      * A connector's derived state changed as the result of a connector

@@ -1,6 +1,6 @@
 /** Execution-time authority checks for the model-facing goal tools. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import type { GoalView } from '@open-harness/oh-goal'
 import { HarnessError } from '@open-harness/oh-llm'

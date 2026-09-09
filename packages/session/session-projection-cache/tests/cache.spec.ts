@@ -7,7 +7,7 @@
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { z } from 'zod'
 import Storage from '@open-harness/oh-storage'
 import { DomainFacility } from '@open-harness/oh-storage-domain'

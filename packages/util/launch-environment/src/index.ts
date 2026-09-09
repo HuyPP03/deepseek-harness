@@ -6,7 +6,7 @@
  * @module @open-harness/oh-launch-environment
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 
 /**
  * Which layer supplied a value, from most to least trusted: the environment
@@ -116,7 +116,7 @@ export function launchEnvironmentOf(ctx: Context): LaunchEnvironmentSnapshot {
     ?? createLaunchEnvironmentSnapshot([{ source: 'process', values: process.env as Record<string, string> }])
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** Launcher-owned snapshot of this run's environment; absent in compositions the product CLI did not boot. */
     launchEnvironment?: LaunchEnvironmentSnapshot

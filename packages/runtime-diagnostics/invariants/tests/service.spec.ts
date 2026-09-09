@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import InvariantRegistry, {
   InvariantError,
   type Config,
 } from '@open-harness/oh-invariants'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     invariantProbe: InvariantProbeService
   }

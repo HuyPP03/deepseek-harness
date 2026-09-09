@@ -8,8 +8,8 @@
  * @module @open-harness/oh-web-search-websift
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { installSettingsSection, settingsNamespace } from '@open-harness/oh-settings'
 import type {} from '@open-harness/oh-web'
 import {

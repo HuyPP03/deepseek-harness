@@ -150,7 +150,7 @@ describe('loadProfile', () => {
       .toThrow('profile "custom" does not exist')
     // The web template auto-initializes on first load. Bundle resolution
     // cannot be asserted to fail here: the source-plane test runner resolves
-    // @deepseek-ai/* through tsconfig paths regardless of the staged anchor.
+    // @open-harness/* through tsconfig paths regardless of the staged anchor.
     expect(PROFILE_TEMPLATES.web).toContain('@open-harness/oh-base')
     try {
       loadProfile('t', 'web', anchor, home)

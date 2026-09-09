@@ -1,7 +1,7 @@
 /** Host registry for model-visible, read-only Cordis capability queries. */
 
-import { Service } from '@deepseek-ai/cordis'
-import type { Context } from '@deepseek-ai/cordis'
+import { Service } from '@open-harness/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import { snapshotJsonValue } from '@open-harness/oh-session'
 import type { JsonValue } from '@open-harness/oh-session/types'
@@ -35,7 +35,7 @@ interface PendingClientQuery {
   settle(resolution: CordisInspectQueryResolution): void
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** Host registry for Cordis inspect providers and Client manifest/query routing. */
     cordisInspect: CordisInspectRegistryService

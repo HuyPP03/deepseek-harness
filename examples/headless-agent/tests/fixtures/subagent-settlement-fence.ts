@@ -3,7 +3,7 @@
  * @module subagent-settlement-fence
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-agent-loop'
 import type {} from '@open-harness/oh-subagent'
 

@@ -3,8 +3,8 @@
  * @module @open-harness/oh-session-title
  */
 
-import { Context, FiberState, Service, type Fiber } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, FiberState, Service, type Fiber } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { z as zod } from 'zod'
 import type { Branded } from '@open-harness/oh-brand'
 import { assertNever, deepFreeze, isAgentLoopRequest } from '@open-harness/oh-llm'
@@ -85,7 +85,7 @@ export interface Config {
   readonly maxTitleBytes: number
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sessionTitle: SessionTitleService
   }

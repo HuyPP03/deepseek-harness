@@ -32,7 +32,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "peerDependencies": {
     "@open-harness/oh-agent": "workspace:^",
@@ -43,7 +43,7 @@
     "@open-harness/oh-session-persistence": "workspace:^",
     "@open-harness/oh-subagent": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-agent": "workspace:^",
@@ -60,6 +60,6 @@
     "@open-harness/oh-session-persistence-jsonl": "workspace:^",
     "@open-harness/oh-subagent": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

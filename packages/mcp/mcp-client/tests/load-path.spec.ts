@@ -11,7 +11,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import Loader from '@open-harness/cordis-plugin-loader'
 import * as mcpClient from '@open-harness/oh-mcp-client'
 
 describe('oh-mcp-client real-load-path guard', () => {

@@ -7,7 +7,7 @@
  * payload, the scoped consume-token dispatch, per-session popupFor
  * lifecycle, and the directory invalidation event subscriptions.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import type { CommandResult } from '@open-harness/oh-commands/types'
 import { createScope, scopeOf } from '@open-harness/oh-client-runtime/client'

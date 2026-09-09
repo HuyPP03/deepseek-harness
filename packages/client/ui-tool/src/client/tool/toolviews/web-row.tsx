@@ -9,7 +9,7 @@
 // no web card (the tools keep a generic pending view), so a running row is the
 // summary line alone.
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { IconBrowseOutline16, IconGlobeOutline14 } from '@open-harness/oh-client-ui-primitives'
 import type { PropsLocale } from '@open-harness/oh-client-ui-slots'
 import type { ToolCallViewProps } from '../../contract/slots.ts'

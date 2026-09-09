@@ -5,7 +5,7 @@
  * @module @open-harness/oh-storage
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { StorageError } from './error.ts'
 import { BackendRegistry } from './registry.ts'
 
@@ -27,7 +27,7 @@ export function storageBackendServiceKey(name: string): string {
   return `storage.backend.${name}`
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     storage: Storage
   }

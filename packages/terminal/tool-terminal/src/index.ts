@@ -4,8 +4,8 @@
  * @module @open-harness/oh-tool-terminal
  */
 
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent } from '@open-harness/oh-agent'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import { TerminalSessionId } from '@open-harness/oh-terminal'

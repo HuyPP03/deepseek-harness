@@ -7,8 +7,8 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import { CallId, HarnessError } from '@open-harness/oh-llm'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRuntime, { defineContentToolFixture, TOOL_ABORTED, type ToolExecutionInput, type PostToolDecision } from '@open-harness/oh-tools'

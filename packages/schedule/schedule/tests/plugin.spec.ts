@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { Context, Service } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context, Service } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import { agentEvents } from '@open-harness/oh-agent'
 import AgentLoop from '@open-harness/oh-agent-loop'
 import { mountAgentLoopTestDependencies } from '@open-harness/oh-agent-loop-testkit'

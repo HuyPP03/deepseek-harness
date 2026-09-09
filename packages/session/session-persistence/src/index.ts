@@ -5,7 +5,7 @@
  * @module @open-harness/oh-session-persistence
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { SessionPreparation } from '@open-harness/oh-session'
 import type { SessionEvent, SessionId, SessionHeader } from '@open-harness/oh-session'
 import type { SessionPersistenceRevision } from './revision.ts'
@@ -57,7 +57,7 @@ export type {
   StoredSuffix,
 } from './coordinator.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sessionPersistence: SessionPersistence
   }

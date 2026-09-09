@@ -1,7 +1,7 @@
 /** Package-owned invariant companion for `@open-harness/oh-attachment-local`. @module @open-harness/oh-attachment-local/invariant */
 
 /* jscpd:ignore-start */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
 const PACKAGE_NAME = '@open-harness/oh-attachment-local'

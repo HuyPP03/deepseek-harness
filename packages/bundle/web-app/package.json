@@ -107,22 +107,22 @@
     "@open-harness/oh-storage-json": "workspace:^",
     "@open-harness/oh-workspace": "workspace:^",
     "@open-harness/oh-workspace-references": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "commander": "^15.0.0"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-shell-env": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-system-prompt": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-shell-env": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-system-prompt": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

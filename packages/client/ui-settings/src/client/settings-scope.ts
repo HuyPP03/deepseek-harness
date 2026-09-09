@@ -5,8 +5,8 @@
  * subscription, both of which are Settings-surface concerns.
  */
 
-import { Service } from '@deepseek-ai/cordis'
-import type { Context } from '@deepseek-ai/cordis'
+import { Service } from '@open-harness/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {
   ConnectionHandle, IApiClient, SettingsNamespaceView, SettingsPathOpView,
 } from '@open-harness/oh-api-remotes/client'
@@ -211,7 +211,7 @@ export class SettingsScopeController<T> implements SettingsScope<T> {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     settingsScope: SettingsScopeBinder
   }

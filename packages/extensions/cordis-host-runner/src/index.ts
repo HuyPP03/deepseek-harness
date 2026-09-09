@@ -4,9 +4,9 @@
  * @module @open-harness/oh-cordis-host-runner
  */
 
-import { Context } from '@deepseek-ai/cordis'
-import type { Fiber } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import type { Fiber } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent } from '@open-harness/oh-agent'
 import { createUserMessage } from '@open-harness/oh-llm'
 import type { JsonValue } from '@open-harness/oh-session/types'
@@ -77,7 +77,7 @@ export function ApprovalRequestId(id: string): ApprovalRequestId {
   return id as ApprovalRequestId
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** Process-local dynamic Plugin registry and lifecycle service. */
     dynamicCordisRunner: DynamicCordisRunnerService

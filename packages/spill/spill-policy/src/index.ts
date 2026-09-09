@@ -43,8 +43,8 @@
  * @module @open-harness/oh-spill-policy
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import { TextRetainer, describeOmitted } from '@open-harness/oh-output-retention'
 import type { Omitted } from '@open-harness/oh-output-retention'

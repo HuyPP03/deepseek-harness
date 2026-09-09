@@ -4,7 +4,7 @@
  * @module @open-harness/oh-code-runtime
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { CodeRunRequest, CodeRunResult } from './types.ts'
 
 export type {
@@ -86,7 +86,7 @@ export const PORTABLE_RESERVED_WORDS: ReadonlySet<string> = new Set([
   'global', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'match', 'type', '_',
 ])
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     codeRuntime: CodeRuntime
   }

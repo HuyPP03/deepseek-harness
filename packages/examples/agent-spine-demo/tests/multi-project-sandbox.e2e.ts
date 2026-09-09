@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promis
 import { homedir } from 'node:os'
 import { basename, join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { SandboxBashExecutor } from '@open-harness/oh-bash-sandbox'
 import LocalSubprocessRuntime from '@open-harness/oh-subprocess-local'
 import * as FsPolicy from '@open-harness/oh-fs-observation-policy'
@@ -15,7 +15,7 @@ import SandboxPolicyService from '@open-harness/oh-sandbox-policy'
 import { SessionId } from '@open-harness/oh-session'
 import * as ToolFs from '@open-harness/oh-tool-fs'
 import type { ToolResult } from '@open-harness/oh-tools'
-import { launcherPath } from '@deepseek-ai/node-addon-landlock-run'
+import { launcherPath } from '@open-harness/node-addon-landlock-run'
 import * as agentSpine from '../src/index.ts'
 
 const bwrapUsable = spawnSync('bwrap', [

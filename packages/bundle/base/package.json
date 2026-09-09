@@ -39,8 +39,8 @@
     }
   },
   "dependencies": {
-    "@deepseek-ai/cordis-plugin-hmr": "workspace:^",
-    "@deepseek-ai/cordis-plugin-timer": "workspace:^",
+    "@open-harness/cordis-plugin-hmr": "workspace:^",
+    "@open-harness/cordis-plugin-timer": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-agent-default-model": "workspace:^",
     "@open-harness/oh-agent-instructions": "workspace:^",
@@ -130,10 +130,10 @@
   },
   "peerDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

@@ -6,7 +6,7 @@
 
 /** The module specifiers the shell shares into the frozen module table. */
 export const PLATFORM_MODULES = [
-  'react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', '@deepseek-ai/cordis',
+  'react', 'react/jsx-runtime', 'react-dom', 'react-dom/client', '@open-harness/cordis',
   '@open-harness/oh-client-ui-slots',
   '@open-harness/oh-client-web-react',
   '@open-harness/oh-client-ui-primitives',

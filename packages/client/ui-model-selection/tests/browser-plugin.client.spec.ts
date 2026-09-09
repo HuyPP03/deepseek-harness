@@ -9,7 +9,7 @@
  * the one-shared-state contract of the triple entry.
  * Scope disposal drops the directory (HMR safety).
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import { createScope } from '@open-harness/oh-client-runtime/client'
 import type { SessionId } from '@open-harness/oh-client-runtime/client'

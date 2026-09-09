@@ -55,7 +55,7 @@
  * @module @open-harness/oh-llm-pi-ai
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { launchEnvironmentOf } from '@open-harness/oh-launch-environment'
 import { assertUsableApiKey, LlmError } from '@open-harness/oh-llm'
 import type { AdapterRegistrationHandle, DirectoryRegistrationHandle, LlmConfigurableProvider } from '@open-harness/oh-llm'

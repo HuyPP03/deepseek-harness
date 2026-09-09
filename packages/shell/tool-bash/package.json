@@ -43,10 +43,10 @@
     "@open-harness/oh-jobs": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
     "@open-harness/oh-user-approval": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-agent": "workspace:^",
@@ -68,6 +68,6 @@
     "@open-harness/oh-tool-jobs": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
     "@open-harness/oh-user-approval": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

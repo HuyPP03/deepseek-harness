@@ -9,9 +9,9 @@
  * @module @open-harness/oh-sdk-jsonrpc-server
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Readable, Writable } from 'node:stream'
-import Schema from '@deepseek-ai/schemastery'
+import Schema from '@open-harness/schemastery'
 import { JsonRpcLineTransport } from '@open-harness/oh-sdk-protocol'
 import { HarnessSdkJsonRpcServer } from './server.ts'
 

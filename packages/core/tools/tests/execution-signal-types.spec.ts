@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from 'vitest'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { CallId } from '@open-harness/oh-llm'
 import { defineTool } from '@open-harness/oh-tools'
 import type {

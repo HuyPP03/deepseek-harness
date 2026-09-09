@@ -9,7 +9,7 @@
 将 `scratch-plugin/src/my-plugin.ts` 替换为：
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 
 export const name = 'greet-tool'

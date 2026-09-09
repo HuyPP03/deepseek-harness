@@ -5,7 +5,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentRegistry, { type Agent, type AgentHandle } from '@open-harness/oh-agent'
 
 import SessionStore, { SessionId } from '@open-harness/oh-session'

@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createUserMessage, CallId, StreamChunk  } from '@open-harness/oh-llm'
 import SessionStore, { SessionEvent, SessionId } from '@open-harness/oh-session'
 import SystemPrompt from '@open-harness/oh-system-prompt'

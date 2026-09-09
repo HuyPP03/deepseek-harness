@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore, { type Session, type SessionEvent } from '@open-harness/oh-session'
 import ToolRuntime from '@open-harness/oh-tools'
 import * as ToolTodo from '@open-harness/oh-tool-todo'

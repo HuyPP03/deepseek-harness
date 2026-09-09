@@ -1,4 +1,4 @@
-# `@deepseek-ai/oh`
+# `@open-harness/oh`
 
 [English](README.md) | 中文
 

@@ -4,7 +4,7 @@
  * @module @open-harness/oh-scope
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { scopeChainOf, scopeOf } from './index.ts'
 import type { ScopeKey } from './index.ts'
 

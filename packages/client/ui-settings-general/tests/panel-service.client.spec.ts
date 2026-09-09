@@ -1,5 +1,5 @@
 /** Settings panel controller: the store's open state and section selection, and its deep-link actions. */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import { SettingsPanelController } from '../src/client/panel-service.ts'
 import type { SettingsPanelState } from '../src/client/panel-service.ts'

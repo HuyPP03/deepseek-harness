@@ -12,7 +12,7 @@
  * @module @open-harness/oh-command-search
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'
 import { createUserMessage } from '@open-harness/oh-llm'
 import type { MessageSource } from '@open-harness/oh-llm'

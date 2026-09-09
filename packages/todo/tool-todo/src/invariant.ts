@@ -1,6 +1,6 @@
 /** Package-owned durable todo-snapshot invariants. @module @open-harness/oh-tool-todo/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 

@@ -34,12 +34,12 @@
   "peerDependencies": {
     "@open-harness/oh-fs": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-fs": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-llm": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

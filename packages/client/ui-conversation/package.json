@@ -50,10 +50,10 @@
   "dependencies": {
     "@open-harness/oh-settings": "workspace:^",
     "clsx": "^2.0.0",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-attachment": "workspace:^",
@@ -76,7 +76,7 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-attachment": "workspace:^",

@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { AttachmentId } from '@open-harness/oh-attachment'
 import BasicCompactionEngine from '@open-harness/oh-compaction-basic'
 import type { BasicCompactionConfig } from '@open-harness/oh-compaction-basic'

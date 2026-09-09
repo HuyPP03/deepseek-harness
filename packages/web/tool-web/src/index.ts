@@ -6,8 +6,8 @@
  * @module @open-harness/oh-tool-web
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type {} from '@open-harness/oh-web'
 import { applyWebSearchTool, WEB_SEARCH_MAX_RESULTS } from './search.ts'
 import { applyWebFetchTool } from './fetch.ts'

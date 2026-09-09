@@ -5,7 +5,7 @@
  * @module @open-harness/oh-client-runtime/client/sessions/remotes
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-api-remotes/client'
 
 /** The generated Remote namespaces a Session and its manager call. */

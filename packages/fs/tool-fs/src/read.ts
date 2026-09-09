@@ -4,7 +4,7 @@
  * @module @open-harness/oh-tool-fs/src/read
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 import type { GenericCallView, ReadResultView, ToolResult } from '@open-harness/oh-tools'
 import type {} from '@open-harness/oh-fs'

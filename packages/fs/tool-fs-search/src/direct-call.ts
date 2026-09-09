@@ -1,6 +1,6 @@
 /** Shared top-level-call post-policy selection for search result spill. @module oh-tool-fs-search/direct-call */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { JsonValue, PostToolDecision, ToolDefinition, ToolExecution, ToolExecutionResult } from '@open-harness/oh-tools'
 
 /**

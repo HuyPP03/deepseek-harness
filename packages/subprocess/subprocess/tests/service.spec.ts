@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { PassThrough } from 'node:stream'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { scrubbedParentEnv, SubprocessRuntime } from '@open-harness/oh-subprocess'
 import type {
   SubprocessHandle,

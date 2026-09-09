@@ -3,7 +3,7 @@
  * @module @open-harness/oh-agent-loop/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { isAgentLoopRequest, type GenerateOptions } from '@open-harness/oh-llm'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import { foldRequestHeader } from '@open-harness/oh-session'

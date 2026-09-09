@@ -39,7 +39,7 @@
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-subprocess": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
     "node-pty": "1.2.0-beta.15"
@@ -49,6 +49,6 @@
     "@open-harness/oh-loader-smoke": "workspace:^",
     "@open-harness/oh-subprocess": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

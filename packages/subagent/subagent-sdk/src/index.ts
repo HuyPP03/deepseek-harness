@@ -10,8 +10,8 @@
  * @module @open-harness/oh-subagent-sdk
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { SubagentCapabilities, SubagentProvider, SubagentStartRequest } from '@open-harness/oh-subagent'
 import { assertPositiveFinite, NO_START_CAPABILITIES, resolveChildCwd, validateConfiguredCwd } from '@open-harness/oh-subagent'
 import {

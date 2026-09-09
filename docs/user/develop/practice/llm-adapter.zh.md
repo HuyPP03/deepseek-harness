@@ -11,8 +11,8 @@ LLM 适配器是一个继承 `LlmAdapter` 并实现 `stream()` 方法的类，�
 ## 最小实现
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
-import Schema from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import Schema from '@open-harness/schemastery'
 import { LlmAdapter, type GenerateOptions, type StreamChunk } from '@open-harness/oh-llm'
 
 class MyAdapter extends LlmAdapter {

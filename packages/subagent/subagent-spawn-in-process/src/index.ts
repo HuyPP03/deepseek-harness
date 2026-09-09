@@ -6,8 +6,8 @@
  * @module @open-harness/oh-subagent-spawn-in-process
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type {
   ContinuableCreateSpec,
   ResolvedSubagentStartRequest,

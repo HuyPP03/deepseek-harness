@@ -32,10 +32,10 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-session-title": "workspace:^",
     "@open-harness/oh-session-title-llm": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
@@ -43,6 +43,6 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-session-title": "workspace:^",
     "@open-harness/oh-session-title-llm": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

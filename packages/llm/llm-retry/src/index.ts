@@ -6,8 +6,8 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import type { Context, Events } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context, Events } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent, RequestErrorAction } from '@open-harness/oh-agent'
 import type { LlmFailure, ResolvedRetryPolicy } from '@open-harness/oh-llm'
 import type { SessionEvent } from '@open-harness/oh-session'

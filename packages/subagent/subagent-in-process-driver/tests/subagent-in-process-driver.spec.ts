@@ -1,6 +1,6 @@
 import { CallId, createUserMessage } from '@open-harness/oh-llm'
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { type Agent, type AgentOptions } from '@open-harness/oh-agent'
 import { SessionId } from '@open-harness/oh-session'
 import AgentLoop from '@open-harness/oh-agent-loop'

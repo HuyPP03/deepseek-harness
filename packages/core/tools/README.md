@@ -66,7 +66,7 @@ First-party plugin authors can use the `defineTool()` helper (exported from this
 
 ```ts
 import { readFile } from 'node:fs/promises'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 
 declare const ctx: Context

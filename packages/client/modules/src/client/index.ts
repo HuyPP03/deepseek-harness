@@ -9,7 +9,7 @@
  * a no-op against the already-registered entry.
  * @module @open-harness/oh-client-modules/client
  */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { OhWindow } from './manifest.ts'
 
 export { ClientModuleSystem } from './system.ts'

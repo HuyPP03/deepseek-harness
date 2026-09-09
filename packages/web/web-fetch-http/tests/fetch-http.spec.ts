@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
 import { AddressInfo } from 'node:net'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import WebRuntime from '@open-harness/oh-web'
 import { HttpFetchProvider, LOCAL_FETCH_PROVIDER_ID } from '@open-harness/oh-web-fetch-http'
 import type { HttpFetchLimits } from '@open-harness/oh-web-fetch-http'

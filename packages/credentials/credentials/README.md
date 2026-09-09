@@ -13,7 +13,7 @@ Credential Service Definition (`ctx.credentials`). One doctrine, three consequen
 ## Surface
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { credentialRef } from '@open-harness/oh-credentials'
 
 declare const ctx: Context

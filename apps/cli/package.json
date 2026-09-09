@@ -20,10 +20,10 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "@deepseek-ai/cordis-plugin-hmr": "workspace:^",
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
-    "@deepseek-ai/cordis-plugin-timer": "workspace:^",
+    "@open-harness/cordis-plugin-hmr": "workspace:^",
+    "@open-harness/cordis-plugin-include": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-timer": "workspace:^",
     "@open-harness/oh-agent-tool-presentation": "workspace:^",
     "@open-harness/oh-app-boot": "workspace:^",
     "@open-harness/oh-base": "workspace:^",
@@ -78,7 +78,7 @@
     "@open-harness/oh-workflow-worker-thread": "workspace:^",
     "@open-harness/oh-agent-instructions": "workspace:^",
     "commander": "^15.0.0",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "js-yaml": "^4.2.0",
     "node-addon-require-builtin": "^0.1.4"
   },

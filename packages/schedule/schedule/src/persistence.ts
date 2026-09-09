@@ -1,6 +1,6 @@
 /** Schedule-owned use of the shared session durability barrier. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Session } from '@open-harness/oh-session'
 
 /** Failure to prove that the current live prefix reached a persistence listener. */

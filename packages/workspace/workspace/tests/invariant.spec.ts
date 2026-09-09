@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import type { DomainChanged } from '@open-harness/oh-storage-domain'
 import * as WorkspaceInvariant from '../src/invariant.ts'

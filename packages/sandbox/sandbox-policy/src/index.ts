@@ -19,8 +19,8 @@
  */
 
 import { resolve as resolvePath } from 'node:path'
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type {} from '@open-harness/oh-agent'
 import { canonicalPath, type SandboxExecutionPolicy, type SandboxMode } from '@open-harness/oh-sandbox'
 import type { Session } from '@open-harness/oh-session'
@@ -54,7 +54,7 @@ function renderPolicyContext(policy: SandboxExecutionPolicy): string {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sandboxPolicy: SandboxPolicyService
   }

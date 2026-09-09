@@ -9,7 +9,7 @@
  * (host catalog + available contributions) as an informational popup. The
  * registrations fold up on fiber disposal.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import type { SessionId, WorkspaceId } from '@open-harness/oh-api-remotes/client'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'

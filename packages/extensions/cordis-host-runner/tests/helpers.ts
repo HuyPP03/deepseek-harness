@@ -1,5 +1,5 @@
-import { Context } from '@deepseek-ai/cordis'
-import Timer from '@deepseek-ai/cordis-plugin-timer'
+import { Context } from '@open-harness/cordis'
+import Timer from '@open-harness/cordis-plugin-timer'
 import { CallId } from '@open-harness/oh-llm'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRegistry from '@open-harness/oh-tools'

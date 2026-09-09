@@ -2,7 +2,7 @@ import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { Session, SessionId } from '@open-harness/oh-session'
 import AgentRegistry, { Inbox } from '@open-harness/oh-agent'
 import type { Agent } from '@open-harness/oh-agent'

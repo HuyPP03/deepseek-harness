@@ -8,7 +8,7 @@
  * @module @open-harness/oh-cordis-host-runner/lifecycle
  */
 
-import type { Context, Fiber, Plugin } from '@deepseek-ai/cordis'
+import type { Context, Fiber, Plugin } from '@open-harness/cordis'
 import { guardedPlugin } from './guard.ts'
 
 /**

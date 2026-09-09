@@ -8,7 +8,7 @@
 import { randomUUID } from 'node:crypto'
 import { stat } from 'node:fs/promises'
 import { basename } from 'node:path'
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { SessionHeader, SessionId } from '@open-harness/oh-session'
 import type {} from '@open-harness/oh-session-persistence'
 import type { DomainGlobal, KvTable } from '@open-harness/oh-storage-domain'
@@ -64,7 +64,7 @@ export class WorkspaceOrderInvalidError extends Error {
 }
 
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     workspaceRegistry: WorkspaceRegistry
   }

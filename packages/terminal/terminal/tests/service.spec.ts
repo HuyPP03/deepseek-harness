@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { Session, SessionId } from '@open-harness/oh-session'
 import AgentRegistry, { Inbox } from '@open-harness/oh-agent'
 import type { Agent } from '@open-harness/oh-agent'

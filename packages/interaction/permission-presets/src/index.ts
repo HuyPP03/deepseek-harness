@@ -15,8 +15,8 @@
  * @module oh-permission-presets
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { z as zod } from 'zod'
 import { resolveSessionPreset } from '@open-harness/oh-agent-presets'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
@@ -39,7 +39,7 @@ import type { PermissionSelect, PresetOption } from './types.ts'
 // consuming the declarations still receive the SessionProjectionMap merge.
 export type * from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     permissionPresets: PermissionPresetService
   }

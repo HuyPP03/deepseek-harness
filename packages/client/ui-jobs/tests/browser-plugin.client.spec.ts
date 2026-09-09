@@ -5,7 +5,7 @@
  * removal — HMR safety), the inert node entry, and the invariant companion's
  * ownership reservation.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'

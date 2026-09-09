@@ -14,10 +14,10 @@
 
 - insert:
     - id: timer
-      name: '@deepseek-ai/cordis-plugin-timer'
+      name: '@open-harness/cordis-plugin-timer'
 
     - id: hmr
-      name: '@deepseek-ai/cordis-plugin-hmr'
+      name: '@open-harness/cordis-plugin-hmr'
       config:
         root: ['.']
 

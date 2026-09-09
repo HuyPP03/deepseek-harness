@@ -5,8 +5,8 @@
 
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
-import { Context, Service } from '@deepseek-ai/cordis'
-import s from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import s from '@open-harness/schemastery'
 import { deriveEventMessage, isAppendSurfaceEvent } from '@open-harness/oh-session/surface'
 import type { SessionHeader, SessionId } from '@open-harness/oh-session/types'
 import type { SessionInspection } from '@open-harness/oh-session-persistence'
@@ -51,7 +51,7 @@ export interface Config {
   readonly maxNoteBytes: number
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     messageFeedback: MessageFeedbackService
   }

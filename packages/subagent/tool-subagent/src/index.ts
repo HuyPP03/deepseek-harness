@@ -8,8 +8,8 @@
  * @module @open-harness/oh-tool-subagent
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { defineTool } from '@open-harness/oh-tools'
 import type { AgentOptions } from '@open-harness/oh-agent'
 import type { ContentBlock } from '@open-harness/oh-llm'

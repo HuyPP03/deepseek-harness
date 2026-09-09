@@ -9,7 +9,7 @@
 
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { delimiter as pathDelimiter } from 'node:path'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-compaction'
 import { decodeStorageRecord } from '@open-harness/oh-session'
 import type { SessionEvent } from '@open-harness/oh-session'

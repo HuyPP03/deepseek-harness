@@ -1,4 +1,4 @@
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { SessionEvent } from '@open-harness/oh-session'
 import type { Agent } from '@open-harness/oh-agent'
 import AgentLoop from '@open-harness/oh-agent-loop'

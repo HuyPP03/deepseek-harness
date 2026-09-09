@@ -7,7 +7,7 @@ import { createUserMessage } from '@open-harness/oh-llm'
 import type { ContextSnapshotSection } from '@open-harness/oh-llm'
 import type { Session, UserMessage } from '@open-harness/oh-session'
 import { isReplacementSurfaceEvent } from '@open-harness/oh-session'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 
 const SOURCE = '@open-harness/oh-system-prompt'
 const CLEARED = 'Current runtime context: none. Earlier runtime-context snapshots no longer apply.'

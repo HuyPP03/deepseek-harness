@@ -6,7 +6,7 @@
  */
 
 import { BlockAssembler } from '@open-harness/oh-llm'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { FinishReason, GenerateOptions, Message, TokenUsage } from '@open-harness/oh-llm'
 
 export interface AssembledResult {

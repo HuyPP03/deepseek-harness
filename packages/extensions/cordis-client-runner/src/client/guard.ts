@@ -13,7 +13,7 @@
  * as trusted as the host process that accepted its definition.
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { DynamicCordisPackage } from '@open-harness/oh-api-remotes/client'
 import type { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import type { ThemeRuntime } from '@open-harness/oh-client-ui-theme/client'

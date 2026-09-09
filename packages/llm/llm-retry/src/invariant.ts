@@ -1,6 +1,6 @@
 /** Package-owned durable retry-event invariants. @module @open-harness/oh-llm-retry/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import type { LlmFailure } from '@open-harness/oh-llm'
 import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'

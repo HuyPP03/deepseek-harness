@@ -8,9 +8,9 @@
  * @module @open-harness/oh-agent-spine-demo
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import Timer from '@deepseek-ai/cordis-plugin-timer'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import Timer from '@open-harness/cordis-plugin-timer'
+import z from '@open-harness/schemastery'
 import LlmRuntime from '@open-harness/oh-llm'
 import SessionStore from '@open-harness/oh-session'
 import SessionTitleService, { type Config as SessionTitleConfig } from '@open-harness/oh-session-title'

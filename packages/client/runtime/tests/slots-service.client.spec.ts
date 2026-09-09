@@ -5,7 +5,7 @@
  * contract (double install / not installed / non-root key), store instance
  * resolution and lifecycle on the ledger axis, and the entry-unload cascade.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import type { FC } from 'react'
 import type { SlotRendererHost } from '@open-harness/oh-client-ui-slots'

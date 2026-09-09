@@ -5,8 +5,8 @@
  * @module @open-harness/oh-session-reference
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent } from '@open-harness/oh-agent'
 import { createUserMessage } from '@open-harness/oh-llm'
 import type { ContentBlock, UserMessage } from '@open-harness/oh-llm'
@@ -50,7 +50,7 @@ user explicitly repeats them.
 `
 const PROMPT_SUFFIX = '\n</referenced-sessions>'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sessionReferenceResolver: SessionReferenceResolver
   }

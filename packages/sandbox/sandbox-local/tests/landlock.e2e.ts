@@ -4,9 +4,9 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { SandboxPolicy } from '@open-harness/oh-sandbox'
-import { launcherPath } from '@deepseek-ai/node-addon-landlock-run'
+import { launcherPath } from '@open-harness/node-addon-landlock-run'
 import { LocalSandboxProvider } from '@open-harness/oh-sandbox-local'
 
 /**

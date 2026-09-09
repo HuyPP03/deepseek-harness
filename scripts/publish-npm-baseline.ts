@@ -258,10 +258,8 @@ class WorkspacePackageSet {
       const name = expectString(manifest, 'name', manifestPath)
       const version = expectString(manifest, 'version', manifestPath)
       const isVendored = manifestPath.startsWith('vendor/')
-      // Vendored packages are rescoped too (vendor/README.md), so publication
-      // never carries an upstream name that would squat it on the registry.
-      if (!name.startsWith('@deepseek-ai/') && !name.startsWith('@open-harness/') && name !== 'oh') {
-        throw new Error(`${manifestPath} must name an @open-harness, @deepseek-ai package or the oh CLI`)
+      if (!name.startsWith('@open-harness/') && name !== 'oh') {
+        throw new Error(`${manifestPath} must name an @open-harness package or the oh CLI`)
       }
       if (name === 'open-harness') {
         throw new Error(`${manifestPath} unexpectedly selected the workspace root`)

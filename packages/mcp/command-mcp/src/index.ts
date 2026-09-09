@@ -8,7 +8,7 @@
  * @module @open-harness/oh-command-mcp
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'
 import type { McpServerView } from '@open-harness/oh-mcp-registry'
 

@@ -59,7 +59,7 @@
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-subagent": "workspace:^",
     "@open-harness/oh-token-meter": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-client-locale": "workspace:^",
@@ -73,7 +73,7 @@
     "@open-harness/oh-subagent": "workspace:^",
     "@open-harness/oh-token-meter": "workspace:^",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "files": [
     "lib/index.js",

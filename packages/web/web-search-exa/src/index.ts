@@ -8,9 +8,9 @@
  * @module @open-harness/oh-web-search-exa
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { launchEnvironmentOf } from '@open-harness/oh-launch-environment'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import type {} from '@open-harness/oh-web'
 import {
   ExaSearchProvider,

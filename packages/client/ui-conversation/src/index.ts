@@ -1,6 +1,6 @@
 /** Host registration for browser conversation preferences. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { settingsNamespace } from '@open-harness/oh-settings'
 import { CONVERSATION_SETTINGS_NAMESPACE, ConversationSettingsSchema } from './submission-settings.ts'
 

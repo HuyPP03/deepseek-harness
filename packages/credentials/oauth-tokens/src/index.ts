@@ -25,8 +25,8 @@
 import { mkdir, readFile, stat } from 'node:fs/promises'
 import { dirname, join, resolve } from 'node:path'
 import { watch as chokidarWatch } from 'chokidar'
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { withFileLock, writeFileAtomic } from '@open-harness/oh-atomic-write'
 import { canonicalizeWatchPath, resolveOhHome } from '@open-harness/oh-home-paths'
 import type { OAuthTokenBundle } from './types.ts'
@@ -515,7 +515,7 @@ function sameBundle(left: OAuthTokenBundle | undefined, right: OAuthTokenBundle 
   return JSON.stringify(left) === JSON.stringify(right)
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** The file-backed OAuth token bundle store. */
     oauthTokens: OAuthTokenStore

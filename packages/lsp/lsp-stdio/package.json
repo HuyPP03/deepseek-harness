@@ -39,10 +39,10 @@
     "@open-harness/oh-lsp": "workspace:^",
     "@open-harness/oh-subprocess": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-brand": "workspace:^",
@@ -54,7 +54,7 @@
     "@open-harness/oh-subprocess": "workspace:^",
     "@open-harness/oh-subprocess-local": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "typescript": "^6.0.3",
     "typescript-language-server": "^5.0.0"
   }

@@ -17,7 +17,7 @@ Services normally extend `TypertRemoteService` so the constructor explicitly bin
 ```ts
 import type { Agent } from '@open-harness/oh-agent'
 import { TypertRemoteService, Remote, RemoteScope } from '@open-harness/oh-typert-protocol'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 
 export interface CreateGoalRequest {
   objective: string
@@ -60,7 +60,7 @@ The Client uses concrete functions on ordinary objects, not a JavaScript Proxy. 
 ```ts ignore-check
 import type { SessionId } from '@open-harness/oh-session/types'
 import type { AgentContext } from '@open-harness/oh-client-runtime/client'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-api-remotes/client'
 
 export const inject = ['remote', 'remote.goals']

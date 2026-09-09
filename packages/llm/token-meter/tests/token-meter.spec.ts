@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createUserMessage, CallId, createMessage } from '@open-harness/oh-llm'
 import type { ContentBlock, Message, TokenUsage } from '@open-harness/oh-llm'
 import SessionStore, { Session, SessionId, canonicalHeader } from '@open-harness/oh-session'

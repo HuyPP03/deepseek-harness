@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { AttachmentId, AttachmentStore } from '@open-harness/oh-attachment'
 import type {
   ImageAttachmentLimits,

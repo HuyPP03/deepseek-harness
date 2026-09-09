@@ -43,7 +43,7 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-typert-protocol": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
@@ -53,6 +53,6 @@
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-typert-protocol": "workspace:^",
     "@open-harness/oh-typert-registry": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

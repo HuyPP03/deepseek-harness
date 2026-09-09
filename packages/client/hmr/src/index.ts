@@ -10,8 +10,8 @@
  */
 import { statSync } from 'node:fs'
 import type { ServerResponse } from 'node:http'
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 // Empty type imports carry the clientModuleHost/webServer Context merges.
 import type {} from '@open-harness/oh-client-modules'
 import type {} from '@open-harness/oh-host-webserver'

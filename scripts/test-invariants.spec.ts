@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context, FiberState, Service, ValidationError } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
-import z from '@deepseek-ai/schemastery'
+import { Context, FiberState, Service, ValidationError } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
+import z from '@open-harness/schemastery'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 import { packageInvariantOwners } from './package-invariants.ts'
@@ -13,7 +13,7 @@ import {
   usesManualInvariantTree,
 } from './test-invariants.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     testInvariantProbe: TestInvariantProbe
   }

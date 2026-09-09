@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import { agentEvents, type Agent } from '@open-harness/oh-agent'
 import LlmRuntime, { CallId, type GenerateOptions, LlmAdapter, type StreamChunk } from '@open-harness/oh-llm'
 import SessionStore, { SessionId } from '@open-harness/oh-session'

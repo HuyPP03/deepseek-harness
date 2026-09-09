@@ -8,7 +8,7 @@
  * @module @open-harness/oh-subprocess
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { OH_ENV_PREFIX } from './types.ts'
 import type { SubprocessHandle, SubprocessSpawnSpec } from './types.ts'
 import type { SubprocessTerminalHandle, SubprocessTerminalSpawnSpec } from './types.ts'
@@ -65,7 +65,7 @@ export function scrubbedParentEnv(): Record<string, string> {
   return env
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     subprocess: SubprocessRuntime
   }

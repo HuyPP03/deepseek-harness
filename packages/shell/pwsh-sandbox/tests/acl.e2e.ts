@@ -12,7 +12,7 @@ import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { SandboxExecutionPolicy } from '@open-harness/oh-sandbox'
 import { resolvePwshPath } from '@open-harness/oh-pwsh-local'
 import { LocalSandboxProvider } from '@open-harness/oh-sandbox-local'

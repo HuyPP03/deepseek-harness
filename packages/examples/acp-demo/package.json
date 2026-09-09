@@ -40,8 +40,8 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-include": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-acp": "workspace:^",
     "@open-harness/oh-agent-spine-demo": "workspace:^",
     "@open-harness/oh-app-boot": "workspace:^",
@@ -52,12 +52,12 @@
     "@open-harness/oh-session-query-sqlite": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
     "@open-harness/oh-agent-instructions": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/cordis": "workspace:^",
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-include": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-acp": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-agent-spine-demo": "workspace:^",
@@ -70,7 +70,7 @@
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
     "@open-harness/oh-agent-instructions": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/cordis": "workspace:^",
+    "@open-harness/schemastery": "workspace:^"
   }
 }

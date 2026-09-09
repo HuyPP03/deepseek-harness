@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import { CallId } from '@open-harness/oh-llm'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRuntime from '@open-harness/oh-tools'

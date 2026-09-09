@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { AttachmentError, AttachmentId } from '@open-harness/oh-attachment'
 import type { ImageAttachmentRef, SaveImageAttachment } from '@open-harness/oh-attachment'
 import type { Agent } from '@open-harness/oh-agent'

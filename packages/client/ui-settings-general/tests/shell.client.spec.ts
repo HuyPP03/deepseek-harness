@@ -1,5 +1,5 @@
 /** Settings shell registration: slot declaration injection, the ledger projections, and HMR recovery. */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import { apply, inject } from '../src/client/index.ts'

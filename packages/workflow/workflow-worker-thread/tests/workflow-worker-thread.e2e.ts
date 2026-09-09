@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import LlmRuntime from '@open-harness/oh-llm'
 import SessionStore, { SessionId } from '@open-harness/oh-session'
 import SystemPrompt from '@open-harness/oh-system-prompt'

@@ -2,7 +2,7 @@
 # the real ACP composition. The model is told not to call it; the scenario pins
 # the assembled request schema without starting Codex.
 - id: base
-  name: '@deepseek-ai/cordis-plugin-include'
+  name: '@open-harness/cordis-plugin-include'
   config:
     path: ./cordis.yml
     patches:

@@ -5,7 +5,7 @@
  * @module @open-harness/oh-sandbox
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { HarnessError } from '@open-harness/oh-llm'
 import type { SessionId } from '@open-harness/oh-session'
 
@@ -151,7 +151,7 @@ export class SandboxUnavailableError extends HarnessError {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sandbox: SandboxProvider
   }

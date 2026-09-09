@@ -3,7 +3,7 @@
  * @module @open-harness/oh-commands
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import { NamedEntries, ScopedLayers } from '@open-harness/oh-scope'
 import type { ScopeKey, ScopeLayer } from '@open-harness/oh-scope'
@@ -93,7 +93,7 @@ class CommandLayer implements ScopeLayer {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     commands: CommandRuntime
   }

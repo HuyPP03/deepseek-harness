@@ -29,10 +29,10 @@ import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import type { Page } from 'playwright'
 import { expect } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
-import Include, { type PatchOptions } from '@deepseek-ai/cordis-plugin-include'
-import Group from '@deepseek-ai/cordis-plugin-group'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
+import Include, { type PatchOptions } from '@open-harness/cordis-plugin-include'
+import Group from '@open-harness/cordis-plugin-group'
 import { scrubRequestHeaders, stabilizeFixtureMessageIds } from '@open-harness/oh-acp-snapshot'
 import {
   assertEntriesLoaded,
@@ -523,7 +523,7 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
     // `cordis:group` beside it, exactly as `boot()` registers it: a group row is
     // how a preset gives one `isolate` realm to a provider and its consumers,
     // and a preset resolving package names from its own directory cannot reach
-    // `@deepseek-ai/cordis-plugin-group` by name.
+    // `@open-harness/cordis-plugin-group` by name.
     ctx.loader.builtins.group = Group
     await ctx.loader.create({
       name: 'cordis:include',

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { SessionId } from '@open-harness/oh-session'
 import { WorkflowRunId } from '@open-harness/oh-workflow'
 import type {

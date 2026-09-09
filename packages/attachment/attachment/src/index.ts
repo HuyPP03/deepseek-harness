@@ -1,6 +1,6 @@
 /** Durable attachment storage seam (`ctx.attachments`). @module @open-harness/oh-attachment */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { AttachmentError } from './error.ts'
 import type {
   ImageAttachmentLimits,
@@ -21,7 +21,7 @@ export type {
   StoredImageAttachment,
 } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     attachments: AttachmentStore
   }

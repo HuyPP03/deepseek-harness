@@ -1,4 +1,4 @@
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import '@open-harness/oh-user-questions'
 
 /** Snapshot-only provider whose invocation means the child guard failed. */

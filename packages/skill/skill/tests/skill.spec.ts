@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { bindScopeParent, createScope, scopeOf } from '@open-harness/oh-scope'
 import SkillRegistry, {
   isModelInvocable,

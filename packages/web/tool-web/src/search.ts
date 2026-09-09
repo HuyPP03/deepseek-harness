@@ -5,7 +5,7 @@
  * never provider selection or network access.
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 import type { GenericCallView, JsonValue, ToolResult, WebSearchResultView, WebSource } from '@open-harness/oh-tools'
 import type { WebSearchResult, WebSearchSource } from '@open-harness/oh-web'

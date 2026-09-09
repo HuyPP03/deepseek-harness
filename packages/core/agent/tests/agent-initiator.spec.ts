@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { runInNewContext } from 'node:vm'
 import AgentRegistry from '@open-harness/oh-agent'
 import type { Agent } from '@open-harness/oh-agent'

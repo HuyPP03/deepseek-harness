@@ -4,8 +4,8 @@
  * @module @open-harness/oh-compaction-tool-result-pruner
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { freezeMessage } from '@open-harness/oh-llm'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import type { Session, SessionEvent, ToolResultMessage } from '@open-harness/oh-session'
@@ -29,7 +29,7 @@ export type {
   ToolResultPruneConfig,
 } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     toolResultPruner: ToolResultPruner
   }

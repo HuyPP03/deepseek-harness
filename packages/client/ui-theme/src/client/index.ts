@@ -7,7 +7,7 @@
  * document. The plugin also registers the Appearance preference row into the
  * settings General section — the theme feature owns its own settings surface.
  */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { BoundActions } from '@open-harness/oh-client-ui-slots'
 import type { ClientContext, SettingsScope } from '@open-harness/oh-client-runtime/client'
 // Type-only: the ctx.settingsScope Context merge. Cross-plugin collaboration
@@ -100,7 +100,7 @@ export interface ThemeTokenInspection {
   cssVariable?: string
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     theme: ThemeRuntime
   }

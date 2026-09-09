@@ -42,13 +42,13 @@
   },
   "peerDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-tool-cordis": "workspace:^",
     "@open-harness/oh-typert-registry": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "zod": "^4.4.3"
   }
 }

@@ -1,6 +1,6 @@
 // Sessions remain resident after creation so they continue consuming mux frames off-screen.
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { AttachmentIdType, ImageAttachmentRef } from '@open-harness/oh-attachment'
 import type { SessionEvent } from '@open-harness/oh-session/types'
 import type {

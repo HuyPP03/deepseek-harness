@@ -1,4 +1,4 @@
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {
   ConversationLocation, ConversationNodeDefinition, ModelRetryNode,
 } from '@open-harness/oh-client-runtime/client'

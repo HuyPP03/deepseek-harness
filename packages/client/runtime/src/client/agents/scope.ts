@@ -15,8 +15,8 @@
  * — a cold session's host Agent is already disposed while its client actx
  * stays alive for history viewing.
  */
-import { Context as CordisContext } from '@deepseek-ai/cordis'
-import type { Context, Fiber } from '@deepseek-ai/cordis'
+import { Context as CordisContext } from '@open-harness/cordis'
+import type { Context, Fiber } from '@open-harness/cordis'
 import type { SessionId } from '@open-harness/oh-api-remotes/client'
 import type { TypertClientRemote, TypertRemoteScopeApi } from '@open-harness/oh-typert-protocol'
 

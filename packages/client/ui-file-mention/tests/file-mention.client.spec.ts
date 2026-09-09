@@ -9,7 +9,7 @@
  * trailing slash for directories, the plain-text-reference decision), and
  * the settled-cache degradation of a pick after a cache clear.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import type { SessionId } from '@open-harness/oh-client-runtime/client'
 import { InputTriggerService } from '@open-harness/oh-client-ui-input-trigger/client'

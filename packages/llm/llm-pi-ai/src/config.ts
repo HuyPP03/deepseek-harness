@@ -15,7 +15,7 @@
  */
 
 import type { CacheRetention, ModelThinkingLevel, Provider, ThinkingBudgets, Transport } from '@earendil-works/pi-ai'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import { credentialRef } from '@open-harness/oh-credentials'
 import type { CredentialRef } from '@open-harness/oh-credentials'
 import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'

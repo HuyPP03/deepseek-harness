@@ -8,7 +8,7 @@
 // and a file sub-row click opens the file inspector. Running parents
 // (runningCalls) nest their so-far dispatches the same way.
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, render } from '@testing-library/react'

@@ -31,7 +31,7 @@ import type { EpochHeader, RequestContext, Session, SessionId, TurnEndReason, Us
 import { canonicalHeader, headerEquals } from '@open-harness/oh-session'
 import { joinContextSections, renderContextSections, renderPrompt } from '@open-harness/oh-system-prompt'
 import type { PromptAssembly } from '@open-harness/oh-system-prompt'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { RuntimeContextProjection } from './runtime-context.ts'
 import { executeToolCalls } from './tool-calls.ts'
 

@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, it } from 'vitest'
-import { Context, Service, symbols } from '@deepseek-ai/cordis'
+import { Context, Service, symbols } from '@open-harness/cordis'
 import { createUserMessage, freezeMessage } from '@open-harness/oh-llm'
 import { Session, SessionId, type UserMessage } from '@open-harness/oh-session'
 import AgentRegistry, {

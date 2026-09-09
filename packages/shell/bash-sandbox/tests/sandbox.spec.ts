@@ -9,7 +9,7 @@ import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync 
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { ShellRunResult, CollectedOutput } from '@open-harness/oh-shell'
 import { SANDBOX_UNAVAILABLE, SandboxProvider, SandboxUnavailableError } from '@open-harness/oh-sandbox'
 import type { ConfinedArgv, SandboxExecutionPolicy, SandboxMode, SandboxPolicy } from '@open-harness/oh-sandbox'

@@ -50,7 +50,7 @@
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
     "@open-harness/oh-user-questions": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@open-harness/oh-commands": {
@@ -72,6 +72,6 @@
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
     "@open-harness/oh-user-questions": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

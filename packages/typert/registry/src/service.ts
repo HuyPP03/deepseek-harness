@@ -5,7 +5,7 @@
  * @module @open-harness/oh-typert-registry
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { z } from 'zod'
 import type {
   InvocationDescriptor,

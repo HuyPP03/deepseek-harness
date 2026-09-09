@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore from '@open-harness/oh-session'
 import AgentRegistry from '@open-harness/oh-agent'
 import type { Agent, AgentHandle, CreateAgentOptions } from '@open-harness/oh-agent'

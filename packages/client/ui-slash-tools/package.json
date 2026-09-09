@@ -54,10 +54,10 @@
     "@open-harness/oh-client-ui-input-trigger": "workspace:^",
     "@open-harness/oh-client-ui-slots": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-client-connection": "workspace:^",
     "@open-harness/oh-client-locale": "workspace:^",

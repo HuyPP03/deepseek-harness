@@ -13,8 +13,8 @@
  */
 
 import { createRequire } from 'node:module'
-import z from '@deepseek-ai/schemastery'
-import type { Context } from '@deepseek-ai/cordis'
+import z from '@open-harness/schemastery'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-command-feedback'
 import {
   SessionTelemetryBackend,

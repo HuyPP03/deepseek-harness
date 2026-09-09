@@ -8,7 +8,7 @@
 // alone: the read intent is result-side only, so there is no running-state
 // read card to draw.
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { resolveWorkspacePath } from '@open-harness/oh-client-runtime/client'
 import { IconBrowseOutline16 } from '@open-harness/oh-client-ui-primitives'
 import type { PropsLocale } from '@open-harness/oh-client-ui-slots'

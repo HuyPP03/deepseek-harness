@@ -5,7 +5,7 @@
  * @module @open-harness/oh-tool-fs/src/write
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 import type { DiffCallView, DiffResultView, ToolResult } from '@open-harness/oh-tools'
 import type { FsWriteOutcome } from '@open-harness/oh-fs'

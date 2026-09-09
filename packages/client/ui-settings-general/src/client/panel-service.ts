@@ -10,8 +10,8 @@
  * link into one of its sections.
  */
 
-import { Service } from '@deepseek-ai/cordis'
-import type { Context } from '@deepseek-ai/cordis'
+import { Service } from '@open-harness/cordis'
+import type { Context } from '@open-harness/cordis'
 import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client-runtime/client'
 
 /** The settings panel's viewing state. */
@@ -63,7 +63,7 @@ export class SettingsPanelController extends Service {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     settingsPanel: SettingsPanelController
   }

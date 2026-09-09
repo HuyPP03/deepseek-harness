@@ -7,8 +7,8 @@
  * @module @open-harness/oh-subagent-fork-in-process
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { SessionEvent } from '@open-harness/oh-session'
 import type { Agent } from '@open-harness/oh-agent'
 import type {

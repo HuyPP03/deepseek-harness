@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import * as yaml from 'js-yaml'
-import { entryListSchema } from '@deepseek-ai/cordis-plugin-include'
-import { evaluate } from '@deepseek-ai/cordis-plugin-loader'
+import { entryListSchema } from '@open-harness/cordis-plugin-include'
+import { evaluate } from '@open-harness/cordis-plugin-loader'
 
 describe('oh-base bundle', () => {
   it('declares a parseable patch list through the oh.bundle.patch manifest field', () => {

@@ -4,7 +4,7 @@
  * @module @open-harness/oh-tool-session-query/service-boundary
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { HarnessError } from '@open-harness/oh-llm'
 import {
   SessionQueryError,

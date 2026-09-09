@@ -1,4 +1,4 @@
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-agent'
 import { CompactionId, compactCheckpointSource } from '@open-harness/oh-compaction'
 import { createUserMessage } from '@open-harness/oh-llm'

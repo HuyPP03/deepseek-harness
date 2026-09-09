@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { CallId } from '@open-harness/oh-llm'
 import AgentRegistry, { type Agent } from '@open-harness/oh-agent'
 import SystemPrompt from '@open-harness/oh-system-prompt'

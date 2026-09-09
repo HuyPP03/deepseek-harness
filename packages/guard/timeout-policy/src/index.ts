@@ -11,7 +11,7 @@
  * @module @open-harness/oh-tool-call-timeout-policy
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { deadline, timeoutOf } from '@open-harness/oh-timeout'
 import type { ToolExecutionResult } from '@open-harness/oh-tools'
 

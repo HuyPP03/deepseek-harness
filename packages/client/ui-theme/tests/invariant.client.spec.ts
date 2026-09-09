@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { apply as nodeApply } from '@open-harness/oh-client-ui-theme'
 import { apply as clientApply, inject, ThemeRuntime } from '@open-harness/oh-client-ui-theme/client'
 import * as ThemeInvariant from '@open-harness/oh-client-ui-theme/invariant'

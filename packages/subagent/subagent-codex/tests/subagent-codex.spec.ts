@@ -1,6 +1,6 @@
 import { PassThrough } from 'node:stream'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import { describe, expect, it, vi } from 'vitest'
 import type { Agent } from '@open-harness/oh-agent'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'

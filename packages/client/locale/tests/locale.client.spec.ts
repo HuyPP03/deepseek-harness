@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { stubSettingsScope, type StubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import type { LocaleSettings, LocaleSnapshot } from '@open-harness/oh-client-locale/client'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'

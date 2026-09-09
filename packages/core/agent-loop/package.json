@@ -39,11 +39,11 @@
     "@open-harness/oh-session-persistence": "workspace:^",
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-settings": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-agent": "workspace:^",
@@ -55,7 +55,7 @@
     "@open-harness/oh-session-persistence-jsonl": "workspace:^",
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-settings": "workspace:^"
   }
 }

@@ -1,6 +1,6 @@
 import { createUserMessage, createMessage } from '@open-harness/oh-llm'
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore, { SESSION_FORMAT_VERSION, SessionId } from '@open-harness/oh-session'
 import type { Session, SessionEvent, SessionHeader, SessionId as SessionIdType } from '@open-harness/oh-session'
 import SessionPersistence from '@open-harness/oh-session-persistence'

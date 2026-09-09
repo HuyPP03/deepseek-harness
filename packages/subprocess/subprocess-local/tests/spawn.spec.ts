@@ -705,7 +705,7 @@ describe('tree-survivor escalation (terminate and bounded waits reach helpers th
   })
 
   it('service teardown awaits tree survivors, not just handle settlement', async () => {
-    const { Context } = await import('@deepseek-ai/cordis')
+    const { Context } = await import('@open-harness/cordis')
     const { default: LocalSubprocessRuntime } = await import('@open-harness/oh-subprocess-local')
     const ctx = new Context()
     const fiber = await ctx.plugin(LocalSubprocessRuntime)

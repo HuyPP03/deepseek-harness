@@ -8,8 +8,8 @@
  * @module @open-harness/oh-tool-bash
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { isAbsolute, resolve as resolvePath } from 'node:path'
 import { defineTool, TOOL_ABORTED } from '@open-harness/oh-tools'
 import type { GenericCallView, TerminalCallView, ToolExecution, ToolResult, ToolResultView } from '@open-harness/oh-tools'

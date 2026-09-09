@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SystemPrompt, { PromptAssembly, TOOL_ORDER_REST } from '@open-harness/oh-system-prompt'
 import type { ToolSchema } from '@open-harness/oh-llm'
 

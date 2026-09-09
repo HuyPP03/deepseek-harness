@@ -8,9 +8,9 @@
  * @module @open-harness/oh-spill-local
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { resolve } from 'node:path'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import { SpillLocator, SpillStore } from '@open-harness/oh-spill'
 import type { SaveTextSpill, SpillRef } from '@open-harness/oh-spill'
 import { privateRoot, saveTextFile } from './store.ts'

@@ -5,7 +5,7 @@
  * @module @open-harness/oh-agent-loop-testkit
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import AgentRegistry from '@open-harness/oh-agent'
 import LlmRuntime from '@open-harness/oh-llm'
 import SessionStore from '@open-harness/oh-session'

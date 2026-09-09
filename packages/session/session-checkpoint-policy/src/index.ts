@@ -4,7 +4,7 @@
  * @module @open-harness/oh-session-checkpoint-policy
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Session } from '@open-harness/oh-session'
 import type { StreamChunk } from '@open-harness/oh-llm'
 import { TOOL_ABORTED_BEFORE_DISPATCH, type ToolExecutionResult } from '@open-harness/oh-tools'

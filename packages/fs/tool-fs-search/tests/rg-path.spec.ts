@@ -7,7 +7,7 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { CallId } from '@open-harness/oh-llm'
 import type { ToolExecution } from '@open-harness/oh-tools'
 import { resolveRgPath, runRipgrep } from '@open-harness/oh-tool-fs-search'

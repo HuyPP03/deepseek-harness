@@ -4,7 +4,7 @@
  * @module @open-harness/oh-command-agent-actions
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { createUserMessage } from '@open-harness/oh-llm'
 import type { MessageSource } from '@open-harness/oh-llm'
 import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'

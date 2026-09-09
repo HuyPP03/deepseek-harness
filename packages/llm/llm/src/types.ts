@@ -9,7 +9,7 @@ import type { ImageAttachmentRef } from '@open-harness/oh-attachment'
 import type { CallId, ProviderRequestId, ReasoningEffortId } from './brand.ts'
 import type { Message } from './message.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     /**
      * The provider topology changed: an adapter registered or unregistered

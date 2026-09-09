@@ -1,7 +1,7 @@
 import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createAssistantMessage, createUserMessage } from '@open-harness/oh-llm'
 import type { MessageId } from '@open-harness/oh-llm/brand'
 import SessionStore, {

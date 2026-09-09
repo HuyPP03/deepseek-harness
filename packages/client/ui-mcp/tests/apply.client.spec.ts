@@ -5,7 +5,7 @@
  * waits on the commandUi service, and both fold up on fiber disposal.
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'

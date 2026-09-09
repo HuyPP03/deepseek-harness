@@ -18,8 +18,8 @@
  * @module @open-harness/oh-tmux-context
  */
 
-import type { Context, LoggerService } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context, LoggerService } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
 import type { ShellExecutor, ShellRunResult } from '@open-harness/oh-shell'
 import { createUserMessage } from '@open-harness/oh-llm'

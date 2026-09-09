@@ -1,7 +1,7 @@
 /** Package-owned goal-round prompt invariants. @module @open-harness/oh-goal-round-driver/invariant */
 
 import { isDeepStrictEqual } from 'node:util'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { foldGoal, type FoldedGoal, type GoalMessageSource, type GoalView } from '@open-harness/oh-goal'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import type { Session, SessionEvent } from '@open-harness/oh-session'

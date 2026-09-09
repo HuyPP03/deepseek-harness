@@ -4,7 +4,7 @@
  * @module @open-harness/oh-sandbox-local/profiles
  */
 
-import { grantArgs as landlockGrantArgs } from '@deepseek-ai/node-addon-landlock-run'
+import { grantArgs as landlockGrantArgs } from '@open-harness/node-addon-landlock-run'
 import { writableRoots } from '@open-harness/oh-sandbox'
 import type { SandboxPolicy } from '@open-harness/oh-sandbox'
 

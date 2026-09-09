@@ -32,7 +32,7 @@
  * @module @open-harness/oh-fs-sandbox
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { LocalFileSystem } from '@open-harness/oh-fs-local'
 import type { Config as LocalConfig } from '@open-harness/oh-fs-local'
 import { FsError } from '@open-harness/oh-fs'

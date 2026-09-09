@@ -4,7 +4,7 @@
  * @module @open-harness/oh-tool-session-query/operations
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { HarnessError } from '@open-harness/oh-llm'
 import type { SessionId } from '@open-harness/oh-session'
 import {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /** Snapshot-only Loader driver: stream one fixture turn as canonical JSONL. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { boot, installFailLoud, loadEnv, resolveConfigPath } from '@open-harness/oh-app-boot'
 import { runFixtureTurn } from '@open-harness/oh-loader-smoke'
 import type { SessionEvent } from '@open-harness/oh-session'

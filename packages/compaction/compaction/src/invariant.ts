@@ -1,6 +1,6 @@
 /** Package-owned compaction log-stream invariants. @module @open-harness/oh-compaction/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { isReplacementSurfaceEvent } from '@open-harness/oh-session'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'

@@ -8,7 +8,7 @@
  * @module @open-harness/oh-bash-sandbox
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { ShellExecRequest, ShellExecSpec, ShellProcess, ShellRunResult } from '@open-harness/oh-shell'
 import { SandboxUnavailableError } from '@open-harness/oh-sandbox'
 import type {

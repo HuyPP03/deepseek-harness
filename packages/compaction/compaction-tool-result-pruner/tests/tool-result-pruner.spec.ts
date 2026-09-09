@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { CallId , createMessage, createToolResultMessage } from '@open-harness/oh-llm'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import SessionStore, {

@@ -135,7 +135,7 @@ describe('parseVendoredRows', () => {
 
     expect(rows.length).toBeGreaterThan(0)
     expect(rows).toContainEqual({
-      npmName: '@deepseek-ai/cordis',
+      npmName: '@open-harness/cordis',
       upstreamName: 'cordis',
       upstream: 'https://github.com/cordiverse/cordis',
     })
@@ -144,7 +144,7 @@ describe('parseVendoredRows', () => {
   })
 
   it('yields nothing when the table columns change, so the generator fails loud', () => {
-    expect(parseVendoredRows('| `cordis/` | `@deepseek-ai/cordis` | cordis | 4.0.0 | https://example.com | `abc123` |\n')).toEqual([])
+    expect(parseVendoredRows('| `cordis/` | `@open-harness/cordis` | cordis | 4.0.0 | https://example.com | `abc123` |\n')).toEqual([])
   })
 
   it('covers every vendored directory, so no package can drop out of the notices', () => {
@@ -231,10 +231,10 @@ describe('collectPythonDependencies', () => {
   it('excludes normalized local project names without exempting a third-party prefix', () => {
     const pyprojects = [
       '[project]\nname = "open-harness-runtime-bin"\ndependencies = ["pydantic"]\n',
-      '[project]\nname = "open-harness-sdk"\ndependencies = ["DeepSeek.Harness_Runtime-Bin", "deepseek-unrelated"]\n',
+      '[project]\nname = "open-harness-sdk"\ndependencies = ["Open.Harness_Runtime-Bin", "open-unrelated"]\n',
     ]
     expect(() => collectPythonDependencies(pyprojects)).toThrow(
-      'python dependency deepseek-unrelated is missing from PYTHON_METADATA',
+      'python dependency open-unrelated is missing from PYTHON_METADATA',
     )
   })
 })

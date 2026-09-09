@@ -10,7 +10,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore, { SessionId } from '@open-harness/oh-session'
 import type { Session } from '@open-harness/oh-session'
 import SessionProjectionRegistry from '@open-harness/oh-session-projection'

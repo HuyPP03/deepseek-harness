@@ -8,7 +8,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { z } from 'zod'
 import SessionStore from '@open-harness/oh-session'
 import type { Session, SessionEvent } from '@open-harness/oh-session'

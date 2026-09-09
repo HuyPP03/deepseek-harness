@@ -46,10 +46,10 @@
     "@open-harness/oh-llm": "workspace:^",
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-session-projection": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -60,6 +60,6 @@
     "@open-harness/oh-session-persistence-jsonl": "workspace:^",
     "@open-harness/oh-session-persistence-sqlite": "workspace:^",
     "@open-harness/oh-session-projection": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

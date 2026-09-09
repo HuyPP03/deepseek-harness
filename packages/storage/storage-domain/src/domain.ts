@@ -9,7 +9,7 @@
  * @module @open-harness/oh-storage-domain/src/domain
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { KvUnit } from '@open-harness/oh-storage'
 import { DomainError } from './error.ts'
 import type { DomainSpec, DomainGlobalSpec, TableKeyOf, TableValueOf } from './spec.ts'

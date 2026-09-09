@@ -46,7 +46,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-client-connection": "workspace:^",
     "@open-harness/oh-client-modules": "workspace:^",
@@ -54,11 +54,11 @@
     "@open-harness/oh-client-ui-slots": "workspace:^",
     "@open-harness/oh-client-ui-theme": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-client-connection": "workspace:^",
     "@open-harness/oh-client-modules": "workspace:^",
@@ -67,7 +67,7 @@
     "@open-harness/oh-client-ui-theme": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "files": [

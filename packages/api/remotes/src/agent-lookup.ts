@@ -1,6 +1,6 @@
 /** Host BFF policy for resolving Remote Agent and Session identities. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent, AgentOptions, AgentSetup } from '@open-harness/oh-agent'
 import type { Session, SessionEvent, SessionHeader, SessionId } from '@open-harness/oh-session'
 import type {} from '@open-harness/oh-session-persistence'

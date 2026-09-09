@@ -3,9 +3,9 @@ import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { Context } from '@deepseek-ai/cordis'
-import Include from '@deepseek-ai/cordis-plugin-include'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Include from '@open-harness/cordis-plugin-include'
+import Loader from '@open-harness/cordis-plugin-loader'
 import LocalJobRegistry from '@open-harness/oh-jobs-local'
 
 let root: string | undefined

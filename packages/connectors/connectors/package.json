@@ -36,7 +36,7 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-agent-presets": "workspace:^",
     "@open-harness/oh-atomic-write": "workspace:^",
     "@open-harness/oh-credentials": "workspace:^",
@@ -46,11 +46,11 @@
     "@open-harness/oh-mcp-manager": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-agent-presets": "workspace:^",
     "@open-harness/oh-atomic-write": "workspace:^",
     "@open-harness/oh-credentials": "workspace:^",

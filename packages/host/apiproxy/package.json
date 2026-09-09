@@ -75,18 +75,18 @@
     "@open-harness/oh-user-questions": "workspace:^",
     "@open-harness/oh-workspace": "workspace:^",
     "@open-harness/oh-workspace-references": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "fflate": "^0.8.2",
     "zod": "^4.4.3"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-agent-presets": "workspace:^",
     "@open-harness/oh-cordis-host-runner": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-agent-presets": "workspace:^",
     "@open-harness/oh-cordis-host-runner": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",

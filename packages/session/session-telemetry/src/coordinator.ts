@@ -14,7 +14,7 @@
  * @module @open-harness/oh-session-telemetry/coordinator
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import type { Agent } from '@open-harness/oh-agent'
 import type { SessionTelemetrySink, SessionTelemetryRecord, SessionTelemetrySeverity } from './index.ts'

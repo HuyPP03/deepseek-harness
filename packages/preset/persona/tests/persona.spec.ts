@@ -1,4 +1,4 @@
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SystemPrompt, { renderPrompt } from '@open-harness/oh-system-prompt'
 import { createScope, type ScopeKey } from '@open-harness/oh-scope'
 import { describe, expect, it } from 'vitest'

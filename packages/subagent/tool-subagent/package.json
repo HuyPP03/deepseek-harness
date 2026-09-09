@@ -39,13 +39,13 @@
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-jobs": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-llm": "workspace:^",
@@ -59,6 +59,6 @@
     "@open-harness/oh-jobs-local": "workspace:^",
     "@open-harness/oh-tool-jobs": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

@@ -6,7 +6,7 @@
  * @module @open-harness/oh-agent/dispatch
  */
 
-import type { Context, Events } from '@deepseek-ai/cordis'
+import type { Context, Events } from '@open-harness/cordis'
 import { scopeTarget } from '@open-harness/oh-scope'
 import type { Scoped } from '@open-harness/oh-scope'
 import type { AssembleContext } from '@open-harness/oh-system-prompt'

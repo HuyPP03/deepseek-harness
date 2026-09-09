@@ -1,7 +1,7 @@
 import { access } from 'node:fs/promises'
 import { join, posix } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import { Inbox } from '@open-harness/oh-agent'
 import type { Agent } from '@open-harness/oh-agent'

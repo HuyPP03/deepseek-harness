@@ -61,7 +61,7 @@
     "@open-harness/oh-client-ui-slots": "workspace:^",
     "@open-harness/oh-client-ui-tool": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "devDependencies": {
@@ -77,7 +77,7 @@
     "@open-harness/oh-client-ui-tool": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "files": [

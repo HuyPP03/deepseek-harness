@@ -3,7 +3,7 @@
  * Isolated file so vi.mock of the MCP SDK doesn't pollute other test suites.
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRuntime from '@open-harness/oh-tools'
 import type { Config } from '@open-harness/oh-mcp-client'

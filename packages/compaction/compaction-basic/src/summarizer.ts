@@ -4,7 +4,7 @@
  * @module @open-harness/oh-compaction-basic/summarizer
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { contentHasImage, createUserMessage, BlockAssembler, LlmError } from '@open-harness/oh-llm'
 import type {
   ContentBlock, FinishReason, GenerateOptions, Message, TokenUsage, ToolSchema,

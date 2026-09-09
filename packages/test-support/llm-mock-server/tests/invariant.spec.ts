@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import * as MockServerInvariant from '../src/invariant.ts'
 

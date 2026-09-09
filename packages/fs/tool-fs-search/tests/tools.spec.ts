@@ -11,7 +11,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { join, sep } from 'node:path'
 import { createUserMessage, CallId } from '@open-harness/oh-llm'
 import SystemPrompt, { renderPrompt } from '@open-harness/oh-system-prompt'

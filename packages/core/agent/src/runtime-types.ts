@@ -5,7 +5,7 @@
  * @module @open-harness/oh-agent
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Scoped } from '@open-harness/oh-scope'
 import type { LlmCallConfig, LlmFailure, ResolvedRetryPolicy } from '@open-harness/oh-llm'
 import type { AgentCancelCause, Session, SessionId, UserMessage } from '@open-harness/oh-session'
@@ -143,7 +143,7 @@ export interface Agent {
   inject(message: UserMessage): void
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     // ---- lifecycle (emit) ----
     /**

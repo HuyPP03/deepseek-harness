@@ -20,7 +20,7 @@
  */
 
 import { Zip, ZipDeflate } from 'fflate'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { AttachmentStore, ImageAttachmentRef } from '@open-harness/oh-attachment'
 import type { SessionLineageNode, SessionQueryEngine } from '@open-harness/oh-session-query'
 import type { SessionId, SessionStore } from '@open-harness/oh-session'

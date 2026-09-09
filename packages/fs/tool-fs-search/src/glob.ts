@@ -9,7 +9,7 @@
  * @module @open-harness/oh-tool-fs-search/glob
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { sep } from 'node:path'
 import { defineTool } from '@open-harness/oh-tools'
 import type { GenericCallView, SearchResultView, ToolResult } from '@open-harness/oh-tools'

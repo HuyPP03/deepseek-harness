@@ -85,9 +85,9 @@ A waterfall listener **must call `next()`**. Omitting it short-circuits the pipe
 Harness uses TypeScript declaration merging for type-safe events:
 
 ```ts
-import '@deepseek-ai/cordis'
+import '@open-harness/cordis'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     'my-plugin/ready': (payload: { id: string }) => void
     'my-plugin/check': (input: string) => boolean | undefined
@@ -121,7 +121,7 @@ export function apply(ctx: Context) {
 This plugin logs tool calls and results:
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import '@open-harness/oh-tools'
 
 export const name = 'tool-logger'

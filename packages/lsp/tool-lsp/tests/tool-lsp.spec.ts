@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { join, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRuntime from '@open-harness/oh-tools'
 import Lsp, { LspProviderId, type LspProvider, type LspProviderQuery, type LspQueryResult } from '@open-harness/oh-lsp'

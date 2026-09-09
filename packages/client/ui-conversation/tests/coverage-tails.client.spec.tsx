@@ -3,7 +3,7 @@
 // without a settings service and AssistantMarkdown reasoning/unknown block arms.
 
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { cleanup, render } from '@testing-library/react'
 import { makeTranslate } from '@open-harness/oh-client-test-runtime'
 import { zh as commonZh } from '@open-harness/oh-client-locale/src/locales/zh.ts'

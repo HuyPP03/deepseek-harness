@@ -3,7 +3,7 @@
  * @module @open-harness/oh-settings/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import { deepEqualJson } from './index.ts'
 

@@ -5,8 +5,8 @@
  * @module @open-harness/oh-agent
  */
 
-import { Context, FiberState, getTraceable, Service, symbols } from '@deepseek-ai/cordis'
-import type { Fiber } from '@deepseek-ai/cordis'
+import { Context, FiberState, getTraceable, Service, symbols } from '@open-harness/cordis'
+import type { Fiber } from '@open-harness/cordis'
 import { AsyncLocalStorage } from 'node:async_hooks'
 import { isPromise } from 'node:util/types'
 import { scopeTarget } from '@open-harness/oh-scope'
@@ -33,7 +33,7 @@ declare module '@open-harness/oh-typert-protocol' {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     agents: AgentRegistry
     /**

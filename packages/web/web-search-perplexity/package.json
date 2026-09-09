@@ -35,15 +35,15 @@
     "@open-harness/oh-launch-environment": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-web": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-launch-environment": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-web": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

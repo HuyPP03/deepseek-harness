@@ -3,7 +3,7 @@
  * @module @open-harness/oh-credentials/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 
 const PACKAGE_NAME = '@open-harness/oh-credentials'

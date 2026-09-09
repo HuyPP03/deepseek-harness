@@ -6,7 +6,7 @@
 // and the invariant companion ride along — one line exposes the aggregate
 // coverage gate still requires exercised.
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'

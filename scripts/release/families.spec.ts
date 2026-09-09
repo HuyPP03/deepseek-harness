@@ -20,7 +20,7 @@ describe('release families', () => {
     const oh = releaseFamily('oh')
     const vendor = releaseFamily('vendor')
     const cli = member('apps/cli', 'oh')
-    const cordis = { ...member('vendor/cordis', '@deepseek-ai/cordis'), version: '4.0.1' }
+    const cordis = { ...member('vendor/cordis', '@open-harness/cordis'), version: '4.0.1' }
 
     expect(oh.tagFor(cli)).toBe('oh-v0.0.1')
     expect(vendor.tagFor(cordis)).toBe('vendor-cordis-v4.0.1')
@@ -41,8 +41,8 @@ describe('release families', () => {
   it('accepts independent vendored versions and rejects an unpublishable one', () => {
     const vendor = releaseFamily('vendor')
     const members = [
-      { ...member('vendor/cordis', '@deepseek-ai/cordis'), version: '4.0.1' },
-      { ...member('vendor/cosmokit', '@deepseek-ai/cosmokit'), version: '1.8.2' },
+      { ...member('vendor/cordis', '@open-harness/cordis'), version: '4.0.1' },
+      { ...member('vendor/cosmokit', '@open-harness/cosmokit'), version: '1.8.2' },
     ]
 
     expect(() => { vendor.verifyVersions(members) }).not.toThrow()
@@ -164,7 +164,7 @@ describe('release families', () => {
     const oh = releaseFamily('oh')
     const vendor = releaseFamily('vendor')
     const harness = member('packages/a/library', '@open-harness/oh-library')
-    const vendored = member('vendor/cordis', '@deepseek-ai/cordis')
+    const vendored = member('vendor/cordis', '@open-harness/cordis')
 
     expect(() => { oh.validatePayload(harness, ['package/lib/index.js', 'package/src/index.ts']) })
       .toThrow(/publishes source file/)
@@ -228,10 +228,10 @@ describe('version precedence', () => {
 })
 
 describe('payload change judgement', () => {
-  const sourceShipping = member('vendor/cosmokit', '@deepseek-ai/cosmokit', {
+  const sourceShipping = member('vendor/cosmokit', '@open-harness/cosmokit', {
     files: ['lib/index.js', 'lib/types/**/*.d.ts', 'src'],
   })
-  const buildOutputOnly = member('vendor/cordis', '@deepseek-ai/cordis', {
+  const buildOutputOnly = member('vendor/cordis', '@open-harness/cordis', {
     files: ['lib/index.js', 'lib/types/**/*.d.ts', 'bin.js'],
   })
 

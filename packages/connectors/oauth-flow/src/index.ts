@@ -14,11 +14,11 @@
 
 import { createHash, randomBytes } from 'node:crypto'
 import { createServer, type Server } from 'node:http'
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { clientSecretRef, type Connectors, type OauthAuthMethod } from '@open-harness/oh-connectors'
 import { credentialRef } from '@open-harness/oh-credentials'
 import type { OAuthTokenBundle } from '@open-harness/oh-credentials-oauth-tokens'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import type { OAuthFlowStart } from './types.ts'
 
 export type { OAuthFlowStart } from './types.ts'

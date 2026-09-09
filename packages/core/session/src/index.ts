@@ -6,7 +6,7 @@
  * @module @open-harness/oh-session
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { isAbsolute } from 'node:path'
 import { deepFreeze } from '@open-harness/oh-llm'
 import { scopeOf, scopeTarget } from '@open-harness/oh-scope'
@@ -34,7 +34,7 @@ export { deriveEventMessage, foldSurface, isAppendSurfaceEvent, isReplacementSur
 export { canonicalHeader, foldRequestHeader, headerEquals } from './request-header.ts'
 export { KNOWN_SESSION_EVENT_TYPES } from './known-event-types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sessions: SessionStore
   }

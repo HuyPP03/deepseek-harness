@@ -20,18 +20,18 @@
 
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { Context, type Fiber, Service } from '@deepseek-ai/cordis'
+import { Context, type Fiber, Service } from '@open-harness/cordis'
 import * as mcpClient from '@open-harness/oh-mcp-client'
 import type { Config as McpClientConfig } from '@open-harness/oh-mcp-client'
 import { ohHomePath, expandHomePath } from '@open-harness/oh-home-paths'
 import type { McpServerView } from '@open-harness/oh-mcp-registry'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import { parse, stringify } from 'yaml'
 
 export type { McpServerSpec, StdioServerSpec, StreamableHttpServerSpec } from './types.ts'
 import type { McpServerSpec } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     mcpManager: McpManager
   }

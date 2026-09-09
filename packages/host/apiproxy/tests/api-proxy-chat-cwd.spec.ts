@@ -9,7 +9,7 @@
 import { existsSync, mkdtempSync, realpathSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentRegistry, { type AgentFactory } from '@open-harness/oh-agent'
 import type { Agent } from '@open-harness/oh-agent'
 import SessionStore, { SessionId, type Session } from '@open-harness/oh-session'

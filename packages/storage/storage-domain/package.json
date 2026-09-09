@@ -34,15 +34,15 @@
   "peerDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-storage": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "zod": "^4.4.3"
   },
   "devDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-storage": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

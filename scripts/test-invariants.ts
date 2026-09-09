@@ -6,8 +6,8 @@
  */
 
 import { expect } from 'vitest'
-import { FiberState, Inject, RegistryService, ValidationError } from '@deepseek-ai/cordis'
-import type { Context, Plugin } from '@deepseek-ai/cordis'
+import { FiberState, Inject, RegistryService, ValidationError } from '@open-harness/cordis'
+import type { Context, Plugin } from '@open-harness/cordis'
 import { AttachmentStore } from '@open-harness/oh-attachment'
 import type {
   ImageAttachmentLimits,

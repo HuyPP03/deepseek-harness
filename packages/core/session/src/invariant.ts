@@ -5,7 +5,7 @@
  * @module @open-harness/oh-session/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { assertNever } from '@open-harness/oh-llm'
 import type { CallId } from '@open-harness/oh-llm'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'

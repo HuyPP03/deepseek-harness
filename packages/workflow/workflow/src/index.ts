@@ -4,7 +4,7 @@
  * @module @open-harness/oh-workflow
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { HarnessError } from '@open-harness/oh-llm'
 import type {
   WorkflowAgentEndInfo,
@@ -28,7 +28,7 @@ export type {
 } from './types.ts'
 export type { WorkflowRun, WorkflowStartRequest } from './runtime-types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     workflowEngine: WorkflowEngine
   }

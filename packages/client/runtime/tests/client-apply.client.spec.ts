@@ -3,7 +3,7 @@
  * connection handle, stream-loop sink wiring into the object layer, and the
  * fiber-scoped loop teardown.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import type { ConnectionHandle } from '@open-harness/oh-api-remotes/client'
 import type { ConnectionSinks } from '@open-harness/oh-api-remotes/client'

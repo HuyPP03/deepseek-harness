@@ -6,7 +6,7 @@
  * @module @open-harness/oh-client-schema-form/model
  */
 
-import Schema from '@deepseek-ai/schemastery'
+import Schema from '@open-harness/schemastery'
 
 /** Live schemastery node; the renderer reads only its structural relations. */
 export type SchemaNode = Schema

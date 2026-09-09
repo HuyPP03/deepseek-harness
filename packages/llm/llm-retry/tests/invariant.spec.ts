@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore, { SessionId, type Session } from '@open-harness/oh-session'
 import { createUserMessage, ProviderRequestId } from '@open-harness/oh-llm'
 import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'

@@ -36,13 +36,13 @@
     "@open-harness/oh-llm": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-llm": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

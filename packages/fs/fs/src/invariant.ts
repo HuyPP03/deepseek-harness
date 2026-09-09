@@ -1,6 +1,6 @@
 /** Package-owned filesystem event-data invariants. @module @open-harness/oh-fs/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 import type { FsObservation, FsTarget } from './types.ts'
 

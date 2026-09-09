@@ -46,7 +46,7 @@
     "@open-harness/oh-llm": "workspace:^",
     "@open-harness/oh-scope": "workspace:^",
     "@open-harness/oh-typert-protocol": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-brand": "workspace:^",
@@ -55,6 +55,6 @@
     "@open-harness/oh-scope": "workspace:^",
     "@open-harness/oh-typert-protocol": "workspace:^",
     "@open-harness/oh-typert-registry": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

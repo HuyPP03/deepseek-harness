@@ -13,11 +13,11 @@
 import { createRequire } from 'node:module'
 import { networkInterfaces } from 'node:os'
 import { fileURLToPath } from 'node:url'
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { addHarnessSourceSection } from '@open-harness/oh-app-boot'
 import * as FrontendStatic from '@open-harness/oh-host-frontend-static'
-import type {} from '@deepseek-ai/cordis-plugin-loader'
+import type {} from '@open-harness/cordis-plugin-loader'
 // Type-only: pulls the `AssembleContext.agent` merge so the surface section
 // can tell a chat assembly from a workspace one.
 import type {} from '@open-harness/oh-agent'

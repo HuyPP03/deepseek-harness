@@ -11,9 +11,9 @@
  * @module @open-harness/oh-acp-demo
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { join } from 'node:path'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import * as acp from '@open-harness/oh-acp'
 import * as agentCore from '@open-harness/oh-agent-spine-demo'
 import * as workspaceContext from '@open-harness/oh-agent-instructions'

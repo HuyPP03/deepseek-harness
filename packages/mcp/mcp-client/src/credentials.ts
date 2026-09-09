@@ -11,7 +11,7 @@
  *
  * @module
  */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { credentialRef } from '@open-harness/oh-credentials'
 import type {} from '@open-harness/oh-credentials'
 import type {} from '@open-harness/oh-credentials-oauth-tokens'

@@ -4,8 +4,8 @@
  * @module @open-harness/oh-compaction-basic
  */
 
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { CompactionEngine, ManualCompactionError } from '@open-harness/oh-compaction'
 import type { CompactionResult, CompactionTrigger } from '@open-harness/oh-compaction'
 import type { TokenMeter } from '@open-harness/oh-token-meter'

@@ -8,8 +8,8 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { installModelSelection } from '@open-harness/oh-agent'
 import type { ModelSelectionRef } from '@open-harness/oh-agent'
 import type {} from '@open-harness/oh-agent-default-model'
@@ -18,7 +18,7 @@ import { SessionId } from '@open-harness/oh-session'
 import type { SessionEvent } from '@open-harness/oh-session'
 // Empty type imports carry the loader Context merge for the settlement await
 // and the cmdline Context merge for the appExit host value.
-import type {} from '@deepseek-ai/cordis-plugin-loader'
+import type {} from '@open-harness/cordis-plugin-loader'
 import type {} from '@open-harness/oh-cmdline'
 
 /** Stable Cordis plugin name. */

@@ -7,7 +7,7 @@
  * @module @open-harness/oh-settings/redact
  */
 
-import type z from '@deepseek-ai/schemastery'
+import type z from '@open-harness/schemastery'
 
 /**
  * Minimal structural view of a live schemastery node. Only the relations the

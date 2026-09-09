@@ -59,7 +59,7 @@
     "@open-harness/oh-scope": "workspace:^",
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-typert-protocol": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
     "zod": "^4.4.3"
@@ -71,6 +71,6 @@
     "@open-harness/oh-scope": "workspace:^",
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-typert-protocol": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

@@ -2,7 +2,7 @@
 # and the SSRF-safe websift provider stay real (the tool calls re-execute the
 # actual preflight refusals); only the model adapter is replaced by replay.
 - id: base
-  name: '@deepseek-ai/cordis-plugin-include'
+  name: '@open-harness/cordis-plugin-include'
   config:
     path: ./cordis.yml
     patches:

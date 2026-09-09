@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore, { type Session, type SessionEvent } from '@open-harness/oh-session'
 import InvariantRegistry, { InvariantError } from '@open-harness/oh-invariants'
 import * as SandboxPolicyInvariant from '@open-harness/oh-sandbox-policy/invariant'

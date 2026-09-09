@@ -10,7 +10,7 @@
  * @module @open-harness/oh-tool-fs/sandbox
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { ToolExecution } from '@open-harness/oh-tools'
 import type { SandboxExecutionPolicy, SandboxMode } from '@open-harness/oh-sandbox'
 import { ESCALATION_TARGETS, approveEscalation, escalationHintMarker, sandboxDenialMarker, validateEscalationArgs } from '@open-harness/oh-sandbox'

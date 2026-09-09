@@ -6,8 +6,8 @@
  * @module @open-harness/oh-repeat-tool-reminder
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
 import { createUserMessage } from '@open-harness/oh-llm'
 import type { MessageSource } from '@open-harness/oh-llm'

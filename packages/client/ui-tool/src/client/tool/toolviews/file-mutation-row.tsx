@@ -8,7 +8,7 @@
 // edit return no diff on `result.isError`) keeps the model-facing error text
 // on ToolRow's Output section, its first line in the collapsed summary.
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { resolveWorkspacePath } from '@open-harness/oh-client-runtime/client'
 import { IconEditOutline16 } from '@open-harness/oh-client-ui-primitives'
 import type { PropsLocale } from '@open-harness/oh-client-ui-slots'

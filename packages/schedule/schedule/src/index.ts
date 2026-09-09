@@ -3,7 +3,7 @@
  * @module @open-harness/oh-schedule
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import type {} from '@open-harness/oh-session-persistence'
 import { ScheduleRuntime } from './runtime.ts'

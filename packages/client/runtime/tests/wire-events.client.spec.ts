@@ -4,7 +4,7 @@
  * api-gateway's own coverage); each established connection generation emits
  * `connection/reset` for generation-scoped cache invalidation.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import type { ConnectionHandle, ConnectionSinks } from '@open-harness/oh-api-remotes/client'
 import TypertRegistry from '@open-harness/oh-typert-registry'

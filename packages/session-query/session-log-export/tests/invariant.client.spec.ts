@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { apply, inject, name } from '../src/invariant.ts'
 
 describe('@open-harness/oh-session-log-export/invariant', () => {

@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentLoop from '@open-harness/oh-agent-loop'
 import { mountAgentLoopTestDependencies } from '@open-harness/oh-agent-loop-testkit'
 import { createUserMessage, CallId, type GenerateOptions, LlmAdapter, type StreamChunk  } from '@open-harness/oh-llm'

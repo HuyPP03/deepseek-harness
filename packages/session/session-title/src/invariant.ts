@@ -4,7 +4,7 @@
  */
 
 /* jscpd:ignore-start */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import type { SessionEvent } from '@open-harness/oh-session'
 

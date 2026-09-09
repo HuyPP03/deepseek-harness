@@ -1,5 +1,5 @@
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { describe, expect, it, vi } from 'vitest'
 import type { RpcResponse, SettingsNamespaceView } from '@open-harness/oh-api-remotes/client'
 import { TestRemote } from '@open-harness/oh-client-test-runtime'

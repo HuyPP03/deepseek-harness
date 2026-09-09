@@ -1,5 +1,5 @@
 /** Registers the conversation components, shared store, and service callbacks. */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { resolveSlotLabel, type BoundActions } from '@open-harness/oh-client-ui-slots'
 import {
   resolveWorkspacePath, type ISessions, type SessionId,

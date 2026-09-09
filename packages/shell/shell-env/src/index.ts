@@ -8,15 +8,15 @@
  * @module @open-harness/oh-shell-env
  */
 
-import { Service, type Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Service, type Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { OH_ENV_PREFIX } from '@open-harness/oh-shell'
 import type { OhEnvironment, OhEnvironmentKey } from '@open-harness/oh-shell'
 import { OH_HOME_ENV, resolveOhHome } from '@open-harness/oh-home-paths'
 import type { ToolExecution } from '@open-harness/oh-tools'
 import type {} from '@open-harness/oh-session-persistence'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     shellEnv: ShellEnvRegistry
   }

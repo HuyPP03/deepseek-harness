@@ -11,7 +11,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createMessage } from '@open-harness/oh-llm'
 import SessionStore, { SessionId } from '@open-harness/oh-session'
 import type { Session, SessionEvent } from '@open-harness/oh-session'

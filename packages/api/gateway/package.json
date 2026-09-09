@@ -62,14 +62,14 @@
     "@open-harness/oh-client-connection": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-typert-registry": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-client-connection": "workspace:^",
     "@open-harness/oh-host-webserver": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-typert-registry": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "zod": "^4.4.3"
   }
 }

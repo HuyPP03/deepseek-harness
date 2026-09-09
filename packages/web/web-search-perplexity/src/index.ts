@@ -7,9 +7,9 @@
  * @module @open-harness/oh-web-search-perplexity
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { launchEnvironmentOf } from '@open-harness/oh-launch-environment'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import type {} from '@open-harness/oh-web'
 import { PerplexitySearchProvider, PERPLEXITY_DEFAULT_BASE_URL, PERPLEXITY_DEFAULT_MAX_TOKENS, PERPLEXITY_DEFAULT_MODEL } from './provider.ts'
 

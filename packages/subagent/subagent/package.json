@@ -55,7 +55,7 @@
     "@open-harness/oh-jobs": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
     "@open-harness/oh-user-approval": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@open-harness/oh-agent-presets": {
@@ -101,6 +101,6 @@
     "@open-harness/oh-jobs": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
     "@open-harness/oh-user-approval": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

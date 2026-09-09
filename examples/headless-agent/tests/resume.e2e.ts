@@ -3,7 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { SessionId } from '@open-harness/oh-session'
 import { codingHarness, finalText, SYSTEM_PROMPT, waitForIdle } from './harness.ts'
 

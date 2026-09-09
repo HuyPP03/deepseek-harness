@@ -4,7 +4,7 @@
  * @module @open-harness/oh-terminal
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import { TerminalBackendCleanupError } from './types.ts'
 import type {
@@ -45,7 +45,7 @@ export { TerminalBackendCleanupError } from './types.ts'
 /** Opaque identity minted by {@link TerminalSessionService} for one live PTY session. */
 export type TerminalSessionId = TerminalSessionIdValue
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     terminals: TerminalSessionService
   }

@@ -6,10 +6,10 @@
  * @module @open-harness/oh-invariants
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import type { Inject } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
-import type Schema from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import type { Inject } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
+import type Schema from '@open-harness/schemastery'
 
 /** Runtime invariant selection configured on the service plugin. */
 export interface Config {
@@ -65,7 +65,7 @@ export class InvariantError extends Error {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     invariants: InvariantRegistry
   }

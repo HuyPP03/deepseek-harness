@@ -1,4 +1,4 @@
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import * as PluginInventoryInvariant from '../src/invariant.ts'

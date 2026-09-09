@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import type { Agent } from '@open-harness/oh-agent'
 import CommandRuntime, { type CommandResult } from '@open-harness/oh-commands'
 import {

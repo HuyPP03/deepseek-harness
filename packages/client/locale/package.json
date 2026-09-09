@@ -43,7 +43,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-client-connection": "workspace:^",
     "@open-harness/oh-client-runtime": "workspace:^",
@@ -54,7 +54,7 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-client-runtime": "workspace:^",
     "@open-harness/oh-client-ui-primitives": "workspace:^",
@@ -66,7 +66,7 @@
   },
   "dependencies": {
     "@open-harness/oh-settings": "workspace:^",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "files": [
     "lib/index.js",

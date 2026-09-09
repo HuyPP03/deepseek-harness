@@ -6,7 +6,7 @@
  * deferral — the stage follows list.current), binding identity, breadcrumb
  * projection, create.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { SessionId } from '@open-harness/oh-api-remotes/client'
 import { SessionCreateError, SessionRuntime, scopeOf } from '../src/client/sessions/service.ts'

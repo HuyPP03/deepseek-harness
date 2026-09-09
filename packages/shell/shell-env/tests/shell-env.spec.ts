@@ -7,7 +7,7 @@
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { CallId } from '@open-harness/oh-llm'
 import type { Agent } from '@open-harness/oh-agent'
 import type { ToolExecution } from '@open-harness/oh-tools'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore, { Session, SessionId } from '@open-harness/oh-session'
 import { createUserMessage } from '@open-harness/oh-llm'
 import { CompactionId, compactCheckpointSource } from '@open-harness/oh-compaction'

@@ -9,7 +9,7 @@
  * @module @open-harness/oh-tool-subagent-control
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import { SessionId } from '@open-harness/oh-session'

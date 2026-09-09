@@ -5,7 +5,7 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { stat } from 'node:fs/promises'
 import AgentRegistry from '@open-harness/oh-agent'
 import { createUserMessage } from '@open-harness/oh-llm'

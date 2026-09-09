@@ -9,8 +9,8 @@
  * @module @open-harness/oh-jobs-local
  */
 
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent } from '@open-harness/oh-agent'
 import { AnonymousEntries, ScopedLayers, scopeOf } from '@open-harness/oh-scope'
 import type { ScopeLayer } from '@open-harness/oh-scope'

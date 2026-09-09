@@ -4,8 +4,8 @@
  * @module @open-harness/oh-tool-session-query
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'
 import { defineTool } from '@open-harness/oh-tools'
 import type {} from '@open-harness/oh-system-prompt'

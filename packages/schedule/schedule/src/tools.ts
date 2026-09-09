@@ -3,7 +3,7 @@
  * @module @open-harness/oh-schedule
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import { defineTool } from '@open-harness/oh-tools'

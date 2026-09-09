@@ -1,6 +1,6 @@
 import { createUserMessage, createMessage } from '@open-harness/oh-llm'
 import { describe, expect, it, vi } from 'vitest'
-import { Context, type Fiber } from '@deepseek-ai/cordis'
+import { Context, type Fiber } from '@open-harness/cordis'
 import SessionStore, { SESSION_FORMAT_VERSION, SessionId } from '@open-harness/oh-session'
 import type { SessionEvent, SessionHeader, SessionId as SessionIdType } from '@open-harness/oh-session'
 import SessionPersistence, { SessionPersistenceCorruptionError, SessionPersistenceRevision } from '@open-harness/oh-session-persistence'

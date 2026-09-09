@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { CodeRuntime } from '@open-harness/oh-code-runtime'
 import type { CodeRunRequest, CodeRunResult } from '@open-harness/oh-code-runtime'
 

@@ -8,7 +8,7 @@
  * @module @open-harness/oh-fs
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { SandboxExecutionPolicy, SandboxMode } from '@open-harness/oh-sandbox'
 import type {
   FsDirEntry,
@@ -41,7 +41,7 @@ export type {
   FsWriteOutcome,
 } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     fs: FileSystem
   }

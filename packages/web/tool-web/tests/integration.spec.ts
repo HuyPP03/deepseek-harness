@@ -9,7 +9,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
 import { AddressInfo } from 'node:net'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { CallId } from '@open-harness/oh-llm'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import ToolRuntime, { type ToolExecutionResult } from '@open-harness/oh-tools'

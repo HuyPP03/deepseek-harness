@@ -6,8 +6,8 @@
  * @module @open-harness/oh-tool-subagent-report
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent } from '@open-harness/oh-agent'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import type { SubagentReportDelivery } from '@open-harness/oh-subagent'

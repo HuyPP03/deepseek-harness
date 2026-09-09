@@ -1,5 +1,5 @@
 /** Browser runtime services for slots, sessions, workspaces, and connection-stream delivery. */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { ConnectionHandle, SessionId } from '@open-harness/oh-api-remotes/client'
 // Type-only: the ctx.remote merge. Deliberately the gateway's Client half rather
 // than api-remotes': that face imports a Host-tsdown-generated artifact, and this
@@ -158,7 +158,7 @@ declare module '@open-harness/oh-client-ui-slots' {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     /**
      * A slot's definition or registration set changed.

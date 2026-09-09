@@ -39,11 +39,11 @@
     "@open-harness/oh-llm": "workspace:^",
     "@open-harness/oh-settings": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
     "@earendil-works/pi-ai": "^0.82.1",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-attachment": "workspace:^",
@@ -54,6 +54,6 @@
     "@open-harness/oh-llm-deepseek": "workspace:^",
     "@open-harness/oh-settings": "workspace:^",
     "@open-harness/oh-timeout": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

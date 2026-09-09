@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { normalizeSessionLog, scrubRequestHeaders, type NormalizeContext } from '@open-harness/oh-acp-snapshot'
 import { LOADER_SMOKE_TEST_TIMEOUT_MS, runLoaderSmoke } from '@open-harness/oh-loader-smoke'
 import { createUserMessage, CallId , createMessage } from '@open-harness/oh-llm'

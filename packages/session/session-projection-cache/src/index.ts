@@ -12,8 +12,8 @@
  * @module @open-harness/oh-session-projection-cache
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { snapshotJsonValue } from '@open-harness/oh-session'
 import type { Session, SessionEvent, SessionHeader, SessionId } from '@open-harness/oh-session'
 // Empty type import: applies the package's cordis Context merge
@@ -27,7 +27,7 @@ import type { CheckpointIdentity, CheckpointRecord } from './spec.ts'
 export { checkpointIdentity, checkpointRecord, checkpointRow, projectionCacheDomainSpec } from './spec.ts'
 export type { CheckpointIdentity, CheckpointRecord } from './spec.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sessionProjectionCache: SessionProjectionCache
   }

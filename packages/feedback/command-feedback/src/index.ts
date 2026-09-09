@@ -6,7 +6,7 @@
  * @module @open-harness/oh-command-feedback
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'
 import type { SessionTelemetryBackend, SessionTelemetrySharingStatus } from '@open-harness/oh-session-telemetry'
 import type { Session } from '@open-harness/oh-session'

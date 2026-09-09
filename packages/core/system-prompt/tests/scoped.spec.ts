@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createScope, scopeOf } from '@open-harness/oh-scope'
 import type { Scope, ScopeKey } from '@open-harness/oh-scope'
 import SystemPrompt, { TOOL_ORDER_REST, renderContextSnapshot, renderPrompt } from '@open-harness/oh-system-prompt'

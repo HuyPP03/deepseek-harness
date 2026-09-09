@@ -1,7 +1,7 @@
 /** ACP wire-content admission and projection owned by the ACP adapter. @module */
 
 import type { ContentBlock as AcpContentBlock } from '@agentclientprotocol/sdk'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { isImageAdmissionError } from '@open-harness/oh-attachment'
 import type { ImageAttachmentRef, ImageMediaType, SaveImageAttachment } from '@open-harness/oh-attachment'
 import type { Agent } from '@open-harness/oh-agent'

@@ -51,7 +51,7 @@
     "@open-harness/oh-client-runtime": "workspace:^",
     "@open-harness/oh-client-ui-input-trigger": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-api-remotes": "workspace:^",
@@ -60,7 +60,7 @@
     "@open-harness/oh-client-test-runtime": "workspace:^",
     "@open-harness/oh-client-ui-input-trigger": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "files": [
     "lib/index.js",

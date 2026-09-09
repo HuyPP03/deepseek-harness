@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentRegistry, { Inbox } from '@open-harness/oh-agent'
 import type { Agent, AgentCancelCause, InboxTarget } from '@open-harness/oh-agent'
 import type { UserMessage } from '@open-harness/oh-llm'

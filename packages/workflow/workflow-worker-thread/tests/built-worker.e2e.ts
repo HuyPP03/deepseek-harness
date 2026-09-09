@@ -21,7 +21,7 @@ describe.skipIf(!existsSync(builtIndex) || !existsSync(builtWorker))('built work
     const driver = join(packageRoot, `.built-worker-driver-${process.pid}.mjs`)
     try {
       await writeFile(driver, `
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SubagentRuntime from '@open-harness/oh-subagent'
 import WorkerThreadWorkflowEngine from '@open-harness/oh-workflow-worker-thread'
 

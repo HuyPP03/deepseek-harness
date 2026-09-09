@@ -5,7 +5,7 @@
  * @module @open-harness/oh-session-persistence/coordinator
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import {
   adoptSessionEvent,
   interruptedTurnClosers,

@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
 import { agentEvents } from '@open-harness/oh-agent'
 import AgentLoop from '@open-harness/oh-agent-loop'

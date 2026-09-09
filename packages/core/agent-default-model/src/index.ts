@@ -4,13 +4,13 @@
  * @module @open-harness/oh-agent-default-model
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { ModelSelection } from '@open-harness/oh-agent'
 import { ReasoningEffortId } from '@open-harness/oh-llm'
 import { installSettingsSection, settingsNamespace } from '@open-harness/oh-settings'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** Default model selection for Agents created without an explicit model. */
     agentDefaultModel: AgentDefaultModelConfig

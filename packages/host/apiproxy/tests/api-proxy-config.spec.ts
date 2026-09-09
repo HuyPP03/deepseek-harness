@@ -6,8 +6,8 @@
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import AgentRegistry from '@open-harness/oh-agent'
 import SessionStore from '@open-harness/oh-session'
 import SystemPrompt from '@open-harness/oh-system-prompt'

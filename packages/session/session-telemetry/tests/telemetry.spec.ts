@@ -7,7 +7,7 @@ import { createToolResultMessage, createUserMessage } from '@open-harness/oh-llm
  */
 
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore, { SessionId, type Session, type SessionEvent } from '@open-harness/oh-session'
 import type { Agent } from '@open-harness/oh-agent'
 import {

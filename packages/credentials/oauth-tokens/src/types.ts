@@ -33,7 +33,7 @@ export interface OAuthTokenBundle {
   readonly updatedAt: number
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     /**
      * Committed change to one owner's stored bundle: a `put`, a `remove`,

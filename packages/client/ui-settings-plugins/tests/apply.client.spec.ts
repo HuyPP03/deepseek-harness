@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /** What the browser half registers, and that it all leaves with the fiber. */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { resolveSlotLabel } from '@open-harness/oh-client-ui-slots'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'

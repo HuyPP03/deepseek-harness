@@ -6,8 +6,8 @@
  * @module @open-harness/oh-session-persistence-sqlite
  */
 
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { randomUUID } from 'node:crypto'
 import { statSync } from 'node:fs'
 import { DatabaseSync } from 'node:sqlite'

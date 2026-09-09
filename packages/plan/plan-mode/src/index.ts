@@ -23,7 +23,7 @@
  * @module @open-harness/oh-plan-mode
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { z as zod } from 'zod'
 import type { ZodType } from 'zod'
 import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
@@ -54,7 +54,7 @@ declare module '@open-harness/oh-session/types' {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     planMode: PlanModeController
   }

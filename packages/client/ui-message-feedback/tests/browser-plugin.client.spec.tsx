@@ -8,7 +8,7 @@
  * fiber (HMR safety). The node half and the invariant companion are exercised
  * over the same Context.
  */
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import { SlotRegistry, type SessionId } from '@open-harness/oh-client-runtime/client'

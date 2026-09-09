@@ -4,7 +4,7 @@
  * @module @open-harness/oh-terminal-bash
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import { TerminalBackendCleanupError } from '@open-harness/oh-terminal'

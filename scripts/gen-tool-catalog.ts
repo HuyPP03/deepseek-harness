@@ -8,7 +8,7 @@
 
 import { globSync, readFileSync, writeFileSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { ToolSchema } from '@open-harness/oh-llm'
 import AgentRegistry from '@open-harness/oh-agent'
 import type { Agent } from '@open-harness/oh-agent'

@@ -6,8 +6,8 @@
  * @module @open-harness/oh-settings
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import type z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import type z from '@open-harness/schemastery'
 import { redactSecrets } from './redact.ts'
 import type { RedactedSecret } from './redact.ts'
 import type { SettingsNamespace, SettingsUpdateSource } from './types.ts'
@@ -128,7 +128,7 @@ export interface SettingsScope<T> {
   replace(section: object): Promise<void>
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     settings: SettingsProvider
   }

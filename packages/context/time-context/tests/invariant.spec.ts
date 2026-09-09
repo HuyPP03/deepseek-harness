@@ -1,6 +1,6 @@
 import { createUserMessage } from '@open-harness/oh-llm'
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import SessionStore, { Session, SessionId, type SessionEvent } from '@open-harness/oh-session'
 import * as TimeInvariant from '@open-harness/oh-time-context/invariant'

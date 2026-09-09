@@ -3,7 +3,7 @@
  * @module @open-harness/oh-client-hmr/invariant
  */
 
-import type { Context, Fiber } from '@deepseek-ai/cordis'
+import type { Context, Fiber } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
 const PACKAGE_NAME = '@open-harness/oh-client-hmr'

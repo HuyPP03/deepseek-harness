@@ -220,7 +220,7 @@ export interface InsertTextRequest {
   readonly span: TokenSpan
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Events {
     /**
      * Applies one command claim to the scoped Input. Dispatched with the

@@ -1,6 +1,6 @@
 /** Package-local scripted child boundary for deterministic tool-subagent tests. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { ContentBlock } from '@open-harness/oh-llm'
 import { SessionId } from '@open-harness/oh-session'
 import type {

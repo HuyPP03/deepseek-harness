@@ -32,7 +32,7 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-attachment": "workspace:^",
     "@open-harness/oh-credentials": "workspace:^",
     "@open-harness/oh-credentials-oauth-tokens": "workspace:^",
@@ -45,11 +45,11 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-attachment": "workspace:^",
     "@open-harness/oh-attachment-local": "workspace:^",
     "@open-harness/oh-credentials": "workspace:^",

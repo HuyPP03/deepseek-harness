@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentLoop from '@open-harness/oh-agent-loop'
 import { renderPrompt } from '@open-harness/oh-system-prompt'
 import { mountAgentLoopTestDependencies } from '../src/index.ts'

@@ -4,8 +4,8 @@
  * @module @open-harness/oh-token-meter
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { BlockAssembler, deepFreeze } from '@open-harness/oh-llm'
 import type { Message, TokenUsage } from '@open-harness/oh-llm'
 import type { EpochHeader, Session, SessionEvent } from '@open-harness/oh-session'
@@ -64,7 +64,7 @@ function validateConfigKeys(config: TokenMeterConfig): void {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     tokenMeter: TokenMeter
   }

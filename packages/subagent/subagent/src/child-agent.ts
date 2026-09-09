@@ -8,7 +8,7 @@
  * @module @open-harness/oh-subagent/child-agent
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent, AgentOptions, CreateAgentOptions } from '@open-harness/oh-agent'
 import type { SandboxMode } from '@open-harness/oh-sandbox'
 import type { Session, SessionId } from '@open-harness/oh-session'

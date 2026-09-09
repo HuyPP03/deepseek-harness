@@ -9,8 +9,8 @@
  * @module @open-harness/oh-bash-local
  */
 
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { SHELL_SETTINGS_NAMESPACE, ShellExecutor } from '@open-harness/oh-shell'
 import type { ShellExecRequest, ShellExecSpec, ShellProcess, ShellProcessRead, ShellRunResult, CollectedOutput } from '@open-harness/oh-shell'
 import type { SubprocessCollect, SubprocessHandle, SubprocessOutputReader, SubprocessSpawnSpec } from '@open-harness/oh-subprocess'

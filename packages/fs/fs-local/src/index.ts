@@ -4,11 +4,11 @@
  * @module @open-harness/oh-fs-local
  */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { constants as bufferConstants } from 'node:buffer'
 import { isAbsolute, relative, resolve, sep } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import { FileSystem, FsError, FsVersion } from '@open-harness/oh-fs'
 import type {
   FsDirEntry,

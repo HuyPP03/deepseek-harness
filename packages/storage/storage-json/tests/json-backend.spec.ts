@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promise
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterAll, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import Storage, { storageBackendServiceKey } from '@open-harness/oh-storage'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import { runKvBackendContract } from '../../storage/tests/contract.ts'

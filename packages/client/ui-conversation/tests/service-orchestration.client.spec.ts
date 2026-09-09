@@ -3,7 +3,7 @@
 // TestSessions mints tagged scopes through the production createScope, so the
 // service's scopeOf/binding path runs against production resolution (no local
 // tag probe).
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { AttachmentId } from '@open-harness/oh-attachment'
 import { makeTranslate, SlotTestRuntime } from '@open-harness/oh-client-test-runtime'

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import * as CommandInvariant from '@open-harness/oh-commands/invariant'
 import InvariantRegistry, { InvariantError } from '@open-harness/oh-invariants'
 import SessionStore, { SessionId, type Session } from '@open-harness/oh-session'

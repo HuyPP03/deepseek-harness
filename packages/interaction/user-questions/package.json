@@ -40,12 +40,12 @@
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-llm": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-llm": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

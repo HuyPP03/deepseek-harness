@@ -17,11 +17,11 @@
  * @module @open-harness/oh-session-projection
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { ZodType } from 'zod'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sessionProjections: SessionProjectionRegistry
   }

@@ -1,7 +1,7 @@
 /** Event-level policy tests; no filesystem provider is needed because the plugin performs no I/O. */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { FsTargetKey, FsVersion } from '@open-harness/oh-fs'
 import type { FsObservation, FsTarget, FsWriteIntent } from '@open-harness/oh-fs'
 import * as FsPolicy from '@open-harness/oh-fs-observation-policy'

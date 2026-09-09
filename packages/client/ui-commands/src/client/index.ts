@@ -29,7 +29,7 @@ export type {
 } from './contract.ts'
 export type { CommandKey } from './locales.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     commandUi: CommandUiRuntime
   }

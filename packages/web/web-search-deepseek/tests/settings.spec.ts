@@ -1,8 +1,8 @@
 /** The `web-search-deepseek` settings section layered over the composition entry. */
 
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
-import type { Fiber } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
+import type { Fiber } from '@open-harness/cordis'
 import { SettingsProvider } from '@open-harness/oh-settings'
 import type { SettingsNamespace } from '@open-harness/oh-settings'
 import WebRuntime from '@open-harness/oh-web'

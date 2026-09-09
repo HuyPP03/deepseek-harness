@@ -32,8 +32,8 @@
  * decisions (the app-shell assembly is itself a graph entry, the only
  * shell-own module registered with the module system).
  */
-import { Context } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import { createRoot, type Root } from 'react-dom/client'
 import * as ModulesClient from '@open-harness/oh-client-modules/client'
 import {

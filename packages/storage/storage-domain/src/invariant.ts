@@ -9,7 +9,7 @@
  * @module @open-harness/oh-storage-domain/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import type { DomainChanged } from './events.ts'
 

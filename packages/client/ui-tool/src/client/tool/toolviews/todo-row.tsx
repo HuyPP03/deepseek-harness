@@ -8,7 +8,7 @@
 // above the composer, so the row stays one line until expanded.
 
 import { IconChecklistOutline14 } from '@open-harness/oh-client-ui-primitives'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { PropsLocale } from '@open-harness/oh-client-ui-slots'
 import type { ToolCallViewProps } from '../../contract/slots.ts'
 import { toolRowModel } from '../models/tool-call-model.ts'

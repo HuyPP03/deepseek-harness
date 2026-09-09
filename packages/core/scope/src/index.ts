@@ -5,8 +5,8 @@
  * @module @open-harness/oh-scope
  */
 
-import type { Context, Fiber } from '@deepseek-ai/cordis'
-import { Context as CordisContext } from '@deepseek-ai/cordis'
+import type { Context, Fiber } from '@open-harness/cordis'
+import { Context as CordisContext } from '@open-harness/cordis'
 
 export { AnonymousEntries, NamedEntries, ScopedLayers } from './store.ts'
 export type { ScopeLayer } from './store.ts'

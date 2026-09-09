@@ -25,8 +25,8 @@ packages:
 linkWorkspacePackages: true
 
 overrides:
-  '@deepseek-ai/cosmokit': 'link:vendor/cosmokit'
-  '@deepseek-ai/schemastery': 'link:vendor/schemastery'
+  '@open-harness/cosmokit': 'link:vendor/cosmokit'
+  '@open-harness/schemastery': 'link:vendor/schemastery'
 
 peerDependencyRules:
   allowedVersions:

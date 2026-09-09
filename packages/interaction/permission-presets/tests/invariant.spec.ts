@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import SessionStore, { type Session, type SessionEvent } from '@open-harness/oh-session'
 import * as PermissionInvariant from '@open-harness/oh-permission-presets/invariant'
 import InvariantRegistry from '@open-harness/oh-invariants'

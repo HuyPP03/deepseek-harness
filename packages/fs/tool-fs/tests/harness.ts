@@ -1,4 +1,4 @@
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import AgentLoop from '@open-harness/oh-agent-loop'
 import { mountAgentLoopTestDependencies } from '@open-harness/oh-agent-loop-testkit'

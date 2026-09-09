@@ -7,7 +7,7 @@ Shared prerequisite mounting for tests that exercise the concrete `AgentLoop`. `
 The caller registers adapters and optional plugins, mounts `AgentLoop` with the configuration under test, and disposes its own Context. System-prompt and tool-registry configuration can be forwarded through `options`; the helper does not provide test defaults beyond those owned by the services. A plugin-load failure rejects the helper call, while services activated earlier in the sequence remain owned by the caller's Context.
 
 ```ts
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentLoop from '@open-harness/oh-agent-loop'
 import { mountAgentLoopTestDependencies } from '@open-harness/oh-agent-loop-testkit'
 

@@ -7,7 +7,7 @@
  * @module @open-harness/oh-compaction
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { Session } from '@open-harness/oh-session'
 import type { CommandId } from '@open-harness/oh-commands/brand'
 import type { CompactionResult } from './types.ts'
@@ -78,7 +78,7 @@ export interface ManualCompactAgentContext extends CompactionAgentContext {
   runMaintenance<T>(task: (signal: AbortSignal) => Promise<T>): Promise<T>
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     compaction: CompactionEngine
   }

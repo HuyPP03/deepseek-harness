@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createUserMessage, CallId  } from '@open-harness/oh-llm'
 import { createScope } from '@open-harness/oh-scope'
 import type { Scope } from '@open-harness/oh-scope'

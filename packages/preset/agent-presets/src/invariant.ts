@@ -3,7 +3,7 @@
  * @module @open-harness/oh-agent-presets/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 // Type-only: resolves the `system-prompt/assemble` waterfall this companion
 // joins, and the `agent` field `oh-agent` merges into its context.

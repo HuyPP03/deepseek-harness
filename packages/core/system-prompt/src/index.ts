@@ -4,13 +4,13 @@
  * @module @open-harness/oh-system-prompt
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { AnonymousEntries, NamedEntries, ScopedLayers, scopeTarget } from '@open-harness/oh-scope'
 import type { ScopeKey, ScopeLayer, Scoped } from '@open-harness/oh-scope'
 import type { ContextSnapshotSection, ToolSchema } from '@open-harness/oh-llm'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     systemPrompt: SystemPrompt
   }

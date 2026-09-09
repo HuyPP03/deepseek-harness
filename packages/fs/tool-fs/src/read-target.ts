@@ -3,7 +3,7 @@
  * @module @open-harness/oh-tool-fs/src/read-target
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { FsError } from '@open-harness/oh-fs'
 import type { FsInfo, FsTarget } from '@open-harness/oh-fs'
 import type { ToolExecution } from '@open-harness/oh-tools'

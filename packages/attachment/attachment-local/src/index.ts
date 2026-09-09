@@ -1,8 +1,8 @@
 /** Local durable attachment backend rooted below `OH_HOME`. @module @open-harness/oh-attachment-local */
 
 import { join, resolve } from 'node:path'
-import { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { AttachmentStore } from '@open-harness/oh-attachment'
 import type { ImageAttachmentLimits, ImageAttachmentRef, SaveImageAttachment, StoredImageAttachment } from '@open-harness/oh-attachment'
 import { resolveOhHome } from '@open-harness/oh-home-paths'

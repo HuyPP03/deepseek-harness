@@ -11,7 +11,7 @@
  * @module @open-harness/oh-lsp
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { HarnessError } from '@open-harness/oh-llm'
 import type { LspProviderId } from './brand.ts'
 import type {
@@ -35,7 +35,7 @@ export type {
   LspService,
 } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     lsp: LspService
   }

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { SessionEvent, SessionHeader, SessionId } from '@open-harness/oh-session'
 import { SubagentError } from '@open-harness/oh-subagent'
 import { RpcId } from '../src/api/rpc.ts'

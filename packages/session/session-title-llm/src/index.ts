@@ -4,8 +4,8 @@
  * @module @open-harness/oh-session-title-llm
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { createUserMessage, BlockAssembler, deepFreeze } from '@open-harness/oh-llm'
 import type { FinishReason, GenerateOptions, Message } from '@open-harness/oh-llm'
 import { deadline, MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'

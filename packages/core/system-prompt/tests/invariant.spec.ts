@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { PromptAssembly } from '@open-harness/oh-system-prompt'
 import * as SystemPromptInvariant from '@open-harness/oh-system-prompt/invariant'
 import InvariantRegistry from '@open-harness/oh-invariants'

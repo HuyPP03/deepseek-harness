@@ -1,6 +1,6 @@
 /** Live/persisted logical-corpus resolution for session-query. */
 
-import type { Context, Fiber } from '@deepseek-ai/cordis'
+import type { Context, Fiber } from '@open-harness/cordis'
 import type { Session, SessionEvent, SessionHeader, SessionId } from '@open-harness/oh-session'
 import type SessionPersistence from '@open-harness/oh-session-persistence'
 import type { SessionRecord } from './types.ts'

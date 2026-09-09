@@ -3,7 +3,7 @@
  * @module @open-harness/oh-schedule
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import { createUserMessage } from '@open-harness/oh-llm'
 import type { EveryScheduleRecord, OneShotScheduleRecord } from './types.ts'

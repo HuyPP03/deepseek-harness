@@ -18,7 +18,7 @@
 
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
 import { ToolListChangedNotificationSchema } from '@modelcontextprotocol/sdk/types.js'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { McpServerStatus, McpServerView } from '@open-harness/oh-mcp-registry'
 import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'
 import { resolveServerValues } from './credentials.ts'

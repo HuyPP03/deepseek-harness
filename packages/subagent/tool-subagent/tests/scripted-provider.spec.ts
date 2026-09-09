@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { type Agent } from '@open-harness/oh-agent'
 import SubagentRuntime, { type SubagentStartRequest } from '@open-harness/oh-subagent'
 import { SessionId } from '@open-harness/oh-session'

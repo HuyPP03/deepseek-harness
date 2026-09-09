@@ -5,9 +5,9 @@
  * @module @open-harness/oh-agent-loop
  */
 
-import { Context, FiberState, Service } from '@deepseek-ai/cordis'
+import { Context, FiberState, Service } from '@open-harness/cordis'
 import { randomUUID } from 'node:crypto'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import { emitAgentEvent } from '@open-harness/oh-agent'
 import type {
   Agent,
@@ -157,7 +157,7 @@ interface PreparedAgent {
   dispose(): Promise<void>
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     agentLoop: AgentLoop
     /**

@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { FileSystem, FsError, FsTargetKey, FsVersion } from '@open-harness/oh-fs'
 import type {
   FsDirEntry,

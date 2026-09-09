@@ -1,6 +1,6 @@
 import { createUserMessage } from '@open-harness/oh-llm'
 import { describe, expect, it } from 'vitest'
-import { Context, symbols, type EffectMeta, type Fiber } from '@deepseek-ai/cordis'
+import { Context, symbols, type EffectMeta, type Fiber } from '@open-harness/cordis'
 import LlmRuntime from '@open-harness/oh-llm'
 import SessionStore, { SessionId, type SessionEvent } from '@open-harness/oh-session'
 import SystemPrompt from '@open-harness/oh-system-prompt'

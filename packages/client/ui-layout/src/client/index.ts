@@ -24,7 +24,7 @@ export { LayoutController } from './service.ts'
 export type { CenterView } from './stores.ts'
 export type { ILayout } from './service.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** The outward face only; the concrete service stays inside this plugin. */
     layout: import('./service.ts').ILayout

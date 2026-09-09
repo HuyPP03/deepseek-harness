@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import LlmRuntime, { CallId, LlmAdapter } from '@open-harness/oh-llm'
 import type { GenerateOptions, StreamChunk } from '@open-harness/oh-llm'
 import * as LlmInvariant from '@open-harness/oh-llm/invariant'

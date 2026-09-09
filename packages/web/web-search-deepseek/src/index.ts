@@ -5,8 +5,8 @@
  * @module @open-harness/oh-web-search-deepseek
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type {} from '@open-harness/oh-agent'
 import { credentialRef } from '@open-harness/oh-credentials'
 import { installSettingsSection, settingsNamespace } from '@open-harness/oh-settings'

@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { MessageId } from '@open-harness/oh-llm/brand'
 import { Session, SessionId } from '@open-harness/oh-session'
 import { remoteMethods } from '@open-harness/oh-typert-protocol'

@@ -9,7 +9,7 @@
 
 import { tmpdir } from 'node:os'
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import type { SandboxPolicy } from '@open-harness/oh-sandbox'
 import { LocalSandboxProvider } from '@open-harness/oh-sandbox-local'
 

@@ -52,7 +52,7 @@ The root entrypoint of each owner remains independent of diagnostics. Loading th
 ## Composition
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import InvariantRegistry from '@open-harness/oh-invariants'
 import * as SessionInvariant from '@open-harness/oh-session/invariant'
 

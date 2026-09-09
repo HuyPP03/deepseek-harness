@@ -7,7 +7,7 @@
  * [SessionsPort](./sessions-port.ts). Widening this interface is the
  * explicit act of widening what features may do to the sessions domain.
  */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {
   RpcResult, SessionId, SubagentAddress, WorkspaceId,
 } from '@open-harness/oh-api-remotes/client'

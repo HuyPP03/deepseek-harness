@@ -1,6 +1,6 @@
 /** Package-owned invariant companion for the bash seam. @module @open-harness/oh-shell/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
 const PACKAGE_NAME = '@open-harness/oh-shell'

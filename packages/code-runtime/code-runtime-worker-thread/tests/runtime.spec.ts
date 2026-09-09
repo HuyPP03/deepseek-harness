@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { WorkerThreadCodeRuntime } from '@open-harness/oh-code-runtime-worker-thread'
 import type { Config } from '@open-harness/oh-code-runtime-worker-thread'
 import type { CodeBindingFunction, CodeBindingNamespace, CodeRunResult } from '@open-harness/oh-code-runtime'

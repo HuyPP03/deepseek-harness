@@ -8,7 +8,7 @@
  * @module @open-harness/oh-credentials
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { CredentialRef } from './types.ts'
 
 export type { CredentialRef } from './types.ts'
@@ -45,7 +45,7 @@ export interface CredentialInfo {
   writable: boolean
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     credentials: CredentialProvider
   }

@@ -6,7 +6,7 @@
  * @module @open-harness/oh-jobs
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import type {
   JobDoneListener, JobId, JobLogRead, JobRead, JobSnapshot, JobStart, JobsChangedListener,
@@ -27,7 +27,7 @@ export type {
   JobsChangedListener,
 } from './types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     jobs: JobRegistry
   }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context, type Fiber } from '@deepseek-ai/cordis'
+import { Context, type Fiber } from '@open-harness/cordis'
 import AgentRegistry, { type Agent } from '@open-harness/oh-agent'
 import AgentLoop from '@open-harness/oh-agent-loop'
 import LlmRuntime, { createUserMessage, CallId, LlmAdapter  } from '@open-harness/oh-llm'

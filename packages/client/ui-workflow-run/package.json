@@ -63,7 +63,7 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-tool-workflow": "workspace:^",
     "@open-harness/oh-workflow": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "devDependencies": {
     "@open-harness/oh-client-locale": "workspace:^",
@@ -77,6 +77,6 @@
     "@open-harness/oh-tool-workflow": "workspace:^",
     "@open-harness/oh-workflow": "workspace:^",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

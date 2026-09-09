@@ -1,7 +1,7 @@
 /** Session-fork boundaries, lineage, and inherited model routing. */
 
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentRegistry, { agentEvents } from '@open-harness/oh-agent'
 import type { Agent, AgentHandle, CreateAgentOptions } from '@open-harness/oh-agent'
 import { createUserMessage, ReasoningEffortId } from '@open-harness/oh-llm'

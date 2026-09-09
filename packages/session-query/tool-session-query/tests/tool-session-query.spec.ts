@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context, type Fiber } from '@deepseek-ai/cordis'
+import { Context, type Fiber } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import { createUserMessage, CallId, HarnessError , createMessage } from '@open-harness/oh-llm'
 import { MAX_TIMER_DELAY_MS, TimeoutReason } from '@open-harness/oh-timeout'

@@ -38,7 +38,7 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-session-title": "workspace:^",
     "@open-harness/oh-session-persistence": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "peerDependenciesMeta": {
     "@open-harness/oh-session-persistence": {
@@ -52,6 +52,6 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-session-title": "workspace:^",
     "@open-harness/oh-session-persistence": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

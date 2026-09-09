@@ -46,7 +46,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-client-connection": "workspace:^",
     "@open-harness/oh-client-runtime": "workspace:^",
@@ -70,7 +70,7 @@
     "@open-harness/oh-client-web-react": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@types/react": "~18.3.1",
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "files": [

@@ -5,7 +5,7 @@
 # preflight refuses before any request leaves the process — deterministic,
 # keyless, and free of external network in replay alike.
 - id: base
-  name: '@deepseek-ai/cordis-plugin-include'
+  name: '@open-harness/cordis-plugin-include'
   config:
     path: ./cordis.yml
     patches:

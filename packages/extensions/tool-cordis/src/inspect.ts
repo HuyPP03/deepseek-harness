@@ -7,7 +7,7 @@
  * @module @open-harness/oh-tool-cordis/inspect
  */
 
-import type { Context, Fiber } from '@deepseek-ai/cordis'
+import type { Context, Fiber } from '@open-harness/cordis'
 import type { ScopeKey } from '@open-harness/oh-scope'
 import type { Agent } from '@open-harness/oh-agent'
 // Type-only: resolves `ctx.dynamicCordisRunner` (the registry this report reads).

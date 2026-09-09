@@ -4,8 +4,8 @@
  */
 
 import { isDeepStrictEqual } from 'node:util'
-import { FiberState } from '@deepseek-ai/cordis'
-import type { Context } from '@deepseek-ai/cordis'
+import { FiberState } from '@open-harness/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
 import type { GoalMessageSource, GoalRef, GoalView } from '@open-harness/oh-goal'
 import { createUserMessage } from '@open-harness/oh-llm'

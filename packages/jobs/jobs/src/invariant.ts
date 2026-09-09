@@ -1,6 +1,6 @@
 /** Package-owned background-job snapshot invariants. @module @open-harness/oh-jobs/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { Agent } from '@open-harness/oh-agent'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import type { JobSnapshot } from './types.ts'

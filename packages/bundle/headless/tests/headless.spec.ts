@@ -1,7 +1,7 @@
 /** Direct one-shot Agent driving, durable aggregation, flushing, and exit mapping. */
 
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import AgentRegistry, { Inbox } from '@open-harness/oh-agent'
 import type { Agent, AgentHandle, CreateAgentOptions } from '@open-harness/oh-agent'
 import AgentDefaultModelConfig from '@open-harness/oh-agent-default-model'

@@ -1,7 +1,7 @@
 /** Read-only projection of the current Cordis Loader plugin entries. */
 
-import type { Context, FiberState } from '@deepseek-ai/cordis'
-import type {} from '@deepseek-ai/cordis-plugin-loader'
+import type { Context, FiberState } from '@open-harness/cordis'
+import type {} from '@open-harness/cordis-plugin-loader'
 import { TypertRemoteService, Remote } from '@open-harness/oh-typert-protocol'
 // Typert-generated ./typert and ./remote artifacts import Zod at runtime.
 import type {} from 'zod'

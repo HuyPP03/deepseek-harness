@@ -12,7 +12,7 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { foldConsumedWork } from '@open-harness/oh-agent'
 import type { Agent, AgentHandle } from '@open-harness/oh-agent'
 import { SessionId, type SessionEvent, type TurnEndReason } from '@open-harness/oh-session'

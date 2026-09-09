@@ -7,7 +7,7 @@
  * scope-birth roster warm — is InputTriggerController behavior, tested on a real
  * session scope (createScope).
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it, vi } from 'vitest'
 import { createScope, scopeOf } from '@open-harness/oh-client-runtime/client'
 import type { SessionId } from '@open-harness/oh-client-runtime/client'

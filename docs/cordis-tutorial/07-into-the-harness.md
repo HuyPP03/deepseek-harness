@@ -9,7 +9,7 @@ This chapter registers a model-callable tool with the harness's `tools` service,
 Create `greet-tool.ts` in `tmp/cordis-tutorial`:
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 import { CallId } from '@open-harness/oh-llm'
 
@@ -53,7 +53,7 @@ Every pattern here is from the earlier chapters: `inject: ['tools']` ([chapter 3
 Create `tool-logger.ts` — a separate plugin that watches every tool call in the app through the harness's `tools/result` event:
 
 ```ts
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-tools'
 
 export const name = 'tool-logger'

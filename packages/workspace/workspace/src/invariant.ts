@@ -3,7 +3,7 @@
  * @module @open-harness/oh-workspace/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 import type { DomainChanged } from '@open-harness/oh-storage-domain'
 import { WorkspaceId } from '@open-harness/oh-workspace'

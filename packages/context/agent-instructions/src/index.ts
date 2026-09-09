@@ -9,7 +9,7 @@
  * @module @open-harness/oh-agent-instructions
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { isDeepStrictEqual } from 'node:util'
 import type { Agent, PreStepDecision } from '@open-harness/oh-agent'
 import { createUserMessage } from '@open-harness/oh-llm'

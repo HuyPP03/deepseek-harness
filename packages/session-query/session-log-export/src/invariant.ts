@@ -1,7 +1,7 @@
 /** Package invariant companion for `@open-harness/oh-session-log-export`. */
 
 /* jscpd:ignore-start */
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
 const PACKAGE_NAME = '@open-harness/oh-session-log-export'

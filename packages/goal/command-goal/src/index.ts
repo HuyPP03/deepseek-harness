@@ -3,7 +3,7 @@
  * @module @open-harness/oh-command-goal
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { CommandInvocation, CommandResult } from '@open-harness/oh-commands'
 import { GoalError } from '@open-harness/oh-goal'
 import type { GoalPhase, GoalRef, GoalView } from '@open-harness/oh-goal'

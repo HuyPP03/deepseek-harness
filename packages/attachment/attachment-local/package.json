@@ -25,16 +25,16 @@
     "@open-harness/oh-attachment": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-home-paths": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
-    "@deepseek-ai/schemastery": "workspace:^",
+    "@open-harness/schemastery": "workspace:^",
     "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@open-harness/oh-attachment": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-home-paths": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

@@ -7,7 +7,7 @@
  * @module @open-harness/oh-llm/retry-policy
  */
 
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import { MAX_TIMER_DELAY_MS } from '@open-harness/oh-timeout'
 import { EMPTY_RESPONSE_CODE } from './error.ts'
 

@@ -37,8 +37,8 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-include": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-atomic-write": "workspace:^",
     "@open-harness/oh-commands": "workspace:^",
@@ -48,15 +48,15 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-settings": "workspace:^",
     "@open-harness/oh-system-prompt": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",
-    "@deepseek-ai/schemastery": "workspace:^"
+    "@open-harness/schemastery": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis-plugin-include": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-agent-loop": "workspace:^",
     "@open-harness/oh-atomic-write": "workspace:^",
@@ -71,6 +71,6 @@
     "@open-harness/oh-settings-file": "workspace:^",
     "@open-harness/oh-system-prompt": "workspace:^",
     "@open-harness/oh-tools": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

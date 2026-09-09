@@ -12,9 +12,9 @@
  * service; sessions that have already logged a selection remain unchanged.
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { ohHomePath } from '@open-harness/oh-home-paths'
-import z from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
 import type {} from '@open-harness/oh-agent-default-model'
 import type { ApiProxy } from './api/index.ts'
 import { createApiProxy, DEFAULT_COLD_BLANK_PROBE_MAX_BYTES } from './api-proxy.ts'
@@ -31,7 +31,7 @@ export type { IApiClient } from './fetch/client.ts'
 export { createApiProxy } from './api-proxy.ts'
 export type { ApiProxyDefaults } from './api-proxy.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** The host-side ApiProxy implementation (the transport-agnostic gateway face). */
     apiProxy: ApiProxy

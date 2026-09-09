@@ -4,7 +4,7 @@
  * @module @open-harness/oh-session-query
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { Session, snapshotSessionEvent, type SessionId } from '@open-harness/oh-session'
 import { foldSessionTitle } from '@open-harness/oh-session-title'
 import type { SessionTitleSnapshot } from '@open-harness/oh-session-title'
@@ -65,7 +65,7 @@ export {
 } from './filters.ts'
 export { assertSessionHeadersCompatible } from './sources.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     sessionQuery: SessionQueryEngine
   }

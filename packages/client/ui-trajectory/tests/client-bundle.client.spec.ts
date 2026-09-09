@@ -8,7 +8,7 @@
  */
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { stubSettingsScope } from '@open-harness/oh-client-test-runtime'
 import { afterEach, describe, expect, it } from 'vitest'
 import {

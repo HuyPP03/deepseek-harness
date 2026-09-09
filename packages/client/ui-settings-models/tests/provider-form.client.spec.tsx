@@ -2,7 +2,7 @@
 /** Model-list editing, endpoint interrogation, and hand-declared provider creation. */
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import Schema from '@deepseek-ai/schemastery'
+import Schema from '@open-harness/schemastery'
 import { bindSnapshotSelector } from '@open-harness/oh-client-web-react'
 import type { RpcResponse, SettingsNamespaceView } from '@open-harness/oh-api-remotes/client'
 import { ModelsSection, providerCopy } from '../src/client/ModelsSection.tsx'

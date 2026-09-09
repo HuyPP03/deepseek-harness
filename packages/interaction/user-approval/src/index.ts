@@ -5,8 +5,8 @@
  */
 
 import { randomUUID } from 'node:crypto'
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type { Agent } from '@open-harness/oh-agent'
 import { createUserMessage, type CallId } from '@open-harness/oh-llm'
 import { scopeTarget } from '@open-harness/oh-scope'
@@ -14,7 +14,7 @@ import type { Scoped } from '@open-harness/oh-scope'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import type {} from '@open-harness/oh-system-prompt'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     approval: ApprovalService
   }

@@ -22,7 +22,7 @@ function props(list: PluginInventorySettingsTabInjected['list']): PluginInventor
 
 const SNAPSHOT = {
   entries: [
-    { entryId: '8a1b2c3d', moduleName: '@deepseek-ai/cordis-plugin-hmr', enabled: true, fiberPhase: 'active' },
+    { entryId: '8a1b2c3d', moduleName: '@open-harness/cordis-plugin-hmr', enabled: true, fiberPhase: 'active' },
     { entryId: 'pending', moduleName: 'cordis:pending-name', enabled: true, fiberPhase: 'pending' },
     { entryId: 'loading', moduleName: '@fixture/loading-name', enabled: true, fiberPhase: 'loading' },
     { entryId: 'failed', moduleName: '@fixture/failed-name', enabled: true, fiberPhase: 'failed' },

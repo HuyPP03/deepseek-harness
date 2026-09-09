@@ -13,8 +13,8 @@
  * @module @open-harness/oh-persona
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import type {} from '@open-harness/oh-system-prompt'
 
 // Imported rather than restated: the registry declares the slot this row

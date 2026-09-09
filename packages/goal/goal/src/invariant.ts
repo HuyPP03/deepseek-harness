@@ -1,6 +1,6 @@
 /** Package-owned durable goal-stream invariants. @module @open-harness/oh-goal/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import { applyGoalEvent, emptyGoalFoldState } from './fold.ts'

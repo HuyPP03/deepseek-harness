@@ -58,7 +58,7 @@
     "@open-harness/oh-typert-protocol": "workspace:^"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-api-gateway": "workspace:^",
     "@open-harness/oh-commands": "workspace:^",
@@ -91,6 +91,6 @@
     "@open-harness/oh-session-persistence": "workspace:^",
     "@open-harness/oh-settings": "workspace:^",
     "@open-harness/oh-typert-registry": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

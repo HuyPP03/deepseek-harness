@@ -12,7 +12,7 @@ import { mkdir, mkdtemp, readFile, realpath, rm, stat, symlink, unlink, utimes, 
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { LocalFileSystem } from '@open-harness/oh-fs-local'
 import { FsVersion } from '@open-harness/oh-fs'
 import type { FsTarget } from '@open-harness/oh-fs'

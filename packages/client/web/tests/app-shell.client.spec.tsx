@@ -8,7 +8,7 @@
  */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, render } from '@testing-library/react'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import { TestSessions, TestWorkspaces } from '@open-harness/oh-client-test-runtime'
 import type { Stabilizer } from '@open-harness/oh-client-test-runtime'

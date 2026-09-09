@@ -1,6 +1,6 @@
 /** Platform-neutral assembly of generated Host Remote contributions. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import commandsRemote from '@open-harness/oh-commands/remote'
 import goalsRemote from '@open-harness/oh-goal/remote'
 import dynamicRemote from '@open-harness/oh-cordis-host-runner/remote'
@@ -89,7 +89,7 @@ export type {
 // package, and this assembly is where both planes legitimately meet.
 export type { JsonValue } from '@open-harness/oh-session/types'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     /** Generated Remote namespaces selected by this Client assembly. */
     remote: TypertClientRemote

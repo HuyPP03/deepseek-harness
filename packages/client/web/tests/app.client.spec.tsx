@@ -6,7 +6,7 @@
  */
 import { afterEach, describe, expect, it } from 'vitest'
 import { cleanup, render } from '@testing-library/react'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { SlotTestRuntime } from '@open-harness/oh-client-test-runtime'
 import type { SessionId } from '@open-harness/oh-client-runtime/client'
 import { buildRenderApp } from '@open-harness/oh-client-web/src/app.tsx'

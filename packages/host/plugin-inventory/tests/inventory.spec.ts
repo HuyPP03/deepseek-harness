@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { Context, type Plugin } from '@deepseek-ai/cordis'
-import Loader from '@deepseek-ai/cordis-plugin-loader'
+import { Context, type Plugin } from '@open-harness/cordis'
+import Loader from '@open-harness/cordis-plugin-loader'
 import { remoteMethods } from '@open-harness/oh-typert-protocol'
 import PluginInventoryGateway from '../src/index.ts'
 

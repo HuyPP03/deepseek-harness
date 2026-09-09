@@ -6,7 +6,7 @@
  * scope → popupFor; unknown id fails loud), both fold up on fiber disposal
  * (HMR safety), and the service satisfies the frozen CommandUiContract.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import { createScope, scopeOf, SlotRegistry } from '@open-harness/oh-client-runtime/client'
 import type { SessionId } from '@open-harness/oh-client-runtime/client'

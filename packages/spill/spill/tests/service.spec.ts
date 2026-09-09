@@ -6,7 +6,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { CallId } from '@open-harness/oh-llm'
 import { SessionId } from '@open-harness/oh-session'
 import { SpillLocator, SpillStore } from '@open-harness/oh-spill'

@@ -13,8 +13,8 @@
  * @module @open-harness/oh-cordis-host-runner/guard
  */
 
-import { Context } from '@deepseek-ai/cordis'
-import type { Plugin } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
+import type { Plugin } from '@open-harness/cordis'
 import { scopeOf } from '@open-harness/oh-scope'
 import { assertSupportedJsonSchema, defineTool } from '@open-harness/oh-tools'
 import type { ToolDefinition } from '@open-harness/oh-tools'

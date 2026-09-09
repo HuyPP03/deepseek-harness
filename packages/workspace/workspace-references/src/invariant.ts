@@ -1,6 +1,6 @@
 /** Package-owned reference-project event invariants. @module @open-harness/oh-workspace-references/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { isAbsolute } from 'node:path'
 import type { Session, SessionEvent } from '@open-harness/oh-session'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'

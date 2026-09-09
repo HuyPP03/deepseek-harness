@@ -3,7 +3,7 @@
  * @module @open-harness/oh-host-directory-picker-auto/invariant
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantInstaller } from '@open-harness/oh-invariants'
 
 const PACKAGE_NAME = '@open-harness/oh-host-directory-picker-auto'

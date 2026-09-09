@@ -10,8 +10,8 @@
  * @module @open-harness/oh-tool-workflow
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { defineTool } from '@open-harness/oh-tools'
 import type { ToolCallView, ToolResultView } from '@open-harness/oh-tools'
 import type { ContentBlock } from '@open-harness/oh-llm'

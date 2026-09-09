@@ -14,8 +14,8 @@
  * `keyof SlotMap & string` is the declare-merge key pattern (see ui-slots):
  * this compilation unit sees only the runtime's 'root' row, but consumer
  * programs merge their own keys in; the rule fires on the narrow-map view. */
-import { Context, Inject } from '@deepseek-ai/cordis'
-import type { Fiber, Plugin } from '@deepseek-ai/cordis'
+import { Context, Inject } from '@open-harness/cordis'
+import type { Fiber, Plugin } from '@open-harness/cordis'
 import { createElement, Fragment, useSyncExternalStore } from 'react'
 import type { ReactNode } from 'react'
 import { act, render, within } from '@testing-library/react'

@@ -10,7 +10,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import LlmRuntime from '@open-harness/oh-llm'
 import { createUserMessage, LlmAdapter } from '@open-harness/oh-llm'
 import type { GenerateOptions, StreamChunk } from '@open-harness/oh-llm'

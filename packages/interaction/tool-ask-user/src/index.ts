@@ -6,7 +6,7 @@
  * @module @open-harness/oh-tool-ask-user
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 import '@open-harness/oh-user-questions'
 

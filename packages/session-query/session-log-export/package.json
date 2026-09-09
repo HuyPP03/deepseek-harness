@@ -22,7 +22,7 @@
   "scripts": { "bundle": "tsdown", "watch": "tsdown --watch" },
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-client-locale": "workspace:^",
     "@open-harness/oh-client-runtime": "workspace:^",
     "@open-harness/oh-client-ui-commands": "workspace:^",
@@ -34,8 +34,8 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-agent": "workspace:^",
     "@open-harness/oh-client-locale": "workspace:^",
     "@open-harness/oh-client-runtime": "workspace:^",

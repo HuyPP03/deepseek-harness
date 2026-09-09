@@ -7,7 +7,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createScope } from '@open-harness/oh-scope'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import { CodeRuntime } from '@open-harness/oh-code-runtime'

@@ -1,6 +1,6 @@
 # Add the persisted goal domain and its model-facing tools to the real one-shot app.
 - id: base
-  name: '@deepseek-ai/cordis-plugin-include'
+  name: '@open-harness/cordis-plugin-include'
   config:
     path: ./cordis.yml
     patches:

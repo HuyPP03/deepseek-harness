@@ -11,7 +11,7 @@ Read this package for the whole plugin tree and its composition order.
 `apply(ctx, config)` mounts each of these as a child of the bundle fiber:
 
 ```
-@deepseek-ai/cordis-plugin-timer  timer service (writes nothing to stdout)
+@open-harness/cordis-plugin-timer  timer service (writes nothing to stdout)
 @open-harness/oh-llm              abstract LLM service + content-block vocabulary
 @open-harness/oh-session          event-sourced session log + store
 @open-harness/oh-session-title    log-backed title service + deterministic fallback

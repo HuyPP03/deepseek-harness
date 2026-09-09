@@ -1,4 +1,4 @@
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { setSandboxMode } from '@open-harness/oh-sandbox-policy'
 import type {} from '@open-harness/oh-agent'
 

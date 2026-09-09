@@ -10,7 +10,7 @@
  * the loading page has to work while (and especially when) plugins fail.
  * @module @open-harness/oh-client-web/src/loader-status
  */
-import type { FiberState } from '@deepseek-ai/cordis'
+import type { FiberState } from '@open-harness/cordis'
 
 /**
  * Value mirror of cordis's `FiberState` const enum: a const enum has no

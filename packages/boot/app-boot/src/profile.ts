@@ -27,8 +27,8 @@ import {
   existsSync, lstatSync, mkdirSync, readFileSync, readlinkSync, symlinkSync, unlinkSync, writeFileSync,
 } from 'node:fs'
 import { basename, dirname, join } from 'node:path'
-import type { EntryOptions } from '@deepseek-ai/cordis-plugin-loader'
-import { applyEntryPatches, type PatchOptions } from '@deepseek-ai/cordis-plugin-include'
+import type { EntryOptions } from '@open-harness/cordis-plugin-loader'
+import { applyEntryPatches, type PatchOptions } from '@open-harness/cordis-plugin-include'
 import { resolveOhHome } from '@open-harness/oh-home-paths'
 import { loadOverlayPatches } from './index.ts'
 

@@ -43,7 +43,7 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-session-persistence": "workspace:^",
     "@open-harness/oh-storage": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   },
   "dependencies": {
     "zod": "^4.4.3"
@@ -55,6 +55,6 @@
     "@open-harness/oh-session": "workspace:^",
     "@open-harness/oh-session-persistence": "workspace:^",
     "@open-harness/oh-storage": "workspace:^",
-    "@deepseek-ai/cordis": "workspace:^"
+    "@open-harness/cordis": "workspace:^"
   }
 }

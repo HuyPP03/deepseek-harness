@@ -1,6 +1,6 @@
 /** Package-owned workflow lifecycle invariants. @module @open-harness/oh-workflow/invariant */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type { InvariantFailure, InvariantInstaller } from '@open-harness/oh-invariants'
 import type {
   WorkflowAgentEndInfo,

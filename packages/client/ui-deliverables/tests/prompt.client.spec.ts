@@ -1,6 +1,6 @@
 /** Node-half coverage for the model guidance paired with Web file references. */
 
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { afterEach, describe, expect, it } from 'vitest'
 import SystemPrompt from '@open-harness/oh-system-prompt'
 import { apply, inject } from '../src/index.ts'

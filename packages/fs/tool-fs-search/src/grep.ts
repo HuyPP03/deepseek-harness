@@ -11,7 +11,7 @@
  * @module @open-harness/oh-tool-fs-search/grep
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 import type { GenericCallView, SearchResultView, ToolResult } from '@open-harness/oh-tools'
 import type { RetainedItems } from '@open-harness/oh-output-retention'

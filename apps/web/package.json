@@ -31,7 +31,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis-plugin-group": "workspace:^",
+    "@open-harness/cordis-plugin-group": "workspace:^",
     "@open-harness/oh-client-modules": "workspace:^",
     "@open-harness/oh-client-ui-primitives": "workspace:^",
     "@open-harness/oh-client-ui-slots": "workspace:^",

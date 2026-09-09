@@ -5,7 +5,7 @@
 # restates the base fields verbatim and re-pins deepseek-v4-flash, mirroring
 # cordis.snapshot.yml.
 - id: base
-  name: '@deepseek-ai/cordis-plugin-include'
+  name: '@open-harness/cordis-plugin-include'
   config:
     path: ./cordis.yml
     patches:

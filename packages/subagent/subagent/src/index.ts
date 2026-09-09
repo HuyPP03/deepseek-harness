@@ -31,7 +31,7 @@
  * @module @open-harness/oh-subagent
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { scopeTarget } from '@open-harness/oh-scope'
 import type { Scoped } from '@open-harness/oh-scope'
 import { assertObjectJsonSchema } from '@open-harness/oh-tools'
@@ -126,7 +126,7 @@ export type { SubagentDescendantListEntry, SubagentListEntry } from './list-chil
 export type { SubagentRunEndInfo, SubagentRunInfo } from './types.ts'
 export type { SubagentIdentityProjection, SubagentTimingProjection } from './projection-types.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     subagents: SubagentRuntime
   }

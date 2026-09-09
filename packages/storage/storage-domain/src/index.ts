@@ -7,8 +7,8 @@
  * @module @open-harness/oh-storage-domain
  */
 
-import type { Context } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import type { Context } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { storageBackendServiceKey } from '@open-harness/oh-storage'
 import { DomainError } from './error.ts'
 import { descriptorOf } from './spec.ts'
@@ -32,7 +32,7 @@ declare module '@open-harness/oh-storage' {
   }
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     storageDomain: DomainFacility
   }

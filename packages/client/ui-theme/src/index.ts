@@ -1,6 +1,6 @@
 /** Host registration for the browser theme preference and pre-plugin palette. */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import type {} from '@open-harness/oh-host-webserver'
 import { settingsNamespace } from '@open-harness/oh-settings'
 import { injectBootTheme } from './boot-theme.ts'

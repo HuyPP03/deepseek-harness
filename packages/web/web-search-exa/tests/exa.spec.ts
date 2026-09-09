@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import WebRuntime from '@open-harness/oh-web'
 import { ExaSearchProvider, EXA_PROVIDER_ID } from '@open-harness/oh-web-search-exa'
 import * as exaPlugin from '@open-harness/oh-web-search-exa'

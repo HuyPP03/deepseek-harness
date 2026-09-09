@@ -52,7 +52,7 @@
     "xlsx": "^0.18.5"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-client-locale": "workspace:^",
     "@open-harness/oh-client-runtime": "workspace:^",
@@ -63,7 +63,7 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-api-remotes": "workspace:^",
     "@open-harness/oh-client-locale": "workspace:^",
     "@open-harness/oh-client-runtime": "workspace:^",

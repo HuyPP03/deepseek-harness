@@ -5,7 +5,7 @@
  * registration follows the slot declaration, resolves the per-session controller from the slot's
  * sessionId, and unregisters on fiber teardown.
  */
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import { LocaleRuntime } from '@open-harness/oh-client-locale/client'
 import { usePinnedBrowserLanguages } from '@open-harness/oh-client-test-runtime'

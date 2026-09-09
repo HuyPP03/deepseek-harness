@@ -1,5 +1,5 @@
 import { createUserMessage } from '@open-harness/oh-llm'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { describe, expect, it } from 'vitest'
 import SessionStore, { Session, SessionId } from '@open-harness/oh-session'
 import SessionTitleService, {

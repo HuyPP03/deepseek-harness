@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import SessionStore, { Session, SessionId, isJsonValue } from '@open-harness/oh-session'
 import type { SessionEvent, SessionHeader } from '@open-harness/oh-session'
 import {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import LlmRuntime, { createUserMessage, type StreamChunk  } from '@open-harness/oh-llm'
 import SessionStore, { SessionId, type SessionEvent } from '@open-harness/oh-session'
 import SystemPrompt from '@open-harness/oh-system-prompt'

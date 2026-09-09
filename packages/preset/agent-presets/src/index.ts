@@ -22,8 +22,8 @@
  */
 
 import { stat } from 'node:fs/promises'
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { bindScopeParent, createScope, scopeOf, type Scope, type ScopeKey, type ScopeParentBinding } from '@open-harness/oh-scope'
 // Type-only: the `agent/created` lifecycle event this service watches and the
 // Agent handle the `/mode` command operates on.
@@ -72,7 +72,7 @@ export { resolveSessionPreset, type PresetBearingSession } from './session.ts'
 export { PresetMountError, UnknownPresetError } from './preset.ts'
 export type { AgentPreset, Config, PresetRoot, PresetTrust } from './preset.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     agentPresets: AgentPresets
   }

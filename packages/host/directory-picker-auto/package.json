@@ -32,8 +32,8 @@
   ],
   "license": "MIT",
   "peerDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-client-ui-directory-picker-browse": "workspace:^",
     "@open-harness/oh-client-ui-directory-picker-native": "workspace:^",
     "@open-harness/oh-host-directory-picker-browse": "workspace:^",
@@ -42,9 +42,9 @@
     "@open-harness/oh-invariants": "workspace:^"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:^",
-    "@deepseek-ai/cordis-plugin-include": "workspace:^",
-    "@deepseek-ai/cordis-plugin-loader": "workspace:^",
+    "@open-harness/cordis": "workspace:^",
+    "@open-harness/cordis-plugin-include": "workspace:^",
+    "@open-harness/cordis-plugin-loader": "workspace:^",
     "@open-harness/oh-client-ui-directory-picker-browse": "workspace:^",
     "@open-harness/oh-client-ui-directory-picker-native": "workspace:^",
     "@open-harness/oh-host-directory-picker": "workspace:^",

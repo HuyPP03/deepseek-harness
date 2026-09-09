@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import LlmRuntime, { createUserMessage, CallId, LlmError, StreamChunk, errorChain  } from '@open-harness/oh-llm'
 import SessionStore, { SessionId, TurnEndReason } from '@open-harness/oh-session'
 import type { SessionEvent } from '@open-harness/oh-session'

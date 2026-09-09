@@ -10,12 +10,12 @@
  * @module @open-harness/oh-skill
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
+import { Context, Service } from '@open-harness/cordis'
 import { assertNever } from '@open-harness/oh-llm'
 import { NamedEntries, ScopedLayers, scopeChainOf, scopeOf } from '@open-harness/oh-scope'
 import type { ScopeKey, ScopeLayer } from '@open-harness/oh-scope'
-import z from '@deepseek-ai/schemastery'
-import type Schema from '@deepseek-ai/schemastery'
+import z from '@open-harness/schemastery'
+import type Schema from '@open-harness/schemastery'
 
 const SKILL_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const DEFAULT_COLLECT_CACHE_ENTRIES = 128
@@ -281,7 +281,7 @@ export interface Config {
   readonly collectCacheMaxEntries?: number
 }
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     skills: SkillRegistry
   }

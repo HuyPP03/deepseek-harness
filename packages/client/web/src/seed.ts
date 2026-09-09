@@ -10,7 +10,7 @@ import * as React from 'react'
 import * as ReactJsxRuntime from 'react/jsx-runtime'
 import * as ReactDom from 'react-dom'
 import * as ReactDomClient from 'react-dom/client'
-import * as Cordis from '@deepseek-ai/cordis'
+import * as Cordis from '@open-harness/cordis'
 import * as UiSlots from '@open-harness/oh-client-ui-slots'
 import * as WebReact from '@open-harness/oh-client-web-react'
 import * as UiPrimitives from '@open-harness/oh-client-ui-primitives'
@@ -31,7 +31,7 @@ export function getStaticModules(): Record<string, unknown> {
     'react/jsx-runtime': ReactJsxRuntime,
     'react-dom': ReactDom,
     'react-dom/client': ReactDomClient,
-    '@deepseek-ai/cordis': Cordis,
+    '@open-harness/cordis': Cordis,
     '@open-harness/oh-client-ui-slots': UiSlots,
     '@open-harness/oh-client-web-react': WebReact,
     '@open-harness/oh-client-ui-primitives': UiPrimitives,

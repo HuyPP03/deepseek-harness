@@ -4,8 +4,8 @@
  * @module @open-harness/oh-tools
  */
 
-import { Context, Service } from '@deepseek-ai/cordis'
-import z from '@deepseek-ai/schemastery'
+import { Context, Service } from '@open-harness/cordis'
+import z from '@open-harness/schemastery'
 import { AnonymousEntries, NamedEntries, ScopedLayers, scopeOf, scopeTarget } from '@open-harness/oh-scope'
 import type { ScopeKey, ScopeLayer, Scoped } from '@open-harness/oh-scope'
 import type { CallId, ContentBlock, ToolSchema } from '@open-harness/oh-llm'
@@ -134,7 +134,7 @@ export type {
   WebSource,
 } from './presentation.ts'
 
-declare module '@deepseek-ai/cordis' {
+declare module '@open-harness/cordis' {
   interface Context {
     tools: ToolRuntime
   }

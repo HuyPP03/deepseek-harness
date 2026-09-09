@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context } from '@open-harness/cordis'
 import { createUserMessage, CallId , createMessage } from '@open-harness/oh-llm'
 import SessionStore, { Session, SessionForkError, SessionId } from '@open-harness/oh-session'
 import type { SessionEvent, TurnEndReason } from '@open-harness/oh-session'

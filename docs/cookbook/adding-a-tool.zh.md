@@ -8,7 +8,7 @@
 
 ```ts
 import { readFile } from 'node:fs/promises'
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { defineTool } from '@open-harness/oh-tools'
 
 export const name = 'my-tool'

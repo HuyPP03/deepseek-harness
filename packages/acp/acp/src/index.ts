@@ -9,11 +9,11 @@
  * @module @open-harness/oh-acp
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { randomUUID } from 'node:crypto'
 import { isAbsolute } from 'node:path'
 import { Readable, Writable } from 'node:stream'
-import Schema from '@deepseek-ai/schemastery'
+import Schema from '@open-harness/schemastery'
 import { createUserMessage, errorChain } from '@open-harness/oh-llm'
 import {
   AgentSideConnection,

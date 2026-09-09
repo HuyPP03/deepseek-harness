@@ -11,7 +11,7 @@
  * @module oh-agent-loop/tool-calls
  */
 
-import type { Context } from '@deepseek-ai/cordis'
+import type { Context } from '@open-harness/cordis'
 import { assertNever, createToolResultMessage, type ToolCallBlock } from '@open-harness/oh-llm'
 import type { Session, UserMessage } from '@open-harness/oh-session'
 import { TOOL_ABORTED_BEFORE_DISPATCH, TOOL_RUNTIME_SCHEDULER, type ToolExecutionInput, type ToolExecutionMode, type ToolExecutionResult, type ToolRunContext } from '@open-harness/oh-tools'
