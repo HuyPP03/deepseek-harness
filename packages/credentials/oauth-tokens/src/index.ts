@@ -28,7 +28,7 @@ import { watch as chokidarWatch } from 'chokidar'
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { withFileLock, writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
-import { canonicalizeWatchPath, resolveDshHome } from '@deepseek-ai/dsh-home-paths'
+import { canonicalizeWatchPath, resolveOhHome } from '@deepseek-ai/dsh-home-paths'
 import type { OAuthTokenBundle } from './types.ts'
 export type { OAuthTokenBundle } from './types.ts'
 
@@ -45,7 +45,7 @@ const OWNER_ID = /^[a-z0-9][a-z0-9-]{0,31}$/
 export interface Config {
   /** Token document path; defaults to `.connectors/oauth-tokens.json` under the harness home. */
   path?: string
-  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
   dshHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean
@@ -69,7 +69,7 @@ interface ResolvedSpec {
  */
 export function resolveSpec(config: Config): ResolvedSpec {
   return {
-    filename: resolve(config.path ?? join(resolveDshHome(config.dshHome), '.connectors', TOKENS_FILENAME)),
+    filename: resolve(config.path ?? join(resolveOhHome(config.dshHome), '.connectors', TOKENS_FILENAME)),
     watch: config.watch ?? true,
     debounceMs: config.debounceMs ?? 100,
   }

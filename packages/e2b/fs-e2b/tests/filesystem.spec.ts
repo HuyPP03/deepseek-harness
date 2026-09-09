@@ -238,7 +238,7 @@ class FakeRemote {
       ): Promise<{ exitCode: number; stdout: string; stderr: string }> => {
         this.checkAbort(options)
         const home = options?.envs?.HOME
-        expect(home).toMatch(/^\/\.dsh-e2b-control-/)
+        expect(home).toMatch(/^\/\.oh-e2b-control-/)
         expect(options?.envs).toEqual({ HOME: home })
         this.commands.push(command)
         if (this.nextCommandError !== undefined) {
@@ -307,7 +307,7 @@ async function setup(remote = new FakeRemote()): Promise<{ ctx: Context; fs: E2B
   const ctx = new Context()
   const runtime = {
     cwd: '/workspace',
-    runtimeRoot: '/workspace/.dsh-e2b',
+    runtimeRoot: '/workspace/.oh-e2b',
     getSandbox: async () => remote.sandbox,
   } as unknown as E2BRuntime
   ctx.provide('e2b', runtime)

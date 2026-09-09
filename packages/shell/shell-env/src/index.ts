@@ -12,7 +12,7 @@ import { Service, type Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { OH_ENV_PREFIX } from '@deepseek-ai/dsh-shell'
 import type { DshEnvironment, DshEnvironmentKey } from '@deepseek-ai/dsh-shell'
-import { OH_HOME_ENV, resolveDshHome } from '@deepseek-ai/dsh-home-paths'
+import { OH_HOME_ENV, resolveOhHome } from '@deepseek-ai/dsh-home-paths'
 import type { ToolExecution } from '@deepseek-ai/dsh-tools'
 import type {} from '@deepseek-ai/dsh-session-persistence'
 
@@ -27,7 +27,7 @@ export const inject: string[] = []
 
 /** Plugin config (all optional — the built-in facts resolve without defaults). */
 export interface Config {
-  /** Open Harness home directory exposed as `OH_HOME`; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Open Harness home directory exposed as `OH_HOME`; defaults to `$OH_HOME` or `~/.oh`. */
   dshHome?: string
 }
 
@@ -98,7 +98,7 @@ export class ShellEnvRegistry extends Service {
    */
   constructor(ctx: Context, config: Config = {}) {
     super(ctx, 'shellEnv')
-    this.dshHome = resolveDshHome(config.dshHome)
+    this.dshHome = resolveOhHome(config.dshHome)
   }
 
   /**

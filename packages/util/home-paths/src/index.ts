@@ -9,7 +9,7 @@ import { homedir } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
 
 /** Directory name for the default Open Harness home under the OS home. */
-export const OH_HOME_DIR_NAME = '.dsh'
+export const OH_HOME_DIR_NAME = '.oh'
 
 /** Stable user-facing display form for the default Open Harness home. */
 export const DEFAULT_OH_HOME_DISPLAY = `~/${OH_HOME_DIR_NAME}`
@@ -77,14 +77,14 @@ export function expandHomePath(path: string): string {
  * Resolve the single-root Open Harness home.
  *
  * Precedence, highest first: an explicit configured path, `$OH_HOME`, then
- * `~/.dsh`. The harness keeps all user data under one root. An empty or
+ * `~/.oh`. The harness keeps all user data under one root. An empty or
  * whitespace-only `$OH_HOME` is treated as unset, so a blank override never
  * resolves the home to the current working directory.
  * @param configured - explicit harness-home override, which has highest precedence.
  * @param env - environment mapping used to read `OH_HOME`.
  * @returns the normalized absolute harness home path.
  */
-export function resolveDshHome(configured?: string, env: Record<string, string | undefined> = process.env): string {
+export function resolveOhHome(configured?: string, env: Record<string, string | undefined> = process.env): string {
   const fromEnv = env[OH_HOME_ENV]
   const selected = configured ?? (fromEnv !== undefined && fromEnv.trim().length > 0 ? fromEnv : defaultDshHome())
   return resolve(expandHomePath(selected))
@@ -95,17 +95,17 @@ export function resolveDshHome(configured?: string, env: Record<string, string |
  * @param segments - path segments appended to the Harness home; an empty list returns the home itself.
  * @returns the normalized absolute joined path.
  */
-export function dshHomePath(...segments: string[]): string {
-  return join(resolveDshHome(), ...segments)
+export function ohHomePath(...segments: string[]): string {
+  return join(resolveOhHome(), ...segments)
 }
 
 /**
  * Describe a resolved harness home symbolically for user-facing display.
  *
  * It never returns an absolute machine path: the default home is labelled
- * `~/.dsh`, and any configured home is labelled `$OH_HOME`.
- * @param resolvedHome - the absolute path returned by {@link resolveDshHome}.
- * @returns `~/.dsh` for the default home, otherwise `$OH_HOME`.
+ * `~/.oh`, and any configured home is labelled `$OH_HOME`.
+ * @param resolvedHome - the absolute path returned by {@link resolveOhHome}.
+ * @returns `~/.oh` for the default home, otherwise `$OH_HOME`.
  */
 export function dshHomeDisplay(resolvedHome: string): string {
   return resolvedHome === resolve(defaultDshHome()) ? DEFAULT_OH_HOME_DISPLAY : `$${OH_HOME_ENV}`

@@ -35,7 +35,7 @@ import * as toolSkill from '@deepseek-ai/dsh-tool-skill'
 import * as toolJobs from '@deepseek-ai/dsh-tool-jobs'
 import AgentLoop, { type Config as AgentLoopConfig } from '@deepseek-ai/dsh-agent-loop'
 import * as llmRetry from '@deepseek-ai/dsh-llm-retry'
-import { resolveDshHome } from '@deepseek-ai/dsh-home-paths'
+import { resolveOhHome } from '@deepseek-ai/dsh-home-paths'
 
 export const name = 'agent-spine-demo'
 
@@ -212,10 +212,10 @@ export function pickSpineConfig(config: Omit<Config, 'agents'>): Omit<Config, 'a
 export function apply(ctx: Context, config: Config): void {
   const nestedDshHome = config.skills?.filesystem?.dshHome
   if (config.dshHome !== undefined && nestedDshHome !== undefined
-    && resolveDshHome(config.dshHome) !== resolveDshHome(nestedDshHome)) {
+    && resolveOhHome(config.dshHome) !== resolveOhHome(nestedDshHome)) {
     throw new Error('agent-spine-demo: dshHome and skills.filesystem.dshHome must resolve to the same directory')
   }
-  const dshHome = resolveDshHome(config.dshHome ?? nestedDshHome)
+  const dshHome = resolveOhHome(config.dshHome ?? nestedDshHome)
 
   ctx.plugin(Timer)
   ctx.plugin(LlmRuntime)

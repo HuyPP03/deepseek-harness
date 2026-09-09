@@ -45,7 +45,7 @@
 
 | 字段 | 必填 | 说明 |
 |---|---|---|
-| `mcpDir` | 否 | 存放每个用户服务器 cordis.yml 的目录；默认 harness home（`$OH_HOME` / `~/.dsh`）下的 `.mcp` |
+| `mcpDir` | 否 | 存放每个用户服务器 cordis.yml 的目录；默认 harness home（`$OH_HOME` / `~/.oh`）下的 `.mcp` |
 
 ## Model Experience
 

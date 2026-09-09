@@ -252,7 +252,7 @@ export async function runScenario(input: InputScript, opts: RunOptions): Promise
       OH_SNAPSHOT_FILE: opts.fixtureFile,
       OH_SNAPSHOT_SESSIONS_ROOT: sessionsRoot,
       OH_SNAPSHOT_SPILL_ROOT: spillRoot,
-      OH_HOME: join(cwd, '.dsh'),
+      OH_HOME: join(cwd, '.oh'),
       OH_AGENTS_HOME: join(cwd, '.agents'),
       ...opts.overrideFile !== undefined ? { OH_SNAPSHOT_OVERRIDE: opts.overrideFile } : {},
       ...opts.childFiles !== undefined && opts.childFiles.length > 0

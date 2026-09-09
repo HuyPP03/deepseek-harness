@@ -12,7 +12,7 @@ import SystemPrompt from '@deepseek-ai/dsh-system-prompt'
 import ToolRuntime from '@deepseek-ai/dsh-tools'
 import McpRegistry from '@deepseek-ai/dsh-mcp-registry'
 import McpManager, { resolveConfig } from '@deepseek-ai/dsh-mcp-manager'
-import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
+import { ohHomePath } from '@deepseek-ai/dsh-home-paths'
 
 // ---- Mock MCP SDK ----
 
@@ -326,6 +326,6 @@ describe('resolveConfig', () => {
   })
 
   it('falls back to the harness home when mcpDir is omitted', () => {
-    expect(resolveConfig({}).mcpDir).toBe(dshHomePath('.mcp'))
+    expect(resolveConfig({}).mcpDir).toBe(ohHomePath('.mcp'))
   })
 })

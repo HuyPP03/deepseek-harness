@@ -79,7 +79,7 @@
     - id: storage-json
       name: '@deepseek-ai/dsh-storage-json'
       config:
-        root: !!js dshHomePath('storages')
+        root: !!js ohHomePath('storages')
 
     - id: storage-domain
       name: '@deepseek-ai/dsh-storage-domain'

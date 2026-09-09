@@ -12,7 +12,7 @@ import type { FilesActionProps } from '../src/client/FilesAction.tsx'
 import { zh } from '../src/client/locales.ts'
 
 const SID = 's1' as SessionId
-const CWD = '/home/u/.dsh/chat/s1'
+const CWD = '/home/u/.oh/chat/s1'
 
 /** Render the action with a sessions-list stub over one session's cwd. */
 function renderAction(cwd: string | undefined, openBrowse = vi.fn()) {

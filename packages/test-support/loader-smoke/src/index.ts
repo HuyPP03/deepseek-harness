@@ -182,7 +182,7 @@ export async function runLoaderSmoke(options: LoaderSmokeOptions): Promise<Loade
       configArgs: options.binArgs ?? [options.configPath],
       ...options.mode !== undefined ? { mode: options.mode } : {},
       tsconfigPath: options.tsconfigPath,
-      env: { OH_HOME: join(cwd, '.dsh'), OH_AGENTS_HOME: join(cwd, '.agents'), ...options.env },
+      env: { OH_HOME: join(cwd, '.oh'), OH_AGENTS_HOME: join(cwd, '.agents'), ...options.env },
     })
     // `input: ''` writes nothing and closes stdin — the fixture-visible
     // stdin-close contract. `reject: false` folds spawn errors, the SIGKILL

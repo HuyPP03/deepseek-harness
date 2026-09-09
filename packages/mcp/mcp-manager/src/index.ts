@@ -23,7 +23,7 @@ import { join, resolve } from 'node:path'
 import { Context, type Fiber, Service } from '@deepseek-ai/cordis'
 import * as mcpClient from '@deepseek-ai/dsh-mcp-client'
 import type { Config as McpClientConfig } from '@deepseek-ai/dsh-mcp-client'
-import { dshHomePath, expandHomePath } from '@deepseek-ai/dsh-home-paths'
+import { ohHomePath, expandHomePath } from '@deepseek-ai/dsh-home-paths'
 import type { McpServerView } from '@deepseek-ai/dsh-mcp-registry'
 import z from '@deepseek-ai/schemastery'
 import { parse, stringify } from 'yaml'
@@ -115,7 +115,7 @@ function toClientConfig(spec: McpServerSpec): McpClientConfig {
  */
 export function resolveConfig(config: Config = {}): { readonly mcpDir: string } {
   return {
-    mcpDir: config.mcpDir !== undefined ? resolve(expandHomePath(config.mcpDir)) : dshHomePath('.mcp'),
+    mcpDir: config.mcpDir !== undefined ? resolve(expandHomePath(config.mcpDir)) : ohHomePath('.mcp'),
   }
 }
 

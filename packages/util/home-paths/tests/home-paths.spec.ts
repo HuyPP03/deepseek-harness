@@ -8,9 +8,9 @@ import {
   canonicalizeWatchPath,
   defaultDshHome,
   dshHomeDisplay,
-  dshHomePath,
+  ohHomePath,
   expandHomePath,
-  resolveDshHome,
+  resolveOhHome,
 } from '@deepseek-ai/dsh-home-paths'
 
 afterEach(() => {
@@ -19,40 +19,40 @@ afterEach(() => {
 
 describe('dsh path helpers', () => {
   it('owns the shared default Open Harness home directory name', () => {
-    expect(OH_HOME_DIR_NAME).toBe('.dsh')
-    expect(DEFAULT_OH_HOME_DISPLAY).toBe('~/.dsh')
-    expect(defaultDshHome()).toBe(join(homedir(), '.dsh'))
+    expect(OH_HOME_DIR_NAME).toBe('.oh')
+    expect(DEFAULT_OH_HOME_DISPLAY).toBe('~/.oh')
+    expect(defaultDshHome()).toBe(join(homedir(), '.oh'))
   })
 
   it('expands tilde paths without changing non-tilde paths', () => {
     expect(expandHomePath('~')).toBe(homedir())
-    expect(expandHomePath('~/.dsh')).toBe(join(homedir(), '.dsh'))
-    expect(expandHomePath('~\\.dsh')).toBe(join(homedir(), '.dsh'))
-    expect(expandHomePath('/tmp/.dsh')).toBe('/tmp/.dsh')
-    expect(expandHomePath('~other/.dsh')).toBe('~other/.dsh')
+    expect(expandHomePath('~/.oh')).toBe(join(homedir(), '.oh'))
+    expect(expandHomePath('~\\.oh')).toBe(join(homedir(), '.oh'))
+    expect(expandHomePath('/tmp/.oh')).toBe('/tmp/.oh')
+    expect(expandHomePath('~other/.oh')).toBe('~other/.oh')
   })
 
   it('resolves explicit path before OH_HOME and the default', () => {
     const envHome = join(homedir(), 'env-dsh')
 
-    expect(resolveDshHome('/tmp/explicit-dsh', { OH_HOME: '~/env-dsh' })).toBe(resolve('/tmp/explicit-dsh'))
-    expect(resolveDshHome(undefined, { OH_HOME: '~/env-dsh' })).toBe(envHome)
-    expect(resolveDshHome(undefined, {})).toBe(defaultDshHome())
+    expect(resolveOhHome('/tmp/explicit-dsh', { OH_HOME: '~/env-dsh' })).toBe(resolve('/tmp/explicit-dsh'))
+    expect(resolveOhHome(undefined, { OH_HOME: '~/env-dsh' })).toBe(envHome)
+    expect(resolveOhHome(undefined, {})).toBe(defaultDshHome())
   })
 
   it('treats an empty or whitespace-only OH_HOME as unset', () => {
-    expect(resolveDshHome(undefined, { OH_HOME: '' })).toBe(defaultDshHome())
-    expect(resolveDshHome(undefined, { OH_HOME: '   ' })).toBe(defaultDshHome())
+    expect(resolveOhHome(undefined, { OH_HOME: '' })).toBe(defaultDshHome())
+    expect(resolveOhHome(undefined, { OH_HOME: '   ' })).toBe(defaultDshHome())
   })
 
   it('joins child segments onto the resolved OH_HOME', () => {
     vi.stubEnv('OH_HOME', '~/env-dsh')
-    expect(dshHomePath()).toBe(join(homedir(), 'env-dsh'))
-    expect(dshHomePath('storages', 'cache')).toBe(join(homedir(), 'env-dsh', 'storages', 'cache'))
+    expect(ohHomePath()).toBe(join(homedir(), 'env-dsh'))
+    expect(ohHomePath('storages', 'cache')).toBe(join(homedir(), 'env-dsh', 'storages', 'cache'))
   })
 
   it('labels a resolved home by whether it is the default root', () => {
-    expect(dshHomeDisplay(resolve(defaultDshHome()))).toBe('~/.dsh')
+    expect(dshHomeDisplay(resolve(defaultDshHome()))).toBe('~/.oh')
     expect(dshHomeDisplay('/some/other/root')).toBe('$OH_HOME')
   })
 

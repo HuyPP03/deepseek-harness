@@ -29,7 +29,7 @@ import { join, resolve } from 'node:path'
 import { Context, Service } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { writeFileAtomic } from '@deepseek-ai/dsh-atomic-write'
-import { dshHomePath, expandHomePath } from '@deepseek-ai/dsh-home-paths'
+import { ohHomePath, expandHomePath } from '@deepseek-ai/dsh-home-paths'
 import { credentialRef, type CredentialProvider } from '@deepseek-ai/dsh-credentials'
 import type { ServerValue as McpServerValue } from '@deepseek-ai/dsh-mcp-client'
 import { UnknownPresetError } from '@deepseek-ai/dsh-agent-presets'
@@ -85,7 +85,7 @@ export interface Config {
   readonly catalogDir?: string
   /** Directory holding user override documents and custom connector manifests; defaults to `.connectors` under the harness home. */
   readonly userDir?: string
-  /** Harness home used when `userDir` is omitted; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Harness home used when `userDir` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
   readonly dshHome?: string
 }
 
@@ -233,7 +233,7 @@ export class ConnectorSeamUnavailableError extends Error {
 export function resolveConfig(config: Config = {}): { readonly catalogDir: string | undefined; readonly userDir: string } {
   return {
     catalogDir: config.catalogDir !== undefined ? resolve(expandHomePath(config.catalogDir)) : undefined,
-    userDir: config.userDir !== undefined ? resolve(expandHomePath(config.userDir)) : dshHomePath('.connectors'),
+    userDir: config.userDir !== undefined ? resolve(expandHomePath(config.userDir)) : ohHomePath('.connectors'),
   }
 }
 

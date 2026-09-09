@@ -40,7 +40,7 @@ The store is passive: it never refreshes, expires, or deletes a bundle on a time
 | Field | Default | Meaning |
 |---|---|---|
 | `path` | `<harness home>/.connectors/oauth-tokens.json` | Token document location. |
-| `dshHome` | `$OH_HOME` or `~/.dsh` | Harness home used when `path` is omitted. |
+| `dshHome` | `$OH_HOME` or `~/.oh` | Harness home used when `path` is omitted. |
 | `watch` | `true` | Hot-publish external edits. |
 | `debounceMs` | `100` | Watcher write-settle window. |
 

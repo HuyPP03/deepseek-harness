@@ -137,7 +137,7 @@ export const SERVICE_WALK_EXEMPTIONS: Record<string, string> = {
   cmdlineArgs: 'not a service: launcher-provided immutable app argument accessor — packages/boot/cmdline/README.md owns the launcher contract',
   configuredAgentIdentities: 'not a service: launcher-provided boot-context value (ConfiguredAgentIdentities | undefined) — packages/core/agent-loop/README.md owns this launcher contract',
   launcherSessionQueryPath: 'not a service: launcher-provided boot-context value (string | undefined) — packages/session-query/session-query-sqlite/README.md owns this launcher contract',
-  dshHomePath: 'not a service: boot-provided root accessor function (typeof dshHomePath | undefined) for Loader !!js config expressions — packages/boot/app-boot/README.md owns the boot contract',
+  ohHomePath: 'not a service: boot-provided root accessor function (typeof ohHomePath | undefined) for Loader !!js config expressions — packages/boot/app-boot/README.md owns the boot contract',
   launchEnvironment: 'not a service: launcher-provided root accessor value (LaunchEnvironmentSnapshot | undefined) — packages/util/launch-environment/README.md owns this launcher contract',
   oauthFlow: 'interface-typed (ConnectorAuthFlow); the implementing engine lives in packages/connectors/oauth-flow — packages/connectors/connectors/README.md owns the seam contract',
   deviceFlow: 'interface-typed (ConnectorDeviceFlow); the implementing engine lives in packages/connectors/device-flow — packages/connectors/connectors/README.md owns the seam contract',

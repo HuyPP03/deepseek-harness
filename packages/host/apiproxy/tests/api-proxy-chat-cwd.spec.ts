@@ -14,7 +14,7 @@ import AgentRegistry, { type AgentFactory } from '@deepseek-ai/dsh-agent'
 import type { Agent } from '@deepseek-ai/dsh-agent'
 import SessionStore, { SessionId, type Session } from '@deepseek-ai/dsh-session'
 import UserQuestionService from '@deepseek-ai/dsh-user-questions'
-import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
+import { ohHomePath } from '@deepseek-ai/dsh-home-paths'
 import { RpcId, type RpcRequest } from '../src/api/rpc.ts'
 import { createApiProxy, type ApiProxyDefaults } from '../src/api-proxy.ts'
 import { describe, expect, it } from 'vitest'
@@ -104,7 +104,7 @@ describe('chat session default project directory', () => {
     process.env.OH_HOME = home
     try {
       const sessionId = SessionId('s-env')
-      expect(dshHomePath('chat', sessionId)).toBe(join(home, 'chat', 's-env'))
+      expect(ohHomePath('chat', sessionId)).toBe(join(home, 'chat', 's-env'))
     } finally {
       if (previous === undefined) delete process.env.OH_HOME
       else process.env.OH_HOME = previous

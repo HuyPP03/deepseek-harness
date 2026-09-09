@@ -68,7 +68,7 @@ wire 视图按构造就是无密文的：服务器条目携带 `serverName`、`m
 |---|---|---|
 | `catalogDir` | 无 | 预定义 `.yml` 清单目录；缺省时目录只有自定义连接器。 |
 | `userDir` | `<harness home>/.connectors` | 自定义清单（`.json`，按 id 匹配）与 override 文档。 |
-| `dshHome` | `$OH_HOME` 或 `~/.dsh` | `userDir` 默认值所用的 harness home。 |
+| `dshHome` | `$OH_HOME` 或 `~/.oh` | `userDir` 默认值所用的 harness home。 |
 
 可选 seam：`credentials`、`oauthTokens`、`agentPresets` 通过 `ctx.get` 消费；需要某个缺失 seam 的操作以 `ConnectorSeamUnavailableError` 失败，而读取在没有它们时仍可用。
 

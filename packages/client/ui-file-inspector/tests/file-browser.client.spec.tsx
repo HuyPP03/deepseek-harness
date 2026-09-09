@@ -12,7 +12,7 @@ import type { FileBrowserProps } from '../src/client/FileBrowser.tsx'
 import { zh } from '../src/client/locales.ts'
 
 const SID = 's1' as SessionId
-const DIR = '/home/u/.dsh/chat/s1'
+const DIR = '/home/u/.oh/chat/s1'
 
 const row = (relative: string, isDirectory = false, root: FileEntry['root'] = 'workspace'): FileEntry => ({
   path: `${DIR}/${relative}`,
@@ -77,7 +77,7 @@ describe('file list seat', () => {
     expect(screen.getByText('notes/docs/').tagName).toBe('SPAN')
     expect(screen.queryByRole('button', { name: 'notes/docs/' })).toBeNull()
     fireEvent.click(screen.getByRole('button', { name: 'git-commands.docx' }))
-    expect(openFile).toHaveBeenCalledWith('/home/u/.dsh/chat/s1/git-commands.docx')
+    expect(openFile).toHaveBeenCalledWith('/home/u/.oh/chat/s1/git-commands.docx')
   })
 
   it('prefaces a non-workspace root with its root name', async () => {
@@ -86,7 +86,7 @@ describe('file list seat', () => {
     }))
     expect(await screen.findByRole('button', { name: 'ref/shared/pix.png' })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'ref/shared/pix.png' }))
-    expect(openFile).toHaveBeenCalledWith('/home/u/.dsh/chat/s1/shared/pix.png')
+    expect(openFile).toHaveBeenCalledWith('/home/u/.oh/chat/s1/shared/pix.png')
   })
 
   it('narrows the window locally as the filter input changes', async () => {

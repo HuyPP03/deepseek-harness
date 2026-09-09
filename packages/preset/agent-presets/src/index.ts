@@ -33,7 +33,7 @@ import type { Agent } from '@deepseek-ai/dsh-agent'
 import type {} from '@deepseek-ai/dsh-commands'
 import type { CommandResult } from '@deepseek-ai/dsh-commands/types'
 import { settingsNamespace, type SettingsScope, type default as SettingsService } from '@deepseek-ai/dsh-settings'
-import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
+import { ohHomePath } from '@deepseek-ai/dsh-home-paths'
 import { discoverPresets, USER_PRESET_DIR } from './discovery.ts'
 import { copyComposition, deleteComposition, readComposition } from './authoring.ts'
 import { mountPreset, serviceForAgent, standingMountFor } from './mount.ts'
@@ -151,7 +151,7 @@ export class AgentPresets extends Service {
     super(ctx, 'agentPresets')
     this.selfCtx = ctx
     this.resolvedRoots = config.includeUserRoot
-      ? [...config.roots, { path: dshHomePath(USER_PRESET_DIR), trust: 'user' }]
+      ? [...config.roots, { path: ohHomePath(USER_PRESET_DIR), trust: 'user' }]
       : [...config.roots]
     this.chatPresetIds = [...(config.chatPresetIds ?? [])]
     // Deliberately not `installSettingsSection`: that helper exists to re-judge

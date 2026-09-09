@@ -39,7 +39,7 @@ async function mount(config: acpAgent.Config, withBash = false): Promise<Context
 async function isolatedSkillsConfig(catalogDescriptionMaxLength?: number): Promise<NonNullable<acpAgent.Config['skills']>> {
   const home = await mkdtemp(join(tmpdir(), 'dsh-acp-demo-skills-'))
   return {
-    filesystem: { dshHome: join(home, '.dsh'), agentsHome: join(home, '.agents') },
+    filesystem: { dshHome: join(home, '.oh'), agentsHome: join(home, '.agents') },
     ...catalogDescriptionMaxLength !== undefined ? { tool: { catalogDescriptionMaxLength } } : {},
   }
 }
@@ -63,7 +63,7 @@ async function withIsolatedSkillHomes<T>(run: () => Promise<T>): Promise<T> {
   const oldDshHome = process.env.OH_HOME
   const oldAgentsHome = process.env.OH_AGENTS_HOME
   const home = await mkdtemp(join(tmpdir(), 'dsh-acp-demo-default-skills-'))
-  process.env.OH_HOME = join(home, '.dsh')
+  process.env.OH_HOME = join(home, '.oh')
   process.env.OH_AGENTS_HOME = join(home, '.agents')
   try {
     return await run()

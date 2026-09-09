@@ -40,7 +40,7 @@ import {
   healProfilesModuleFallback,
   loadOverlayPatches,
 } from '@deepseek-ai/dsh-app-boot'
-import { dshHomePath } from '@deepseek-ai/dsh-home-paths'
+import { ohHomePath } from '@deepseek-ai/dsh-home-paths'
 import { settingsNamespace } from '@deepseek-ai/dsh-settings'
 import { LlmAdapter } from '@deepseek-ai/dsh-llm'
 import type {
@@ -318,14 +318,14 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
   const workspaceCwd = await realpath(await mkdtemp(join(tmpdir(), 'dsh-web-e2e-ws-')))
   // Isolated harness home: the settings/credentials rows resolve $OH_HOME
   // paths at load, and an in-process boot must NEVER touch the developer's
-  // real ~/.dsh document or credential file.
-  const harnessHome = options.harnessHome ?? join(workspaceCwd, '.dsh-home')
+  // real ~/.oh document or credential file.
+  const harnessHome = options.harnessHome ?? join(workspaceCwd, '.oh-home')
   // Skill discovery is model-visible input, and its roots now resolve inside a
   // PRESET — a subtree this lane's include patches cannot reach, because the
   // roster mounts it directly per session rather than as a row of the booted
   // tree. The row's documented fallback is the environment, so pin that: the
   // whole scaffold lifetime, not just the boot, since presets mount when a
-  // session is created. Without this a developer's real ~/.dsh/skills silently
+  // session is created. Without this a developer's real ~/.oh/skills silently
   // enters replay requests and goldens while CI sees none. `OH_HOME` follows
   // the resolved harness home so a scaffold sharing another's home — the
   // cross-port persistence scenario — pins the same roots the settings and
@@ -384,7 +384,7 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
     // chooses it. This lane boots the shipped tree WITHOUT AppCLIEntry, so it
     // has to supply the same fact or the roster resolves nothing and every
     // session composes an agent with no tools, no persona, and no token meter.
-    // Only the shipped root: a developer's own `~/.dsh/.agent-presets` must not be
+    // Only the shipped root: a developer's own `~/.oh/.agent-presets` must not be
     // able to change a golden.
     {
       id: 'agent-presets',
@@ -403,15 +403,15 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
     // storage-json's yml root is anchored to the real $OH_HOME; pin the row
     // to an absolute temp root (removed with the workspace at close) so tests
     // never write the user's harness home.
-    { id: 'storage-json', config: { root: join(workspaceCwd, '.dsh-storages') } },
+    { id: 'storage-json', config: { root: join(workspaceCwd, '.oh-storages') } },
     // Skill discovery is model-visible input. Pin every host-level root inside
-    // the owned temp world so ~/.dsh, ~/.agents, and a bundled-root env setting
+    // the owned temp world so ~/.oh, ~/.agents, and a bundled-root env setting
     // cannot change replay requests or conversation goldens. Project roots stay
     // enabled against the same empty temp workspace, preserving the real seam.
     {
       id: 'skill-filesystem',
       config: {
-        dshHome: join(workspaceCwd, '.dsh-home'),
+        dshHome: join(workspaceCwd, '.oh-home'),
         agentsHome: join(workspaceCwd, '.agents-home'),
         bundledSkillDir: join(workspaceCwd, '.bundled-skills'),
         watch: false,
@@ -507,7 +507,7 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
     await writeFile(rootConfig, '[]\n')
     ctx.baseUrl = pathToFileURL(profileDir).href + '/'
     // This direct Loader harness supplies the same root-path capability as app-boot.
-    ctx.provide('dshHomePath', dshHomePath)
+    ctx.provide('ohHomePath', ohHomePath)
     // A host with no command line still provides one: the web bundle's startup
     // row releases the rows waiting on it, and with no arguments each starts on
     // the values this scaffold composed above. An exit request can only come

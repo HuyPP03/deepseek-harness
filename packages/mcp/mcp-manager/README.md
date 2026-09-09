@@ -45,7 +45,7 @@ The host RPC surface (`mcp.list` / `mcp.add` / `mcp.remove` / `mcp.reconnect` on
 
 | Field | Required | Description |
 |---|---|---|
-| `mcpDir` | no | Directory holding one cordis.yml per user server; defaults to `.mcp` under the harness home (`$OH_HOME` / `~/.dsh`) |
+| `mcpDir` | no | Directory holding one cordis.yml per user server; defaults to `.mcp` under the harness home (`$OH_HOME` / `~/.oh`) |
 
 ## Model Experience
 

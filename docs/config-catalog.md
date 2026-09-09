@@ -109,7 +109,7 @@ Source: [`packages/core/agent-default-model/src/index.ts:41`](../packages/core/a
 ```ts config-catalog
 /** User-facing workspace instruction loader configuration. */
 export interface Config {
-  /** Harness home containing the fixed user-global `AGENTS.md`; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Harness home containing the fixed user-global `AGENTS.md`; defaults to `$OH_HOME` or `~/.oh`. */
   dshHome?: string
   /** Directory entries that identify the project root while walking upward from the session cwd. */
   projectRootMarkers?: string[]
@@ -331,7 +331,7 @@ Source: [`packages/core/agent-tool-presentation/src/index.ts:38`](../packages/co
 ```ts config-catalog
 /** Local attachment backend configuration. */
 export interface Config {
-  /** Explicit harness home; omitted follows `OH_HOME`, then `~/.dsh`. */
+  /** Explicit harness home; omitted follows `OH_HOME`, then `~/.oh`. */
   dshHome?: string
   /** Maximum encoded bytes accepted for one image. */
   maxImageBytes?: number
@@ -570,7 +570,7 @@ export interface Config {
   readonly catalogDir?: string
   /** Directory holding user override documents and custom connector manifests; defaults to `.connectors` under the harness home. */
   readonly userDir?: string
-  /** Harness home used when `userDir` is omitted; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Harness home used when `userDir` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
   readonly dshHome?: string
 }
 ```
@@ -636,7 +636,7 @@ Source: [`packages/extensions/cordis-host-runner/src/index.ts:88`](../packages/e
 export interface Config {
   /** Credentials document path; defaults to `.credentials.yaml` under the harness home. */
   path?: string
-  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
   dshHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean
@@ -656,7 +656,7 @@ Source: [`packages/credentials/credentials-local/src/index.ts:55`](../packages/c
 export interface Config {
   /** Token document path; defaults to `.connectors/oauth-tokens.json` under the harness home. */
   path?: string
-  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
   dshHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean
@@ -1991,7 +1991,7 @@ Source: [`packages/session/session-title-first-prompt-llm/src/index.ts:15`](../p
 export interface Config {
   /** Settings document path; defaults to `settings.yaml` under the harness home. */
   path?: string
-  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Harness home used when `path` is omitted; defaults to `$OH_HOME` or `~/.oh`. */
   dshHome?: string
   /** Watch the document and hot-publish external edits; defaults to true. */
   watch?: boolean
@@ -2009,7 +2009,7 @@ Source: [`packages/settings/settings-file/src/index.ts:21`](../packages/settings
 ```ts config-catalog
 /** Plugin config (all optional — the built-in facts resolve without defaults). */
 export interface Config {
-  /** Open Harness home directory exposed as `OH_HOME`; defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Open Harness home directory exposed as `OH_HOME`; defaults to `$OH_HOME` or `~/.oh`. */
   dshHome?: string
 }
 ```
@@ -2043,7 +2043,7 @@ export interface Config {
   providerName?: string
   /** Whether project and user roots are included around custom roots. */
   includeDefaultRoots?: boolean
-  /** Open Harness config root. Defaults to `$OH_HOME` or `~/.dsh`. */
+  /** Open Harness config root. Defaults to `$OH_HOME` or `~/.oh`. */
   dshHome?: string
   /** Shared agent config root. Defaults to `$OH_AGENTS_HOME` or `~/.agents`. */
   agentsHome?: string

@@ -9,7 +9,7 @@ File-backed settings provider. One YAML or JSON document carries every namespace
 | Field | Meaning | Default |
 |---|---|---|
 | `path` | Settings document path; extension picks the format (`.yaml`/`.yml`/`.json`) | `settings.yaml` under the harness home |
-| `dshHome` | Harness home used when `path` is omitted | `$OH_HOME` or `~/.dsh` |
+| `dshHome` | Harness home used when `path` is omitted | `$OH_HOME` or `~/.oh` |
 | `watch` | Watch the document and hot-publish external edits | `true` |
 | `debounceMs` | Watcher write-settle window in milliseconds | `100` |
 
