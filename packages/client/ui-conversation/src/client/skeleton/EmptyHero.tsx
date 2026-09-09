@@ -7,7 +7,7 @@
 import { useId } from 'react'
 import type { ReactNode, RefObject } from 'react'
 import {
-  FishLogo, IconChevronDownOutline14, IconFolderClose16, IconFolderOpen16,
+  IconChevronDownOutline14, IconFolderClose16, IconFolderOpen16, OpenMark,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { workspaceTitleOf } from '@deepseek-ai/dsh-client-runtime/client'
 import type { ConversationSlotProps } from '../contract/slots.ts'
@@ -65,7 +65,7 @@ export function WorkspaceChip({ buttonRef, label, menuOpen = false, onClick, t }
 }
 
 /**
- * The soft blue backdrop ellipse (figma 313:14109). Rendered by the hero
+ * The soft red backdrop ellipse (figma 313:14109). Rendered by the hero
  * owner (ConversationRoot), not HeroShell, so it can center on the input
  * card; the owner's className supplies all positioning.
  * @param props.className - positioning class from the owner.
@@ -92,7 +92,14 @@ export function HeroGlow({ className }: { className?: string | undefined }) {
         </filter>
       </defs>
       <g filter={`url(#${glowFilterId})`}>
-        <ellipse cx="525.5" cy="234" rx="425.5" ry="134" fill="#6187D8" fillOpacity="0.08" />
+        <ellipse
+          cx="525.5"
+          cy="234"
+          rx="425.5"
+          ry="134"
+          style={{ fill: 'var(--dsw-alias-button-info-fill, #ea595f)' }}
+          fillOpacity="0.08"
+        />
       </g>
     </svg>
   )
@@ -117,9 +124,9 @@ export function HeroShell({ t, children }: HeroShellProps) {
     <div className={css.root}>
       <div className={css.stack}>
         <div className={css.headline}>
-          {/* figma 34:10412: fish 34×25 leading the headline, gap 10. */}
-          <span className={css.fishHitbox}>
-            <FishLogo size={34} className={css.fish} />
+          {/* The open-ring mark leads the headline, 34px square, gap 10. */}
+          <span className={css.markHitbox}>
+            <OpenMark size={34} className={css.mark} />
           </span>
           <span className={css.headlineText}>{t('hero.headline')}</span>
           <span className={css.previewBadge}>{t('hero.preview')}</span>

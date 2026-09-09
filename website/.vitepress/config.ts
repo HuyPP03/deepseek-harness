@@ -201,7 +201,7 @@ const sharedTheme: Pick<DefaultTheme.Config, 'search' | 'socialLinks' | 'editLin
 const base = process.env.DOCS_BASE ?? '/'
 
 /**
- * The DeepSeek wordmark, inlined so its `currentColor` fills follow the active
+ * The Open Harness mark, inlined so its `currentColor` fills follow the active
  * theme. An `<img>` would freeze the mark at the colors the file declares.
  */
 const wordmark = readFileSync(resolve(import.meta.dirname, '../public/wordmark.svg'), 'utf8')
@@ -222,6 +222,7 @@ const wordmark = readFileSync(resolve(import.meta.dirname, '../public/wordmark.s
 const siteStyle = `
 .dsh-lockup { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
 .dsh-wordmark { display: block; height: 22px; width: auto; color: var(--vp-c-text-1); }
+.dsh-wordmark-text { font-size: 15px; font-weight: 600; color: var(--vp-c-text-1); white-space: nowrap; }
 .dsh-tag {
   display: inline-flex;
   align-items: center;
@@ -273,18 +274,18 @@ const scrollbarScript = `
 `
 
 /**
- * Navigation-bar title: the DeepSeek wordmark and the release-stage tag.
- * VitePress renders `siteTitle` as HTML.
+ * Navigation-bar title: the Open Harness mark, the product name, and the
+ * release-stage tag. VitePress renders `siteTitle` as HTML.
  *
  * @param previewTag - Localized release-stage label.
  * @returns Markup placed beside the navigation-bar home link.
  */
 function siteTitle(previewTag: string): string {
-  return `<span class="dsh-lockup">${wordmark}<span class="dsh-tag">${previewTag}</span></span>`
+  return `<span class="dsh-lockup">${wordmark}<span class="dsh-wordmark-text">Open Harness</span><span class="dsh-tag">${previewTag}</span></span>`
 }
 
 export default withMermaid({
-  title: 'DeepSeek Harness',
+  title: 'Open Harness',
   description: 'A plugin-based SDK for building agent harnesses',
   base,
   head: [
