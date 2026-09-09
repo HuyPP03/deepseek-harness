@@ -101,6 +101,7 @@ function renderDirectory(
     load: vi.fn(() => Promise.resolve()),
     openTokenDialog: vi.fn(),
     setDialogDraft: vi.fn(),
+    setDialogUrl: vi.fn(),
     closeDialog: vi.fn(),
     saveToken: vi.fn(() => Promise.resolve()),
     openOauthDialog: vi.fn(),
@@ -122,7 +123,6 @@ function renderDirectory(
     setCustomDraft: vi.fn(),
     closeCustomDialog: vi.fn(),
     saveCustom: vi.fn(() => Promise.resolve()),
-    removeCustom: vi.fn(() => Promise.resolve()),
   }
   const props = {
     t: (key: string, params?: Record<string, unknown>) =>
@@ -187,7 +187,6 @@ type DrivenWireOverrides = Partial<{
   connect: () => Promise<unknown>
   disconnect: () => Promise<unknown>
   add: () => Promise<unknown>
-  remove: () => Promise<unknown>
 }>
 
 /**
@@ -206,7 +205,6 @@ async function renderDriven(
     connect: vi.fn(async () => okView()),
     disconnect: vi.fn(async () => okView()),
     add: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: { id: 'custom' } } })),
-    remove: vi.fn(async () => ({ rpcId: 'r', result: { ok: true as const, value: {} } })),
     ...overrides,
   }
   const controller = new ConnectorsSectionController({ connectors } as never)
@@ -220,6 +218,7 @@ async function renderDriven(
     load: () => controller.load(),
     openTokenDialog: (id: string) => { controller.openTokenDialog(id) },
     setDialogDraft: (ref: string, value: string) => { controller.setDialogDraft(ref, value) },
+    setDialogUrl: (value: string) => { controller.setDialogUrl(value) },
     closeDialog: () => { controller.closeDialog() },
     saveToken: () => controller.saveToken(),
     openOauthDialog: (id: string) => { controller.openOauthDialog(id) },
@@ -235,7 +234,6 @@ async function renderDriven(
     setCustomDraft: (field: string, value: string) => { controller.setCustomDraft(field, value) },
     closeCustomDialog: () => { controller.closeCustomDialog() },
     saveCustom: () => controller.saveCustom(),
-    removeCustom: (id: string) => controller.removeCustom(id),
     openSession: vi.fn(),
     newProviderChat: vi.fn(() => Promise.resolve()),
   }
@@ -299,8 +297,8 @@ describe('ConnectorsDirectory', () => {
     const a = renderDirectory()
     // Roster order: atlas (Configure), notion (Connect token), github
     // (Disconnect), slack (Disconnect), jira (Connect retry), google
-    // (Connect oauth), dropbox (Connect oauth), m365 (Remove), linear
-    // (Connect device).
+    // (Connect oauth), dropbox (Connect oauth), m365 (none: authorizing),
+    // linear (Connect device).
     expect(screen.getByRole('button', { name: 'Configure' })).toBeTruthy()
     // needs-auth (notion, google, linear), failed-mount (jira), and the
     // unconfigured browser flows (google, dropbox) all offer Connect.
@@ -308,7 +306,7 @@ describe('ConnectorsDirectory', () => {
     expect(screen.getAllByRole('button', { name: 'Disconnect' })).toHaveLength(2)
 
     // The authorizing card is mid-flow: its name sits in a button-free card.
-    expect(screen.getAllByRole('button')).toHaveLength(1 + 5 + 2 + 9 + 1 + 1)
+    expect(screen.getAllByRole('button')).toHaveLength(1 + 5 + 2 + 9 + 1)
 
     // A tokenless unconfigured card has no action; its howTo guides instead
     // (dropbox; google's howTo no longer shows — its card is needs-auth).
@@ -494,9 +492,8 @@ describe('ConnectorsDirectory', () => {
     // Every card action shares the busy gate: with one operation in flight
     // no card action is enabled, on any card. The provider select wrappers
     // are not gated (they only switch the view, they don't mutate). The New
-    // connector header is not gated either. The custom card's Remove sits
-    // outside the busy gate: filter it out here.
-    const actionButtons = screen.getAllByRole('button').filter(b => !b.className.includes('card') && b.textContent !== 'New connector' && b.textContent !== 'Remove')
+    // connector header is not gated either: filter both out here.
+    const actionButtons = screen.getAllByRole('button').filter(b => !b.className.includes('card') && b.textContent !== 'New connector')
     expect(actionButtons).toHaveLength(8)
     for (const button of actionButtons) expect(button.hasAttribute('disabled')).toBe(true)
   })
@@ -654,6 +651,54 @@ describe('ConnectorsDirectory', () => {
     fireEvent.change(tokenInput, { target: { value: 'sekrit2' } })
     await waitFor(() => {
       expect(within(dialog).queryByText('store refused')).toBeNull()
+    })
+  })
+
+  it('offers Configure while a self-hosted row lacks its stored URL, and Connect once stored', () => {
+    renderDirectory({
+      connectors: [
+        view({ id: 'conf-unset', description: 'Confluence A', state: 'unconfigured', urlRequired: true, auth: [{ mode: 'token', configured: true, credentialRefs: ['CONFLUENCE_PERSONAL_TOKEN'] }] }),
+        view({ id: 'conf-set', description: 'Confluence B', state: 'needs-auth', urlRequired: true, url: 'https://b.example', auth: [{ mode: 'token', configured: true, credentialRefs: ['CONFLUENCE_PERSONAL_TOKEN'] }] }),
+      ],
+    })
+    // The stored token alone does not arm the connect: the missing URL keeps
+    // the row on Configure.
+    const unsetCard = screen.getByRole('button', { name: /conf-unset/ })
+    expect(within(unsetCard).getByRole('button', { name: 'Configure' })).toBeTruthy()
+    expect(within(unsetCard).queryByRole('button', { name: 'Connect' })).toBeNull()
+    // Once the URL is stored the row offers Connect and drops Configure.
+    const setCard = screen.getByRole('button', { name: /conf-set/ })
+    expect(within(setCard).getByRole('button', { name: 'Connect' })).toBeTruthy()
+    expect(within(setCard).queryByRole('button', { name: 'Configure' })).toBeNull()
+  })
+
+  it('shows the URL field for a self-hosted row and saves it with the token', async () => {
+    const row = view({
+      id: 'confluence',
+      description: 'Confluence instance',
+      state: 'unconfigured',
+      urlRequired: true,
+      auth: [{ mode: 'token', configured: false, howTo: 'Create a personal access token.', credentialRefs: ['CONFLUENCE_PERSONAL_TOKEN'] }],
+    })
+    const { connectors } = await renderDriven({}, [row])
+    fireEvent.click(screen.getByRole('button', { name: 'Configure' }))
+    const dialog = screen.getByRole('dialog')
+    expect(within(dialog).getByText('Instance URL')).toBeTruthy()
+    const urlInput = within(dialog).getByPlaceholderText('https://confluence.example.com')
+    const tokenInput = within(dialog).getByPlaceholderText('Paste your token')
+    // The save stays closed until both the URL and the token are drafted.
+    fireEvent.change(tokenInput, { target: { value: 'pat' } })
+    expect(within(dialog).getByRole('button', { name: 'Save & connect' }).hasAttribute('disabled')).toBe(true)
+    fireEvent.change(urlInput, { target: { value: 'https://confluence.htsc.vn' } })
+    await waitFor(() => {
+      expect(within(dialog).queryByRole('button', { name: 'Save & connect' })?.hasAttribute('disabled')).toBe(false)
+    })
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save & connect' }))
+    await waitFor(() => {
+      expect(connectors.configure).toHaveBeenCalledWith({
+        id: 'confluence',
+        fields: { credentials: { CONFLUENCE_PERSONAL_TOKEN: 'pat' }, url: 'https://confluence.htsc.vn' },
+      })
     })
   })
 

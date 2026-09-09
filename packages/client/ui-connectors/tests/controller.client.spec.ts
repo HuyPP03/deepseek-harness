@@ -4,7 +4,7 @@
  */
 import { describe, expect, it, vi } from 'vitest'
 import type { ConnectorView, IApiClient, RpcId, RpcResponse } from '@deepseek-ai/dsh-api-remotes/client'
-import { ConnectorsSectionController } from '../src/client/controller.ts'
+import { ConnectorsSectionController, parseEnvDraft } from '../src/client/controller.ts'
 
 /** One secret-free roster view; `with` overrides the interesting fields. */
 function view(withFields: Partial<ConnectorView> & { id: string }): ConnectorView {
@@ -68,8 +68,8 @@ function fail<T>(message: string): RpcResponse<T> {
   return { rpcId: 'r' as RpcId, result: { ok: false as const, error: { code: 'connector-unavailable', message, details: {} } } }
 }
 
-/** The four wire calls the controller drives, typed by the real domain. */
-type ConnectorDouble = Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin' | 'add' | 'remove'>
+/** The wire calls the controller drives, typed by the real domain. */
+type ConnectorDouble = Pick<IApiClient['connectors'], 'list' | 'configure' | 'connect' | 'disconnect' | 'authorize' | 'deviceLogin' | 'add'>
 
 function fakeConnectors(overrides: Partial<ConnectorDouble> = {}) {
   // The fakes answer the RpcResponse shapes the controller unwraps; the
@@ -83,7 +83,6 @@ function fakeConnectors(overrides: Partial<ConnectorDouble> = {}) {
     authorize: vi.fn(async () => ok({ authorizationUrl: 'http://127.0.0.1:8766/authorize', expiresAt: Date.now() + 300_000 })),
     deviceLogin: vi.fn(async () => ok({ status: 'ready' as const, expiresAt: Date.now() })),
     add: vi.fn(async () => ok({ id: 'custom' })),
-    remove: vi.fn(async () => ok({})),
     disconnect: vi.fn(async (payload: { id: string }) => ok({ connector: view({ id: payload.id, state: 'unconfigured', auth: [{ mode: 'token', configured: false }] }) })),
   }
   return { ...base, ...overrides }
@@ -228,6 +227,61 @@ describe('ConnectorsSectionController', () => {
     // The next edit clears the failure.
     controller.setDialogDraft('ATLASSIAN_TOKEN', 'sekrit2')
     expect(controller.store.getSnapshot().dialog?.error).toBeNull()
+  })
+
+  it('drafts the URL for a self-hosted row and saves it with the credentials', async () => {
+    const { controller, api } = await ready({
+      list: async () => ok({
+        connectors: [
+          view({
+            id: 'confluence',
+            state: 'unconfigured',
+            urlRequired: true,
+            auth: [{ mode: 'token', configured: false, credentialRefs: ['CONFLUENCE_PERSONAL_TOKEN'] }],
+          }),
+          view({
+            id: 'plain',
+            state: 'unconfigured',
+            auth: [{ mode: 'token', configured: false, credentialRefs: ['PLAIN_TOKEN'] }],
+          }),
+        ],
+      }),
+    })
+    controller.openTokenDialog('confluence')
+    // No stored URL yet: the row takes one, so the draft starts empty, not null.
+    expect(controller.store.getSnapshot().dialog).toMatchObject({
+      drafts: { CONFLUENCE_PERSONAL_TOKEN: '' }, url: '',
+    })
+    controller.setDialogUrl('https://confluence.example.com')
+    expect(controller.store.getSnapshot().dialog?.url).toBe('https://confluence.example.com')
+    controller.setDialogDraft('CONFLUENCE_PERSONAL_TOKEN', 'pat')
+    await controller.saveToken()
+    expect(api.connectors.configure).toHaveBeenCalledWith({
+      id: 'confluence',
+      fields: { credentials: { CONFLUENCE_PERSONAL_TOKEN: 'pat' }, url: 'https://confluence.example.com' },
+    })
+    // A stored URL prefills the draft.
+    const stored = await ready({
+      list: async () => ok({
+        connectors: [view({
+          id: 'confluence',
+          state: 'needs-auth',
+          urlRequired: true,
+          url: 'https://stored.example.com',
+          auth: [{ mode: 'token', configured: false, credentialRefs: ['CONFLUENCE_PERSONAL_TOKEN'] }],
+        })],
+      }),
+    })
+    stored.controller.openTokenDialog('confluence')
+    expect(stored.controller.store.getSnapshot().dialog?.url).toBe('https://stored.example.com')
+    // A row that takes no URL swallows the URL mutator.
+    controller.openTokenDialog('plain')
+    controller.setDialogUrl('https://nowhere.example')
+    expect(controller.store.getSnapshot().dialog?.url).toBeNull()
+    // A closed dialog swallows it as well.
+    controller.closeDialog()
+    controller.setDialogUrl('https://nowhere.example')
+    expect(controller.store.getSnapshot().dialog).toBeNull()
   })
 
   it('guards a second save while one is in flight', async () => {
@@ -513,30 +567,50 @@ describe('ConnectorsSectionController', () => {
     })
   })
 
-  it('guards a remove while an operation is in flight and records a remove failure', async () => {
-    let resolveConnect: (value: unknown) => void = () => {}
-    const { controller, api } = await ready({
-      connect: vi.fn(() => new Promise((resolve) => { resolveConnect = resolve })) as unknown as ConnectorDouble['connect'],
-    })
-    void controller.connect('notion')
-    await controller.removeCustom('atlas')
-    expect(api.connectors.remove).not.toHaveBeenCalled()
-    resolveConnect(ok({ connector: view({ id: 'notion', state: 'connected' }) }))
-    const failing = await ready({ remove: async () => fail('manifest missing') })
-    await failing.controller.removeCustom('atlas')
-    expect(failing.controller.store.getSnapshot().opError).toEqual({ id: 'atlas', message: 'manifest missing' })
-    expect(failing.controller.store.getSnapshot().busyId).toBeNull()
+  it('parses env draft pairs, keeps values with equals signs, and drops malformed segments', () => {
+    expect(parseEnvDraft('A=1, B=two')).toEqual({ A: '1', B: 'two' })
+    expect(parseEnvDraft('A=1=B, C=x=y')).toEqual({ A: '1=B', C: 'x=y' })
+    expect(parseEnvDraft('  , A=1,  ')).toEqual({ A: '1' })
+    expect(parseEnvDraft('')).toBeUndefined()
+    expect(parseEnvDraft('NOEQUALS')).toBeUndefined()
+    expect(parseEnvDraft('A=')).toBeUndefined()
+    expect(parseEnvDraft('=v')).toBeUndefined()
   })
 
-  it('clears the selection when the removed row was selected and keeps the roster', async () => {
-    const { controller } = await ready()
-    controller.selectProvider('atlas')
-    await controller.removeCustom('atlas')
-    expect(controller.store.getSnapshot().selectedProvider).toBeNull()
-    expect(controller.store.getSnapshot().connectors.map(c => c.id)).toEqual(['atlas', 'notion', 'google', 'linear', 'gmail', 'gcal'])
-    controller.selectProvider('unknown')
-    expect(controller.store.getSnapshot().selectedProvider).toBe('unknown')
-    expect(controller.store.getSnapshot().providerTools).toEqual([])
+  it('sends the stdio env pairs in the spec and omits the key while the field is empty', async () => {
+    const { controller, api } = await ready()
+    controller.openCustomDialog()
+    controller.setCustomDraft('name', 'Confluence')
+    controller.setCustomDraft('command', 'uvx')
+    controller.setCustomDraft('args', 'mcp-atlassian')
+    controller.setCustomDraft('env', 'CONFLUENCE_URL=https://confluence.example.com, EXTRA=1')
+    await controller.saveCustom()
+    expect(api.connectors.add).toHaveBeenCalledWith({
+      spec: {
+        name: 'Confluence', transport: 'stdio', command: 'uvx', args: ['mcp-atlassian'],
+        env: { CONFLUENCE_URL: 'https://confluence.example.com', EXTRA: '1' },
+      },
+    })
+    controller.openCustomDialog()
+    controller.setCustomDraft('name', 'No Env')
+    controller.setCustomDraft('command', 'npx')
+    await controller.saveCustom()
+    expect(api.connectors.add).toHaveBeenLastCalledWith({
+      spec: { name: 'No Env', transport: 'stdio', command: 'npx' },
+    })
+  })
+
+  it('omits the env field on an http draft', async () => {
+    const { controller, api } = await ready()
+    controller.openCustomDialog()
+    controller.setCustomDraft('name', 'Remote')
+    controller.setCustomDraft('transport', 'streamable-http')
+    controller.setCustomDraft('url', 'https://mcp.example.com')
+    controller.setCustomDraft('env', 'A=1')
+    await controller.saveCustom()
+    expect(api.connectors.add).toHaveBeenCalledWith({
+      spec: { name: 'Remote', transport: 'streamable-http', url: 'https://mcp.example.com' },
+    })
   })
 
   it('derives the selected provider tool list from the mounted servers, deduped', async () => {
@@ -553,6 +627,10 @@ describe('ConnectorsSectionController', () => {
     })
     controller.selectProvider('atlas')
     expect(controller.store.getSnapshot().providerTools).toEqual(['get_ticket', 'create_ticket', 'search'])
+    // An unknown id selects but has no tools to derive.
+    controller.selectProvider('unknown')
+    expect(controller.store.getSnapshot().selectedProvider).toBe('unknown')
+    expect(controller.store.getSnapshot().providerTools).toEqual([])
     controller.selectProvider(null)
     expect(controller.store.getSnapshot().providerTools).toEqual([])
   })

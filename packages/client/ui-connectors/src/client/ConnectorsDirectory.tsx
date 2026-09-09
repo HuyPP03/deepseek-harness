@@ -36,11 +36,10 @@ const EMPTY_SESSIONS: readonly SessionSummary[] = []
  * @param props.onAuthorize - open the browser OAuth flow.
  * @param props.onDeviceLogin - open the device-code flow.
  * @param props.onDisconnect - unmount and forget the credential.
- * @param props.onRemove - remove a custom connector.
  * @returns the card element.
  */
 function ConnectorCard({ row, busy, error, t, onConfigure, onConfigureApp, onConnect, onAuthorize,
-  onDeviceLogin, onDisconnect, onRemove }: {
+  onDeviceLogin, onDisconnect }: {
   row: ConnectorView
   busy: boolean
   error: string | null
@@ -51,7 +50,6 @@ function ConnectorCard({ row, busy, error, t, onConfigure, onConfigureApp, onCon
   onAuthorize: (id: string) => void
   onDeviceLogin: (id: string) => void
   onDisconnect: (id: string) => void
-  onRemove: (id: string) => void
 }): ReactNode {
   const mounted = row.servers.filter(server => server.mounted).length
   const off = row.servers.length - mounted
@@ -87,7 +85,7 @@ function ConnectorCard({ row, busy, error, t, onConfigure, onConfigureApp, onCon
       )}
       {guidance !== null && <span className={css.cardMeta}>{guidance}</span>}
       {message !== null && <span className={css.cardError}>{message}</span>}
-      {(canConfigure(row) || canConfigureApp(row) || canConnect(row) || canDisconnect(row) || row.custom) && (
+      {(canConfigure(row) || canConfigureApp(row) || canConnect(row) || canDisconnect(row)) && (
         <div className={css.cardActions}>
           {/* Every action stops the click: the card wrapper owns the card
               click, and a bubbling action click would re-run the same flow. */}
@@ -142,16 +140,6 @@ function ConnectorCard({ row, busy, error, t, onConfigure, onConfigureApp, onCon
               {t('disconnect')}
             </Button>
           )}
-          {row.custom && (
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={busy}
-              onClick={(e) => { e.stopPropagation(); onRemove(row.id) }}
-            >
-              {t('remove')}
-            </Button>
-          )}
         </div>
       )}
     </div>
@@ -165,10 +153,10 @@ function ConnectorCard({ row, busy, error, t, onConfigure, onConfigureApp, onCon
  */
 export function ConnectorsDirectory(props: ConnectorsDirectoryProps): ReactNode {
   const {
-    t, load, openTokenDialog, setDialogDraft, closeDialog,
+    t, load, openTokenDialog, setDialogDraft, setDialogUrl, closeDialog,
     saveToken, openOauthDialog, setOauthDraft, closeOauthDialog, saveOauth,
     connect, authorize, deviceLogin, disconnect, selectProvider, useConnectors,
-    openCustomDialog, setCustomDraft, closeCustomDialog, saveCustom, removeCustom,
+    openCustomDialog, setCustomDraft, closeCustomDialog, saveCustom,
     useSessions, openSession, newProviderChat,
   } = props
 
@@ -331,7 +319,6 @@ export function ConnectorsDirectory(props: ConnectorsDirectoryProps): ReactNode 
                 onAuthorize={handleAuthorize}
                 onDeviceLogin={handleDeviceLogin}
                 onDisconnect={(id) => { void disconnect(id) }}
-                onRemove={(id) => { void removeCustom(id) }}
               />
             </div>
           ))}
@@ -355,6 +342,7 @@ export function ConnectorsDirectory(props: ConnectorsDirectoryProps): ReactNode 
           t={t}
           onClose={closeDialog}
           onDraft={setDialogDraft}
+          onUrl={setDialogUrl}
           onSave={saveToken}
         />
       )}

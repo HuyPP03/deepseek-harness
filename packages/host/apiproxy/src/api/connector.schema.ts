@@ -1,9 +1,10 @@
 /**
  * connector domain zod schemas (names derived from map keys:
  * connectorListRequestSchema / connectorListViewSchema / …). The views
- * mirror the service's wire-safe ConnectorView: no server command, URL,
- * header, or credential field crosses the wire; the only secret direction
- * is the token value inside connector.configure and connector.complete.
+ * mirror the service's wire-safe ConnectorView: no server command, header,
+ * or credential field crosses the wire (the view's url is the user's own
+ * instance URL, not a server address); the only secret direction is the
+ * token value inside connector.configure and connector.complete.
  */
 
 import { z } from 'zod'
@@ -48,6 +49,8 @@ export const connectorViewSchema = z.object({
   auth: z.array(connectorAuthViewSchema),
   suggestions: z.array(z.string()),
   products: z.array(z.string()).optional(),
+  urlRequired: z.boolean().optional(),
+  url: z.string().optional(),
 }) satisfies z.ZodType<Wire<ConnectorView>>
 
 /** connector.list request payload. */

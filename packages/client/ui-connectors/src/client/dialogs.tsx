@@ -8,6 +8,7 @@
  */
 import type { ReactNode } from 'react'
 import { Button, Input, Modal } from '@deepseek-ai/dsh-client-ui-primitives'
+import { parseEnvDraft } from './controller.ts'
 import type { ConnectOauthDialog, ConnectTokenDialog, CustomConnectorDialog } from './controller.ts'
 import type { ConnectorsTranslate } from './contract/slots.ts'
 import css from './Dialogs.module.css'
@@ -18,6 +19,7 @@ interface TokenDialogProps {
   t: ConnectorsTranslate
   onClose: () => void
   onDraft: (ref: string, value: string) => void
+  onUrl: (value: string) => void
   onSave: () => Promise<void>
 }
 
@@ -26,9 +28,10 @@ interface TokenDialogProps {
  * @param props - the drafts, the copy, and the mutations.
  * @returns the modal.
  */
-export function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialogProps): ReactNode {
+export function TokenDialog({ dialog, t, onClose, onDraft, onUrl, onSave }: TokenDialogProps): ReactNode {
   const refs = Object.keys(dialog.drafts)
   const allDrafted = refs.length > 0 && Object.values(dialog.drafts).every(value => value.trim() !== '')
+  const urlDrafted = dialog.url === null || dialog.url.trim() !== ''
   return (
     <Modal
       open
@@ -46,7 +49,7 @@ export function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialog
             variant="primary"
             size="sm"
             autoFocus
-            disabled={dialog.saving || !allDrafted}
+            disabled={dialog.saving || !allDrafted || !urlDrafted}
             onClick={() => { void onSave() }}
           >
             {dialog.saving ? t('dialog.saving') : t('dialog.save')}
@@ -54,6 +57,18 @@ export function TokenDialog({ dialog, t, onClose, onDraft, onSave }: TokenDialog
         </div>
       )}
     >
+      {dialog.url !== null && (
+        <div className={css.dialogField}>
+          <span className={css.dialogFieldLabel}>{t('dialog.url')}</span>
+          <Input
+            type="text"
+            value={dialog.url}
+            placeholder="https://confluence.example.com"
+            onChange={(event) => { onUrl(event.target.value) }}
+          />
+          <span className={css.dialogFieldHint}>{t('dialog.urlHint')}</span>
+        </div>
+      )}
       {refs.map(ref => (
         <div className={css.dialogField} key={ref}>
           <span className={css.dialogFieldLabel}>{ref}</span>
@@ -141,7 +156,7 @@ export function OauthAppDialog({ dialog, t, onClose, onDraft, onSave }: OauthApp
 
 /**
  * Render the custom connector dialog: one form over the AddCustomSpec fields
- * (name, id, transport, command/args or url, optional token var).
+ * (name, id, transport, command/args/env or url, optional token var).
  * @param props - the dialog state and the controller's draft mutators.
  * @returns the modal.
  */
@@ -154,9 +169,12 @@ export function CustomDialog({ dialog, t, onClose, onDraft, onSave }: {
 }): ReactNode {
   const d = dialog.drafts
   const isHttp = d.transport === 'streamable-http'
+  // The env field is optional: empty is valid, non-empty must parse to pairs.
+  const envOk = d.env.trim() === '' || parseEnvDraft(d.env) !== undefined
   const valid = d.name.trim() !== ''
     && (isHttp || d.command.trim() !== '')
     && (!isHttp || d.url.trim() !== '')
+    && (isHttp || envOk)
   return (
     <Modal
       open
@@ -244,6 +262,18 @@ export function CustomDialog({ dialog, t, onClose, onDraft, onSave }: {
             placeholder="-y, @example/mcp-server"
             onChange={(e) => { onDraft('args', e.target.value) }}
           />
+        </div>
+      )}
+      {!isHttp && (
+        <div className={css.dialogField}>
+          <span className={css.dialogFieldLabel}>{t('custom.new.env')}</span>
+          <Input
+            type="text"
+            value={d.env}
+            placeholder="CONFLUENCE_URL=https://confluence.example.com, OTHER_KEY=value"
+            onChange={(e) => { onDraft('env', e.target.value) }}
+          />
+          <span className={css.dialogFieldHint}>{t('custom.new.envHint')}</span>
         </div>
       )}
       {isHttp && (

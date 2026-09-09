@@ -2,7 +2,7 @@
 
 English | [中文](README.zh.md)
 
-The connector catalog and state machine: predefined connections (Notion, GitHub, Figma, Atlassian, Slack, Google, Microsoft 365, …) and user-authored custom connectors, each mounting one or more MCP servers through [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md).
+The connector catalog and state machine: predefined connections (Confluence, Figma, GitHub, Notion, Slack, …) and user-authored custom connectors, each mounting one or more MCP servers through [`dsh-mcp-manager`](../../mcp/mcp-manager/README.md).
 
 A connector is a manifest: the MCP server(s) it mounts, how it authenticates them, and the agent preset a session with it composes with. State is **derived at read time** from the authoritative seams — the credential store, the OAuth token store, the live MCP registry — so a connector can never claim a state the seams do not show.
 
@@ -43,19 +43,19 @@ suggestions:
 |---|---|
 | `list()` | Every catalog + custom connector as a wire-safe view, sorted by id. |
 | `get(id)` | One view, or `undefined`. |
-| `manifest(id)` | The raw manifest (host-internal; views never carry commands, env, or URLs). |
+| `manifest(id)` | The raw manifest (host-internal; views never carry commands or env, and the only URL a view carries is the user-stored `url`). |
 | `setAuthorizing(id, inFlight)` | Flag an in-flight auth flow; the state reads `authorizing` while flagged. |
-| `configure(id, fields)` | Store token/credential values and/or override fields. Auto-connects once a token method is fully configured; a failed mount records `lastError` instead of losing the stored values. |
+| `configure(id, fields)` | Store token/credential values and/or override fields. Auto-connects once a token method is fully configured; a failed mount records `lastError` instead of losing the stored values. A manifest that requires a base URL is not fully configured until the `url` override is stored, and a mount failure from the missing override leaves the connector on its configure gate rather than in `error`. |
 | `connect(id, mode)` | Mount with a token; every declared credential reference must be stored first (`ConnectorCredentialMissingError` otherwise). `oauth` and `device` reject with `ConnectorAuthUnavailableError` until the flow engine lands. |
 | `disconnect(id)` | Unmount, unset the connector's credentials, remove its token bundle, and delete its override document. |
 | `addCustom(spec)` | Author `custom-<slug>`: copy the `custom` preset, persist the manifest, auto-mount when no auth is needed. |
 | `removeCustom(id)` | Unmount, unset credentials, delete the manifest and the preset copy. Shipped ids are refused. |
 
-The wire view is secret-free by construction: server entries carry `serverName`, `mounted`, and `status`; auth entries carry `mode`, `configured`, the token method's `credentialRefs` (public reference names — the per-reference fields of the client's token dialog), and user-facing hints — never values.
+The wire view is secret-free by construction: server entries carry `serverName`, `mounted`, and `status`; auth entries carry `mode`, `configured`, the token method's `credentialRefs` (public reference names — the per-reference fields of the client's token dialog), and user-facing hints — never values. A view whose manifest resolves a base URL from the override document carries `urlRequired: true`, plus the stored `url` once set.
 
 ### State
 
-`unconfigured` → `needs-auth` → (`authorizing`) → `connecting` → `connected` → `reconnecting`/`down`, plus `error` while a failed operation's `lastError` is pending. Derivation: a mounted server's status comes from the registry; a pending mount failure wins over a same-name registry view the connector does not own (a taken name shows `error`, not the squatter's status).
+`unconfigured` → `needs-auth` → (`authorizing`) → `connecting` → `connected` → `reconnecting`/`down`, plus `error` while a failed operation's `lastError` is pending. Derivation: a mounted server's status comes from the registry; a pending mount failure wins over a same-name registry view the connector does not own (a taken name shows `error`, not the squatter's status). "Configured" — the gate between `unconfigured` and `needs-auth` — means an auth method's requirements are stored, and, for a manifest that requires a base URL, the `url` override included.
 
 ### Events
 
@@ -90,4 +90,5 @@ None.
 - **No device-code engine** — the M365 device-code loop lands in a later phase; only the browser OAuth flow ([dsh-connectors-oauth-flow](../oauth-flow/README.md)) is composed today.
 - **Polling for passive state** — registry flips without a connector operation (a server dropping, reconnecting) are visible on the next `list()`; no event is emitted for them.
 - **Overrides are a boot-time snapshot** — external edits of the override documents are not hot-reloaded.
+- **Custom connectors cannot use `$override` slots** — `addCustom` env and headers are literals only, so a self-hosted service whose server needs a base URL ships as a catalog manifest (Confluence) rather than a custom connector.
 - **`lastError` is in-memory** — a failed mount's message survives until the next successful operation, not across restarts.

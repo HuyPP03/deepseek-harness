@@ -425,9 +425,14 @@ export class Connectors extends Service {
           this.lastError.delete(id)
         } catch (error) {
           // The credential is stored; the mount failed. Surface the failure
-          // as the connector's state rather than losing the stored value.
-          /* v8 ignore next -- mcp-manager rejects with Error instances; the String(error) peer answers the catch type */
-          this.lastError.set(id, error instanceof Error ? error.message : String(error))
+          // as the connector's state rather than losing the stored value. A
+          // missing override is a configuration precondition, not a mount
+          // failure: the row stays on its configure gate (the view already
+          // advertises urlRequired) instead of a terminal error.
+          if (!(error instanceof ConnectorOverrideMissingError)) {
+            /* v8 ignore next -- mcp-manager rejects with Error instances; the String(error) peer answers the catch type */
+            this.lastError.set(id, error instanceof Error ? error.message : String(error))
+          }
         }
       }
     }
@@ -626,7 +631,10 @@ export class Connectors extends Service {
       if (method.mode === 'device' && method.howTo !== undefined) view.howTo = method.howTo
       return view
     }))
-    const state = this.stateOf(manifest.id, servers, auth.some(entry => entry.configured))
+    const urlRequired = this.manifestRequiresUrl(manifest)
+    const configured = auth.some(entry => entry.configured)
+      && (!urlRequired || overrides.url !== undefined)
+    const state = this.stateOf(manifest.id, servers, configured)
     const view: Writable<ConnectorView> = {
       id: manifest.id,
       name: manifest.name,
@@ -637,6 +645,10 @@ export class Connectors extends Service {
       servers,
       auth,
       suggestions: [...(manifest.suggestions ?? [])],
+    }
+    if (urlRequired) {
+      view.urlRequired = true
+      if (overrides.url !== undefined) view.url = overrides.url
     }
     const lastError = this.lastError.get(manifest.id)
     if (state === 'error' && lastError !== undefined) view.lastError = lastError
@@ -719,6 +731,19 @@ export class Connectors extends Service {
       return overrides.clientId !== undefined
     }
     return false
+  }
+
+  /**
+   * Whether any of the manifest's server slots resolves the override
+   * document's `url` field, so a stored base URL is a connect precondition.
+   * @param manifest - the connector whose servers are scanned.
+   */
+  private manifestRequiresUrl(manifest: ConnectorManifest): boolean {
+    return manifest.servers.some((server) => {
+      const slots = server.transport === 'stdio' ? (server.env ?? {}) : (server.headers ?? {})
+      return Object.values(slots).some(slot =>
+        typeof slot !== 'string' && '$override' in slot && slot.$override === 'url')
+    })
   }
 
   /** Whether a token method's references are all stored. */

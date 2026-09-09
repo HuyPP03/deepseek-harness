@@ -287,6 +287,13 @@ export interface ConnectorView {
   readonly suggestions: readonly string[]
   /** The switchable provider products, where the provider has them. */
   readonly products?: readonly string[]
+  /**
+   * Whether a server of this manifest resolves its base URL from the user's
+   * override document, so the connector cannot connect before one is stored.
+   */
+  readonly urlRequired?: boolean
+  /** The stored base URL, present when `urlRequired` and one has been stored. */
+  readonly url?: string
 }
 
 /** The fields one `configure` call can set; absent fields are left untouched. */

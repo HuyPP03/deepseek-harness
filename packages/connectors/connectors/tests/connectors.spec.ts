@@ -443,6 +443,20 @@ describe('token flow', () => {
     await expect(readFile(join(root, '.mcp', 'notion.cordis.yml'), 'utf8')).rejects.toThrow(/ENOENT/)
   })
 
+  it('keeps a self-hosted connector unconfigured until its base URL is stored', async () => {
+    const { ctx } = await boot()
+    // No URL stored: the requirement is advertised from the first read.
+    expect(await ctx.connectors.get('atlas')).toMatchObject({ urlRequired: true })
+    // Storing the token references alone does not arm the connect.
+    await ctx.connectors.configure('atlas', { credentials: { ATLASSIAN_USERNAME: 'me', ATLASSIAN_TOKEN: 'tok' } })
+    expect(await stateOf(ctx, 'atlas')).toBe('unconfigured')
+    // The stored URL lifts the gate and surfaces on the view.
+    await ctx.connectors.configure('atlas', { url: 'https://x.atlassian.net' })
+    expect(await ctx.connectors.get('atlas')).toMatchObject({
+      urlRequired: true, url: 'https://x.atlassian.net', state: 'needs-auth',
+    })
+  })
+
   it('refuses a configure with an unknown credential reference', async () => {
     const { ctx } = await boot()
     await expect(ctx.connectors.configure('notion', { credentials: { WRONG_REF: 'x' } })).rejects.toThrow(/not a credential reference/)
@@ -459,6 +473,10 @@ describe('token flow', () => {
     // declared reference.
     await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(ConnectorCredentialMissingError)
     await expect(ctx.connectors.connect('atlas', 'token')).rejects.toThrow(/ATLASSIAN_USERNAME/)
+
+    // The manifest's env resolves the override document's url field, so the
+    // view advertises the URL requirement from the first read on.
+    expect(await ctx.connectors.get('atlas')).toMatchObject({ urlRequired: true })
 
     await ctx.connectors.configure('atlas', { credentials: { ATLASSIAN_USERNAME: 'me' } })
     expect(await stateOf(ctx, 'atlas')).toBe('unconfigured')

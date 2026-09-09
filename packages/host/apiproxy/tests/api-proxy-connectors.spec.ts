@@ -375,21 +375,23 @@ describe('connector RPC domain', () => {
     }
   })
 
-  it('surfaces a missing override field as the connector error state, then recovers', async () => {
+  it('keeps a missing override field on the configure gate, then recovers', async () => {
     const { client, dispose, root: r, home: h } = await harness()
     root = r
     home = h
     try {
       // The credential is stored, but the url override was never configured:
-      // the mount fails and the view carries the error state with its message.
+      // the missing field is a configuration precondition, so the view stays
+      // on the unconfigured gate and advertises the URL requirement.
       const configured = expectOk(await client.connectors.configure({ id: 'duo', fields: { token: 'duo-token' } }))
-      expect(configured.connector.state).toBe('error')
-      expect(configured.connector.lastError).toContain('needs its "url" field configured')
+      expect(configured.connector.state).toBe('unconfigured')
+      expect(configured.connector).toMatchObject({ urlRequired: true })
       const wireError = expectErr(await client.connectors.connect({ id: 'duo', mode: 'token' }))
       expect(wireError.code).toBe('connector-override-missing')
       expect(wireError.details).toEqual({ id: 'duo', field: 'url' })
-      // The missing field is configured; the same connect now mounts.
-      expectOk(await client.connectors.configure({ id: 'duo', fields: { url: 'https://duo.example/mcp' } }))
+      // The missing field is configured; the view arms the connect, which mounts.
+      const armed = expectOk(await client.connectors.configure({ id: 'duo', fields: { url: 'https://duo.example/mcp' } }))
+      expect(armed.connector).toMatchObject({ urlRequired: true, url: 'https://duo.example/mcp', state: 'needs-auth' })
       const recovered = expectOk(await client.connectors.connect({ id: 'duo', mode: 'token' }))
       expect(recovered.connector.state).toBe('connected')
       expect(recovered.connector.lastError).toBeUndefined()

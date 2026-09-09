@@ -13,16 +13,17 @@ export type ConnectorsKey =
   | 'risk.token' | 'risk.tokenStale' | 'risk.oauth' | 'risk.device' | 'risk.servers' | 'risk.custom'
   | 'back' | 'sessions.placeholder' | 'sessions.new' | 'sessions.empty' | 'tools.available'
   | 'dialog.title' | 'dialog.tokenPlaceholder'
+  | 'dialog.url' | 'dialog.urlHint'
   | 'dialog.cancel' | 'dialog.save' | 'dialog.saving'
   | 'card.setupApp'
   | 'dialog.setup.title' | 'dialog.setup.clientId' | 'dialog.setup.clientIdPlaceholder'
   | 'dialog.setup.clientSecret' | 'dialog.setup.secretHint' | 'dialog.setup.save'
-  | 'remove'
   | 'custom.new.button'
   | 'custom.new.title'
   | 'custom.new.name' | 'custom.new.id' | 'custom.new.transport'
   | 'custom.new.transport.stdio' | 'custom.new.transport.http'
   | 'custom.new.command' | 'custom.new.args' | 'custom.new.url'
+  | 'custom.new.env' | 'custom.new.envHint'
   | 'custom.new.tokenVar' | 'custom.new.tokenVarIsHeader'
   | 'custom.new.save' | 'custom.new.saving'
 
@@ -64,6 +65,8 @@ export const en: Record<ConnectorsKey, string> = {
   'tools.available': 'Available tools',
   'dialog.title': 'Connect {name}',
   'dialog.tokenPlaceholder': 'Paste your token',
+  'dialog.url': 'Instance URL',
+  'dialog.urlHint': 'The base URL of your self-hosted instance, e.g. https://confluence.example.com.',
   'dialog.cancel': 'Cancel',
   'dialog.save': 'Save & connect',
   'dialog.saving': 'Saving…',
@@ -74,7 +77,6 @@ export const en: Record<ConnectorsKey, string> = {
   'dialog.setup.clientSecret': 'Client secret',
   'dialog.setup.secretHint': 'Optional — leave empty when your provider gives you a public desktop client.',
   'dialog.setup.save': 'Save',
-  remove: 'Remove',
   'custom.new.button': 'New connector',
   'custom.new.title': 'New custom connector',
   'custom.new.name': 'Name',
@@ -85,6 +87,8 @@ export const en: Record<ConnectorsKey, string> = {
   'custom.new.command': 'Command',
   'custom.new.args': 'Args (comma-separated)',
   'custom.new.url': 'URL',
+  'custom.new.env': 'Env vars (optional)',
+  'custom.new.envHint': 'KEY=VALUE pairs, comma-separated — e.g. the service URL the server reads from its environment.',
   'custom.new.tokenVar': 'Token variable (optional)',
   'custom.new.tokenVarIsHeader': 'Token is an HTTP header',
   'custom.new.save': 'Create',
@@ -129,6 +133,8 @@ export const vi: Record<ConnectorsKey, string> = {
   'tools.available': 'Công cụ khả dụng',
   'dialog.title': 'Kết nối {name}',
   'dialog.tokenPlaceholder': 'Dán token của bạn',
+  'dialog.url': 'URL instance',
+  'dialog.urlHint': 'URL gốc của instance tự lưu trữ của bạn, ví dụ https://confluence.example.com.',
   'dialog.cancel': 'Hủy',
   'dialog.save': 'Lưu & kết nối',
   'dialog.saving': 'Đang lưu…',
@@ -139,7 +145,6 @@ export const vi: Record<ConnectorsKey, string> = {
   'dialog.setup.clientSecret': 'Client secret',
   'dialog.setup.secretHint': 'Tuỳ chọn — bỏ trống nếu nhà cung cấp cấp cho bạn client desktop công khai.',
   'dialog.setup.save': 'Lưu',
-  remove: 'Xóa',
   'custom.new.button': 'Kết nối mới',
   'custom.new.title': 'Kết nối tùy chỉnh mới',
   'custom.new.name': 'Tên',
@@ -150,6 +155,8 @@ export const vi: Record<ConnectorsKey, string> = {
   'custom.new.command': 'Lệnh',
   'custom.new.args': 'Đối số (phân tách bằng dấu phẩy)',
   'custom.new.url': 'URL',
+  'custom.new.env': 'Biến môi trường (tuỳ chọn)',
+  'custom.new.envHint': 'Cặp KEY=VALUE, phân tách bằng dấu phẩy — ví dụ URL dịch vụ mà máy chủ đọc từ biến môi trường.',
   'custom.new.tokenVar': 'Biến token (tuỳ chọn)',
   'custom.new.tokenVarIsHeader': 'Token là HTTP header',
   'custom.new.save': 'Tạo',
@@ -194,6 +201,8 @@ export const zh: Record<ConnectorsKey, string> = {
   'tools.available': '可用工具',
   'dialog.title': '连接 {name}',
   'dialog.tokenPlaceholder': '粘贴你的令牌',
+  'dialog.url': '实例 URL',
+  'dialog.urlHint': '你的自托管实例的基础 URL，例如 https://confluence.example.com。',
   'dialog.cancel': '取消',
   'dialog.save': '保存并连接',
   'dialog.saving': '正在保存…',
@@ -204,7 +213,6 @@ export const zh: Record<ConnectorsKey, string> = {
   'dialog.setup.clientSecret': '客户端密钥',
   'dialog.setup.secretHint': '可选 —— 如果提供商给你的是公开桌面客户端，留空即可。',
   'dialog.setup.save': '保存',
-  remove: '移除',
   'custom.new.button': '新建连接器',
   'custom.new.title': '新建自定义连接器',
   'custom.new.name': '名称',
@@ -215,6 +223,8 @@ export const zh: Record<ConnectorsKey, string> = {
   'custom.new.command': '命令',
   'custom.new.args': '参数（逗号分隔）',
   'custom.new.url': 'URL',
+  'custom.new.env': '环境变量（可选）',
+  'custom.new.envHint': 'KEY=VALUE 对，逗号分隔——例如服务器从环境变量读取的服务 URL。',
   'custom.new.tokenVar': '令牌变量（可选）',
   'custom.new.tokenVarIsHeader': '令牌是 HTTP 头',
   'custom.new.save': '创建',

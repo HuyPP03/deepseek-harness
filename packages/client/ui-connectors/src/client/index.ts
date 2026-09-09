@@ -81,6 +81,7 @@ export function apply(ctx: ClientContext): void {
     load: () => controller.load(),
     openTokenDialog: (id) => { controller.openTokenDialog(id) },
     setDialogDraft: (ref, value) => { controller.setDialogDraft(ref, value) },
+    setDialogUrl: (value) => { controller.setDialogUrl(value) },
     closeDialog: () => { controller.closeDialog() },
     saveToken: () => controller.saveToken(),
     openOauthDialog: (id) => { controller.openOauthDialog(id) },
@@ -96,7 +97,6 @@ export function apply(ctx: ClientContext): void {
     setCustomDraft: (field, value) => { controller.setCustomDraft(field, value) },
     closeCustomDialog: () => { controller.closeCustomDialog() },
     saveCustom: () => controller.saveCustom(),
-    removeCustom: id => controller.removeCustom(id),
     // Opening a chat from the directory must leave the overlay: the session
     // opens in the conversation column underneath, so the center view returns
     // to the conversation in the same step.
