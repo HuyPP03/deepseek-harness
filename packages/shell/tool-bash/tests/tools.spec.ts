@@ -1078,7 +1078,7 @@ describe('the model-facing bash tool builds its request from named args only (no
         ...request.signal ? { signal: request.signal } : {},
         ...request.stdin !== undefined ? { stdin: request.stdin } : {},
         ...request.env !== undefined ? { env: request.env } : {},
-        ...request.dshEnv !== undefined ? { dshEnv: request.dshEnv } : {},
+        ...request.ohEnv !== undefined ? { ohEnv: request.ohEnv } : {},
         sandboxPolicy: request.sandboxPolicy,
       }
     }
@@ -1137,7 +1137,7 @@ describe('the model-facing bash tool builds its request from named args only (no
       agent,
     })
 
-    expect(bash.requests[0]?.dshEnv).toEqual({
+    expect(bash.requests[0]?.ohEnv).toEqual({
       OH_HOME: recordingDshHome,
       OH_SESSION_ID: 'request-fg',
       OH_SESSION_JSONL: path,
@@ -1164,7 +1164,7 @@ describe('the model-facing bash tool builds its request from named args only (no
     })
 
     expect(bash.requests[0]?.env).toBeUndefined()
-    expect(bash.requests[0]?.dshEnv).toEqual({
+    expect(bash.requests[0]?.ohEnv).toEqual({
       OH_HOME: recordingDshHome,
       OH_SESSION_ID: 'request-bg',
       OH_SESSION_JSONL: path,
@@ -1185,7 +1185,7 @@ describe('the model-facing bash tool builds its request from named args only (no
       agent,
     })
 
-    expect(bash.requests[0]?.dshEnv).toEqual({
+    expect(bash.requests[0]?.ohEnv).toEqual({
       OH_HOME: recordingDshHome,
       OH_SESSION_ID: 'request-id-only',
       OH_SHELL: '1',
@@ -1208,7 +1208,7 @@ describe('the model-facing bash tool builds its request from named args only (no
       })
     }
 
-    expect(bash.requests.map(request => request.dshEnv)).toEqual([
+    expect(bash.requests.map(request => request.ohEnv)).toEqual([
       {
         OH_HOME: recordingDshHome,
         OH_SESSION_ID: 'request-parent',
@@ -1222,7 +1222,7 @@ describe('the model-facing bash tool builds its request from named args only (no
         OH_SHELL: '1',
       },
     ])
-    expect(bash.requests[0]?.dshEnv?.OH_SESSION_JSONL).not.toBe(bash.requests[1]?.dshEnv?.OH_SESSION_JSONL)
+    expect(bash.requests[0]?.ohEnv?.OH_SESSION_JSONL).not.toBe(bash.requests[1]?.ohEnv?.OH_SESSION_JSONL)
   })
 
   it('does not forward trusted-only fields even when the model includes them as extra arguments', async () => {

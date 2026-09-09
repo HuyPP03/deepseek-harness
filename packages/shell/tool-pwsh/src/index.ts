@@ -360,7 +360,7 @@ export function apply(ctx: Context, config: Config = {}): void {
         command: args.command,
         ...workdir !== undefined ? { workdir } : {},
         ...args.timeoutMs !== undefined ? { timeoutMs: args.timeoutMs } : {},
-        dshEnv: ctx.shellEnv.collect(exec),
+        ohEnv: ctx.shellEnv.collect(exec),
         ...policy !== undefined ? { sandboxPolicy: policy } : {},
       }
       if (args.run_in_background === true) {

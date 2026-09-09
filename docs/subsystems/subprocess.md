@@ -16,12 +16,12 @@ One provider's spawn working directories, executable paths, ordinary processes, 
 
 ```ts type-equiv
 /** One environment key inside the managed {@link OH_ENV_PREFIX} namespace. */
-type DshEnvironmentKey = `${typeof OH_ENV_PREFIX}${string}`
+type OhEnvironmentKey = `${typeof OH_ENV_PREFIX}${string}`
 ```
 
 ```ts type-equiv
 /** Trusted Open Harness variables for one child-process execution. */
-type DshEnvironment = Readonly<Record<DshEnvironmentKey, string>>
+type OhEnvironment = Readonly<Record<OhEnvironmentKey, string>>
 ```
 
 ```ts type-equiv

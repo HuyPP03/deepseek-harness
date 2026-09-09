@@ -132,7 +132,7 @@ describe('the provider hand-off', () => {
       const result = await bash.run(bash.resolve({
         command: 'true',
         env: { BASH_ENV: hook },
-        dshEnv: { OH_ORDER_FILE: order },
+        ohEnv: { OH_ORDER_FILE: order },
       }))
       expect(result.exitCode).toBe(0)
       expect(readFileSync(order, 'utf8')).toBe('runner\nhook\n')

@@ -36,7 +36,7 @@ export function apply(ctx: Context): void {
 }
 ```
 
-The overlay is computed from the current `ToolExecution` and passed through the dedicated `ShellExecRequest.dshEnv` channel. The local executors remove all inherited `OH_*` before merging that snapshot, so nested harnesses and concurrent parent/child agents cannot leak stale identities. `process.env` is never modified. The shell tools' descriptions teach the generic `$OH_*` convention rather than naming persistence-specific variables or adding a permanent system-prompt section.
+The overlay is computed from the current `ToolExecution` and passed through the dedicated `ShellExecRequest.ohEnv` channel. The local executors remove all inherited `OH_*` before merging that snapshot, so nested harnesses and concurrent parent/child agents cannot leak stale identities. `process.env` is never modified. The shell tools' descriptions teach the generic `$OH_*` convention rather than naming persistence-specific variables or adding a permanent system-prompt section.
 
 ## Model Experience
 

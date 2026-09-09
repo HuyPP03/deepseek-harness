@@ -292,28 +292,28 @@ describe.skipIf(!hasPwsh)('PwshLocalExecutor.run', () => {
     await expect(bash.run(bash.resolve({ command: 'Write-Output ok', workdir: '/nonexistent-dsh' }))).rejects.toThrow(/ENOENT/)
   })
 
-  it('resolve() carries stdin/env/dshEnv onto the spec, and run() threads them to the command', async () => {
+  it('resolve() carries stdin/env/ohEnv onto the spec, and run() threads them to the command', async () => {
     const { bash } = await setup()
     const spec = bash.resolve({
       command: '$s = ([Console]::In.ReadToEnd()).TrimEnd(); Write-Output $s; Write-Output "[$env:SEAM_VAR][$env:OH_SEAM_VAR]"',
       stdin: 'piped\n',
       env: { SEAM_VAR: 'env-ok' },
-      dshEnv: { OH_SEAM_VAR: 'dsh-ok' },
+      ohEnv: { OH_SEAM_VAR: 'dsh-ok' },
     })
     // resolve() keeps the optional input/environment fields verbatim.
     expect(spec.stdin).toBe('piped\n')
     expect(spec.env).toEqual({ SEAM_VAR: 'env-ok' })
-    expect(spec.dshEnv).toEqual({ OH_SEAM_VAR: 'dsh-ok' })
+    expect(spec.ohEnv).toEqual({ OH_SEAM_VAR: 'dsh-ok' })
     const result = await bash.run(spec)
     expect(lf(result.stdout.text)).toBe('piped\n[env-ok][dsh-ok]\n')
   })
 
-  it('resolve() omits stdin/env/dshEnv when the request supplies none', async () => {
+  it('resolve() omits stdin/env/ohEnv when the request supplies none', async () => {
     const { bash } = await setup()
     const spec = bash.resolve({ command: 'Write-Output ok' })
     expect('stdin' in spec).toBe(false)
     expect('env' in spec).toBe(false)
-    expect('dshEnv' in spec).toBe(false)
+    expect('ohEnv' in spec).toBe(false)
   })
 })
 
@@ -337,7 +337,7 @@ describe.skipIf(!hasPwsh)('PwshLocalExecutor.start (background process handles)'
       command: '$s = ([Console]::In.ReadToEnd()).TrimEnd(); Write-Output $s; Write-Output "[$env:BG_VAR][$env:OH_BG_VAR]"',
       stdin: 'bg-stdin\n',
       env: { BG_VAR: 'bg-env' },
-      dshEnv: { OH_BG_VAR: 'bg-dsh-env' },
+      ohEnv: { OH_BG_VAR: 'bg-dsh-env' },
     }))
     const partialOutput = await readUntil(proc, '[bg-env][bg-dsh-env]')
     await proc.done

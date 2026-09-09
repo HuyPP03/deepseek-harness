@@ -11,7 +11,7 @@
 import { Service, type Context } from '@deepseek-ai/cordis'
 import z from '@deepseek-ai/schemastery'
 import { OH_ENV_PREFIX } from '@open-harness/oh-shell'
-import type { DshEnvironment, DshEnvironmentKey } from '@open-harness/oh-shell'
+import type { OhEnvironment, OhEnvironmentKey } from '@open-harness/oh-shell'
 import { OH_HOME_ENV, resolveOhHome } from '@open-harness/oh-home-paths'
 import type { ToolExecution } from '@open-harness/oh-tools'
 import type {} from '@open-harness/oh-session-persistence'
@@ -51,13 +51,13 @@ export interface BashEnvContributor {
   /** Stable contributor name used in diagnostics and duplicate detection. */
   name: string
   /** Complete set of `OH_*` keys this contributor may return. */
-  variables: Readonly<Record<DshEnvironmentKey, BashEnvVariable>>
+  variables: Readonly<Record<OhEnvironmentKey, BashEnvVariable>>
   /**
    * Resolve this contributor's available values for one tool execution.
    * @param execution - the shell tool execution and its optional calling agent.
    * @returns a partial map containing only keys declared in {@link variables}.
    */
-  resolve(execution: ToolExecution): Readonly<Partial<Record<DshEnvironmentKey, string>>>
+  resolve(execution: ToolExecution): Readonly<Partial<Record<OhEnvironmentKey, string>>>
 }
 
 /** An enumerable declaration returned by {@link ShellEnvRegistry.list}. */
@@ -65,13 +65,13 @@ export interface BashEnvVariableInfo extends BashEnvVariable {
   /** Contributor that owns the variable. */
   contributor: string
   /** Declared `OH_*` environment variable name. */
-  key: DshEnvironmentKey
+  key: OhEnvironmentKey
 }
 
 const OH_SHELL_KEY = `${OH_ENV_PREFIX}SHELL` as const
 const OH_SESSION_ID_KEY = `${OH_ENV_PREFIX}SESSION_ID` as const
 const OH_SESSION_JSONL_KEY = `${OH_ENV_PREFIX}SESSION_JSONL` as const
-const RESERVED_BASH_ENV_KEYS = new Set<DshEnvironmentKey>([
+const RESERVED_BASH_ENV_KEYS = new Set<OhEnvironmentKey>([
   OH_HOME_ENV,
   OH_SHELL_KEY,
   OH_SESSION_ID_KEY,
@@ -88,7 +88,7 @@ const BASH_ENV_KEY_SUFFIX = /^[A-Z][A-Z0-9_]*$/
  */
 export class ShellEnvRegistry extends Service {
   private readonly contributors = new Map<string, BashEnvContributor>()
-  private readonly keyOwners = new Map<DshEnvironmentKey, string>()
+  private readonly keyOwners = new Map<OhEnvironmentKey, string>()
   private readonly dshHome: string
 
   /**
@@ -116,7 +116,7 @@ export class ShellEnvRegistry extends Service {
         throw new Error(`bash env contributor "${contributor.name}" is already registered`)
       }
 
-      const variables = Object.entries(contributor.variables) as [DshEnvironmentKey, BashEnvVariable][]
+      const variables = Object.entries(contributor.variables) as [OhEnvironmentKey, BashEnvVariable][]
       for (const [key, variable] of variables) {
         if (!key.startsWith(OH_ENV_PREFIX)
           || !BASH_ENV_KEY_SUFFIX.test(key.slice(OH_ENV_PREFIX.length))) {
@@ -149,8 +149,8 @@ export class ShellEnvRegistry extends Service {
    * @param execution - the current tool execution.
    * @returns an immutable environment overlay containing built-ins and current contributions.
    */
-  collect(execution: ToolExecution): DshEnvironment {
-    const values: Record<DshEnvironmentKey, string> = {
+  collect(execution: ToolExecution): OhEnvironment {
+    const values: Record<OhEnvironmentKey, string> = {
       [OH_HOME_ENV]: this.dshHome,
       [OH_SHELL_KEY]: '1',
     }
@@ -161,7 +161,7 @@ export class ShellEnvRegistry extends Service {
     for (const contributor of [...this.contributors.values()].sort((left, right) => left.name.localeCompare(right.name))) {
       const resolved = contributor.resolve(execution)
       for (const [rawKey, value] of Object.entries(resolved)) {
-        const key = rawKey as DshEnvironmentKey
+        const key = rawKey as OhEnvironmentKey
         if (!Object.hasOwn(contributor.variables, key)) {
           throw new Error(`bash env contributor "${contributor.name}" returned undeclared key "${key}"`)
         }
@@ -186,7 +186,7 @@ export class ShellEnvRegistry extends Service {
       .flatMap(contributor => Object.entries(contributor.variables).map(([key, variable]) => ({
         contributor: contributor.name,
         description: variable.description,
-        key: key as DshEnvironmentKey,
+        key: key as OhEnvironmentKey,
       })))
       .sort((left, right) => left.key.localeCompare(right.key))
   }

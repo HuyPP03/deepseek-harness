@@ -13,10 +13,10 @@ import type { Readable, Writable } from 'node:stream'
 export const OH_ENV_PREFIX = 'OH_' as const
 
 /** One environment key inside the managed {@link OH_ENV_PREFIX} namespace. */
-export type DshEnvironmentKey = `${typeof OH_ENV_PREFIX}${string}`
+export type OhEnvironmentKey = `${typeof OH_ENV_PREFIX}${string}`
 
 /** Trusted Open Harness variables for one child-process execution. */
-export type DshEnvironment = Readonly<Record<DshEnvironmentKey, string>>
+export type OhEnvironment = Readonly<Record<OhEnvironmentKey, string>>
 
 /** One captured stream: the (possibly truncated) text plus recovery info. */
 export interface CollectedOutput {
