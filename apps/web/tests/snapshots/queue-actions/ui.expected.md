@@ -27,7 +27,7 @@
   - img
   - text: Context injection skill-catalog
 - paragraph: partial
-- status: Deep diving...
+- status: Thinking...
 - list:
   - listitem:
     - text: Edited queue item
@@ -45,4 +45,5 @@
 - button "Select model, current DeepSeek-V4-Flash":
   - text: DeepSeek-V4-Flash
   - img
-- button "Stop generating"
+- button "Stop generating":
+  - img

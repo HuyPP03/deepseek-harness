@@ -37,7 +37,7 @@
   - img
   - text: Bash Print alpha to stdout
 - paragraph: partial
-- status: Deep diving...
+- status: Thinking...
 - textbox "Message the agent"
 - button "Commands":
   - img
@@ -46,5 +46,6 @@
   - text: DeepSeek-V4-Flash
   - img
 - button "6% of context used"
-- button "Stop generating"
+- button "Stop generating":
+  - img
 - text: 1 turns · 1 steps LLM {{duration}} · Tool call {{duration}} TTFT avg {{duration}} · {{throughput}} tok/s Cache hit 0% Input 7.8K tok · Output 109 tok

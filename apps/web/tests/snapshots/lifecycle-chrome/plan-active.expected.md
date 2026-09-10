@@ -1,26 +1,20 @@
-- button "New session"
+- button "New chat": Open Harness
+- tablist "Browse tabs":
+  - tab "Chats" [selected]
+  - tab "Workspaces"
+  - tab "Connectors"
 - button "Collapse sidebar":
   - img
-- tablist "Browse tabs":
-  - tab "Chats"
-  - tab "Workspaces" [selected]
-  - tab "Connectors"
-- button "New session":
+- button "New chat":
   - img
-  - text: New Session
-- text: Workspaces
+  - text: New Chat
+- text: Chats
 - button "Search sessions":
   - img
 - textbox "Search sessions..."
 - button "View options":
   - img
-- button "Add workspace":
-  - img
-- tree "Sessions":
-  - treeitem "workspace" [expanded]:
-    - img
-    - text: workspace
-  - treeitem "New Session" [selected]
+- tree "Chats": No chats yet
 - button "Settings":
   - img
   - text: Settings
@@ -41,7 +35,9 @@
 - button "Select model, current DeepSeek-V4-Flash":
   - text: DeepSeek-V4-Flash
   - img
-- button "Send message" [disabled]
+- button "Send message" [disabled]:
+  - img
 - text: Details
-- button "Close details"
+- button "Close details":
+  - img
 - text: Click a tool row in the message flow to view its details

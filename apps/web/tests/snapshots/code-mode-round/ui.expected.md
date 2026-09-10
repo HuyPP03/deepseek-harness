@@ -61,5 +61,6 @@
   - text: DeepSeek-V4-Flash
   - img
 - button "7% of context used"
-- button "Send message" [disabled]
+- button "Send message" [disabled]:
+  - img
 - text: 1 turns · 2 steps LLM {{duration}} · Tool call {{duration}} TTFT avg {{duration}} · {{throughput}} tok/s Cache hit 52% Input 17.2K tok · Output 252 tok

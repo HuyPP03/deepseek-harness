@@ -105,5 +105,6 @@
   - text: DeepSeek-V4-Flash
   - img
 - button "0% of context used"
-- button "Send message" [disabled]
+- button "Send message" [disabled]:
+  - img
 - text: 3 turns · 7 steps LLM {{duration}} · Tool call {{duration}} Cache hit 77% Input 66.5K tok · Output 318 tok

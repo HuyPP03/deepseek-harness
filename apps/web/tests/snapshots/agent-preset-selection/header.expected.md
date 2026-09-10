@@ -2,9 +2,6 @@
   - button "Seeded turn" [disabled]
 - img
 - text: Minimal mode
-- button "1 subagent":
-  - text: 1 subagent
-  - img
 - button "Session files":
   - img
   - text: Session files

@@ -26,10 +26,12 @@
   - img
   - text: Context injection skill-catalog
 - paragraph: partial
-- status: Deep diving...
+- status: Thinking...
 - textbox "Parent session offline; sending is unavailable but you can still stop the run" [disabled]
 - button "Commands" [disabled]:
   - img
 - 'button "Access mode, current: Custom" [disabled]': Custom
-- button "Stop generating"
-- button "Send message" [disabled]
+- button "Stop generating":
+  - img
+- button "Send message" [disabled]:
+  - img

@@ -33,7 +33,7 @@
   - img
   - text: Context injection skill-catalog
 - paragraph: partial
-- status: Deep diving...
+- status: Thinking...
 - region "To-dos":
   - button "To-dos 1 completed · 1 in progress"
 - img
@@ -52,4 +52,5 @@
 - button "Select model, current DeepSeek-V4-Flash":
   - text: DeepSeek-V4-Flash
   - img
-- button "Stop generating"
+- button "Stop generating":
+  - img
