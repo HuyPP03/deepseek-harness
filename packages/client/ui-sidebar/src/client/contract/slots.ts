@@ -98,6 +98,11 @@ export type SidebarRootInjected = {
    * under the chat preset, and open it.
    */
   startChat: () => void
+  /**
+   * Open the New Connector dialog (the Connectors tab's New control). A no-op
+   * when the connectors surface has not registered its command yet.
+   */
+  startConnector: () => void
   /** Toggle the sidebar column through the layout service. */
   toggleSidebar: () => void
 }

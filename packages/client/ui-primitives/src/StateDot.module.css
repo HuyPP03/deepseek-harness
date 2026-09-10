@@ -1,5 +1,4 @@
-/* The ongoing state rides the business accent alias so it follows the
- * theme (teal in dark, red in light). */
+/* The ongoing state rides the business accent alias (brand red). */
 .dot,
 .matrix {
   --oh-state-ongoing: var(--oh-alias-state-business-primary);

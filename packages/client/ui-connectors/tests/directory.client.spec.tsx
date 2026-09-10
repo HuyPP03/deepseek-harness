@@ -260,6 +260,8 @@ describe('ConnectorsDirectory', () => {
 
   it('shows the empty state for a deployment with no connectors', () => {
     renderDirectory({ status: 'ready', connectors: [] })
+    expect(screen.getByRole('heading', { name: 'Connectors' })).toBeTruthy()
+    expect(screen.getByText('Providers you can connect, then chat with.')).toBeTruthy()
     expect(screen.getByText('No connectors are composed on this deployment.')).toBeTruthy()
   })
 
@@ -433,6 +435,12 @@ describe('ConnectorsDirectory', () => {
     expect(a.selectProvider).toHaveBeenCalledWith('github')
     fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
     expect(a.openCustomDialog).toHaveBeenCalledOnce()
+  })
+
+  it('places a roster count next to the New connector control', () => {
+    renderDirectory()
+    expect(screen.getByText('9 connectors')).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'New connector' })).toBeTruthy()
   })
 
   it('opens the connect flow a card click needs: dialog, oauth, device, token, and the settling select', () => {

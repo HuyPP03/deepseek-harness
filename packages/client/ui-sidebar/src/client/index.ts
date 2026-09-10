@@ -63,6 +63,13 @@ export function apply(ctx: ClientContext): void {
       inject: (): SidebarRootInjected => ({
         startSession,
         startChat,
+        // Read at call time so apply order relative to ui-connectors is
+        // unconstrained: the command is registered once the connectors
+        // surface activates, and the button is only clickable after boot.
+        startConnector: () => {
+          const provided = ctx.get('connectorNew') as { open(): void } | undefined
+          provided?.open()
+        },
         toggleSidebar: () => { ctx.layout.toggleSidebar() },
       }),
     }, SidebarRoot),

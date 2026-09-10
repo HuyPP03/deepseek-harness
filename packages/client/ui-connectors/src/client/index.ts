@@ -76,6 +76,14 @@ export function apply(ctx: ClientContext): void {
     return controller.store.subscribe(sync)
   }, 'ui-connectors: connectorPresetIds')
 
+  // The New Connector command: the sidebar shell's New control (on the
+  // Connectors tab) and the directory header both open this dialog. Provided
+  // as a plain capability (not a reactive store) and read at call time, so
+  // apply order relative to the sidebar is unconstrained.
+  ctx.provide('connectorNew', {
+    open: () => { controller.openCustomDialog() },
+  })
+
   const injected = (): ConnectorsDirectoryInjected => ({
     hooks: { connectors: controller.store },
     load: () => controller.load(),

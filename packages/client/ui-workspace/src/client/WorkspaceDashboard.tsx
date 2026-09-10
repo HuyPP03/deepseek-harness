@@ -5,7 +5,7 @@
  * the workspace's newest session, or starts one when it holds none.
  */
 import { useMemo } from 'react'
-import { IconFolderClose16, OpenMark } from '@open-harness/oh-client-ui-primitives'
+import { IconWorkspaceDashboardHero18, OpenMark } from '@open-harness/oh-client-ui-primitives'
 import type { WorkspaceDashboardProps } from './contract/slots.ts'
 import type { SessionNode } from './tree.ts'
 import { deriveGroups, relativeTime } from './tree.ts'
@@ -44,48 +44,61 @@ export function WorkspaceDashboard({
   )
   return (
     <div className={css.dash}>
-      <div className={css.head}>
-        <h1 className={css.title}>{t('section.workspaces')}</h1>
-        {groups.length > 0 && (
-          <span className={css.count}>
-            {t(groups.length === 1 ? 'workspaces.count.one' : 'workspaces.count.other', { n: groups.length })}
-          </span>
-        )}
-      </div>
-      <div className={css.gridScroll}>
-        {groups.length === 0
-          ? <div className={css.empty}><OpenMark size={28} />{t('empty.noWorkspaces')}</div>
-          : <div className={css.grid} aria-label={t('section.workspaces')}>
-            {groups.map((group) => {
-              const newest = newestSession(group.sessions)
-              // The card opens the NEWEST non-blank session (a blank row is the
-              // provisional New Session, not an openable conversation).
-              const openable = newestSession(group.sessions.filter(s => !s.blank))
-              return (
-                <button
-                  key={group.key}
-                  type="button"
-                  className={css.card}
-                  onClick={() => {
-                    if (openable !== undefined) openSession(openable.id)
-                    else startSession(group.workspaceId)
-                  }}
-                >
-                  <span className={css.cardIcon}><IconFolderClose16 size={20} /></span>
-                  <span className={css.cardBody}>
-                    <span className={css.cardTitle}>{group.label}</span>
-                    <span className={css.cardPath}>{group.cwd}</span>
-                    <span className={css.cardMeta}>
-                      {t(group.sessionCount === 1 ? 'sessions.count.one' : 'sessions.count.other', { n: group.sessionCount })}
-                    </span>
-                  </span>
-                  {newest !== undefined && (
-                    <span className={css.cardTime}>{relativeTimeLabel(newest.updatedAt, t)}</span>
-                  )}
-                </button>
-              )
-            })}
-          </div>}
+      <div className={css.inner}>
+        <div className={css.head}>
+          <div className={css.headCopy}>
+            <h1 className={css.title}>{t('section.workspaces')}</h1>
+            <p className={css.lede}>{t('workspaces.subtitle')}</p>
+          </div>
+          {groups.length > 0 && (
+            <span className={css.count}>
+              {t(groups.length === 1 ? 'workspaces.count.one' : 'workspaces.count.other', { n: groups.length })}
+            </span>
+          )}
+        </div>
+        <div className={css.body}>
+          {groups.length === 0
+            ? (
+              <div className={css.empty}>
+                <span className={css.emptyIcon}><OpenMark size={28} /></span>
+                <span className={css.emptyTitle}>{t('empty.noWorkspaces')}</span>
+                <span className={css.emptyHint}>{t('empty.noWorkspaces.hint')}</span>
+              </div>
+            )
+            : (
+              <div className={css.grid} aria-label={t('section.workspaces')}>
+                {groups.map((group) => {
+                  const newest = newestSession(group.sessions)
+                  // The card opens the NEWEST non-blank session (a blank row is the
+                  // provisional New Session, not an openable conversation).
+                  const openable = newestSession(group.sessions.filter(s => !s.blank))
+                  return (
+                    <button
+                      key={group.key}
+                      type="button"
+                      className={css.card}
+                      onClick={() => {
+                        if (openable !== undefined) openSession(openable.id)
+                        else startSession(group.workspaceId)
+                      }}
+                    >
+                      <span className={css.cardTop}>
+                        <span className={css.cardIcon}><IconWorkspaceDashboardHero18 size={20} /></span>
+                        {newest !== undefined && (
+                          <span className={css.cardTime}>{relativeTimeLabel(newest.updatedAt, t)}</span>
+                        )}
+                      </span>
+                      <span className={css.cardTitle}>{group.label}</span>
+                      <span className={css.cardPath}>{group.cwd}</span>
+                      <span className={css.chip}>
+                        {t(group.sessionCount === 1 ? 'sessions.count.one' : 'sessions.count.other', { n: group.sessionCount })}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+        </div>
       </div>
     </div>
   )

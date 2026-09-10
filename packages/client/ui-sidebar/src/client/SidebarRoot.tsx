@@ -48,6 +48,7 @@ export function SidebarRoot({
   width,
   startSession,
   startChat,
+  startConnector,
   toggleSidebar,
   t,
   useStore,
@@ -55,12 +56,15 @@ export function SidebarRoot({
 }: SidebarRootComponentProps) {
   const tab = useStore(state => state.tab)
   // The New control follows the active tab: Chats mints the ungrouped blank
-  // chat (a chat is what the Chats tab lists), Workspaces starts a session.
-  // The connectors tab has no New control at all: the region's own
-  // "New connector" mints its entries.
-  const startNew = tab === 'workspaces' ? () => { startSession() } : startChat
-  const newLabel = tab === 'workspaces' ? t('session.new') : t('chat.new')
-  const newLabelFull = tab === 'workspaces' ? t('session.new.label') : t('chat.new.label')
+  // chat (a chat is what the Chats tab lists), Workspaces starts a session,
+  // and Connectors opens the New Connector dialog (the same one the directory
+  // header drives, so the sidebar stays in sync with the other two tabs).
+  const startNew = tab === 'workspaces' ? () => { startSession() }
+    : tab === 'connectors' ? () => { startConnector() } : startChat
+  const newLabel = tab === 'workspaces' ? t('session.new')
+    : tab === 'connectors' ? t('connector.new') : t('chat.new')
+  const newLabelFull = tab === 'workspaces' ? t('session.new.label')
+    : tab === 'connectors' ? t('connector.new.label') : t('chat.new.label')
   // Wide content stays mounted while the collapse animates (fading via
   // .collapsed .wide), unmounts at settle, and remounts right away on expand.
   const [settled, setSettled] = useState(collapsed)
@@ -157,21 +161,19 @@ export function SidebarRoot({
       </div>
 
       {/* Expanded, the button carries its own label — tooltip only on the rail.
-          The connectors tab has no blank session to start: its New control is
-          the region's own "New connector". */}
-      {tab !== 'connectors' && (
-        <Tooltip label={newLabelFull} delayMs={500} disabled={wide}>
-          <button
-            type="button"
-            className={css.newSession}
-            aria-label={newLabelFull}
-            onClick={() => { startNew() }}
-          >
-            <IconNewChatOutline16 size={wide ? 14 : 18} />
-            {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{newLabel}</span>}
-          </button>
-        </Tooltip>
-      )}
+          Every tab shows a New control: Chats and Workspaces mint a session or
+          chat, Connectors opens the New Connector dialog. */}
+      <Tooltip label={newLabelFull} delayMs={500} disabled={wide}>
+        <button
+          type="button"
+          className={css.newSession}
+          aria-label={newLabelFull}
+          onClick={() => { startNew() }}
+        >
+          <IconNewChatOutline16 size={wide ? 14 : 18} />
+          {wide && <span className={clsx(css.newSessionLabel, css.wide)}>{newLabel}</span>}
+        </button>
+      </Tooltip>
 
       {/* The browsing region fills the column between the controls and the
           foot in both states; its rail icon column rides the same slot. The

@@ -48,7 +48,7 @@ describe('ui-sidebar apply', () => {
     // Copy rides the standard locale seat, not the inject face.
     expect(b.slots.entries('sidebar')[0]!.locale).toBe('sidebar')
     const injected = (b.slots.entries('sidebar')[0]!.inject as () => SidebarRootInjected)()
-    expect(Object.keys(injected)).toEqual(['startSession', 'startChat', 'toggleSidebar'])
+    expect(Object.keys(injected)).toEqual(['startSession', 'startChat', 'startConnector', 'toggleSidebar'])
     // Both arms delegate to the runtime's shared New Session action.
     injected.startSession('workspace' as never)
     expect(b.workspaces.startSession).toHaveBeenCalledWith('workspace')
@@ -63,6 +63,19 @@ describe('ui-sidebar apply', () => {
     })
     injected.toggleSidebar()
     expect(b.layout.toggleSidebar).toHaveBeenCalledOnce()
+  })
+
+  it('routes the Connectors New arm to the provided connectorNew command', async () => {
+    const b = await bench()
+    await b.ctx.plugin({ inject: [...inject], apply }).await()
+    const injected = (b.slots.entries('sidebar')[0]!.inject as () => SidebarRootInjected)()
+    // Not provided yet: the arm is a no-op (the command lands once the
+    // connectors surface activates).
+    injected.startConnector()
+    const open = vi.fn()
+    b.ctx.provide('connectorNew', { open } as never)
+    injected.startConnector()
+    expect(open).toHaveBeenCalledOnce()
   })
 
   it('registers the header (brand + navigation) on the shared tab store', async () => {

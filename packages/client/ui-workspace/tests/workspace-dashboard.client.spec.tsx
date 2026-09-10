@@ -113,7 +113,10 @@ describe('WorkspaceDashboard', () => {
 
   it('shows the empty state when there are no workspaces', () => {
     mount({ items: [] })
+    expect(screen.getByRole('heading', { name: 'Workspaces' })).toBeTruthy()
+    expect(screen.getByText('Folders that group their sessions.')).toBeTruthy()
     expect(screen.getByText('No workspaces yet')).toBeTruthy()
+    expect(screen.getByText('Add a folder to group its sessions.')).toBeTruthy()
   })
 
   it('shows the singular counts for a lone workspace with a lone session', () => {

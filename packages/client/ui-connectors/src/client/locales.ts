@@ -9,7 +9,8 @@ export type ConnectorsKey =
   | 'custom' | 'servers.one' | 'servers.many' | 'server.off'
   | 'rail.label'
   | 'list.title' | 'list.empty'
-  | 'directory.title'
+  | 'directory.title' | 'directory.subtitle'
+  | 'directory.count.one' | 'directory.count.other'
   | 'risk.token' | 'risk.tokenStale' | 'risk.oauth' | 'risk.device' | 'risk.servers' | 'risk.custom'
   | 'back' | 'sessions.placeholder' | 'sessions.new' | 'sessions.empty' | 'tools.available'
   | 'dialog.title' | 'dialog.tokenPlaceholder'
@@ -50,8 +51,11 @@ export const en: Record<ConnectorsKey, string> = {
   'server.off': 'not mounted',
   'rail.label': 'Connectors',
   'list.title': 'Connected',
-  'list.empty': 'No connected providers yet. The directory in the main area lists what you can connect.',
+  'list.empty': 'None connected yet. Browse the directory to add one.',
   'directory.title': 'Connectors',
+  'directory.subtitle': 'Providers you can connect, then chat with.',
+  'directory.count.one': '{n} connector',
+  'directory.count.other': '{n} connectors',
   'risk.token': 'Requires {refs} — an invalid or revoked token fails the connect.',
   'risk.tokenStale': 'Uses the stored {refs} — a revoked token drops the servers.',
   'risk.oauth': 'Needs a browser sign-in — the grant can expire and needs re-authorization.',
@@ -118,8 +122,11 @@ export const vi: Record<ConnectorsKey, string> = {
   'server.off': 'chưa bật',
   'rail.label': 'Kết nối',
   'list.title': 'Đã kết nối',
-  'list.empty': 'Chưa có nhà cung cấp nào được kết nối. Danh mục ở khu chính liệt kê những gì bạn có thể kết nối.',
+  'list.empty': 'Chưa kết nối nhà cung cấp nào. Duyệt danh mục để thêm.',
   'directory.title': 'Kết nối',
+  'directory.subtitle': 'Các nhà cung cấp bạn có thể kết nối rồi trò chuyện.',
+  'directory.count.one': '{n} kết nối',
+  'directory.count.other': '{n} kết nối',
   'risk.token': 'Cần {refs} — token không hợp lệ hoặc bị thu hồi sẽ làm hỏng kết nối.',
   'risk.tokenStale': 'Dùng {refs} đã lưu — token bị thu hồi sẽ làm mất các máy chủ.',
   'risk.oauth': 'Cần đăng nhập qua trình duyệt — quyền có thể hết hạn và cần cấp lại.',
@@ -186,8 +193,11 @@ export const zh: Record<ConnectorsKey, string> = {
   'server.off': '未挂载',
   'rail.label': '连接器',
   'list.title': '已连接',
-  'list.empty': '还没有已连接的提供商。主区域的名录列出了可连接的内容。',
+  'list.empty': '还没有已连接的提供商。可在名录中添加。',
   'directory.title': '连接器',
+  'directory.subtitle': '可连接的提供商，连接后即可与之对话。',
+  'directory.count.one': '{n} 个连接器',
+  'directory.count.other': '{n} 个连接器',
   'risk.token': '需要 {refs} —— 无效或已吊销的令牌会导致连接失败。',
   'risk.tokenStale': '使用已存储的 {refs} —— 令牌被吊销会断开服务器。',
   'risk.oauth': '需要通过浏览器登录 —— 授权可能过期并需要重新授权。',

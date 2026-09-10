@@ -83,7 +83,10 @@ describe('ChatDashboard', () => {
   it('shows the empty state when there are no chats', () => {
     const list = sessionList()
     mount({ list: { ...list, ids: [], byId: {} } })
+    expect(screen.getByRole('heading', { name: 'Chats' })).toBeTruthy()
+    expect(screen.getByText('Recent conversations, newest first.')).toBeTruthy()
     expect(screen.getByText('No chats yet')).toBeTruthy()
+    expect(screen.getByText('Start a conversation — it will appear here.')).toBeTruthy()
     expect(screen.queryByText('2 chats')).toBeNull()
   })
 

@@ -11,7 +11,7 @@
 import { useEffect, useMemo } from 'react'
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
-import { Button, StateDot } from '@open-harness/oh-client-ui-primitives'
+import { Button, IconConnectorsDashboardHero18, IconPlusOutline16, StateDot } from '@open-harness/oh-client-ui-primitives'
 import type { ConnectorView } from '@open-harness/oh-api-remotes/client'
 import type { SessionSummary } from '@open-harness/oh-client-runtime/client'
 import { canConfigure, canConfigureApp, canConnect, canDisconnect, cardClickIntent, dotStateOf, STATE_KEY } from './rows.ts'
@@ -62,9 +62,11 @@ function ConnectorCard({ row, busy, error, t, onConfigure, onConfigureApp, onCon
   return (
     <div className={css.card}>
       <div className={css.cardHead}>
-        <StateDot state={dotStateOf(row.state)} />
-        <span className={css.cardName}>{row.name}</span>
-        {row.custom && <span className={css.customBadge}>{t('custom')}</span>}
+        <span className={css.cardIdentity}>
+          <StateDot state={dotStateOf(row.state)} />
+          <span className={css.cardName}>{row.name}</span>
+          {row.custom && <span className={css.customBadge}>{t('custom')}</span>}
+        </span>
         <span className={css.cardState}>{t(STATE_KEY[row.state])}</span>
       </div>
       <span className={css.cardDescription}>{row.description}</span>
@@ -331,13 +333,30 @@ export function ConnectorsDirectory(props: ConnectorsDirectoryProps): ReactNode 
 
   return (
     <div className={css.root}>
-      <div className={css.header}>
-        <span className={css.title}>{t('directory.title')}</span>
-        <Button variant="outline" size="sm" onClick={() => { openCustomDialog() }}>
-          {t('custom.new.button')}
-        </Button>
+      <div className={css.inner}>
+        <div className={css.header}>
+          <div className={css.headerCopy}>
+            <h1 className={css.title}>
+              <IconConnectorsDashboardHero18 className={css.heroIcon} size={20} />
+              {t('directory.title')}
+            </h1>
+            <p className={css.lede}>{t('directory.subtitle')}</p>
+          </div>
+          <div className={css.headActions}>
+            {state.status === 'ready' && state.connectors.length > 0 && (
+              <span className={css.count}>
+                {t(state.connectors.length === 1 ? 'directory.count.one' : 'directory.count.other', {
+                  n: state.connectors.length,
+                })}
+              </span>
+            )}
+            <Button variant="primary" onClick={() => { openCustomDialog() }} icon={<IconPlusOutline16 size={16} />}>
+              {t('custom.new.button')}
+            </Button>
+          </div>
+        </div>
+        {body}
       </div>
-      {body}
       {state.dialog !== null && (
         <TokenDialog
           dialog={state.dialog}

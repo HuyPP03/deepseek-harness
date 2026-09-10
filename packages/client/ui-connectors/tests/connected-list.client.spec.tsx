@@ -89,7 +89,7 @@ describe('ConnectedProvidersList', () => {
 
   it('shows the empty note when nothing is connected', () => {
     renderList({ status: 'ready', connectors: [view({ id: 'notion', state: 'needs-auth' })] })
-    expect(screen.getByText('No connected providers yet. The directory in the main area lists what you can connect.')).toBeTruthy()
+    expect(screen.getByText('None connected yet. Browse the directory to add one.')).toBeTruthy()
   })
 
   it('lists the connected providers only, with a custom badge on its own', () => {

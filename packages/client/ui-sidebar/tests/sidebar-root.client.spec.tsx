@@ -34,6 +34,7 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
 } = {}) {
   const startSession = vi.fn()
   const startChat = vi.fn()
+  const startConnector = vi.fn()
   const toggleSidebar = vi.fn()
   const store = createSidebarStore().create()
   store.actions.setTab(tab)
@@ -46,7 +47,8 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
     <SidebarRoot
       collapsed={current.collapsed} width={current.width}
       useSessions={neverHook} useWorkspaces={neverHook}
-      startSession={startSession} startChat={startChat} toggleSidebar={toggleSidebar}
+      startSession={startSession} startChat={startChat} startConnector={startConnector}
+      toggleSidebar={toggleSidebar}
       t={t}
       useStore={bindSnapshotSelector(store)} actions={store.actions}
       renderSlot={((
@@ -76,6 +78,7 @@ function mountShell({ collapsed = false, width = 300, tab = 'workspaces' }: {
   return {
     startSession,
     startChat,
+    startConnector,
     store,
     toggleSidebar,
     regionOwner: () => {
@@ -121,11 +124,13 @@ describe('SidebarRoot shell', () => {
     expect(c.startSession).not.toHaveBeenCalled()
     cleanup()
 
-    // The connectors tab has no New control at all: its roster mints its own
-    // connectors.
-    mountShell({ tab: 'connectors' })
-    expect(screen.queryByRole('button', { name: 'New session' })).toBeNull()
-    expect(screen.queryByRole('button', { name: 'New chat' })).toBeNull()
+    // The connectors tab: the same button is "New connector" and calls
+    // startConnector (the dialog the directory header also drives).
+    const e = mountShell({ tab: 'connectors' })
+    fireEvent.click(screen.getByRole('button', { name: 'New connector' }))
+    expect(e.startConnector).toHaveBeenCalledOnce()
+    expect(e.startChat).not.toHaveBeenCalled()
+    expect(e.startSession).not.toHaveBeenCalled()
     cleanup()
   })
 
@@ -160,9 +165,9 @@ describe('SidebarRoot shell', () => {
     owner.expandSidebar()
     expect(b.toggleSidebar).not.toHaveBeenCalled()
 
-    // The connectors tab has no New control: its roster mints its own
-    // connectors, and a blank session has nothing to do with the roster.
+    // The connectors tab's New control is "New connector" (not a session).
     expect(screen.queryByRole('button', { name: 'New session' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'New connector' })).toBeTruthy()
 
     // Switching the shared tab back restores the workspaces region with the
     // tab handed over.
