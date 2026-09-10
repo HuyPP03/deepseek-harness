@@ -20,7 +20,7 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-function mountHeader({ tab = 'workspaces', currentSession }: {
+function mountHeader({ tab = 'chats', currentSession }: {
   tab?: 'chats' | 'workspaces' | 'connectors'
   currentSession?: { current: unknown }
 } = {}) {
@@ -55,19 +55,19 @@ function mountHeader({ tab = 'workspaces', currentSession }: {
 
 describe('HeaderRoot', () => {
   it('routes the brand to the active tab starter', () => {
-    // Workspaces tab (the default): the brand is a "New session" shortcut.
+    // The chats tab (the default): the brand is a "New chat" shortcut (the
+    // ungrouped blank chat the Chats tab lists).
     const b = mountHeader()
-    fireEvent.click(screen.getByRole('button', { name: 'New session' }))
-    expect(b.startSession).toHaveBeenCalledOnce()
-    expect(b.startChat).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: 'New chat' }))
+    expect(b.startChat).toHaveBeenCalledOnce()
+    expect(b.startSession).not.toHaveBeenCalled()
     cleanup()
 
-    // The chats tab: the brand is a "New chat" shortcut (the ungrouped blank
-    // chat the Chats tab lists).
-    const c = mountHeader({ tab: 'chats' })
-    fireEvent.click(screen.getByRole('button', { name: 'New chat' }))
-    expect(c.startChat).toHaveBeenCalledOnce()
-    expect(c.startSession).not.toHaveBeenCalled()
+    // Workspaces tab: the brand is a "New session" shortcut.
+    const c = mountHeader({ tab: 'workspaces' })
+    fireEvent.click(screen.getByRole('button', { name: 'New session' }))
+    expect(c.startSession).toHaveBeenCalledOnce()
+    expect(c.startChat).not.toHaveBeenCalled()
     cleanup()
 
     // The connectors tab: the brand is not a New shortcut — its label
@@ -82,59 +82,63 @@ describe('HeaderRoot', () => {
 
   it('switches tabs through the tablist on the shared store', () => {
     const b = mountHeader()
-    expect(screen.getByRole('tab', { name: 'Workspaces' }).getAttribute('aria-selected')).toBe('true')
-    expect(screen.getByRole('tab', { name: 'Chats' }).getAttribute('aria-selected')).toBe('false')
-
-    fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
-    expect(b.store.getSnapshot().tab).toBe('chats')
     expect(screen.getByRole('tab', { name: 'Chats' }).getAttribute('aria-selected')).toBe('true')
+    expect(screen.getByRole('tab', { name: 'Workspaces' }).getAttribute('aria-selected')).toBe('false')
+
+    fireEvent.click(screen.getByRole('tab', { name: 'Workspaces' }))
+    expect(b.store.getSnapshot().tab).toBe('workspaces')
+    expect(screen.getByRole('tab', { name: 'Workspaces' }).getAttribute('aria-selected')).toBe('true')
 
     // Clicking the active tab is a no-op.
-    fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
-    expect(b.store.getSnapshot().tab).toBe('chats')
+    fireEvent.click(screen.getByRole('tab', { name: 'Workspaces' }))
+    expect(b.store.getSnapshot().tab).toBe('workspaces')
     cleanup()
   })
 
-  it('mirrors the browsing tab into the center view (no session current)', () => {
+  it('mirrors the browsing tab into the center view on navigation (no session current)', () => {
     const b = mountHeader({ currentSession: { current: undefined } })
-    // Mount syncs the persisted tab (workspaces) to the workspace dashboard,
-    // and exactly once — an unchanged tab issues no further writes.
-    expect(b.setCenterView).toHaveBeenCalledTimes(1)
-    expect(b.setCenterView).toHaveBeenCalledWith('workspaces')
+    // A cold mount without a current session keeps the conversation hero —
+    // the product's front door — so the tab effect writes nothing on mount
+    // (the persisted tab still highlights in the header; the session-yield
+    // effect owns the mount landing).
+    expect(b.setCenterView).not.toHaveBeenCalled()
 
     // Each tab change writes twice: the click re-asserts immediately, the
     // effect confirms after the tab store settles.
     fireEvent.click(screen.getByRole('tab', { name: 'Connectors' }))
     expect(b.setCenterView).toHaveBeenLastCalledWith('connectors')
-    expect(b.setCenterView).toHaveBeenCalledTimes(3)
+    expect(b.setCenterView).toHaveBeenCalledTimes(2)
     fireEvent.click(screen.getByRole('tab', { name: 'Chats' }))
     expect(b.setCenterView).toHaveBeenLastCalledWith('chats')
-    expect(b.setCenterView).toHaveBeenCalledTimes(5)
+    expect(b.setCenterView).toHaveBeenCalledTimes(4)
     fireEvent.click(screen.getByRole('tab', { name: 'Workspaces' }))
     expect(b.setCenterView).toHaveBeenLastCalledWith('workspaces')
-    expect(b.setCenterView).toHaveBeenCalledTimes(7)
+    expect(b.setCenterView).toHaveBeenCalledTimes(6)
     cleanup()
 
-    // Cold mounts sync the persisted tab too: Chats its dashboard, Connectors
-    // the directory.
+    // A cold mount never force-syncs the persisted tab, regardless of which
+    // tab it is: the center lands on the conversation hero, not the tab's
+    // dashboard.
     const c = mountHeader({ tab: 'chats', currentSession: { current: undefined } })
-    expect(c.setCenterView).toHaveBeenCalledWith('chats')
+    expect(c.setCenterView).not.toHaveBeenCalled()
     cleanup()
     const d = mountHeader({ tab: 'connectors', currentSession: { current: undefined } })
-    expect(d.setCenterView).toHaveBeenCalledWith('connectors')
+    expect(d.setCenterView).not.toHaveBeenCalled()
   })
 
   it('yields a dashboard to the conversation when a session becomes current', () => {
-    // Cold mount on Chats with a current session: the session sync (declared
-    // after the tab sync) lands the center on the conversation.
+    // Cold mount with a current session: the session sync lands the center on
+    // the conversation (the tab effect is a no-op on mount, so this is the
+    // only writer).
     const a = mountHeader({ tab: 'chats' })
+    expect(a.setCenterView).toHaveBeenCalledTimes(1)
     expect(a.setCenterView).toHaveBeenLastCalledWith('conversation')
     cleanup()
 
-    // The dashboard showing, then a session opens (row click, brand shortcut,
-    // or provider chat): the center follows the session.
+    // No session yet, then one opens (row click, brand shortcut, or provider
+    // chat): the center follows the session.
     const b = mountHeader({ tab: 'chats', currentSession: { current: undefined } })
-    expect(b.setCenterView).toHaveBeenLastCalledWith('chats')
+    expect(b.setCenterView).not.toHaveBeenCalled()
     b.sessionState.current = 'session-2'
     b.rerender()
     expect(b.setCenterView).toHaveBeenLastCalledWith('conversation')

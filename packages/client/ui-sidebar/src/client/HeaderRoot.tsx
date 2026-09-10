@@ -5,7 +5,7 @@
  * disagree; the header owns the tab -> center-view mirror, and the sidebar
  * renders its region against the same tab read-only.
  */
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import clsx from 'clsx'
 import { OpenMark } from '@open-harness/oh-client-ui-primitives'
 import type { CenterView } from '@open-harness/oh-client-ui-layout/client'
@@ -38,11 +38,15 @@ export function HeaderRoot({
 }: HeaderRootComponentProps) {
   const tab = useStore(state => state.tab)
   const currentSession = useSessions(state => state.current)
+  const isFirstRender = useRef(true)
   // The browsing tab drives the center column's full-column view: Chats its
   // dashboard, Connectors the directory overlay, Workspaces the conversation.
-  // An effect (not the click handler) so the persisted tab restored on mount
-  // syncs too.
+  // Tab changes update center view.
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
     setCenterView(viewForTab(tab))
   }, [tab, setCenterView])
   // Opening a session yields any dashboard to the conversation (the row

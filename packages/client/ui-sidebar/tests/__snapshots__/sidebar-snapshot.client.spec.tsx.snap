@@ -29,7 +29,7 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
       </button>
     </div>
     <button
-      aria-label="New session"
+      aria-label="New chat"
       class="newSession"
       type="button"
     >
@@ -44,7 +44,7 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
       <span
         class="newSessionLabel wide"
       >
-        New Session
+        New Chat
       </span>
     </button>
     <div
@@ -108,7 +108,7 @@ exports[`sidebar shell snapshots > renders the expanded column (toggle, New butt
       </button>
     </div>
     <button
-      aria-label="New session"
+      aria-label="New chat"
       class="newSession"
       type="button"
     >
@@ -123,7 +123,7 @@ exports[`sidebar shell snapshots > renders the expanded column (toggle, New butt
       <span
         class="newSessionLabel wide"
       >
-        New Session
+        New Chat
       </span>
     </button>
     <div
@@ -187,7 +187,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the zh copy (n
       </button>
     </div>
     <button
-      aria-label="新建会话"
+      aria-label="新建聊天"
       class="newSession"
       type="button"
     >
@@ -202,7 +202,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the zh copy (n
       <span
         class="newSessionLabel wide"
       >
-        新会话
+        新聊天
       </span>
     </button>
     <div

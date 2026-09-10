@@ -32,7 +32,7 @@ type SidebarViewActions = {
  */
 export function createSidebarStore(): EngineStoreHandle<SidebarViewState, SidebarViewActions> {
   return defineStore({
-    init: (): SidebarViewState => ({ tab: 'workspaces' }),
+    init: (): SidebarViewState => ({ tab: 'chats' }),
     persist: 'oh.sidebar.view.v2',
     actions: {
       setTab: (d, tab: SidebarTab) => { d.tab = tab },

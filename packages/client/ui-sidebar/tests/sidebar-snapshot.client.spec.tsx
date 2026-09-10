@@ -40,9 +40,9 @@ describe('sidebar shell snapshots', () => {
   it('renders the expanded column in the zh copy (no nav: the header owns it)', async () => {
     const { runtime } = await bench()
     const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 300 })
-    // Default tab is Workspaces: the New button starts a session, and the
+    // Default tab is Chats: the New button starts a chat, and the
     // brand/wordmark no longer lives in the column (it is the header's).
-    expect(slot.view.getAllByRole('button', { name: '新建会话' })).toHaveLength(1)
+    expect(slot.view.getAllByRole('button', { name: '新建聊天' })).toHaveLength(1)
     expect(slot.view.queryAllByRole('tab')).toHaveLength(0)
     expect(slot.container).toMatchSnapshot()
     await runtime.dispose()
@@ -51,9 +51,9 @@ describe('sidebar shell snapshots', () => {
   it('renders the expanded column (toggle, New button, empty holes)', async () => {
     const { runtime } = await bench({ locale: 'en' })
     const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 300 })
-    // Default tab is Workspaces: the New button starts a session; the nav
+    // Default tab is Chats: the New button starts a chat; the nav
     // tabs live in the header, so the column carries no tablist.
-    expect(slot.view.getByRole('button', { name: 'New session' })).toBeTruthy()
+    expect(slot.view.getByRole('button', { name: 'New chat' })).toBeTruthy()
     expect(slot.view.queryAllByRole('tab')).toHaveLength(0)
     expect(slot.container).toMatchSnapshot()
     await runtime.dispose()
@@ -65,9 +65,9 @@ describe('sidebar shell snapshots', () => {
     const shell = slot.container.firstElementChild
     slot.update({ collapsed: true, width: 56 })
     // The wide content unmounts at the 150ms settle; only the rail's capsule
-    // remains a New-session button.
+    // remains a New-chat button.
     await waitFor(() => {
-      expect(slot.view.getAllByRole('button', { name: 'New session' })).toHaveLength(1)
+      expect(slot.view.getAllByRole('button', { name: 'New chat' })).toHaveLength(1)
     })
     expect(slot.container).toMatchSnapshot()
     // Same tree position: the owner flip re-rendered the shell in place.
@@ -78,11 +78,11 @@ describe('sidebar shell snapshots', () => {
   it('a locale switch refreshes mounted copy without re-registration', async () => {
     const { runtime, locale } = await bench()
     const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 300 })
-    expect(slot.view.getAllByRole('button', { name: '新建会话' })).toHaveLength(1)
+    expect(slot.view.getAllByRole('button', { name: '新建聊天' })).toHaveLength(1)
     // Same fiber, same registration: setLocale alone re-renders the outlet.
     act(() => { locale.setLocale('en') })
-    expect(slot.view.getAllByRole('button', { name: 'New session' })).toHaveLength(1)
-    expect(slot.view.queryByRole('button', { name: '新建会话' })).toBeNull()
+    expect(slot.view.getAllByRole('button', { name: 'New chat' })).toHaveLength(1)
+    expect(slot.view.queryByRole('button', { name: '新建聊天' })).toBeNull()
     await runtime.dispose()
   })
 })
