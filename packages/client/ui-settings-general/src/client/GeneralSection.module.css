@@ -1,12 +1,8 @@
-/* Feature-contributed rows own their chrome and separators; the section
- * strips the trailing separator wherever the column ends. */
+/* Feature-contributed rows are titled cards; the column spaces them. */
 
 .section {
   display: flex;
   flex-direction: column;
+  gap: 12px;
   width: 100%;
-}
-
-.section > :global([data-slot='settings.general.item']) > :last-child {
-  border-bottom: none;
 }
