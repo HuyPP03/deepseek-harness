@@ -1,6 +1,6 @@
 /**
- * Settings shell root: the sidebar-foot trigger row plus the centered modal
- * panel (figma 501:29947, 1080x700) with the section nav rail. The shell is
+ * Settings shell root: the sidebar-foot trigger row plus the wide centered
+ * modal panel with the section nav rail. The shell is
  * a pure composition face — every piece of text (trigger label, panel title,
  * close label, sections) arrives from registrants through slots; accessible
  * names resolve to that content (trigger: its own text; dialog:
@@ -21,10 +21,10 @@ import css from './SettingsRoot.module.css'
 
 /** Nav glyph by section id; unknown ids fall back to the settings gear. */
 function navIcon(id: string) {
-  if (id === 'models') return <IconDataOutline16 className={css.navIcon} size={16} />
-  if (id === 'agent-presets') return <IconAgentPresetOutline16 className={css.navIcon} size={16} />
-  if (id === 'plugins') return <IconPersonalizationOutline16 className={css.navIcon} size={16} />
-  return <IconSettingsOutline16 className={css.navIcon} size={16} />
+  if (id === 'models') return <IconDataOutline16 className={css.navIcon} size={18} />
+  if (id === 'agent-presets') return <IconAgentPresetOutline16 className={css.navIcon} size={18} />
+  if (id === 'plugins') return <IconPersonalizationOutline16 className={css.navIcon} size={18} />
+  return <IconSettingsOutline16 className={css.navIcon} size={18} />
 }
 
 type PanelProps = {

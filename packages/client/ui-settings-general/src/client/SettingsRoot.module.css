@@ -1,7 +1,6 @@
-/* Settings shell (figma 501:29904 mask context / 501:29947 panel): sidebar
-   foot trigger row + centered 1080x700 modal panel. The trigger uses the
-   sidebar foot's 42px row / 36px rail circle rhythm; the
-   panel is a two-column layout — 188px nav rail + content column with a
+/* Settings shell: sidebar foot trigger row + wide centered modal panel.
+   The trigger uses the sidebar foot's 42px row / 36px rail circle rhythm;
+   the panel is a two-column layout — 208px nav rail + content column with a
    54px header and the 24px-padded options area. */
 
 /* Trigger row: the 42px foot-row box shared with the Cordis footer action. */
@@ -64,19 +63,18 @@
   backdrop-filter: var(--oh-mask-blur);
 }
 
-/* Panel (figma Settings 501:29947): r24, white, lv3 shadow (figma effects
-   match --oh-shadow-lv3 exactly); figma's 1080x700 is shrunk to 800 wide.
-   One height for every section, taken from the viewport rather than the
-   content: sections differ by hundreds of pixels (a settings list against the
-   composition editor), and a content-sized panel would resize under the
-   pointer on every nav click. Whatever does not fit scrolls in `.options`. */
+/* Panel: the figma 1080-wide modal at full width (viewport-capped), r14,
+   lv3 shadow. One height for every section, taken from the viewport rather
+   than the content: sections differ by hundreds of pixels (a settings list
+   against the composition editor), and a content-sized panel would resize
+   under the pointer on every nav click. Whatever does not fit scrolls in
+   `.options`. */
 .panel {
   position: relative;
   z-index: 1;
   display: flex;
-  width: 800px;
-  height: min(800px, calc(100vh - 48px));
-  max-width: calc(100vw - 48px);
+  width: min(1080px, calc(100vw - 48px));
+  height: min(780px, calc(100vh - 48px));
   border-radius: 14px;
   overflow: hidden;
   background: var(--oh-alias-bg-layer-2);
@@ -90,15 +88,14 @@
   --oh-scrollbar-thumb-hover: var(--oh-alias-scrollbar-hover-l2);
 }
 
-/* Nav rail (figma .Setting-nav 501:29958): 188 wide, pad (12,22,12,0),
-   gap 18, no own fill — the panel white shows through. */
+/* Nav rail: 208 wide, no own fill — the panel surface shows through. */
 .nav {
   flex: none;
   display: flex;
   flex-direction: column;
   gap: 18px;
-  width: 188px;
-  padding: 22px 12px 0;
+  width: 208px;
+  padding: 22px 14px 0;
   box-sizing: border-box;
 }
 
@@ -118,37 +115,53 @@
   gap: 4px;
 }
 
-/* Nav cell (figma .Setting-nav-cell 501:29962): 164x40, r12, pad
-   (12,9,16,9), gap 8; label 14/400 lh22; selected fill #EBEEF2. */
+/* Nav cell: 40 tall, r10, icon + label. The active cell rides the accent
+   family (tertiary fill + primary left bar) — the same identity as the
+   header's segmented tabs. */
 .navCell {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   height: 40px;
-  padding: 9px 16px 9px 12px;
+  padding: 9px 12px;
   box-sizing: border-box;
   border: none;
-  border-radius: 12px;
+  border-radius: 10px;
   background: transparent;
   cursor: pointer;
   font-family: inherit;
   font-size: 14px;
   line-height: 22px;
   font-weight: 400;
-  color: var(--oh-alias-label-primary);
+  color: var(--oh-alias-label-secondary);
   text-align: left;
 }
 
 .navCell:hover {
-  background: var(--oh-specific-sidebar-nav-item-hover);
+  background: var(--oh-alias-interactive-bg-hover);
 }
 
 .navCell.active {
-  background: var(--oh-specific-sidebar-nav-item-active);
+  background: var(--oh-alias-state-business-tertiary);
+  color: var(--oh-alias-label-primary);
+  font-weight: 500;
+}
+
+.navCell.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--oh-alias-state-business-primary);
 }
 
 .navIcon {
   flex: none;
+  color: currentColor;
 }
 
 .navLabel {
