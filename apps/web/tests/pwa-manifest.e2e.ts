@@ -28,8 +28,10 @@ it('ships install metadata with the built web application', async () => {
 
 it('ships a favicon that switches to a light mark under dark color scheme', async () => {
   const favicon = await readFile(join(DIST_ROOT, 'favicon.svg'), 'utf8')
-  // The light fill must live inside the dark-scheme media query, so the icon
-  // stays black in light mode and only turns white under a dark scheme.
-  expect(favicon).toMatch(/@media \(prefers-color-scheme: dark\)\s*{\s*path\s*{[^}]*fill:\s*#fff/i)
+  // The light stroke/fill must live inside the dark-scheme media query, so
+  // the mark (ring + dot) stays black in light mode and only turns white
+  // under a dark scheme.
+  expect(favicon).toMatch(/@media \(prefers-color-scheme: dark\)\s*{\s*\.ring\s*{\s*stroke:\s*#fff;\s*}\s*\.dot\s*{\s*fill:\s*#fff;\s*}/i)
+  expect(favicon).toContain('stroke="#000"')
   expect(favicon).toContain('fill="#000"')
 })

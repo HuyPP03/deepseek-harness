@@ -93,6 +93,11 @@ describe('web e2e: resident question composer round trip', () => {
       await compareOrRefreshGolden(SIDEBAR_EXPECTED, sidebar, MODE)
     }
 
+    // Browsing the Workspaces tab covers the center with its dashboard; the
+    // row click returns the center view to the conversation so the squeeze
+    // measurements and the answer gestures below reach the card.
+    await selectedRow.click()
+
     // Squeezed card: the option rows are the capped card's scroll content, so
     // shrinking the seat must push overflow into the option list, never
     // collapse a row below the height its own copy needs — a collapsed row

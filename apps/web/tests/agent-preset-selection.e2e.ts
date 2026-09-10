@@ -281,12 +281,15 @@ describe('web e2e: agent-preset selection', () => {
 
     await compareOrRefreshGolden(HEADER_EXPECTED, snapshot, MODE)
     expect(snapshot).toContain('Minimal mode')
-    expect(snapshot).toContain('button "1 subagent"')
-    expect(snapshot.indexOf('Minimal mode')).toBeLessThan(snapshot.indexOf('button "1 subagent"'))
-    expect(snapshot.indexOf('button "1 subagent"')).toBeLessThan(snapshot.indexOf('button "Session log"'))
+    expect(snapshot.indexOf('Minimal mode')).toBeLessThan(snapshot.indexOf('button "Session files"'))
+    expect(snapshot.indexOf('button "Session files"')).toBeLessThan(snapshot.indexOf('button "Session log"'))
     // Static chrome, not a control: the header can only report a composition
     // the host would refuse to change.
     expect(snapshot).not.toContain('button "Minimal mode"')
+    // The subagent chip left the header for the composer's tool row (with
+    // the other live-activity indicators), so it is asserted on the page,
+    // not in the header snapshot.
+    expect(await page.getByRole('button', { name: '1 subagent' }).count()).toBe(1)
   })
 
   it('drove every surface without a page error or a stream warning', () => {

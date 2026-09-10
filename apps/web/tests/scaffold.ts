@@ -73,8 +73,13 @@ import { REPO_ROOT, requireDist } from './support.ts'
 // } from '@open-harness/oh-client-ui-settings-models'
 export const WELCOME_NOTICE_SETTINGS_NAMESPACE = 'ui-onboarding'
 export const WELCOME_NOTICE_ACK_FIELD = 'welcomeNoticeVersion'
-export const WELCOME_NOTICE_VERSION = '2026-08-13.1'
+export const WELCOME_NOTICE_VERSION = '2026-09-09.1'
 export const WELCOME_NOTICE_COPY = {
+  en: {
+    title: 'Internal Testing Notice',
+    body: "Open Harness 0.1 remains in testing for Harness developers. Many areas need further improvement, and we welcome feedback from the developer community. Open Harness's core plugins and foundational APIs will continue to evolve rapidly over the coming months.\n\nWe look forward to exploring the limits of intelligence with developers around the world, building on open-source, open, reusable, and composable infrastructure. We welcome Harness developers everywhere to join the Open Harness plugin ecosystem.",
+    continueLabel: 'Continue',
+  },
   zh: {
     title: '内测声明',
     body: 'Open Harness 目前的 0.1 版本仍处在面向 Harness 开发者进行测试的阶段，还有许多地方需要持续改进和打磨，希望听取广大开发者的反馈建议。预计 Open Harness 的核心插件以及基础 API 都会在接下来的一段时间内快速迭代、持续演化。\n\n我们期待与全球开发者一起，在开源、开放、可复用、可组合的基础设施之上，共同探索智能上限。欢迎全球 Harness 开发者加入 Open Harness 插件生态。',
@@ -235,6 +240,13 @@ export interface LaunchOptions {
   deepSeekMissingCredential?: boolean
   /** Leave the current welcome notice pending; ordinary scenarios pre-acknowledge it before browser boot. */
   welcomeNoticePending?: boolean
+  /**
+   * Pre-seed the durable `locale.preference` before browser boot so the page
+   * opens in that language. The product default is `en` and a fresh surface
+   * never consults the browser locale, so a scenario asserting a non-English
+   * surface seeds the preference instead of pinning the browser language.
+   */
+  localePreference?: 'en' | 'vi' | 'zh'
   /**
    * Point the shipped websift search row at a deterministic self-hosted
    * SearXNG endpoint. Browser search scenarios keep the real provider while
@@ -534,6 +546,13 @@ export async function launchWebScaffold(options: LaunchOptions = {}): Promise<We
     if (options.welcomeNoticePending !== true) {
       await ctx.settings.mutate(settingsNamespace(WELCOME_NOTICE_SETTINGS_NAMESPACE), [{
         op: 'set', path: [WELCOME_NOTICE_ACK_FIELD], value: WELCOME_NOTICE_VERSION,
+      }])
+    }
+    // Mirrored from packages/client/locale/src/locale-settings.ts (the
+    // host-side scaffold cannot import the browser package).
+    if (options.localePreference !== undefined) {
+      await ctx.settings.mutate(settingsNamespace('locale'), [{
+        op: 'set', path: ['preference'], value: options.localePreference,
       }])
     }
     const boundPort = ctx.get('webServer')?.port

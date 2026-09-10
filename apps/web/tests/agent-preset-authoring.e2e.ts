@@ -58,6 +58,7 @@ describe('web e2e: agent-preset authoring is a host-side copy', () => {
   beforeAll(async () => {
     userRoot = await realpath(await mkdtemp(join(tmpdir(), 'oh-web-e2e-presets-')))
     scaffold = await launchWebScaffold({
+      localePreference: 'zh',
       extraOverlayPath: OVERLAY,
       agentPresets: {
         roots: [

@@ -34,10 +34,12 @@ describe('web e2e: settings modal and General preferences', () => {
   let tripwire: ReturnType<typeof watchConsole>
 
   beforeAll(async () => {
-    scaffold = await launchWebScaffold({})
+    scaffold = await launchWebScaffold({ localePreference: 'zh' })
     browser = await chromium.launch()
-    // Chinese browser: the shared page asserts the localized settings surface
-    // the client derives from it (the English default has its own spec below).
+    // The product default is `en` and a fresh surface never consults the
+    // browser locale, so the shared page's Chinese surface comes from the
+    // pre-seeded durable preference (the English default has its own spec
+    // below). The ZH browser locale keeps the page environment consistent.
     page = await browser.newPage({ viewport: { width: 1680, height: 1000 }, locale: ZH_BROWSER_LOCALE })
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
@@ -216,7 +218,7 @@ describe('web e2e: settings modal and General preferences', () => {
       })
       expect(state).toEqual({
         attr: true,
-        background: 'rgb(21, 21, 23)',
+        background: 'rgb(12, 13, 16)',
         colorScheme: 'dark',
       })
     } finally {
@@ -453,11 +455,13 @@ describe('web e2e: settings modal and General preferences', () => {
     expect(tripwire.pageErrors).toEqual([])
   }, 90_000)
 
-  it('opens an English browser in English without any stored preference', async () => {
-    // A fresh Host home has no locale preference, so its surface follows the
-    // browser rather than the product fallback.
+  it('opens a Chinese browser in English without any stored preference', async () => {
+    // A fresh Host home has no locale preference. The product default is `en`
+    // and a fresh surface never consults the browser locale, so even a
+    // zh-CN browser opens on the English settings surface — the assembled-app
+    // proof of the en-first decision.
     const fresh = await launchWebScaffold({})
-    const enPage = await browser.newPage({ viewport: { width: 1680, height: 1000 }, locale: 'en-US' })
+    const enPage = await browser.newPage({ viewport: { width: 1680, height: 1000 }, locale: ZH_BROWSER_LOCALE })
     const enTripwire = watchConsole(enPage)
     onTestFailed(() => saveFailureShot(enPage, 'web-e2e-settings-browser-language'))
     try {

@@ -97,6 +97,11 @@ describe('web e2e: plan review takeover round trip', () => {
       await compareOrRefreshGolden(SIDEBAR_EXPECTED, sidebar, MODE)
     }
 
+    // Browsing the Workspaces tab covers the center with its dashboard; the
+    // row click returns the center view to the conversation so the approve
+    // gesture below reaches the decision card.
+    await selectedRow.click()
+
     await card.getByRole('button', { name: 'Approve' }).click()
 
     const sessionId = await settled

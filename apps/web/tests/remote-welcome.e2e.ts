@@ -1,5 +1,7 @@
 // Trusted non-loopback Web access cannot call the loopback-only settings API;
 // the notice therefore advances for this browser process and returns on reload.
+// The same API gate also hides the durable locale preference, so this remote
+// surface presents the product-default English notice.
 import type { Browser, Page } from 'playwright'
 import { chromium } from 'playwright'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -8,7 +10,6 @@ import {
   WELCOME_NOTICE_COPY,
   type WebScaffold,
 } from './scaffold.ts'
-import { ZH_BROWSER_LOCALE } from './support.ts'
 
 const MODE = webSnapshotMode()
 
@@ -24,10 +25,7 @@ describe.skipIf(MODE === 'record')('web e2e: remote welcome notice', () => {
       welcomeNoticePending: true,
     })
     browser = await chromium.launch()
-    page = await browser.newPage({
-      viewport: { width: 1440, height: 960 },
-      locale: ZH_BROWSER_LOCALE,
-    })
+    page = await browser.newPage({ viewport: { width: 1440, height: 960 } })
     tripwire = watchConsole(page)
     await page.goto(scaffold.baseUrl, { waitUntil: 'load' })
     await page.waitForSelector('#root', { timeout: 30_000 })
@@ -39,11 +37,11 @@ describe.skipIf(MODE === 'record')('web e2e: remote welcome notice', () => {
   })
 
   it('advances process-locally and presents the notice again after reload', async () => {
-    const welcome = page.getByRole('dialog', { name: WELCOME_NOTICE_COPY.zh.title })
+    const welcome = page.getByRole('dialog', { name: WELCOME_NOTICE_COPY.en.title })
     await welcome.waitFor({ timeout: 15_000 })
     expect(await page.locator('#root').evaluate(root => (root as HTMLElement).inert)).toBe(true)
 
-    await welcome.getByRole('button', { name: WELCOME_NOTICE_COPY.zh.continueLabel }).click()
+    await welcome.getByRole('button', { name: WELCOME_NOTICE_COPY.en.continueLabel }).click()
     await welcome.waitFor({ state: 'detached', timeout: 15_000 })
     await expect.poll(
       () => page.locator('#root').evaluate(root => (root as HTMLElement).inert),
