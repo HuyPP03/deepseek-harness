@@ -9,9 +9,9 @@
 import { memo, useState } from 'react'
 import type { CompactionSummaryNode } from '@open-harness/oh-client-runtime/client'
 import {
-  IconApiOutline14,
   IconChevronDownOutline14,
   IconChevronRightOutline14,
+  IconCordisPluginOutline14,
   MarkdownText,
 } from '@open-harness/oh-client-ui-primitives'
 import type { ChatViewSlotProps } from '../contract/slots.ts'
@@ -59,7 +59,7 @@ export const CompactionItem = memo(function CompactionItem({
       >
         <span className={css.compactionLeading} aria-hidden>
           <span className={css.compactionContextIcon} data-compaction-icon="context">
-            <IconApiOutline14 />
+            <IconCordisPluginOutline14 />
           </span>
           <span
             className={css.compactionDisclosureIcon}

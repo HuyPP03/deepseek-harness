@@ -17,7 +17,7 @@ import { useState, type KeyboardEvent } from 'react'
 import type { Context } from '@open-harness/cordis'
 import clsx from 'clsx'
 import {
-  IconApiOutline14, IconChevronDownOutline14, IconInspectOutline12, StateDot, TerminalBlock,
+  IconChevronDownOutline14, IconCordisPluginOutline14, IconInspectOutline12, StateDot, TerminalBlock,
 } from '@open-harness/oh-client-ui-primitives'
 import type { PropsLocale } from '@open-harness/oh-client-ui-slots'
 import type { ToolCallViewProps } from '../../contract/slots.ts'
@@ -34,7 +34,7 @@ function leadingFor(state: ToolRowState) {
     case 'error': return <StateDot state="error" />
     case 'stopped': return <StateDot state="warning" />
     // Running keeps the icon — the row sweep carries the in-flight signal.
-    default: return <IconApiOutline14 size={14} />
+    default: return <IconCordisPluginOutline14 size={14} />
   }
 }
 

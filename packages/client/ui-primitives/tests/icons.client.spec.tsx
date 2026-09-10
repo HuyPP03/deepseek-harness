@@ -3,7 +3,7 @@ import { cleanup, render } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import * as primitives from '@open-harness/oh-client-ui-primitives'
 import {
-  IconApiOutline14, IconArchiveOutline20, IconFolderClose16, IconGoalOutline16, IconSendOutline16,
+  IconArchiveOutline20, IconCordisPluginOutline14, IconFolderClose16, IconGoalOutline16, IconSendOutline16,
 } from '@open-harness/oh-client-ui-primitives'
 
 afterEach(cleanup)
@@ -15,12 +15,12 @@ const icons = Object.fromEntries(
 ) as Record<string, (p: primitives.IconProps) => React.JSX.Element>
 const iconNames = Object.keys(icons)
 
-describe('ic_ds_ icon set', () => {
-  it('exports the full icon set (46 deepsuite + 20 figma extracts + four product glyphs outside those sets)', () => {
-    expect(iconNames.length).toBe(70)
+describe('stroke icon family', () => {
+  it('exports the full icon set (78 stroke glyphs, plus the kept filled variants)', () => {
+    expect(iconNames.length).toBe(78)
   })
 
-  it.each(iconNames)('%s renders an svg with currentColor fills and no hardcoded palette', (name) => {
+  it.each(iconNames)('%s renders an svg in currentColor with no hardcoded palette', (name) => {
     const Icon = icons[name]!
     const { container } = render(<Icon />)
     const svg = container.querySelector('svg')
@@ -39,8 +39,8 @@ describe('ic_ds_ icon set', () => {
   })
 
   it('each glyph defaults to its own drawn size, not one set-wide default', () => {
-    const api = render(<IconApiOutline14 />)
-    expect(api.container.querySelector('svg')!.getAttribute('width')).toBe('14')
+    const cordis = render(<IconCordisPluginOutline14 />)
+    expect(cordis.container.querySelector('svg')!.getAttribute('width')).toBe('14')
     const folder = render(<IconFolderClose16 />)
     expect(folder.container.querySelector('svg')!.getAttribute('width')).toBe('16')
     const archive = render(<IconArchiveOutline20 />)

@@ -6,7 +6,7 @@
 
 import type { ReactNode } from 'react'
 import {
-  IconApiOutline14, IconBrowseOutline16, IconCodeOutline16, IconEditOutline16, IconSearchOutline16, IconSparkle16,
+  IconBrowseOutline16, IconCodeOutline16, IconCordisPluginOutline14, IconEditOutline16, IconSearchOutline16, IconSparkle16,
 } from '@open-harness/oh-client-ui-primitives'
 import type { ToolCallOwnerProps, ToolTreeProps } from '../../contract/slots.ts'
 import { readCardModel } from '../models/read-card-model.ts'
@@ -21,7 +21,7 @@ import { ToolRow } from '../components/ToolRow.tsx'
 const VARIANT_ICONS: Record<ToolRowVariant, ReactNode> = {
   search: <IconSearchOutline16 size={14} />,
   read: <IconBrowseOutline16 size={14} />,
-  bash: <IconApiOutline14 size={14} />,
+  bash: <IconCordisPluginOutline14 size={14} />,
   write: <IconEditOutline16 size={14} />,
   edit: <IconEditOutline16 size={14} />,
   code: <IconCodeOutline16 size={14} />,
