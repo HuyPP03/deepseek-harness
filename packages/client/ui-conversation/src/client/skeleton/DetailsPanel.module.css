@@ -1,6 +1,6 @@
-/* Details third column, minimal fill: header (name + close) over a
-   scrolling body of Input/Output code sections. Panel width/squeeze belongs
-   to layout; this fills whatever the column gives. */
+/* Details third column: sticky header over a scrolling body. File / browse /
+   job seats fill the body without outer padding; tool sections keep the padded
+   Input/Output layout. */
 
 .root {
   display: flex;
@@ -11,23 +11,40 @@
   background: var(--oh-alias-bg-base);
 }
 
-/* figma RightSidebar header frame (I54:42735;43:36451): pad 14/12/12/12, gap 8. */
 .header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
-  padding: 14px 12px 12px;
+  padding: 12px 12px 11px;
   border-bottom: 1px solid var(--oh-alias-border-l2);
+  background: var(--oh-alias-bg-layer-1);
 }
 
-/* figma I54:42735;43:41479: 14/20 wt500. */
+.headerCopy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .title {
   overflow: hidden;
   font-size: 14px;
   line-height: 20px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--oh-alias-label-primary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.subtitle {
+  overflow: hidden;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--oh-alias-label-tertiary);
+  font-family: var(--oh-font-mono, ui-monospace, monospace);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -38,15 +55,25 @@
   place-items: center;
   width: 28px;
   height: 28px;
+  margin-top: -2px;
   border: none;
   border-radius: 999px;
   background: transparent;
   color: var(--oh-alias-label-secondary);
   cursor: pointer;
+  transition:
+    color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .close:hover {
+  color: var(--oh-alias-label-primary);
   background: var(--oh-alias-interactive-bg-hover);
+}
+
+.close:focus-visible {
+  outline: 2px solid var(--oh-alias-brand-primary);
+  outline-offset: 1px;
 }
 
 .body {
@@ -54,10 +81,46 @@
   min-height: 0;
   padding: 12px 16px;
   overflow-y: auto;
+  --oh-scrollbar-thumb: var(--oh-alias-scrollbar-bg-l2);
+  --oh-scrollbar-thumb-hover: var(--oh-alias-scrollbar-hover-l2);
+}
+
+/* File / browse / job occupants own their own padding and scrollers. */
+.seatBody {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.emptyCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 160px;
+  margin: 8px 0;
+  padding: 24px 18px;
+  border: 1px dashed var(--oh-alias-border-l2);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--oh-alias-bg-layer-1) 70%, transparent);
+  text-align: center;
+}
+
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--oh-alias-state-business-primary) 12%, var(--oh-alias-bg-layer-3));
+  color: var(--oh-alias-state-business-primary);
 }
 
 .empty {
-  padding: 8px 0;
+  padding: 0;
   font-size: 13px;
   line-height: 20px;
   color: var(--oh-alias-label-tertiary);
@@ -75,7 +138,6 @@
   color: var(--oh-alias-label-secondary);
 }
 
-/* figma Code-block (I54:42735;43:41429): r12, pad 16, mono 13/22. */
 .code {
   margin: 0;
   padding: 16px;

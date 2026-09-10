@@ -7,7 +7,7 @@
 // session snapshot — no data of its own.
 
 import { Fragment } from 'react'
-import { CodeBlock } from '@open-harness/oh-client-ui-primitives'
+import { CodeBlock, IconCloseOutline16, IconInspectOutline12 } from '@open-harness/oh-client-ui-primitives'
 import { shallowEqual } from '@open-harness/oh-client-runtime/client'
 import type { ConversationSnapshot, RunningToolCall, ToolCallBlock, ToolResultNode } from '@open-harness/oh-client-runtime/client'
 import type { DetailsSlotProps } from '../contract/slots.ts'
@@ -90,24 +90,32 @@ export function DetailsPanel({ useSession, useSessions, sessionId, useStore, ren
           ? t('details.jobTitle')
           : material?.name ?? selection.toolName ?? t('details.title')
 
+  const seatBody = isFileSelection || isBrowseSelection || isJobSelection
+
   return (
     <div className={css.root}>
       <div className={css.header}>
-        <div className={css.title}>
-          {title}
+        <div className={css.headerCopy}>
+          <div className={css.title}>{title}</div>
+          {isFileSelection && (
+            <div className={css.subtitle} title={filePath}>{filePath}</div>
+          )}
         </div>
         <button
           type="button" className={css.close} aria-label={t('details.close')}
           onClick={() => { closeDetails() }}
         >
-          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden>
-            <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
+          <IconCloseOutline16 size={14} />
         </button>
       </div>
-      <div className={css.body}>
+      <div className={seatBody ? css.seatBody : css.body}>
         {selection === null
-          ? <div className={css.empty}>{t('details.empty')}</div>
+          ? (
+            <div className={css.emptyCard}>
+              <span className={css.emptyIcon} aria-hidden><IconInspectOutline12 size={18} /></span>
+              <div className={css.empty}>{t('details.empty')}</div>
+            </div>
+          )
           : isFileSelection
             ? (
               // Keyed by the selected path: the inspector seat owns per-file
@@ -142,7 +150,12 @@ export function DetailsPanel({ useSession, useSessions, sessionId, useStore, ren
                   </Fragment>
                 )
                 : callId === undefined
-                  ? <div className={css.empty}>{t('details.empty')}</div>
+                  ? (
+                    <div className={css.emptyCard}>
+                      <span className={css.emptyIcon} aria-hidden><IconInspectOutline12 size={18} /></span>
+                      <div className={css.empty}>{t('details.empty')}</div>
+                    </div>
+                  )
                   : material === null
                     ? <div className={css.empty}>{t('details.notInWindow')}</div>
                     : (

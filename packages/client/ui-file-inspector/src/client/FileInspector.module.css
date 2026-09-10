@@ -1,4 +1,4 @@
-/* File inspector: the tab strip and the two seats inside the details panel body.
+/* File inspector: the tab strip and the seats inside the details panel body.
    Tokens stay on the --oh-alias-* semantic layer so light/dark ride the theme. */
 
 .root {
@@ -12,8 +12,8 @@
 
 .tabs {
   display: flex;
-  gap: 0;
-  padding: 0 12px;
+  gap: 2px;
+  padding: 8px 10px 0;
   border-bottom: 1px solid var(--oh-alias-border-l2);
   background: var(--oh-alias-bg-layer-1);
   flex: none;
@@ -29,24 +29,29 @@
   font-size: 12px;
   line-height: 18px;
   font-weight: 500;
-  padding: 8px 12px 7px;
+  padding: 7px 12px 8px;
+  border-radius: 8px 8px 0 0;
   cursor: pointer;
-  transition: color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
+  transition:
+    color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    background-color var(--oh-transition-duration-fast) var(--oh-ease-in-out),
+    border-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
 }
 
 .tab:hover {
   color: var(--oh-alias-label-primary);
+  background: var(--oh-alias-interactive-bg-hover);
 }
 
 .tabActive {
   color: var(--oh-alias-label-primary);
   border-bottom-color: var(--oh-alias-state-business-primary);
+  background: color-mix(in srgb, var(--oh-alias-state-business-primary) 8%, transparent);
 }
 
 .tab:focus-visible {
   outline: 2px solid var(--oh-alias-brand-primary);
   outline-offset: -2px;
-  border-radius: 4px;
 }
 
 .seat {
@@ -66,13 +71,27 @@
   margin: 0;
   display: flex;
   flex-direction: column;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
 }
 
 .state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 140px;
+  margin: 16px;
   padding: 20px 16px;
+  border: 1px dashed var(--oh-alias-border-l2);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--oh-alias-bg-layer-1) 70%, transparent);
   color: var(--oh-alias-label-tertiary);
   font-size: 13px;
   line-height: 20px;
+  text-align: center;
 }
 
 /* The virtualized code view: the line height is the layout unit (the
@@ -122,7 +141,8 @@
   text-align: right;
   color: var(--oh-alias-label-caption);
   user-select: none;
-  border-right: 1px solid var(--oh-alias-border-l1);
+  border-right: 1px solid var(--oh-alias-border-l2);
+  background: color-mix(in srgb, var(--oh-alias-bg-layer-1) 55%, transparent);
   margin-right: 12px;
 }
 
@@ -203,10 +223,26 @@
   background: var(--oh-alias-bg-base);
 }
 
-.browserFilter {
+.browserFilterWrap {
   flex: none;
+  position: relative;
   margin: 12px 12px 8px;
-  padding: 7px 10px;
+}
+
+.browserFilterIcon {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: var(--oh-alias-label-dimmed);
+  pointer-events: none;
+}
+
+.browserFilter {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 7px 10px 7px 30px;
   border: 1px solid var(--oh-alias-border-l2);
   border-radius: 8px;
   background: var(--oh-alias-bg-layer-1);
@@ -246,7 +282,9 @@
 }
 
 .browserRow {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   width: 100%;
   appearance: none;
   background: none;
@@ -276,6 +314,9 @@
 }
 
 .browserRowDir {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 10px;
   color: var(--oh-alias-label-tertiary);
   font-size: 12px;
@@ -286,8 +327,20 @@
   text-overflow: ellipsis;
 }
 
+.browserRowIcon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--oh-alias-label-tertiary);
+}
+
+.browserRow:hover .browserRowIcon {
+  color: var(--oh-alias-state-business-primary);
+}
+
 .browserName {
   display: block;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }

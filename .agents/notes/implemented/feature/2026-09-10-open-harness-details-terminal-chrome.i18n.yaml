@@ -1,0 +1,6 @@
+# Bilingual-pair consistency record (docs/i18n/README.md): the git blob hash of each
+# side as of the last confirmed-consistent state. Both languages carry equal authority;
+# after editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write .agents/notes/implemented/feature/2026-09-10-open-harness-details-terminal-chrome.md
+2026-09-10-open-harness-details-terminal-chrome.md: 52f57bfc1d3a9bc23316a73455daa55693a45757
+2026-09-10-open-harness-details-terminal-chrome.zh.md: 85a3af6161bd051c81b6cca8dbec67afcfdc8754

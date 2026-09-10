@@ -11,7 +11,7 @@
 import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
-import { Button, IconPlusOutline16, Modal, RiskConfirmation } from '@open-harness/oh-client-ui-primitives'
+import { Button, IconCordisPluginOutline14, IconPlusOutline16, Modal, RiskConfirmation } from '@open-harness/oh-client-ui-primitives'
 import type { McpServerStatus } from '@open-harness/oh-api-remotes/client'
 import type { SnapshotStore } from '@open-harness/oh-client-runtime/client'
 import type { InjectFace, PropsLocale, PropsRuntime } from '@open-harness/oh-client-ui-slots'
@@ -279,9 +279,10 @@ export function McpSection(props: McpSectionProps): ReactNode {
   return (
     <div className={css.section}>
       <div className={css.header}>
-        <p className={css.intro}>{t('sectionIntro')}</p>
-        <Button variant="outline" size="sm" onClick={() => { beginAdd() }}>
-          <IconPlusOutline16 size={14} />
+        <div className={css.headerCopy}>
+          <p className={css.intro}>{t('sectionIntro')}</p>
+        </div>
+        <Button variant="primary" size="md" icon={<IconPlusOutline16 size={16} />} onClick={() => { beginAdd() }}>
           {t('add')}
         </Button>
       </div>
@@ -292,7 +293,18 @@ export function McpSection(props: McpSectionProps): ReactNode {
           <Button variant="outline" size="sm" onClick={() => { void load() }}>{t('retry')}</Button>
         </div>
       )}
-      {state.status === 'ready' && state.rows.length === 0 && <p className={css.note}>{t('noServers')}</p>}
+      {state.status === 'ready' && state.rows.length === 0 && (
+        <div className={css.emptyCard}>
+          <div className={css.emptyIconBadge} aria-hidden>
+            <IconCordisPluginOutline14 size={20} />
+          </div>
+          <div className={css.emptyTitle}>{t('noServers')}</div>
+          <p className={css.emptySub}>{t('sectionIntro')}</p>
+          <Button variant="primary" size="md" icon={<IconPlusOutline16 size={16} />} onClick={() => { beginAdd() }}>
+            {t('add')}
+          </Button>
+        </div>
+      )}
       {state.status === 'ready' && state.rows.length > 0 && (
         <div className={css.list}>
           {state.rows.map(row => (

@@ -46,7 +46,12 @@
   padding: 10px 14px 10px var(--dsl-terminal-gutter);
   border-top-left-radius: var(--dsl-terminal-radius);
   border-top-right-radius: var(--dsl-terminal-radius);
-  background: var(--oh-alias-markdown-code-block-banner);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--oh-alias-state-business-primary) 6%, var(--oh-alias-markdown-code-block-banner)),
+      var(--oh-alias-markdown-code-block-banner) 42%
+    );
   /* A long multi-line command scrolls inside the banner instead of pushing
      the output off screen. */
   max-height: 150px;
@@ -155,8 +160,13 @@
 
 .copyButton:hover {
   color: var(--oh-alias-label-primary);
-  border-color: var(--oh-alias-label-dimmed);
-  background-color: var(--oh-alias-bg-layer-2);
+  border-color: color-mix(in srgb, var(--oh-alias-state-business-primary) 35%, var(--oh-alias-border-l2));
+  background-color: color-mix(in srgb, var(--oh-alias-state-business-primary) 8%, var(--oh-alias-bg-layer-2));
+}
+
+.copyButton:focus-visible {
+  outline: 2px solid var(--oh-alias-brand-primary);
+  outline-offset: 1px;
 }
 
 /* Vertical scrolling lives on the OUTPUT, not the card root. */

@@ -10,6 +10,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { FileEntry } from '@open-harness/oh-api-remotes/client'
 import { clsx } from 'clsx'
+import {
+  IconBrowseOutline16, IconFileTypeCode16, IconFileTypeFolder16,
+  IconFileTypeJson16, IconFileTypeMarkdown16, IconSearchOutline16,
+} from '@open-harness/oh-client-ui-primitives'
 import type { FileBrowserProps } from './contract/slots.ts'
 import css from './FileInspector.module.css'
 
@@ -20,6 +24,23 @@ type ListState =
   | { kind: 'loading' }
   | { kind: 'ok'; rows: readonly FileEntry[]; truncated: boolean }
   | { kind: 'error' }
+
+/**
+ * Render custom icon matching file extension.
+ */
+function renderFileIcon(path: string) {
+  const lower = path.toLowerCase()
+  if (lower.endsWith('.ts') || lower.endsWith('.tsx') || lower.endsWith('.js') || lower.endsWith('.jsx') || lower.endsWith('.py')) {
+    return <IconFileTypeCode16 size={14} />
+  }
+  if (lower.endsWith('.md') || lower.endsWith('.txt') || lower.endsWith('.doc')) {
+    return <IconFileTypeMarkdown16 size={14} />
+  }
+  if (lower.endsWith('.json') || lower.endsWith('.yaml') || lower.endsWith('.yml')) {
+    return <IconFileTypeJson16 size={14} />
+  }
+  return <IconBrowseOutline16 size={14} />
+}
 
 /**
  * The one-line display form of a walk row: workspace-relative for the main
@@ -68,13 +89,18 @@ export function FileBrowser({ listFiles, openFile, t }: FileBrowserProps) {
 
   return (
     <div className={css.browserRoot}>
-      <input
-        type="text"
-        className={css.browserFilter}
-        placeholder={t('browser.filterPlaceholder')}
-        value={query}
-        onChange={(event) => { setQuery(event.target.value) }}
-      />
+      <div className={css.browserFilterWrap}>
+        <span className={css.browserFilterIcon} aria-hidden>
+          <IconSearchOutline16 size={12} />
+        </span>
+        <input
+          type="text"
+          className={css.browserFilter}
+          placeholder={t('browser.filterPlaceholder')}
+          value={query}
+          onChange={(event) => { setQuery(event.target.value) }}
+        />
+      </div>
       {state.truncated && <div className={css.browserNote}>{t('browser.truncated')}</div>}
       {visible.length === 0
         ? <div className={css.state}>{t('browser.empty')}</div>
@@ -88,6 +114,9 @@ export function FileBrowser({ listFiles, openFile, t }: FileBrowserProps) {
                   // below already locates every file, and the inspector has
                   // no directory view to hand a folder pick to.
                   <li key={`${row.root}:${row.relative}`} className={css.browserRowDir}>
+                    <span className={css.browserRowIcon} aria-hidden>
+                      <IconFileTypeFolder16 size={14} />
+                    </span>
                     <span className={css.browserName}>{display}/</span>
                   </li>
                 )
@@ -99,6 +128,9 @@ export function FileBrowser({ listFiles, openFile, t }: FileBrowserProps) {
                       title={row.path}
                       onClick={() => { openFile(row.path) }}
                     >
+                      <span className={css.browserRowIcon} aria-hidden>
+                        {renderFileIcon(row.path)}
+                      </span>
                       <span className={css.browserName}>{display}</span>
                     </button>
                   </li>
