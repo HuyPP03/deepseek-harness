@@ -19,9 +19,13 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
       >
         <svg
           class="panelIcon"
-          data-content="35f95b0c"
+          data-content="d22b2043"
           fill="none"
           height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
           viewBox="0 0 16 16"
           width="16"
           xmlns="http://www.w3.org/2000/svg"
@@ -34,9 +38,13 @@ exports[`sidebar shell snapshots > renders the collapsed rail after the crossfad
       type="button"
     >
       <svg
-        data-content="c0ce4dcc"
+        data-content="5e40213d"
         fill="none"
         height="14"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
         viewBox="0 0 16 16"
         width="14"
         xmlns="http://www.w3.org/2000/svg"
@@ -98,9 +106,13 @@ exports[`sidebar shell snapshots > renders the expanded column (toggle, New butt
       >
         <svg
           class="panelIcon"
-          data-content="35f95b0c"
+          data-content="d22b2043"
           fill="none"
           height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
           viewBox="0 0 16 16"
           width="16"
           xmlns="http://www.w3.org/2000/svg"
@@ -113,9 +125,13 @@ exports[`sidebar shell snapshots > renders the expanded column (toggle, New butt
       type="button"
     >
       <svg
-        data-content="c0ce4dcc"
+        data-content="5e40213d"
         fill="none"
         height="14"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
         viewBox="0 0 16 16"
         width="14"
         xmlns="http://www.w3.org/2000/svg"
@@ -177,9 +193,13 @@ exports[`sidebar shell snapshots > renders the expanded column in the zh copy (n
       >
         <svg
           class="panelIcon"
-          data-content="35f95b0c"
+          data-content="d22b2043"
           fill="none"
           height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
           viewBox="0 0 16 16"
           width="16"
           xmlns="http://www.w3.org/2000/svg"
@@ -192,9 +212,13 @@ exports[`sidebar shell snapshots > renders the expanded column in the zh copy (n
       type="button"
     >
       <svg
-        data-content="c0ce4dcc"
+        data-content="5e40213d"
         fill="none"
         height="14"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="1.5"
         viewBox="0 0 16 16"
         width="14"
         xmlns="http://www.w3.org/2000/svg"
