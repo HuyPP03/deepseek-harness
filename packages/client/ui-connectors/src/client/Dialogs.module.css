@@ -1,7 +1,22 @@
 /* Connectors dialogs (token + OAuth app + custom connector): one modal per draft. */
 
 .dialog {
-  width: min(420px, calc(100vw - 32px));
+  width: min(460px, calc(100vw - 32px));
+}
+
+.customDialog {
+  width: min(580px, calc(100vw - 32px));
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.formGrid .dialogField + .dialogField {
+  margin-top: 0;
 }
 
 .dialogField {
@@ -29,6 +44,45 @@
   font-size: 11px;
   line-height: 16px;
   color: var(--oh-alias-label-tertiary);
+}
+
+.dialogTextarea {
+  width: 100%;
+  min-height: 76px;
+  padding: 8px 10px;
+  border: 1px solid var(--oh-alias-border-l2);
+  border-radius: 8px;
+  background: var(--oh-alias-bg-layer-1);
+  color: var(--oh-alias-label-primary);
+  font-family: var(--oh-font-family-mono, monospace);
+  font-size: 13px;
+  line-height: 20px;
+  resize: vertical;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--oh-transition-duration-fast) var(--oh-ease-in-out);
+}
+
+.dialogTextarea:focus {
+  border-color: var(--oh-alias-brand-primary);
+}
+
+.dialogTextarea::placeholder {
+  color: var(--oh-alias-label-dimmed);
+}
+
+.checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--oh-alias-label-secondary);
+  cursor: pointer;
+}
+
+.checkboxLabel input {
+  accent-color: var(--oh-alias-brand-primary);
 }
 
 /* The byoApp app-registration steps, numbered, above the credential fields. */
@@ -71,9 +125,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 10px;
+  padding: 6px 12px;
   border: 1px solid var(--oh-alias-border-l2);
-  border-radius: 999px;
+  border-radius: 8px;
   background: var(--oh-alias-bg-layer-1);
   font-size: 12px;
   line-height: 18px;

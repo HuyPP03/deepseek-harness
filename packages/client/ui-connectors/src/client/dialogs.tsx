@@ -7,6 +7,7 @@
  * the client.
  */
 import type { ReactNode } from 'react'
+import clsx from 'clsx'
 import { Button, Input, Modal } from '@open-harness/oh-client-ui-primitives'
 import { parseEnvDraft } from './controller.ts'
 import type { ConnectOauthDialog, ConnectTokenDialog, CustomConnectorDialog } from './controller.ts'
@@ -181,7 +182,7 @@ export function CustomDialog({ dialog, t, onClose, onDraft, onSave }: {
       onClose={onClose}
       title={t('custom.new.title')}
       closeLabel={t('dialog.cancel')}
-      className={css.dialog as string}
+      className={clsx(css.dialog, css.customDialog) as string}
       footer={(
         <div className={css.dialogFooter}>
           <Button variant="outline" size="sm" disabled={dialog.saving} onClick={onClose}>
@@ -199,24 +200,27 @@ export function CustomDialog({ dialog, t, onClose, onDraft, onSave }: {
         </div>
       )}
     >
-      <div className={css.dialogField}>
-        <span className={css.dialogFieldLabel}>{t('custom.new.name')}</span>
-        <Input
-          type="text"
-          value={d.name}
-          placeholder="My Service"
-          onChange={(e) => { onDraft('name', e.target.value) }}
-        />
+      <div className={css.formGrid}>
+        <div className={css.dialogField}>
+          <span className={css.dialogFieldLabel}>{t('custom.new.name')}</span>
+          <Input
+            type="text"
+            value={d.name}
+            placeholder="My Service"
+            onChange={(e) => { onDraft('name', e.target.value) }}
+          />
+        </div>
+        <div className={css.dialogField}>
+          <span className={css.dialogFieldLabel}>{t('custom.new.id')}</span>
+          <Input
+            type="text"
+            value={d.id}
+            placeholder="my-service"
+            onChange={(e) => { onDraft('id', e.target.value) }}
+          />
+        </div>
       </div>
-      <div className={css.dialogField}>
-        <span className={css.dialogFieldLabel}>{t('custom.new.id')}</span>
-        <Input
-          type="text"
-          value={d.id}
-          placeholder="my-service"
-          onChange={(e) => { onDraft('id', e.target.value) }}
-        />
-      </div>
+
       <div className={css.dialogField}>
         <span className={css.dialogFieldLabel}>{t('custom.new.transport')}</span>
         <div className={css.customTransport}>
@@ -242,33 +246,49 @@ export function CustomDialog({ dialog, t, onClose, onDraft, onSave }: {
           </label>
         </div>
       </div>
+
       {!isHttp && (
-        <div className={css.dialogField}>
-          <span className={css.dialogFieldLabel}>{t('custom.new.command')}</span>
-          <Input
-            type="text"
-            value={d.command}
-            placeholder="npx"
-            onChange={(e) => { onDraft('command', e.target.value) }}
-          />
+        <div className={css.formGrid}>
+          <div className={css.dialogField}>
+            <span className={css.dialogFieldLabel}>{t('custom.new.command')}</span>
+            <Input
+              type="text"
+              value={d.command}
+              placeholder="npx"
+              onChange={(e) => { onDraft('command', e.target.value) }}
+            />
+          </div>
+          <div className={css.dialogField}>
+            <span className={css.dialogFieldLabel}>{t('custom.new.tokenVar')}</span>
+            <Input
+              type="text"
+              value={d.tokenVar}
+              placeholder="MY_SERVICE_TOKEN"
+              onChange={(e) => { onDraft('tokenVar', e.target.value) }}
+            />
+          </div>
         </div>
       )}
+
       {!isHttp && (
         <div className={css.dialogField}>
           <span className={css.dialogFieldLabel}>{t('custom.new.args')}</span>
-          <Input
-            type="text"
+          <textarea
+            className={css.dialogTextarea}
+            rows={3}
             value={d.args}
             placeholder="-y, @example/mcp-server"
             onChange={(e) => { onDraft('args', e.target.value) }}
           />
         </div>
       )}
+
       {!isHttp && (
         <div className={css.dialogField}>
           <span className={css.dialogFieldLabel}>{t('custom.new.env')}</span>
-          <Input
-            type="text"
+          <textarea
+            className={css.dialogTextarea}
+            rows={3}
             value={d.env}
             placeholder="CONFLUENCE_URL=https://confluence.example.com, OTHER_KEY=value"
             onChange={(e) => { onDraft('env', e.target.value) }}
@@ -276,29 +296,33 @@ export function CustomDialog({ dialog, t, onClose, onDraft, onSave }: {
           <span className={css.dialogFieldHint}>{t('custom.new.envHint')}</span>
         </div>
       )}
+
       {isHttp && (
-        <div className={css.dialogField}>
-          <span className={css.dialogFieldLabel}>{t('custom.new.url')}</span>
-          <Input
-            type="text"
-            value={d.url}
-            placeholder="https://example.com/mcp"
-            onChange={(e) => { onDraft('url', e.target.value) }}
-          />
+        <div className={css.formGrid}>
+          <div className={css.dialogField}>
+            <span className={css.dialogFieldLabel}>{t('custom.new.url')}</span>
+            <Input
+              type="text"
+              value={d.url}
+              placeholder="https://example.com/mcp"
+              onChange={(e) => { onDraft('url', e.target.value) }}
+            />
+          </div>
+          <div className={css.dialogField}>
+            <span className={css.dialogFieldLabel}>{t('custom.new.tokenVar')}</span>
+            <Input
+              type="text"
+              value={d.tokenVar}
+              placeholder="MY_SERVICE_TOKEN"
+              onChange={(e) => { onDraft('tokenVar', e.target.value) }}
+            />
+          </div>
         </div>
       )}
-      <div className={css.dialogField}>
-        <span className={css.dialogFieldLabel}>{t('custom.new.tokenVar')}</span>
-        <Input
-          type="text"
-          value={d.tokenVar}
-          placeholder="MY_SERVICE_TOKEN"
-          onChange={(e) => { onDraft('tokenVar', e.target.value) }}
-        />
-      </div>
+
       {isHttp && (
         <div className={css.dialogField}>
-          <label>
+          <label className={css.checkboxLabel}>
             <input
               type="checkbox"
               checked={d.tokenVarIsHeader === 'true'}
@@ -308,6 +332,7 @@ export function CustomDialog({ dialog, t, onClose, onDraft, onSave }: {
           </label>
         </div>
       )}
+
       {dialog.error !== null && <span className={css.dialogError}>{dialog.error}</span>}
     </Modal>
   )
