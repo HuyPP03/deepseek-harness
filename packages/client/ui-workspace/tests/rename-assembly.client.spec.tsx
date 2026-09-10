@@ -31,6 +31,8 @@ async function createRuntime(): Promise<SlotTestRuntime> {
   locale.setLocale('zh')
   runtime.provide('locale', locale)
   runtime.slots.installLocale(locale)
+  // The browser entry declares `layout` (a row click returns the center view).
+  runtime.provide('layout', { setCenterView: vi.fn() } as never)
   return runtime
 }
 

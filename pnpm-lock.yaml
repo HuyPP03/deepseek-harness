@@ -626,12 +626,12 @@ importers:
       '@open-harness/oh-subagent-codex':
         specifier: workspace:*
         version: link:../packages/subagent/subagent-codex
-      '@open-harness/oh-subagent-sdk':
-        specifier: workspace:*
-        version: link:../packages/subagent/subagent-sdk
       '@open-harness/oh-subagent-fork-in-process':
         specifier: workspace:*
         version: link:../packages/subagent/subagent-fork-in-process
+      '@open-harness/oh-subagent-sdk':
+        specifier: workspace:*
+        version: link:../packages/subagent/subagent-sdk
       '@open-harness/oh-subagent-spawn-in-process':
         specifier: workspace:*
         version: link:../packages/subagent/subagent-spawn-in-process
@@ -3311,6 +3311,9 @@ importers:
       '@open-harness/oh-client-ui-conversation':
         specifier: workspace:^
         version: link:../ui-conversation
+      '@open-harness/oh-client-ui-layout':
+        specifier: workspace:^
+        version: link:../ui-layout
       '@open-harness/oh-client-ui-primitives':
         specifier: workspace:^
         version: link:../ui-primitives
@@ -3584,6 +3587,9 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
     devDependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: 1.29.0
+        version: 1.29.0(zod@4.4.3)
       '@open-harness/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
@@ -3617,9 +3623,6 @@ importers:
       '@open-harness/oh-mcp-registry':
         specifier: workspace:^
         version: link:../../mcp/mcp-registry
-      '@modelcontextprotocol/sdk':
-        specifier: 1.29.0
-        version: 1.29.0(zod@4.4.3)
 
   packages/connectors/device-flow:
     dependencies:
@@ -4216,6 +4219,9 @@ importers:
       '@open-harness/cordis-plugin-timer':
         specifier: workspace:^
         version: link:../../../vendor/timer
+      '@open-harness/node-addon-landlock-run':
+        specifier: workspace:^
+        version: link:../../../native/landlock-run/packages/entry
       '@open-harness/oh-agent':
         specifier: workspace:^
         version: link:../../core/agent
@@ -4312,9 +4318,6 @@ importers:
       '@open-harness/oh-tools':
         specifier: workspace:^
         version: link:../../core/tools
-      '@open-harness/node-addon-landlock-run':
-        specifier: workspace:^
-        version: link:../../../native/landlock-run/packages/entry
 
   packages/examples/jsonrpc-demo:
     dependencies:
@@ -5195,6 +5198,9 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.12.0
+        version: 1.29.0(zod@4.4.3)
       '@open-harness/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
@@ -5219,9 +5225,6 @@ importers:
       '@open-harness/oh-typert-registry':
         specifier: workspace:^
         version: link:../../typert/registry
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.12.0
-        version: 1.29.0(zod@4.4.3)
 
   packages/host/directory-picker:
     devDependencies:
@@ -5723,12 +5726,12 @@ importers:
 
   packages/llm/llm-pi-ai:
     dependencies:
-      '@open-harness/schemastery':
-        specifier: link:../../../vendor/schemastery
-        version: link:../../../vendor/schemastery
       '@earendil-works/pi-ai':
         specifier: ^0.82.1
         version: 0.82.1(@modelcontextprotocol/sdk@1.30.0(zod@4.4.3))(ws@8.21.0)(zod@4.4.3)
+      '@open-harness/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
     devDependencies:
       '@open-harness/cordis':
         specifier: workspace:^
@@ -5977,16 +5980,22 @@ importers:
 
   packages/mcp/mcp-client:
     dependencies:
-      '@open-harness/schemastery':
-        specifier: link:../../../vendor/schemastery
-        version: link:../../../vendor/schemastery
       '@modelcontextprotocol/sdk':
         specifier: ^1.12.0
         version: 1.29.0(zod@4.4.3)
+      '@open-harness/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
       zod:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
+      '@modelcontextprotocol/server-everything':
+        specifier: ^2026.7.4
+        version: 2026.7.4
+      '@modelcontextprotocol/server-filesystem':
+        specifier: ^2026.7.4
+        version: 2026.7.10(zod@4.4.3)
       '@open-harness/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
@@ -6020,12 +6029,6 @@ importers:
       '@open-harness/oh-tools':
         specifier: workspace:^
         version: link:../../core/tools
-      '@modelcontextprotocol/server-everything':
-        specifier: ^2026.7.4
-        version: 2026.7.4
-      '@modelcontextprotocol/server-filesystem':
-        specifier: ^2026.7.4
-        version: 2026.7.10(zod@4.4.3)
 
   packages/mcp/mcp-manager:
     dependencies:
@@ -6036,6 +6039,9 @@ importers:
         specifier: ^2.9.0
         version: 2.9.0
     devDependencies:
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.12.0
+        version: 1.29.0(zod@4.4.3)
       '@open-harness/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
@@ -6051,9 +6057,6 @@ importers:
       '@open-harness/oh-mcp-registry':
         specifier: workspace:^
         version: link:../mcp-registry
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.12.0
-        version: 1.29.0(zod@4.4.3)
 
   packages/mcp/mcp-registry:
     dependencies:
@@ -6224,12 +6227,12 @@ importers:
 
   packages/sandbox/sandbox-local:
     dependencies:
-      '@open-harness/oh-sandbox-windows-acl':
-        specifier: workspace:^
-        version: link:../sandbox-windows-acl
       '@open-harness/node-addon-landlock-run':
         specifier: workspace:^
         version: link:../../../native/landlock-run/packages/entry
+      '@open-harness/oh-sandbox-windows-acl':
+        specifier: workspace:^
+        version: link:../sandbox-windows-acl
       '@open-harness/schemastery':
         specifier: link:../../../vendor/schemastery
         version: link:../../../vendor/schemastery
@@ -6999,6 +7002,9 @@ importers:
       '@open-harness/cordis':
         specifier: workspace:^
         version: link:../../../vendor/cordis
+      '@open-harness/node-addon-landlock-run':
+        specifier: workspace:^
+        version: link:../../../native/landlock-run/packages/entry
       '@open-harness/oh-bash-local':
         specifier: workspace:^
         version: link:../bash-local
@@ -7020,9 +7026,6 @@ importers:
       '@open-harness/oh-subprocess-local':
         specifier: workspace:^
         version: link:../../subprocess/subprocess-local
-      '@open-harness/node-addon-landlock-run':
-        specifier: workspace:^
-        version: link:../../../native/landlock-run/packages/entry
 
   packages/shell/pwsh-local:
     dependencies:
@@ -7728,46 +7731,6 @@ importers:
         specifier: 0.147.0
         version: 0.147.0
 
-  packages/subagent/subagent-sdk:
-    dependencies:
-      '@open-harness/schemastery':
-        specifier: link:../../../vendor/schemastery
-        version: link:../../../vendor/schemastery
-    devDependencies:
-      '@open-harness/cordis':
-        specifier: workspace:^
-        version: link:../../../vendor/cordis
-      '@open-harness/cordis-plugin-loader':
-        specifier: workspace:^
-        version: link:../../../vendor/loader
-      '@open-harness/oh-agent':
-        specifier: workspace:^
-        version: link:../../core/agent
-      '@open-harness/oh-invariants':
-        specifier: workspace:^
-        version: link:../../runtime-diagnostics/invariants
-      '@open-harness/oh-llm':
-        specifier: workspace:^
-        version: link:../../llm/llm
-      '@open-harness/oh-loader-smoke':
-        specifier: workspace:^
-        version: link:../../test-support/loader-smoke
-      '@open-harness/oh-sdk-client':
-        specifier: workspace:^
-        version: link:../../sdk/client
-      '@open-harness/oh-sdk-protocol':
-        specifier: workspace:^
-        version: link:../../sdk/protocol
-      '@open-harness/oh-session':
-        specifier: workspace:^
-        version: link:../../core/session
-      '@open-harness/oh-subagent':
-        specifier: workspace:^
-        version: link:../subagent
-      '@open-harness/oh-subprocess':
-        specifier: workspace:^
-        version: link:../../subprocess/subprocess
-
   packages/subagent/subagent-fork-in-process:
     dependencies:
       '@open-harness/schemastery':
@@ -7861,6 +7824,46 @@ importers:
       '@open-harness/oh-user-approval':
         specifier: workspace:^
         version: link:../../interaction/user-approval
+
+  packages/subagent/subagent-sdk:
+    dependencies:
+      '@open-harness/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
+    devDependencies:
+      '@open-harness/cordis':
+        specifier: workspace:^
+        version: link:../../../vendor/cordis
+      '@open-harness/cordis-plugin-loader':
+        specifier: workspace:^
+        version: link:../../../vendor/loader
+      '@open-harness/oh-agent':
+        specifier: workspace:^
+        version: link:../../core/agent
+      '@open-harness/oh-invariants':
+        specifier: workspace:^
+        version: link:../../runtime-diagnostics/invariants
+      '@open-harness/oh-llm':
+        specifier: workspace:^
+        version: link:../../llm/llm
+      '@open-harness/oh-loader-smoke':
+        specifier: workspace:^
+        version: link:../../test-support/loader-smoke
+      '@open-harness/oh-sdk-client':
+        specifier: workspace:^
+        version: link:../../sdk/client
+      '@open-harness/oh-sdk-protocol':
+        specifier: workspace:^
+        version: link:../../sdk/protocol
+      '@open-harness/oh-session':
+        specifier: workspace:^
+        version: link:../../core/session
+      '@open-harness/oh-subagent':
+        specifier: workspace:^
+        version: link:../subagent
+      '@open-harness/oh-subprocess':
+        specifier: workspace:^
+        version: link:../../subprocess/subprocess
 
   packages/subagent/subagent-spawn-in-process:
     dependencies:
@@ -8534,12 +8537,12 @@ importers:
 
   packages/web/tool-web:
     dependencies:
-      '@open-harness/schemastery':
-        specifier: link:../../../vendor/schemastery
-        version: link:../../../vendor/schemastery
       '@joplin/turndown-plugin-gfm':
         specifier: ^1.0.67
         version: 1.0.67
+      '@open-harness/schemastery':
+        specifier: link:../../../vendor/schemastery
+        version: link:../../../vendor/schemastery
       turndown:
         specifier: ^7.2.4
         version: 7.2.4

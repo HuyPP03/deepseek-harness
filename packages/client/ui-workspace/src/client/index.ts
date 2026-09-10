@@ -13,6 +13,9 @@ import { createSnapshotStore, type SnapshotStore } from '@open-harness/oh-client
 import type { ClientContext } from '@open-harness/oh-client-runtime/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@open-harness/oh-client-locale/client'
+// Type-only: pulls the layout plugin's Context merge (ctx.layout), so a
+// session-open from a browsing surface can return the center view.
+import type {} from '@open-harness/oh-client-ui-layout/client'
 import type {
   ChatDashboardInjected, WorkspaceBrowserInjected, WorkspaceDashboardInjected, WorkspacePickerInjected,
 } from './contract/slots.ts'
@@ -50,7 +53,7 @@ const NS = 'workspace'
  * provides a waitable service. apply therefore depends on each slot
  * declaration through `slots.inject()` instead of assuming order.
  */
-export const inject = ['slots', 'sessions', 'workspaces', 'locale']
+export const inject = ['slots', 'sessions', 'workspaces', 'locale', 'layout']
 
 /**
  * Register the browser and picker once their slot declarations are on the
@@ -110,7 +113,13 @@ export function apply(ctx: ClientContext): void {
     // Explicit group actions keep their target; unscoped New Session inherits
     // the current Session Workspace before the recent-Workspace fallback.
     startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
-    open: (sessionId) => { ctx.sessions.open(sessionId) },
+    // Opening a session from the browsing region returns the center view to
+    // the conversation — including a re-open of the already-current session,
+    // whose store change alone would not retrigger the header's yield.
+    open: (sessionId) => {
+      ctx.sessions.open(sessionId)
+      ctx.layout.setCenterView('conversation')
+    },
     searchSessions,
     searchResultLimit: ctx.sessions.searchResultLimit,
     renameSession: async (sessionId, title) => {
@@ -173,7 +182,12 @@ export function apply(ctx: ClientContext): void {
     name: 'main.chats',
     locale: NS,
     inject: (): ChatDashboardInjected => ({
-      openSession: (sessionId) => { ctx.sessions.open(sessionId) },
+      // A card click leaves the dashboard: the session opens in the
+      // conversation column, so the center view returns in the same step.
+      openSession: (sessionId) => {
+        ctx.sessions.open(sessionId)
+        ctx.layout.setCenterView('conversation')
+      },
       startChat: () => {
         ctx.workspaces.startChat()
           .then((sessionId) => { ctx.sessions.open(sessionId) })
@@ -189,7 +203,12 @@ export function apply(ctx: ClientContext): void {
     name: 'main.workspaces',
     locale: NS,
     inject: (): WorkspaceDashboardInjected => ({
-      openSession: (sessionId) => { ctx.sessions.open(sessionId) },
+      // A card click leaves the dashboard: the session opens in the
+      // conversation column, so the center view returns in the same step.
+      openSession: (sessionId) => {
+        ctx.sessions.open(sessionId)
+        ctx.layout.setCenterView('conversation')
+      },
       startSession: (workspaceId) => { ctx.workspaces.startSession(workspaceId) },
     }),
   }, WorkspaceDashboard))

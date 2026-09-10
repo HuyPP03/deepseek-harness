@@ -37,12 +37,14 @@ async function bench() {
     create, startSession, startChat, rename, insertSessionBefore,
   } as never)
   ctx.provide('sessions', { open, clear, search, searchResultLimit: 20, binding, fork } as never)
+  const setCenterView = vi.fn()
+  ctx.provide('layout', { setCenterView } as never)
   const locale = new LocaleRuntime(ctx)
   locale.setLocale('zh')
   ctx.provide('locale', locale)
   return {
     ctx, slots: ctx.get('slots') as SlotRegistry, locale, create, startSession, startChat, rename,
-    insertSessionBefore, open, clear, search, renameSession, binding, fork,
+    insertSessionBefore, open, clear, search, renameSession, binding, fork, setCenterView,
   }
 }
 
@@ -58,7 +60,7 @@ function declare(slots: SlotRegistry, ...names: HoleName[]): () => void {
 
 describe('ui-workspace apply', () => {
   it('declares the services it drives', () => {
-    expect(inject).toEqual(['slots', 'sessions', 'workspaces', 'locale'])
+    expect(inject).toEqual(['slots', 'sessions', 'workspaces', 'locale', 'layout'])
   })
 
   it('registers browser and pickers for declarations arriving before or after apply', async () => {
@@ -92,6 +94,9 @@ describe('ui-workspace apply', () => {
     expect(b.startSession).toHaveBeenLastCalledWith(undefined)
     browser.open('session' as never)
     expect(b.open).toHaveBeenCalledWith('session')
+    // A row click from the browsing region returns the center view to the
+    // conversation (a dashboard may be showing while the tab stays put).
+    expect(b.setCenterView).toHaveBeenCalledWith('conversation')
     const signal = new AbortController().signal
     await expect(browser.searchSessions('match', signal)).resolves.toEqual({
       items: [{ sessionId: 'session', snippet: 'match' }],
@@ -130,6 +135,8 @@ describe('ui-workspace apply', () => {
     const dash = (entry.inject as () => ChatDashboardInjected)()
     dash.openSession('session' as never)
     expect(b.open).toHaveBeenCalledWith('session')
+    // A card click leaves the dashboard for the conversation column.
+    expect(b.setCenterView).toHaveBeenCalledWith('conversation')
     // New chat: start the ungrouped blank chat, then open the minted session.
     dash.startChat()
     expect(b.startChat).toHaveBeenCalledOnce()
@@ -149,6 +156,8 @@ describe('ui-workspace apply', () => {
     const dash = (entry.inject as () => WorkspaceDashboardInjected)()
     dash.openSession('session' as never)
     expect(b.open).toHaveBeenCalledWith('session')
+    // A card click leaves the dashboard for the conversation column.
+    expect(b.setCenterView).toHaveBeenCalledWith('conversation')
     dash.startSession('ws' as never)
     expect(b.startSession).toHaveBeenCalledWith('ws')
   })

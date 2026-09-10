@@ -35,6 +35,7 @@
         "@open-harness/oh-client-locale",
         "@open-harness/oh-client-runtime",
         "@open-harness/oh-client-ui-conversation",
+        "@open-harness/oh-client-ui-layout",
         "@open-harness/oh-client-ui-sidebar"
       ],
       "platform": "web"
@@ -59,17 +60,18 @@
     "react": "^18.2.0"
   },
   "devDependencies": {
+    "@open-harness/cordis": "workspace:^",
     "@open-harness/oh-client-locale": "workspace:^",
     "@open-harness/oh-client-runtime": "workspace:^",
     "@open-harness/oh-client-test-runtime": "workspace:^",
     "@open-harness/oh-client-ui-conversation": "workspace:^",
+    "@open-harness/oh-client-ui-layout": "workspace:^",
     "@open-harness/oh-client-ui-primitives": "workspace:^",
     "@open-harness/oh-client-ui-sidebar": "workspace:^",
     "@open-harness/oh-client-ui-slots": "workspace:^",
     "@open-harness/oh-invariants": "workspace:^",
     "@open-harness/oh-workspace-references": "workspace:^",
     "@types/react": "~18.3.1",
-    "@open-harness/cordis": "workspace:^",
     "react": "^18.2.0"
   },
   "files": [
