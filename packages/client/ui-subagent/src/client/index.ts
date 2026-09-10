@@ -108,9 +108,9 @@ export function apply(ctx: ClientContext): void {
     },
   })
   ctx.slots.inject(
-    'conversation.session.header.actions',
+    'conversation.input.right',
     () => ctx.slots.register({
-      name: 'conversation.session.header.actions',
+      name: 'conversation.input.right',
       id: 'subagent-catalog',
       order: 10,
       locale: NS,

@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 /**
- * ui-job plugin halves: the browser entry's dictionary and header-slot
+ * ui-job plugin halves: the browser entry's dictionary and composer-tool-row
  * registrations against the real SlotRegistry (with fiber teardown proving
  * removal — HMR safety), the inert node entry, and the invariant companion's
  * ownership reservation.
@@ -16,21 +16,21 @@ import { apply as applyNode } from '../src/index.ts'
 import * as JobInvariant from '../src/invariant.ts'
 import { en, NS, vi, zh } from '../src/client/locales.ts'
 
-/** Slot ledger reader: entry ids currently registered in the header list. */
-function headerEntryIds(ctx: Context): (string | undefined)[] {
+/** Slot ledger reader: entry ids currently registered in the composer tool row. */
+function composerEntryIds(ctx: Context): (string | undefined)[] {
   return ctx.slots
-    .entries('conversation.session.header.actions')
+    .entries('conversation.input.right')
     .map(entry => entry.options.id)
 }
 
-/** Boot the browser half over a real slot tree that declares the header list. */
+/** Boot the browser half over a real slot tree that declares the composer tool row. */
 async function bench(): Promise<{ ctx: Context; fiber: ReturnType<Context['plugin']> }> {
   const ctx = new Context()
   await ctx.plugin(SlotRegistry).await()
   ctx.slots.register({
     name: 'root',
     children: {
-      'conversation.session.header.actions': { kind: 'list', scope: 'session' },
+      'conversation.input.right': { kind: 'list', scope: 'session' },
     },
   } as never, () => null)
   ctx.provide('sessions', {})
@@ -51,11 +51,11 @@ describe('ui-job browser half', () => {
     expect(inject).toEqual(['sessions', 'slots', 'locale', 'connection'])
   })
 
-  it('registers the header action, and fiber teardown removes it (HMR safety)', async () => {
+  it('registers the composer tool-row action, and fiber teardown removes it (HMR safety)', async () => {
     const { ctx, fiber } = await bench()
-    expect(headerEntryIds(ctx)).toContain('job-list')
+    expect(composerEntryIds(ctx)).toContain('job-list')
     await fiber.dispose()
-    expect(headerEntryIds(ctx)).not.toContain('job-list')
+    expect(composerEntryIds(ctx)).not.toContain('job-list')
   })
 
   it('registers both dictionaries under its own namespace and releases them with the fiber', async () => {

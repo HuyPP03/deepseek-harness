@@ -16,9 +16,9 @@ export interface JobListActionInjected {
   openJob: (jobId: string) => void
 }
 
-/** Full props for the session-header background-job action. */
+/** Full props for the composer-tool-row background-job action. */
 export type JobListActionProps =
-  PropsRuntime<'conversation.session.header.actions'> & JobListActionInjected & PropsLocale<typeof NS>
+  PropsRuntime<'conversation.input.right'> & JobListActionInjected & PropsLocale<typeof NS>
 
 /** Stable empty list so a session with no jobs keeps one array identity. */
 const NO_TASKS: readonly JobView[] = []
@@ -55,9 +55,10 @@ function ordered(jobs: readonly JobView[]): JobView[] {
 }
 
 /**
- * Session-header entry point for this session's background jobs. It renders
- * nothing at all until the session has at least one job, so an ordinary
- * conversation never grows a control for a capability it is not using.
+ * Composer-tool-row entry point for this session's background jobs. It
+ * renders nothing at all until the session has at least one job, so an
+ * ordinary conversation never grows a control for a capability it is not
+ * using.
  * @param props - runtime slot currency plus the namespace translator.
  * @returns the trigger and its popover list, or null when there is nothing to show.
  */

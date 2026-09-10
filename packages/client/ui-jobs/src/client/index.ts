@@ -31,16 +31,16 @@ export type { JobListActionInjected, JobListActionProps } from './JobListAction.
 export const inject = ['sessions', 'slots', 'locale', 'connection']
 
 /**
- * Client plugin body: register the dictionaries, the header action, and the
- * details-panel job seat.
+ * Client plugin body: register the dictionaries, the composer-tool-row
+ * action, and the details-panel job seat.
  * @param ctx - client root context.
  */
 export function apply(ctx: ClientContext): void {
   ctx.effect(() => ctx.locale.register(NS, { en, vi, zh }), 'ui-job: dictionaries')
   ctx.slots.inject(
-    'conversation.session.header.actions',
+    'conversation.input.right',
     () => ctx.slots.register({
-      name: 'conversation.session.header.actions',
+      name: 'conversation.input.right',
       id: 'job-list',
       // After the subagent catalog: session lineage reads before process work.
       order: 20,

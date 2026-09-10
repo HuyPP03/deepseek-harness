@@ -25,9 +25,9 @@ export interface SubagentCatalogInjected {
   setCatalogOpen: (parentSessionId: SessionId, open: boolean) => void
 }
 
-/** Full props for the session-header catalog action. */
+/** Full props for the composer-tool-row catalog action. */
 export type SubagentCatalogActionProps =
-  PropsRuntime<'conversation.session.header.actions'> & SubagentCatalogInjected & PropsLocale<typeof NS>
+  PropsRuntime<'conversation.input.right'> & SubagentCatalogInjected & PropsLocale<typeof NS>
 
 interface CatalogRowsProps {
   parentSessionId: SessionId
